@@ -33,7 +33,7 @@ final class PageSourceArchiveService
         $collection = $this->images->collect($payload);
         $currentGeneration = $this->sourceGenerations->pageGeneration($pageId);
         if ($currentGeneration !== $generation) {
-            throw new StaleSourceGenerationException('page', $generation, $currentGeneration);
+            throw new StaleSourceGenerationException('page', (int) $generation, (int) $currentGeneration);
         }
 
         return $this->archives->write(

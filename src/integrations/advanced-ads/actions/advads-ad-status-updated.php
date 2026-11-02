@@ -77,6 +77,7 @@ class ADVADS_AD_STATUS_UPDATED {
 
 		if ( intval( '-1' ) === intval( $ad_id ) ) {
 			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Selects every ad whose status differs from the target status, trash included; WP_Query cannot express a not-equal status.
 			$post_ids = $wpdb->get_results( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_status != %s AND post_type = 'advanced_ads'", $ad_status ), ARRAY_A );
 			if ( $post_ids ) {
 				foreach ( $post_ids as $post ) {

@@ -40,6 +40,7 @@ class Automator_Taxonomies {
 				'public'             => false,
 				'publicly_queryable' => false,
 				'show_ui'            => true,
+				'show_in_menu'       => false,
 				'hierarchical'       => true,
 				'label'              => esc_attr__( 'Recipe category', 'uncanny-automator' ), // display name
 				'labels'             => array(
@@ -68,6 +69,7 @@ class Automator_Taxonomies {
 				'public'             => false,
 				'publicly_queryable' => false,
 				'show_ui'            => true,
+				'show_in_menu'       => false,
 				'hierarchical'       => false,
 				'label'              => esc_attr__( 'Recipe tag', 'uncanny-automator' ), // display name
 				'labels'             => array(

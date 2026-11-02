@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\App\Infrastructure\Database\Database;
+
 /**
  * Class UOA_RECIPECOMPLETED
  *
@@ -98,13 +100,10 @@ class UOA_RECIPECOMPLETED {
 		if ( empty( $user_id ) ) {
 			return;
 		}
-		global $wpdb;
-		// get recipe actions
-		$table_name = $wpdb->prefix . Automator()->db->tables->action;
-		$errors     = $wpdb->get_var( $wpdb->prepare( "SELECT error_message FROM $table_name WHERE automator_recipe_log_id = %d AND completed = %d", $recipe_log_id, 1 ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		if ( ! empty( $errors ) ) {
-			// bail early
+		// The run's own status decides, not its action rows: a run with none (its trigger
+		// failed) would read as clean. Completed is also the status the count below counts.
+		if ( Automator_Status::COMPLETED !== Database::get_execution_log_store()->get_recipe_status( absint( $recipe_log_id ) ) ) {
 			return;
 		}
 

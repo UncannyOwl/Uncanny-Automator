@@ -3,25 +3,26 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Transports\Restful\Recipe\Items;
 
-use WP_Error;
-use Uncanny_Automator\App\Recipe_Builder\Action\Services\Action_CRUD_Service;
 use Uncanny_Automator\App\Infrastructure\Database\Database;
-use Uncanny_Automator\App\Transports\Restful\Recipe\Items\Traits\Filters\Filter_Before_Item_Created;
-use Uncanny_Automator\App\Transports\Restful\Recipe\Items\Traits\Filters\Filter_Field_Values_Before_Save;
-use Uncanny_Automator\App\Transports\Restful\Recipe\Items\Traits\Hooks\Deprecated_Hook_Add_Operations;
-use Uncanny_Automator\App\Transports\Restful\Recipe\Items\Traits\Hooks\Deprecated_Hook_Update_Operations;
+use Uncanny_Automator\App\Recipe_Builder\Action\Services\Action_CRUD_Service;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Portability\Recipe_Duplication_Service;
+use WP_Error;
 
 /**
  * Action REST handler.
- *
- * @package Uncanny_Automator\App\Transports\Restful\Recipe\Items
  */
 class Action_Rest extends Recipe_Item_Rest {
 
-	use Filter_Before_Item_Created;
-	use Filter_Field_Values_Before_Save;
-	use Deprecated_Hook_Add_Operations;
-	use Deprecated_Hook_Update_Operations;
+	/**
+	 * Read one of the item's post meta values through its store.
+	 *
+	 * @param string $key Meta key.
+	 *
+	 * @return mixed The stored value, or '' when there is none.
+	 */
+	protected function item_meta( string $key ) {
+		return Database::get_action_store()->get_meta( $this->get_post_id(), $key );
+	}
 
 	/**
 	 * Add an action to recipe.
@@ -29,37 +30,25 @@ class Action_Rest extends Recipe_Item_Rest {
 	 * @return array|WP_Error
 	 */
 	protected function do_add_item() {
-		$post_type     = Database::get_action_store()->get_post_type();
-		$filter_result = $this->apply_creation_filter( $post_type, 'create_action' );
-		if ( true !== $filter_result ) {
-			return $filter_result;
-		}
-
 		$recipe_id = $this->get_recipe_id();
 		$parent_id = $this->get_parent_id() ?? $recipe_id;
+		$path_code = (string) ( $this->get_request()->get_param( 'path_code' ) ?? '' );
 
 		$service = Action_CRUD_Service::instance();
-		$result  = $service->add_to_recipe(
-			$recipe_id,
-			$this->get_item_code(),
-			array(),
-			array(),
-			(int) $parent_id
-		);
+
+		if ( $parent_id !== $recipe_id && '' !== $path_code ) {
+			$result = $service->add_to_block_path( $recipe_id, $this->get_code(), array(), $parent_id, $path_code );
+		} else {
+			$result = $service->add_to_recipe( $recipe_id, $this->get_code(), array(), $parent_id );
+		}
 
 		if ( is_wp_error( $result ) ) {
-			return $this->failure(
-				$result->get_error_message(),
-				400,
-				'automator_add_action_to_recipe_failed'
-			);
+			$error_code = $result->get_error_code();
+			return $this->failure( $result->get_error_message(), 400, '' !== $error_code ? $error_code : 'automator_add_action_to_recipe_failed' );
 		}
 
 		$action_id = (int) $result['action_id'];
-
-		// Deprecated hooks (must set item_id first).
-		$this->set_item_id( $action_id );
-		$this->dispatch_deprecated_add_hooks();
+		$this->set_post_id( $action_id );
 
 		return array(
 			'item_id'   => $action_id,
@@ -73,37 +62,33 @@ class Action_Rest extends Recipe_Item_Rest {
 	 * @return array|WP_Error
 	 */
 	protected function do_update_item() {
-		$item_post = Database::get_action_store()->get_wp_post( (int) $this->get_item_id() );
+		$store     = Database::get_action_store();
+		$item_post = $store->get_wp_post( $this->get_post_id() );
 		if ( ! $item_post ) {
 			return $this->failure( 'Action not found.', 404, 'automator_action_not_found' );
 		}
 
-		$this->set_item_post( $item_post );
-		$this->set_item_code_from_meta();
-		$this->set_integration_code_from_meta();
+		$this->set_wp_post( $item_post );
+		$this->set_code( (string) $store->get_meta( $this->get_post_id(), 'code' ) );
+		$this->set_integration_code( (string) $store->get_meta( $this->get_post_id(), 'integration' ) );
 
 		$action_definition = $this->get_item_definition();
 		if ( null === $action_definition ) {
 			return $this->failure( 'Action not found.', 404, 'automator_action_not_found' );
 		}
 
-		// Deprecated hooks.
-		$this->dispatch_deprecated_before_update_hooks( $action_definition->to_array()['meta_code'] );
-
 		$config  = $this->prepare_field_config_for_services();
 		$service = Action_CRUD_Service::instance();
-		$result  = $service->update_action( (int) $this->get_item_id(), $config, array() );
+		$result  = $service->update_action( $this->get_post_id(), $config, null, $this->resolve_parent_id(), null, $this->get_path_code(), $this->get_recipe_id() );
 
 		if ( is_wp_error( $result ) ) {
 			return $this->failure( $result->get_error_message(), 400, 'automator_update_action_failed' );
 		}
 
-		// Deprecated hooks.
-		$this->dispatch_deprecated_option_updated_hooks( $config );
-
 		return array(
 			'success'   => true,
 			'item_data' => $result['action'] ?? array(),
+			'config'    => $config,
 		);
 	}
 
@@ -113,18 +98,45 @@ class Action_Rest extends Recipe_Item_Rest {
 	 * @return bool|WP_Error
 	 */
 	protected function do_delete_item() {
-		// Capture item_code from meta before deletion (needed for hooks).
-		$this->set_item_code_from_meta();
+		// Capture code from meta before deletion (needed for hook payload).
+		$this->set_code( (string) Database::get_action_store()->get_meta( $this->get_post_id(), 'code' ) );
 
 		$service = Action_CRUD_Service::instance();
-		$result  = $service->delete_action( (int) $this->get_item_id(), true );
+		$result  = $service->delete_action( $this->get_post_id(), true, $this->get_recipe_id() );
 
 		if ( is_wp_error( $result ) ) {
 			return $this->failure( $result->get_error_message(), 400, 'automator_delete_action_failed' );
 		}
 
-		$this->set_item_post_type( Database::get_action_store()->get_post_type() );
-
 		return true;
+	}
+
+	/**
+	 * Toggle the action's post_status.
+	 *
+	 * @param bool $is_on true → publish, false → draft.
+	 * @return array|WP_Error
+	 */
+	protected function do_set_status( bool $is_on ) {
+		return Action_CRUD_Service::instance()->set_status(
+			$this->get_post_id(),
+			$this->get_recipe_id(),
+			$is_on
+		);
+	}
+
+	/**
+	 * Duplicate this action (and any subtree) within the recipe.
+	 *
+	 * @return int|WP_Error New action id.
+	 */
+	protected function do_duplicate_item() {
+		$service = new Recipe_Duplication_Service();
+		$result  = $service->duplicate_entity( $this->get_recipe_id(), $this->get_post_id() );
+		if ( is_wp_error( $result ) ) {
+			return $this->failure( $result->get_error_message(), 400, 'automator_duplicate_action_failed' );
+		}
+
+		return (int) $result->get_root_id();
 	}
 }

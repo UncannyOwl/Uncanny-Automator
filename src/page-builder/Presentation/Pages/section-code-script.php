@@ -78,10 +78,13 @@ jQuery(function($) {
         var o = upbPreviewMeta.pluginUrl;
         var srcdoc = '<!DOCTYPE html><html><head><meta charset="utf-8">'
             + '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src ' + o + ' \'unsafe-inline\'; script-src ' + o + ' \'unsafe-inline\'; img-src ' + o + ' data: https:; font-src ' + o + ' data:;">'
+<?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- Builds the srcdoc of a sandboxed preview iframe, not a page WordPress renders. ?>
             + '<link rel="stylesheet" href="' + upbPreviewMeta.bootstrapUrl + '">'
             + '<style>:root{' + upbPreviewMeta.tokenCss + '}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}'
             + data.css + '</style></head><body>' + data.html
+<?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- Builds the srcdoc of a sandboxed preview iframe, not a page WordPress renders. ?>
             + '<script src="' + upbPreviewMeta.lucideUrl + '"><\/script>'
+<?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- Builds the srcdoc of a sandboxed preview iframe, not a page WordPress renders. ?>
             + '<script src="' + upbPreviewMeta.alpineUrl + '" defer><\/script>'
             + '<script>document.addEventListener("DOMContentLoaded",function(){if(window.lucide)lucide.createIcons()});<\/script>'
             + '</body></html>';

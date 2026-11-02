@@ -264,6 +264,7 @@ class GF_SUBFORM_GROUPS extends \Uncanny_Automator\Recipe\Trigger {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uncanny Groups' own table; the plugin offers no API for this query.
 		return $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT `group_id` FROM {$wpdb->prefix}ulgm_group_codes
@@ -282,6 +283,7 @@ class GF_SUBFORM_GROUPS extends \Uncanny_Automator\Recipe\Trigger {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Finds a post by a raw meta value without a post type; WP_Query needs a post type or returns other posts.
 		return $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT `post_id` FROM $wpdb->postmeta WHERE meta_key = '_ulgm_code_group_id' AND  meta_value = %s LIMIT 1",
@@ -351,6 +353,7 @@ class GF_SUBFORM_GROUPS extends \Uncanny_Automator\Recipe\Trigger {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uncanny Groups' own table; the plugin offers no API for this query.
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->prefix}ulgm_group_details as tbl_groups

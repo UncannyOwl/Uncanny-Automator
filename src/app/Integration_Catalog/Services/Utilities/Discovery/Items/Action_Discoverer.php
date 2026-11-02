@@ -64,6 +64,22 @@ class Action_Discoverer extends Integration_Item_Discoverer {
 	}
 
 	/**
+	 * The requires_user_data a registered action's catalog row carries, read
+	 * from its registry definition through the derivation discover() applies.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $code Action code.
+	 *
+	 * @return bool|null Null when the action is not registered in this request.
+	 */
+	public function registered_requires_user_data( string $code ): ?bool {
+		$action = $this->action_registry->get_action_definition( $code, false );
+
+		return is_wp_error( $action ) ? null : $this->requires_user_data( $action, 'action' );
+	}
+
+	/**
 	 * Get action code.
 	 *
 	 * @param array $item Action data

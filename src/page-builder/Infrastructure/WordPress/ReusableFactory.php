@@ -30,9 +30,8 @@ final class ReusableFactory
 
     public function redirectPostNewForReusable(): void
     {
-        $postType = isset($_GET['post_type']) && is_string($_GET['post_type'])
-            ? sanitize_key(wp_unslash($_GET['post_type']))
-            : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        $postType = isset($_GET['post_type']) && is_string($_GET['post_type']) ? sanitize_key(wp_unslash($_GET['post_type'])) : '';
 
         if ($postType !== self::POST_TYPE) {
             return;
@@ -50,16 +49,15 @@ final class ReusableFactory
         }
 
         $formId = 'upb-create-reusable-form';
-        $form = '<form id="' . esc_attr($formId) . '" method="post" action="' . esc_url(admin_url('admin-post.php')) . '">'
+
+        wp_die(
+            '<form id="' . esc_attr($formId) . '" method="post" action="' . esc_url(admin_url('admin-post.php')) . '">'
             . '<input type="hidden" name="action" value="' . esc_attr(self::CREATE_ACTION) . '">'
             . '<input type="hidden" name="_wpnonce" value="' . esc_attr((string) wp_create_nonce(self::CREATE_ACTION)) . '">'
             . '<button type="submit" class="button button-primary">'
             . esc_html_x('Add new reusable', 'Page Builder', 'uncanny-automator')
             . '</button></form>'
-            . '<script>document.getElementById("' . esc_js($formId) . '").submit();</script>';
-
-        wp_die(
-            $form,
+            . '<script>document.getElementById("' . esc_js($formId) . '").submit();</script>',
             esc_html_x('Add new reusable', 'Page Builder', 'uncanny-automator'),
             ['response' => 200],
         );
@@ -221,7 +219,7 @@ final class ReusableFactory
 
     private function assertPostRequest(): void
     {
-        if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? '')) === 'POST') {
+        if (strtoupper(sanitize_text_field(wp_unslash($_SERVER['REQUEST_METHOD'] ?? ''))) === 'POST') {
             return;
         }
 
@@ -243,7 +241,7 @@ final class ReusableFactory
             // A reporting failure cannot replace the controlled admin response.
         }
 
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] %s failed (%s).',
             $code,
             $failure::class,

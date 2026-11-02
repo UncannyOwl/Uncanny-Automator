@@ -32,9 +32,9 @@ class WP_SUBMITCOMMENT extends \Uncanny_Automator\Recipe\Trigger {
 	protected function setup_trigger() {
 		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 
-		// translators: %1$s is a post, %2$s is a number of times.
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Post, %2$s: Number of times */
 				esc_html_x( 'A user submits a comment on {{a post:%1$s}} {{a number of:%2$s}} time(s)', 'WordPress', 'uncanny-automator' ),
 				$this->get_trigger_meta(),
 				'NUMTIMES:' . $this->get_trigger_meta()

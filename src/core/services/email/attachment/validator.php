@@ -1,6 +1,8 @@
 <?php
 namespace Uncanny_Automator\Services\Email\Attachment;
 
+use Uncanny_Automator\App\Infrastructure\Remote_File\Remote_File_Client;
+use Uncanny_Automator\App\Infrastructure\Remote_File\Remote_File_Head;
 use WP_Error;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,6 +15,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  * A class to validate URL and check file constraints.
  */
 class Validator {
+
+	/**
+	 * Seconds the HEAD request may take.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var int
+	 */
+	const HEAD_TIMEOUT = 10;
 
 	/**
 	 * The file size limitation.
@@ -57,33 +68,37 @@ class Validator {
 		if ( $this->skip_token_validation && $this->contains_tokens() ) {
 			return array(
 				'status_code' => 200,
-				'message'     => _x( 'Validation was skipped because a token was detected. The URL is assumed to be valid.', 'Email Validator', 'uncanny-automator' ),
+				'message'     => _x( 'Validation was skipped because a token was detected. The URL is assumed to be valid.', 'Email Validator', 'uncanny-automator' ), // phpcs:ignore Uncanny_Automator.Strings.AutoContextTranslation.MissingContext -- Plain text for the run log and the builder, escaped where it is shown.
 			);
 		}
 
 		if ( ! $this->is_valid_url() ) {
-			return new WP_Error( 'invalid_url', _x( 'The URL provided is not valid.', 'Email Validator', 'uncanny-automator' ) );
+			return new WP_Error( 'invalid_url', _x( 'The URL provided is not valid.', 'Email Validator', 'uncanny-automator' ) ); // phpcs:ignore Uncanny_Automator.Strings.AutoContextTranslation.MissingContext -- Plain text for the run log and the builder, escaped where it is shown.
 		}
 
-		if ( automator_resolves_to_private_ip( $this->url ) ) {
-			return new WP_Error( 'ssrf_blocked', _x( 'The URL resolves to a private or reserved IP address and cannot be used.', 'Email Validator', 'uncanny-automator' ) );
+		// One HEAD request that follows no redirect, after the address check:
+		// the status and the size come from the same answer.
+		$head = ( new Remote_File_Client() )->head( $this->url, self::HEAD_TIMEOUT );
+
+		if ( is_wp_error( $head ) && Remote_File_Client::PRIVATE_ADDRESS === $head->get_error_code() ) {
+			return new WP_Error( 'ssrf_blocked', _x( 'The URL resolves to a private or reserved IP address and cannot be used.', 'Email Validator', 'uncanny-automator' ) ); // phpcs:ignore Uncanny_Automator.Strings.AutoContextTranslation.MissingContext -- Plain text for the run log and the builder, escaped where it is shown.
 		}
 
-		$status_code = $this->get_status_code();
+		$status_code = self::status_of( $head );
 
 		if ( ! $this->is_file_accessible( $status_code ) ) {
 			// translators: 1: Status code
-			return new WP_Error( 'file_not_accessible', sprintf( _x( 'The file could not be accessed. Please check the URL and try again. Status code: %s.', 'Email Validator', 'uncanny-automator' ), $status_code ), array( 'status_code' => $status_code ) );
+			return new WP_Error( 'file_not_accessible', sprintf( _x( 'The file could not be accessed. Please check the URL and try again. Status code: %s.', 'Email Validator', 'uncanny-automator' ), $status_code ), array( 'status_code' => $status_code ) ); // phpcs:ignore Uncanny_Automator.Strings.AutoContextTranslation.MissingContext -- Plain text for the run log and the builder, escaped where it is shown.
 
 		}
 
-		if ( $this->is_file_too_large() ) {
+		if ( $this->is_file_too_large( $head ) ) {
 
 			return new WP_Error(
 				'file_too_large',
 				sprintf(
 					// translators: 1: File size limit in MB
-					_x(
+					_x( // phpcs:ignore Uncanny_Automator.Strings.AutoContextTranslation.MissingContext -- Plain text for the run log and the builder, escaped where it is shown.
 						'The file exceeds the maximum allowed size of %d MB.',
 						'Email Validator',
 						'uncanny-automator'
@@ -97,7 +112,7 @@ class Validator {
 
 		return array(
 			'status_code' => $status_code,
-			'message'     => _x( 'File is valid and accessible.', 'Email Validator', 'uncanny-automator' ),
+			'message'     => _x( 'File is valid and accessible.', 'Email Validator', 'uncanny-automator' ), // phpcs:ignore Uncanny_Automator.Strings.AutoContextTranslation.MissingContext -- Plain text for the run log and the builder, escaped where it is shown.
 		);
 	}
 
@@ -111,55 +126,33 @@ class Validator {
 	}
 
 	/**
-	 * Get the HTTP status code of the file URL.
-	 *
-	 * @return int HTTP status code.
-	 */
-	private function get_status_code() {
-
-		return self::remote_get_status_code( $this->url );
-
-	}
-
-	/**
 	 * Utility function to fetch the status code.
+	 *
+	 * One HEAD request that follows no redirect: a redirect answers with its
+	 * 3xx code, which is treated as inaccessible, so a public URL cannot hand
+	 * the check on to a private or internal address.
 	 *
 	 * @param string $url
 	 *
-	 * @return int
+	 * @return int The status, or 0 when the address is private or the request failed.
 	 */
 	public static function remote_get_status_code( $url ) {
 
-		if ( automator_resolves_to_private_ip( $url ) ) {
-			return 0;
-		}
+		return self::status_of( ( new Remote_File_Client() )->head( (string) $url, self::HEAD_TIMEOUT ) );
+	}
 
-		// HEAD + no redirects: a redirect response returns a 3xx code which
-		// is treated as inaccessible. This prevents an open-redirect bypass
-		// where a public URL redirects to a private/internal address.
-		$response = wp_remote_head(
-			$url,
-			array(
-				'redirection' => 0,
-				'timeout'     => 10,
-			)
-		);
+	/**
+	 * The status a HEAD answer carries.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param Remote_File_Head|WP_Error $head The HEAD answer, or why there is none.
+	 *
+	 * @return int The status, or 0 when there is no answer.
+	 */
+	private static function status_of( $head ) {
 
-		// Return 0 if is wp_error.
-		if ( is_wp_error( $response ) ) {
-			return 0;
-		}
-
-		// Extract headers from the response
-		$status_code = wp_remote_retrieve_response_code( $response );
-
-		// Return 0 if status code is empty.
-		if ( empty( $status_code ) ) {
-			return 0;
-		}
-
-		return absint( $status_code );
-
+		return $head instanceof Remote_File_Head ? $head->status() : 0;
 	}
 
 	/**
@@ -178,9 +171,9 @@ class Validator {
 	 * @return bool True if the file is accessible, false otherwise.
 	 */
 	private function is_file_accessible( $status_code ) {
-		if ( $status_code !== 200 ) {
+		if ( 200 !== $status_code ) {
 			// translators: 1: Status code
-			$this->log_error( sprintf( _x( 'The file is not accessible. Please check the URL and try again. HTTP status code: %s.', 'Email Validator', 'uncanny-automator' ), $status_code ) );
+			$this->log_error( sprintf( _x( 'The file is not accessible. Please check the URL and try again. HTTP status code: %s.', 'Email Validator', 'uncanny-automator' ), $status_code ) ); // phpcs:ignore Uncanny_Automator.Strings.AutoContextTranslation.MissingContext -- Plain text for the run log and the builder, escaped where it is shown.
 			return false;
 		}
 		return true;
@@ -189,42 +182,32 @@ class Validator {
 	/**
 	 * Check if the file exceeds the allowed size limit.
 	 *
-	 * Uses a HEAD request to read the Content-Length header rather than
-	 * downloading the full file, avoiding a redundant outbound request.
-	 * If the server does not send Content-Length the check is skipped and
-	 * the download itself will impose its own timeout.
+	 * Reads the Content-Length of the HEAD answer the status came from, so the
+	 * size costs no request of its own. If the server does not send
+	 * Content-Length the check is skipped and the download itself will impose
+	 * its own timeout.
+	 *
+	 * @param Remote_File_Head $head The HEAD answer.
 	 *
 	 * @return bool True if the file is too large, false otherwise.
 	 */
-	private function is_file_too_large() {
+	private function is_file_too_large( Remote_File_Head $head ) {
 
-		$response = wp_remote_head(
-			$this->url,
-			array(
-				'timeout'     => 10,
-				'redirection' => 0,
-			)
-		);
+		$size = $head->size();
 
-		if ( is_wp_error( $response ) ) {
-			return false; // Cannot determine size; allow download to proceed.
-		}
-
-		$content_length = wp_remote_retrieve_header( $response, 'content-length' );
-
-		if ( '' === (string) $content_length ) {
+		if ( null === $size ) {
 			return false; // Server did not send Content-Length; allow download to proceed.
 		}
 
 		$limit_size = apply_filters( 'automator_email_file_size_limit', $this->file_size_limit );
 
-		if ( absint( $content_length ) > $limit_size ) {
+		if ( $size > $limit_size ) {
 			$this->log_error(
 				sprintf(
 					// translators: 1: File size limit in MB, 2: File size in MB
-					_x( 'File size exceeds %1$d MB. The file reports: %2$s MB.', 'Email Validator', 'uncanny-automator' ),
+					_x( 'File size exceeds %1$d MB. The file reports: %2$s MB.', 'Email Validator', 'uncanny-automator' ), // phpcs:ignore Uncanny_Automator.Strings.AutoContextTranslation.MissingContext -- Plain text for the run log and the builder, escaped where it is shown.
 					self::to_megabytes( $limit_size ),
-					self::to_megabytes( absint( $content_length ) )
+					self::to_megabytes( $size )
 				)
 			);
 			return true;
@@ -245,7 +228,6 @@ class Validator {
 		$mb = $bytes / ( 1024 * 1024 );
 
 		return (int) floor( $mb );
-
 	}
 
 	/**

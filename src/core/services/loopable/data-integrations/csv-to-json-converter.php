@@ -58,7 +58,7 @@ class Csv_To_Json_Converter {
 		'semicolon' => ';',
 		'comma'     => ',',
 		'pipe'      => '|',
-		'tab'       => "\\t",
+		'tab'       => "\t",
 	);
 
 	/**
@@ -189,11 +189,11 @@ class Csv_To_Json_Converter {
 			$this->delimiter = $this->detect_delimiter( $csv_data );
 		}
 
-		$rows = str_getcsv( $csv_data, "\n" );
+		$rows = str_getcsv( $csv_data, "\n", '"', '\\' );
 
 		$this->data = array_map(
-			function( $row ) {
-				return str_getcsv( $row, $this->delimiter );
+			function ( $row ) {
+				return str_getcsv( $row, $this->delimiter, '"', '\\' );
 			},
 			$rows
 		);

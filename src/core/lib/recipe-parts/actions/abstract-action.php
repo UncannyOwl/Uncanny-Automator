@@ -14,6 +14,9 @@
 
 namespace Uncanny_Automator\Recipe;
 
+use Uncanny_Automator\App\Integration_Catalog\Services\Hidden_Items;
+use Uncanny_Automator\App\Recipe_Runner\Exceptions\Action_Error_Exception;
+
 /**
  * Abstract Actions
  *
@@ -204,11 +207,27 @@ abstract class Action {
 	}
 
 	/**
+	 * Why the action's requirements are not met on this site, for a recipe
+	 * that already holds it. Override alongside requirements_met(); '' tells
+	 * the generic sentence.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return string
+	 */
+	public function requirements_unmet_message(): string {
+		return '';
+	}
+
+	/**
 	 * Define and register the action by pushing it into the Automator object
 	 */
 	public function register_action( $actions ) {
 
 		if ( ! $this->requirements_met() ) {
+			// Not offered; a recipe that already holds it is told why (decision A4).
+			Hidden_Items::record( (string) $this->get_integration(), 'action', (string) $this->get_action_code(), $this->requirements_unmet_message() );
+
 			return $actions;
 		}
 
@@ -230,10 +249,6 @@ abstract class Action {
 			'loopable_tokens'       => $this->get_loopable_tokens(),
 		);
 
-		if ( ! empty( self::$agent_registry ) && isset( self::$agent_registry[ $this->get_action_code() ] ) ) {
-			$action['agent_class'] = self::$agent_registry[ $this->get_action_code() ];
-		}
-
 		if ( ! empty( $this->get_buttons() ) ) {
 			$action['buttons'] = $this->get_buttons();
 		}
@@ -246,11 +261,42 @@ abstract class Action {
 			}
 		}
 
+		$action = $this->with_required_block_ancestors( $action );
+
 		$action = apply_filters( 'automator_register_action', $action );
+
+		$this->maybe_register_loopable_tokens_hooks( $action );
 
 		$actions[ $this->get_action_code() ] = $action;
 
 		return $actions;
+	}
+
+	/**
+	 * Registers the hooks for any loopable tokens this action declares.
+	 *
+	 * This base registers through the `automator_actions` filter rather than
+	 * Automator()->register->action(), so the registrar's loopable-token block
+	 * never runs for a modern action and a loop over the token resolves to
+	 * nothing. Recipe\Trigger self-registers the same way.
+	 *
+	 * @param mixed[] $action The action definition.
+	 *
+	 * @return void
+	 */
+	private function maybe_register_loopable_tokens_hooks( $action ) {
+
+		$loopable_tokens = $action['loopable_tokens'] ?? array();
+
+		if ( empty( $loopable_tokens ) ) {
+			return;
+		}
+
+		foreach ( (array) $loopable_tokens as $token_class ) {
+			if ( is_string( $token_class ) && class_exists( $token_class ) ) {
+				( new $token_class() )->register_hooks( $action );
+			}
+		}
 	}
 
 	/**
@@ -380,10 +426,11 @@ abstract class Action {
 		$this->maybe_parsed                = $this->maybe_parse_tokens( $this->user_id, $this->action_data, $this->recipe_id, $this->args );
 		$this->action_data['maybe_parsed'] = $this->maybe_parsed;
 
-		$error = null;
-
 		try {
 			$result = $this->process_action( $this->user_id, $this->action_data, $this->recipe_id, $this->args, $this->maybe_parsed );
+		} catch ( Action_Error_Exception $e ) {
+			$result = false;
+			$this->add_error( $e->to_action_error() );
 		} catch ( \Error $e ) {
 			$result = false;
 			$this->add_log_error( $e->getMessage() );
@@ -392,13 +439,40 @@ abstract class Action {
 			$this->add_log_error( $e->getMessage() );
 		}
 
+		$this->complete_from_result( $this->settle_result( $result ) );
+
+		do_action( 'automator_after_process_action', $this->user_id, $this->action_data, $this->recipe_id, $this->args, $this->maybe_parsed );
+	}
+
+	/**
+	 * Last look at the outcome of process_action() before the row completes. The base changes nothing.
+	 *
+	 * @param mixed $result What process_action() returned.
+	 *
+	 * @return mixed The result to complete with.
+	 */
+	protected function settle_result( $result ) {
+		return $result;
+	}
+
+	/**
+	 * Complete the action's row from a process result: false and null carry the collected errors,
+	 * null without a notice is "did nothing", null with one is "completed with notice".
+	 *
+	 * @param mixed $result What process_action() or process_job() returned.
+	 *
+	 * @return void
+	 */
+	protected function complete_from_result( $result ) {
+
+		$error = null;
+
 		if ( false === $result ) {
 			$this->action_data['complete_with_errors'] = true;
 			$error                                     = $this->get_log_errors();
 		}
 
 		if ( null === $result && ! $this->is_complete_with_notice() ) {
-			$action_data['do_nothing']                 = true;
 			$this->action_data['complete_with_errors'] = true;
 			$error                                     = $this->get_log_errors();
 		}
@@ -408,14 +482,11 @@ abstract class Action {
 			$error                                     = $this->get_log_errors();
 		}
 
-		// Carry structured errors on action_data for downstream consumers.
 		if ( ! empty( $this->structured_errors ) ) {
 			$this->action_data['structured_errors'] = $this->structured_errors;
 		}
 
 		Automator()->complete->action( $this->user_id, $this->action_data, $this->recipe_id, $error );
-
-		do_action( 'automator_after_process_action', $this->user_id, $this->action_data, $this->recipe_id, $this->args, $this->maybe_parsed );
 	}
 
 	/**

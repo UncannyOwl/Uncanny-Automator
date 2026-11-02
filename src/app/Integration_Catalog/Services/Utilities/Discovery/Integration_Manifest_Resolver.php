@@ -122,6 +122,9 @@ class Integration_Manifest_Resolver {
 	 * All manifest fields take precedence over feed/discovered data (except integration_version).
 	 * This allows developers to explicitly control integration metadata.
 	 *
+	 * Key shapes mirror what Integration_Details_Normalizer reads: `plugin_details`
+	 * is flat and `description` is a single-entry list of short/full.
+	 *
 	 * @param array $data     Integration data to apply overrides to
 	 * @param array $manifest Manifest data
 	 *
@@ -133,10 +136,22 @@ class Integration_Manifest_Resolver {
 			$data['integration_color'] = $manifest['integration_color'];
 		}
 
-		// description (short/full)
-		$manifest_description = $this->get_description( $manifest );
-		if ( ! empty( $manifest_description ) ) {
-			$data['description'] = $manifest_description;
+		// Integration_Details_Normalizer reads description[0].short / .full, but the
+		// incoming value may be absent or a plain string, so rebuild rather than
+		// index into it.
+		if ( ! empty( $manifest['short_description'] ) || ! empty( $manifest['full_description'] ) ) {
+			$description = is_array( $data['description'][0] ?? null )
+				? $data['description'][0]
+				: array();
+
+			if ( ! empty( $manifest['short_description'] ) ) {
+				$description['short'] = $manifest['short_description'];
+			}
+			if ( ! empty( $manifest['full_description'] ) ) {
+				$description['full'] = $manifest['full_description'];
+			}
+
+			$data['description'] = array( $description );
 		}
 
 		// integration_link (developer_site)
@@ -145,39 +160,44 @@ class Integration_Manifest_Resolver {
 			$data['integration_link'] = $manifest_external_url;
 		}
 
-		// Ensure plugin_details array exists
-		if ( ! isset( $data['plugin_details'][0] ) ) {
-			$data['plugin_details'][0] = array();
+		// integration_type
+		if ( ! empty( $manifest['integration_type'] ) ) {
+			$data['integration_type'] = $manifest['integration_type'];
+		}
+
+		// integration_tier
+		if ( ! empty( $manifest['integration_tier'] ) ) {
+			$data['integration_tier'] = $manifest['integration_tier'];
 		}
 
 		// developer_name
 		if ( ! empty( $manifest['developer_name'] ) ) {
-			$data['plugin_details'][0]['developer_name'] = $manifest['developer_name'];
+			$data['plugin_details']['developer_name'] = $manifest['developer_name'];
 		}
 
 		// plugin_file_path
 		if ( ! empty( $manifest['plugin_file_path'] ) ) {
-			$data['plugin_details'][0]['plugin_file'] = $manifest['plugin_file_path'];
+			$data['plugin_details']['plugin_file'] = $manifest['plugin_file_path'];
 		}
 
 		// plugin_required
 		if ( ! empty( $manifest['plugin_required'] ) ) {
-			$data['plugin_details'][0]['plugin_required'] = $manifest['plugin_required'];
+			$data['plugin_details']['plugin_required'] = $manifest['plugin_required'];
 		}
 
 		// integration_required
 		if ( ! empty( $manifest['integration_required'] ) ) {
-			$data['plugin_details'][0]['integration_required'] = $manifest['integration_required'];
+			$data['plugin_details']['integration_required'] = $manifest['integration_required'];
 		}
 
 		// distribution_type
 		if ( ! empty( $manifest['distribution_type'] ) ) {
-			$data['plugin_details'][0]['distribution_type'] = $manifest['distribution_type'];
+			$data['plugin_details']['distribution_type'] = $manifest['distribution_type'];
 		}
 
 		// plugin_variations
 		if ( ! empty( $manifest['plugin_variations'] ) ) {
-			$data['plugin_details'][0]['plugin_variations'] = $manifest['plugin_variations'];
+			$data['plugin_details']['plugin_variations'] = $manifest['plugin_variations'];
 		}
 
 		return $data;

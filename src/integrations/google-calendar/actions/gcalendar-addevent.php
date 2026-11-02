@@ -431,9 +431,9 @@ class GCALENDAR_ADDEVENT extends \Uncanny_Automator\Recipe\App_Action {
 		try {
 			$dt = new DateTime( $time ); // Accept whatever date.
 		} catch ( Exception $e ) {
-			// translators: %s: Invalid time that was provided
 			throw new Exception(
 				sprintf(
+					/* translators: %s: Time */
 					esc_html_x( 'Error: Invalid time provided (%s)', 'Google Calendar', 'uncanny-automator' ),
 					esc_html( $time )
 				)
@@ -453,9 +453,9 @@ class GCALENDAR_ADDEVENT extends \Uncanny_Automator\Recipe\App_Action {
 		try {
 			$dt = new DateTime( $date ); // Accept whatever date.
 		} catch ( Exception $e ) {
-			// translators: %s: Invalid date that was provided
 			throw new Exception(
 				sprintf(
+					/* translators: %s: Date */
 					esc_html_x( 'Error: Invalid date provided (%s)', 'Google Calendar', 'uncanny-automator' ),
 					esc_html( $date )
 				)
@@ -870,9 +870,9 @@ class GCALENDAR_ADDEVENT extends \Uncanny_Automator\Recipe\App_Action {
 
 		if ( ! empty( $invalid_emails ) ) {
 			$invalid_list = implode( ', ', $invalid_emails );
-			// translators: %s: List of invalid email addresses
 			throw new Exception(
 				sprintf(
+					/* translators: %s: Invalid email addresses */
 					esc_html_x( 'Invalid email address(es) in attendees field: %s. Please provide valid email addresses separated by commas.', 'Google Calendar', 'uncanny-automator' ),
 					esc_html( $invalid_list )
 				)

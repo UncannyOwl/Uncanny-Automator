@@ -110,6 +110,7 @@ class Discord_Member_Encryption_Migration extends Migration {
 		global $wpdb;
 
 		// Delete all Discord username user meta entries
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; deletes one user meta key for every user in a single statement.
 		$deleted = $wpdb->delete(
 			$wpdb->usermeta,
 			array( 'meta_key' => 'automator_discord_member_username' ),

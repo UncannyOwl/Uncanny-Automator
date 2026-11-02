@@ -2,9 +2,8 @@
 /**
  * Comprehensive recipe inspection tool.
  *
- * Returns the full recipe tree from Automator()->get_recipe_object() with
- * UI-only fields stripped. Preserves the runtime execution order (_ui_order)
- * and condition group wrapping.
+ * Returns the recipe as the ModelRecipe wire shape the recipe builder parses,
+ * read through the wire service, with the admin-only keys stripped.
  *
  * Absorbs: list_actions, loop_list, loop_get, loop_filter_list, loop_filter_get,
  *          list_conditions, get_user_selector.
@@ -16,8 +15,10 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Catalog\Recipes;
 
-use Uncanny_Automator\App\Bridge\Automator_Recipe_Object_Bridge;
-use Uncanny_Automator\App\Bridge\Recipe_Object_Bridge;
+use Uncanny_Automator\App\Recipe_Builder\Block\Migration\Legacy_Storage_Migration_Exception;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Wire_Key;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Model_Recipe_Schema;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Recipe_Wire_Service;
 use Uncanny_Automator\App\Recipe_Builder\Shared\User\Value_Objects\User_Context;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Json_Rpc_Response;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abstract_MCP_Tool;
@@ -25,61 +26,29 @@ use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abstract_MCP_T
 /**
  * Get Recipe Tool — comprehensive.
  *
- * Single call returns everything the agent needs to understand recipe state.
- * Uses the recipe object which already computes execution order and condition wrapping.
+ * One call returns the whole recipe in the builder's own vocabulary: triggers
+ * under flow.entry, the run-as selector, and execution-ordered content with
+ * blocks and their path-keyed branches.
  *
- * @since 7.0.0 (rewritten 7.1.0)
+ * @since 7.0.0 (rewritten 7.1.0; wire shape 8.0.0)
  */
 class Get_Recipe_Tool extends Abstract_MCP_Tool {
 
 	/**
-	 * Bridge to the legacy recipe-object lookups.
+	 * Cache-first wire read of the recipe tree.
 	 *
-	 * @var Recipe_Object_Bridge
+	 * @var Recipe_Wire_Service
 	 */
-	private Recipe_Object_Bridge $recipes;
+	private Recipe_Wire_Service $wire;
 
 	/**
-	 * Constructor.
+	 * Lazy-default DI: production reads the shared wire service; tests inject one over a fixture tree.
 	 *
-	 * Uses the canonical lazy-default DI pattern from the api-layer skill
-	 * (Rule 6 #3) — review note C22 converted this from the lazy private
-	 * resolver pattern to constructor injection so the seam is mockable
-	 * without subclass tricks.
-	 *
-	 * @param Recipe_Object_Bridge|null $recipes Optional bridge override (tests).
+	 * @param Recipe_Wire_Service|null $wire Wire read seam.
 	 */
-	public function __construct( ?Recipe_Object_Bridge $recipes = null ) {
-		$this->recipes = $recipes ?? new Automator_Recipe_Object_Bridge();
+	public function __construct( ?Recipe_Wire_Service $wire = null ) {
+		$this->wire = $wire ?? Recipe_Wire_Service::instance();
 	}
-
-	/**
-	 * Fields to strip from the recipe object. UI-only, not useful for the agent.
-	 */
-	private const STRIP_TOP_LEVEL = array(
-		'is_pro_active',
-		'has_pro_item',
-		'_config',
-	);
-
-	private const STRIP_MISC = array(
-		'url_duplicate_recipe',
-		'url_trash_recipe',
-		'url_logs',
-		'url_download_recipe',
-		'can_edit',
-		'has_loop_running',
-		'recipe_is_running',
-	);
-
-	private const STRIP_ACTION_ITEM = array(
-		'backup',
-		'sentence_human_readable_html',
-	);
-
-	private const STRIP_TRIGGER_ITEM = array(
-		'backup',
-	);
 
 	/**
 	 * {@inheritDoc}
@@ -92,10 +61,14 @@ class Get_Recipe_Tool extends Abstract_MCP_Tool {
 	 * {@inheritDoc}
 	 */
 	public function get_description() {
-		return 'Get a recipe by ID with complete details: triggers, actions (in execution order), '
-			. 'loops (with filters), conditions (wrapping their gated actions), and user selector. '
-			. 'Returns the full recipe tree in one call. '
-			. 'Actions items are sorted by execution_order — conditions wrap their gated actions inline.';
+		return 'Get a recipe by ID as the full recipe tree in one call. '
+			. 'Triggers are in flow.entry.triggers with flow.entry.operator (all or any). The run-as user selector is flow.run_as. '
+			. 'flow.content is the execution-ordered list of items (type=item: trigger or action) and blocks (type=block: filter, delay_schedule or loop). '
+			. 'A block\'s children sit in its paths list, each { path_code, content }: FILTER-CONDITIONS-MET and FILTER-CONDITIONS-NOT-MET on a filter, DELAY-COMPLETED on a delay_schedule (the Queue block in the builder), LOOP-ITERATION-COMPLETED on a loop; '
+			. 'these are the same path_code values save_action and save_block accept. '
+			. 'Conditions are the modifiers of a filter block; loop filters are the modifiers of a loop block. '
+			. 'Every item and block carries tokens (use as {{id}}), availability (whether the step runs on this site) and tags. '
+			. 'Absorbs list_actions, loop_list, loop_get, loop_filter_list, loop_filter_get, list_conditions and get_user_selector.';
 	}
 
 	/**
@@ -119,87 +92,13 @@ class Get_Recipe_Tool extends Abstract_MCP_Tool {
 	 * {@inheritDoc}
 	 */
 	protected function output_schema_definition(): ?array {
-		// Mirrors the TypeScript Recipe interface at:
-		// src/assets/src/features/recipe-builder/types/recipe/structure.d.ts
-		return array(
-			'type'       => 'object',
-			'properties' => array(
-				'recipe_id'     => array( 'type' => 'integer' ),
-				'is_recipe_on'  => array( 'type' => 'boolean' ),
-				'title'         => array( 'type' => 'string' ),
-				'recipe_type'   => array(
-					'type' => 'string',
-					'enum' => array( 'user', 'anonymous' ),
-				),
-				'stats'         => array(
-					'type'       => 'object',
-					'properties' => array(
-						'total_runs' => array( 'type' => 'integer' ),
-					),
-				),
-				'miscellaneous' => array( 'type' => 'object' ),
-				'triggers'      => array(
-					'type'       => 'object',
-					'properties' => array(
-						'logic' => array(
-							'type' => 'string',
-							'enum' => array( 'any', 'all' ),
-						),
-						'items' => array(
-							'type'  => 'array',
-							'items' => array(
-								'type'       => 'object',
-								'properties' => array(
-									'type'             => array( 'type' => 'string' ),
-									'id'               => array( 'type' => 'integer' ),
-									'is_item_on'       => array( 'type' => 'boolean' ),
-									'integration_code' => array( 'type' => 'string' ),
-									'code'             => array( 'type' => 'string' ),
-									'miscellaneous'    => array( 'type' => 'object' ),
-									'fields'           => array( 'type' => 'object' ),
-									'tokens'           => array( 'type' => 'array' ),
-								),
-							),
-						),
-					),
-				),
-				'actions'       => array(
-					'type'       => 'object',
-					'properties' => array(
-						'run_on' => array( 'type' => array( 'object', 'null' ) ),
-						'items'  => array(
-							'type'        => 'array',
-							'description' => 'Execution-ordered. type=action|filter|loop. filter items wrap gated actions. Sorted by _ui_order.',
-							'items'       => array(
-								'type'       => 'object',
-								'properties' => array(
-									'type'             => array( 'type' => 'string' ),
-									'_ui_order'        => array( 'type' => 'integer' ),
-									'id'               => array( 'type' => array( 'integer', 'string' ) ),
-									'is_item_on'       => array( 'type' => 'boolean' ),
-									'integration_code' => array( 'type' => 'string' ),
-									'code'             => array( 'type' => 'string' ),
-									'miscellaneous'    => array( 'type' => 'object' ),
-									'fields'           => array( 'type' => 'object' ),
-									'tokens'           => array( 'type' => 'array' ),
-									'logic'            => array( 'type' => 'string' ),
-									'conditions'       => array( 'type' => 'array' ),
-									'items'            => array( 'type' => 'array' ),
-								),
-							),
-						),
-					),
-				),
-			),
-			'required'   => array( 'recipe_id', 'title', 'recipe_type', 'triggers', 'actions' ),
-		);
+		return Model_Recipe_Schema::recipe_for_agent();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function execute_tool( User_Context $user_context, array $params ) {
-
 		$recipe_id = isset( $params['recipe_id'] ) ? (int) $params['recipe_id'] : 0;
 
 		if ( $recipe_id <= 0 ) {
@@ -207,80 +106,37 @@ class Get_Recipe_Tool extends Abstract_MCP_Tool {
 		}
 
 		try {
-			$recipe = $this->recipes->get_recipe_as_array( $recipe_id );
-
-			if ( null === $recipe ) {
-				return Json_Rpc_Response::create_error_response(
-					sprintf( 'Recipe not found with ID %d. Use list_recipes to find valid recipe IDs.', $recipe_id )
-				);
-			}
-
-			// Strip UI-only top-level fields.
-			foreach ( self::STRIP_TOP_LEVEL as $key ) {
-				unset( $recipe[ $key ] );
-			}
-
-			// Strip UI-only miscellaneous fields and fix empty array serialization.
-			if ( isset( $recipe['miscellaneous'] ) && is_array( $recipe['miscellaneous'] ) ) {
-				foreach ( self::STRIP_MISC as $key ) {
-					unset( $recipe['miscellaneous'][ $key ] );
-				}
-				if ( isset( $recipe['miscellaneous']['recipe_throttle'] ) ) {
-					$recipe['miscellaneous']['recipe_throttle'] = $this->ensure_object( $recipe['miscellaneous']['recipe_throttle'] );
-				}
-				$recipe['miscellaneous'] = $this->ensure_object( $recipe['miscellaneous'] );
-			}
-
-			// Clean trigger items.
-			if ( isset( $recipe['triggers']['items'] ) && is_array( $recipe['triggers']['items'] ) ) {
-				$recipe['triggers']['items'] = array_map(
-					function ( $trigger ) {
-						foreach ( self::STRIP_TRIGGER_ITEM as $key ) {
-							unset( $trigger[ $key ] );
-						}
-						$trigger['fields'] = $this->ensure_object( $trigger['fields'] ?? array() );
-						return $trigger;
-					},
-					$recipe['triggers']['items']
-				);
-			}
-
-			// Clean action items recursively (handles condition group nesting).
-			if ( isset( $recipe['actions']['items'] ) && is_array( $recipe['actions']['items'] ) ) {
-				$recipe['actions']['items'] = array_map(
-					array( $this, 'clean_action_item' ),
-					$recipe['actions']['items']
-				);
-			}
-
-			return Json_Rpc_Response::create_success_response( 'Recipe retrieved successfully', $recipe );
-
+			$recipe = $this->wire->get_wire_array( $recipe_id );
+		} catch ( Legacy_Storage_Migration_Exception $e ) {
+			return Json_Rpc_Response::create_error_response( $e->user_message( $recipe_id ) );
 		} catch ( \Exception $e ) {
-			return Json_Rpc_Response::create_error_response( 'Failed to retrieve recipe: ' . $e->getMessage() );
+			return Json_Rpc_Response::create_error_response( sprintf( 'Recipe %d could not be read (%s).', $recipe_id, $e->getMessage() ) );
 		}
+
+		if ( null === $recipe ) {
+			return Json_Rpc_Response::create_error_response(
+				sprintf( 'Recipe not found with ID %d. Use list_recipes to find valid recipe IDs.', $recipe_id )
+			);
+		}
+
+		return Json_Rpc_Response::create_success_response( 'Recipe retrieved successfully', $this->strip_admin_only_keys( $recipe ) );
 	}
 
 	/**
-	 * Clean an action item — strip UI fields, recurse into nested items (condition groups).
+	 * Drop the keys that mean nothing to an MCP client: edit rights and admin urls.
 	 *
-	 * @param array $item Action, loop, or condition group item.
-	 * @return array Cleaned item.
+	 * @param array<string, mixed> $recipe The wire array.
+	 * @return array<string, mixed>
 	 */
-	private function clean_action_item( array $item ): array {
-		foreach ( self::STRIP_ACTION_ITEM as $key ) {
-			unset( $item[ $key ] );
+	private function strip_admin_only_keys( array $recipe ): array {
+		foreach ( Wire_Key::AGENT_STRIPPED_TOP_LEVEL as $key ) {
+			unset( $recipe[ $key ] );
 		}
 
-		// Fix empty arrays that should be objects.
-		if ( isset( $item['fields'] ) ) {
-			$item['fields'] = $this->ensure_object( $item['fields'] );
+		foreach ( Wire_Key::AGENT_STRIPPED_MISCELLANEOUS as $key ) {
+			unset( $recipe[ Wire_Key::MISCELLANEOUS ][ $key ] );
 		}
 
-		// Recurse into nested items (condition groups wrap actions).
-		if ( isset( $item['items'] ) && is_array( $item['items'] ) ) {
-			$item['items'] = array_map( array( $this, 'clean_action_item' ), $item['items'] );
-		}
-
-		return $item;
+		return $recipe;
 	}
 }

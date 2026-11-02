@@ -11,7 +11,7 @@
  * only, after the normal loaders have run.
  *
  * Sources (no class-name guessing):
- *   - Gated items (triggers/actions/closures/conditions/loop_filters): the merged item
+ *   - Gated items (triggers/actions/conditions/loop_filters): the merged item
  *     map (Recipe_Manifest::get_item_map()) — carries the final FQCN, file and code.
  *   - Tokens (no code in the item map): the FILE list from
  *     Set_Up_Automator::$all_integrations[ dir ]['tokens'] + the CLASS name from the
@@ -63,12 +63,28 @@ class Backward_Compat_Reconciler {
 	private $error_handler;
 
 	/**
+	 * The files the loader already recorded as failed on this request, keyed by canonical path.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var array<string,true>
+	 */
+	private $recorded_files = array();
+
+	/**
 	 * Backward_Compat_Reconciler constructor.
 	 *
-	 * @param Load_Error_Handler $error_handler Error handler for instantiation failures.
+	 * @param Load_Error_Handler $error_handler  Error handler for instantiation failures.
+	 * @param string[]           $recorded_files Files the loader already recorded as failed on this
+	 *                                           request. They are skipped, so each failure is
+	 *                                           recorded once. Since <version>.
 	 */
-	public function __construct( Load_Error_Handler $error_handler ) {
+	public function __construct( Load_Error_Handler $error_handler, array $recorded_files = array() ) {
 		$this->error_handler = $error_handler;
+
+		foreach ( $recorded_files as $file ) {
+			$this->recorded_files[ self::failed_file_key( (string) $file ) ] = true;
+		}
 	}
 
 	/**
@@ -99,7 +115,7 @@ class Backward_Compat_Reconciler {
 		// returned by automator_get_gated_directory_types() (loop-filters) — do not swap
 		// that in here. This mirrors the other item-map reader,
 		// Recipe_Part_Loader::find_class_in_integration() (which carries the same note).
-		$gated_types = array( 'triggers', 'actions', 'closures', 'conditions', 'loop_filters' );
+		$gated_types = array( 'triggers', 'actions', 'conditions', 'loop_filters' );
 
 		foreach ( $item_map as $integration_code => $types ) {
 
@@ -210,9 +226,40 @@ class Backward_Compat_Reconciler {
 			return false;
 		}
 
+		// The loader already tried this file and recorded why it failed: loading it again
+		// fails the same way and would record the same failure a second time.
+		if ( $this->was_recorded( $file ) ) {
+			return false;
+		}
+
+		try {
+			return $this->load_item( $class, $file, $type );
+		} catch ( \Throwable $e ) {
+			$this->error_handler->handle( $class, $e );
+			return false;
+		}
+	}
+
+	/**
+	 * Include one gated item's file, then build and track its class.
+	 *
+	 * Asking whether the class exists can run the add-on's autoloader, and including the file
+	 * compiles it, so the caller runs this inside its guard: a failure in any step, a parse
+	 * error included, is recorded for the load-errors notice and skips this item only.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $class_name The FQCN from the item map.
+	 * @param string $file       The file from the item map.
+	 * @param string $type       Recipe-part type.
+	 *
+	 * @return bool True if the class was instantiated.
+	 */
+	private function load_item( $class_name, $file, $type ) {
+
 		// Defer lazy triggers (definition() !== null) to Trigger_Metadata_Loader; legacy
 		// add-on triggers have no definition() and fall through to load.
-		if ( 'triggers' === $type && class_exists( $class ) && method_exists( $class, 'definition' ) && null !== $class::definition() ) {
+		if ( 'triggers' === $type && class_exists( $class_name ) && method_exists( $class_name, 'definition' ) && null !== $class_name::definition() ) {
 			return false;
 		}
 
@@ -222,7 +269,7 @@ class Backward_Compat_Reconciler {
 
 		include_once $file;
 
-		if ( ! class_exists( $class ) ) {
+		if ( ! class_exists( $class_name ) ) {
 			return false;
 		}
 
@@ -230,14 +277,35 @@ class Backward_Compat_Reconciler {
 		// from Automator()->helpers->recipe at call time). A modern-namespace item would
 		// need its helpers injected, but those load via their own integration and are
 		// caught by the idempotency guard above, so they never reach this instantiation.
-		try {
-			Utilities::add_class_instance( $class, new $class() );
-			$this->log( 'loaded [' . $type . '] ' . $class );
-			return true;
-		} catch ( \Throwable $e ) {
-			$this->error_handler->handle( $class, $e );
-			return false;
-		}
+		Utilities::add_class_instance( $class_name, new $class_name() );
+		$this->log( 'loaded [' . $type . '] ' . $class_name );
+
+		return true;
+	}
+
+	/**
+	 * Whether the loader already recorded this file as failed on this request.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $file The file.
+	 *
+	 * @return bool
+	 */
+	private function was_recorded( $file ) {
+		return '' !== $file && isset( $this->recorded_files[ self::failed_file_key( $file ) ] );
+	}
+
+	/**
+	 * Match linked add-on paths to the same failed file without requiring it to exist.
+	 *
+	 * @param string $file The failed file.
+	 * @return string
+	 */
+	private static function failed_file_key( $file ) {
+		$resolved = realpath( $file );
+
+		return self::collapse_path( false === $resolved ? $file : $resolved );
 	}
 
 	/**
@@ -325,13 +393,13 @@ class Backward_Compat_Reconciler {
 
 		foreach ( (array) Set_Up_Automator::$all_integrations[ $dir_name ]['tokens'] as $file ) {
 
-			if ( is_array( $file ) || ! is_file( $file ) ) {
+			if ( is_array( $file ) || ! is_file( $file ) || $this->was_recorded( $file ) ) {
 				continue;
 			}
 
 			$class = $this->class_for_file( $file );
 
-			if ( '' === $class || false !== Utilities::get_class_instance( $class ) || ! class_exists( $class ) ) {
+			if ( '' === $class || false !== Utilities::get_class_instance( $class ) || ! $this->token_class_exists( $class ) ) {
 				continue;
 			}
 
@@ -344,8 +412,31 @@ class Backward_Compat_Reconciler {
 				Utilities::add_class_instance( $class, new $class() );
 				$this->log( 'loaded [tokens] ' . $class );
 			} catch ( \Throwable $e ) {
-				unset( $e ); // Best-effort — token reconcile failures must not surface.
+				unset( $e ); // Best-effort — a token constructor's failure must not surface.
 			}
+		}
+	}
+
+	/**
+	 * Whether a token class exists.
+	 *
+	 * Asking can run the add-on's autoloader, which compiles the class's file. A failure
+	 * there, a parse error included, is recorded for the load-errors notice and skips this
+	 * class only. A token class whose constructor fails is still skipped without a record.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $class_name The FQCN from the Composer classmap.
+	 *
+	 * @return bool
+	 */
+	private function token_class_exists( $class_name ) {
+
+		try {
+			return class_exists( $class_name );
+		} catch ( \Throwable $e ) {
+			$this->error_handler->handle( $class_name, $e );
+			return false;
 		}
 	}
 

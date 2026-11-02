@@ -1,0 +1,24 @@
+{
+  "name": "create_preview_link",
+  "description": "Create a temporary read-only preview of saved Page Builder source, including enabled JavaScript. Anyone with the URL can view this fixed snapshot for 15 minutes without a login. A new link replaces the old link. Does not publish or change page source. Use only for the user-requested page. Standalone rendering does not test theme chrome, server forms or network requests; inspect the static rendering report. Source changes require a new link.",
+  "http": {
+    "method": "POST",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/preview"
+  },
+  "parameters": [
+    {
+      "name": "page_id",
+      "type": "integer",
+      "minimum": 1,
+      "required": true,
+      "in": "body",
+      "description": "Explicit Page Builder-owned page ID to preview."
+    }
+  ],
+  "output": {
+    "content_type": "application/json",
+    "description": "Preview URL, Unix expiry, snapshot digest, source dependencies and static rendering report. Treat the URL as temporary access to draft content."
+  },
+  "auto_approve": false,
+  "group": "write"
+}

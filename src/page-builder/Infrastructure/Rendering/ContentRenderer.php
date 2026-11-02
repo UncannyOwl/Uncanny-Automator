@@ -11,6 +11,7 @@ use UncannyPageBuilder\Application\Rendering\PublishedPage;
 use UncannyPageBuilder\Application\Rendering\PublishedPageStatus;
 use UncannyPageBuilder\Application\Rendering\LucideRuntimeInitializer;
 use UncannyPageBuilder\Domain\Shell\ShellMode;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPublishedFallbackParser;
 
@@ -82,7 +83,7 @@ final class ContentRenderer
             // An owned legacy page can still have a stale Page Builder
             // projection in post_content. A failed public-pointer read must
             // use the preserved WordPress body, not the filter input.
-            error_log('[Uncanny Page Builder] Published content selection failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Published content selection failed (' . $failure::class . ')');
 
             if ($postId === null) {
                 return $content;
@@ -138,7 +139,7 @@ final class ContentRenderer
 
             return $rendered;
         } catch (\Throwable $failure) {
-            error_log('[Uncanny Page Builder] Published content render failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Published content render failed (' . $failure::class . ')');
 
             return $content;
         }
@@ -177,7 +178,7 @@ final class ContentRenderer
 
             return $classes;
         } catch (\Throwable $failure) {
-            error_log('[Uncanny Page Builder] Published body class selection failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Published body class selection failed (' . $failure::class . ')');
 
             return $classes;
         }
@@ -208,11 +209,12 @@ final class ContentRenderer
 
             if ($page->css() !== '') {
                 echo '<style id="uncanny-page-builder-published-css">'
+                    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Published artifact CSS; StyleElementCss::escape() neutralises a closing style tag and HTML escaping would corrupt the CSS.
                     . StyleElementCss::escape($page->css())
                     . '</style>';
             }
         } catch (\Throwable $failure) {
-            error_log('[Uncanny Page Builder] Published CSS output failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Published CSS output failed (' . $failure::class . ')');
         }
     }
 
@@ -243,7 +245,7 @@ final class ContentRenderer
                 echo '<div id="uncanny-magic-bridge-root" data-page-id="' . esc_attr((string) $postId) . '"></div>';
             }
         } catch (\Throwable $failure) {
-            error_log('[Uncanny Page Builder] Magic Bridge root output failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Magic Bridge root output failed (' . $failure::class . ')');
         }
     }
 
@@ -270,12 +272,14 @@ final class ContentRenderer
                 return;
             }
 
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static Lucide initialiser script owned by the plugin; HTML escaping would break the JavaScript.
             echo '<script>' . LucideRuntimeInitializer::script() . '</script>';
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Immutable published artifact script markup built at publication from the dedicated page JavaScript lane; HTML escaping would break the scripts.
             echo $page->customJavaScript();
         } catch (\Throwable $failure) {
             // wp_footer is a shared WordPress surface. A Page Builder failure
             // must not terminate the visitor request.
-            error_log('[Uncanny Page Builder] Published page JavaScript output failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Published page JavaScript output failed (' . $failure::class . ')');
         }
     }
 
@@ -312,7 +316,7 @@ final class ContentRenderer
         } catch (\Throwable $failure) {
             // wp_footer is a shared WordPress surface. A Page Builder failure
             // must not terminate the visitor request.
-            error_log('[Uncanny Page Builder] Render fallback check failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Render fallback check failed (' . $failure::class . ')');
         }
     }
 

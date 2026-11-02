@@ -63,7 +63,8 @@ class Paid_Memberships_Pro_Helpers {
 		global $wpdb;
 		$qry = "SELECT * FROM $wpdb->pmpro_membership_levels ORDER BY id ASC";
 		// Ignored no need to escape since there are no arguments to accept.
-		$levels  = $wpdb->get_results( $qry ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Paid Memberships Pro's own table; the plugin offers no API for this query.
+		$levels  = $wpdb->get_results( $qry );
 		$options = array();
 		if ( $levels ) {
 			$options['-1'] = esc_attr__( 'Any membership', 'uncanny-automator' );
@@ -93,6 +94,7 @@ class Paid_Memberships_Pro_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_pmp_memberships', $option );
 	}
 }

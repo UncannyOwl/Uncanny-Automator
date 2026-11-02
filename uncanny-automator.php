@@ -9,8 +9,8 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             7.7.1
- * Requires at least:   5.8
+ * Version:             8.0.0
+ * Requires at least:   6.2
  * Requires PHP:        7.4
  */
 
@@ -18,13 +18,18 @@ use Uncanny_Automator\Actionify_Triggers;
 use Uncanny_Automator\Automator_Functions;
 use Uncanny_Automator\Automator_Load;
 use Uncanny_Automator\DB_Tables;
+use Uncanny_Automator\Services\Action_Scheduler;
 use Uncanny_Automator\App\Application\Application_Bootstrap;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 if ( ! defined( 'AUTOMATOR_PLUGIN_VERSION' ) ) {
 	/*
 	 * Specify Automator version.
 	 */
-	define( 'AUTOMATOR_PLUGIN_VERSION', '7.7.1' );
+	define( 'AUTOMATOR_PLUGIN_VERSION', '8.0.0' );
 }
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
@@ -77,7 +82,7 @@ if ( ! defined( 'UA_ABSPATH' ) ) {
 	/**
 	 * Automator ABSPATH for file includes
 	 */
-	define( 'UA_ABSPATH', dirname( AUTOMATOR_BASE_FILE ) . DIRECTORY_SEPARATOR );
+	define( 'UA_ABSPATH', dirname( AUTOMATOR_BASE_FILE ) . DIRECTORY_SEPARATOR ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Established public constant used by Automator and add-ons.
 }
 
 
@@ -89,6 +94,13 @@ DB_Tables::register_tables();
 
 // Autoload files
 require UA_ABSPATH . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
+// Action Scheduler runs delayed, scheduled and background work for Automator and Pro. It must be required now,
+// before plugins_loaded: each bundled copy (WooCommerce's, an older Pro's) registers there, and the newest one loads.
+if ( is_file( UA_ABSPATH . 'vendor' . DIRECTORY_SEPARATOR . 'woocommerce' . DIRECTORY_SEPARATOR . 'action-scheduler' . DIRECTORY_SEPARATOR . 'action-scheduler.php' ) ) {
+	require_once UA_ABSPATH . 'vendor' . DIRECTORY_SEPARATOR . 'woocommerce' . DIRECTORY_SEPARATOR . 'action-scheduler' . DIRECTORY_SEPARATOR . 'action-scheduler.php';
+	add_action( 'action_scheduler_init', array( Action_Scheduler::class, 'load_shutdown_lock' ) );
+}
 
 // Strict load order: tier 1 constants → tier 2 functions → tier 3 runtime constants.
 // See src/constants.php, src/global-functions.php, src/globals.php for the rules
@@ -139,7 +151,7 @@ require_once UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'globals.php';
  * @param string $class Fully-qualified class name requested by PHP.
  * @return void
  */
-function automator_autoloader( $class ) {
+function automator_autoloader( $class ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.classFound -- Retain the public parameter name for named-argument compatibility.
 	if ( 0 === strncmp( $class, 'UncannyPageBuilder\\', strlen( 'UncannyPageBuilder\\' ) ) ) {
 		return;
 	}
@@ -209,10 +221,10 @@ if ( ! class_exists( 'Automator_Load', false ) ) {
 if ( ! class_exists( 'Application_Bootstrap', false ) ) {
 	include_once UA_ABSPATH . 'src/app/Application/Application_Bootstrap.php';
 }
-$application_bootstrap = new Application_Bootstrap();
-$application_bootstrap->init();
+$automator_application_bootstrap = new Application_Bootstrap();
+$automator_application_bootstrap->init();
 
 Automator_Load::get_instance();
 
-$actionify = new Actionify_Triggers\Trigger_Engine();
-$actionify->init();
+$automator_actionify = new Actionify_Triggers\Trigger_Engine();
+$automator_actionify->init();

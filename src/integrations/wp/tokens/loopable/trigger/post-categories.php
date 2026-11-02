@@ -35,7 +35,6 @@ class Post_Categories extends Trigger_Loopable_Token {
 		$this->set_name( _x( 'Post categories', 'Woo', 'uncanny-automator' ) );
 		$this->set_log_identifier( '#{{CAT_ID}} {{CAT_NAME}}' );
 		$this->set_child_tokens( $child_tokens );
-
 	}
 
 	/**
@@ -66,7 +65,6 @@ class Post_Categories extends Trigger_Loopable_Token {
 		}
 
 		return $loopable;
-
 	}
 
 
@@ -86,20 +84,18 @@ class Post_Categories extends Trigger_Loopable_Token {
 
 		switch ( $trigger_code ) {
 
-			# Triggers where post ID is in index 2.
-			case 'WP_POST_PUBLISHED_IN_TAXONOMY':
+			# Triggers whose hook passes a post object third (transition_post_status; post_updated's post before).
 			case 'ANON_POST_UPDATED_IN_TAXONOMY':
 			case 'WPPOSTSTATUS':
 			case 'ANON_WPPOSTSTATUS':
 				$post_id = $trigger_args[2]->ID ?? '';
 				break;
-			# Triggers where post ID is in index 0.
-			case 'ANON_POST_UPDATED_IN_TAXONOMY':
+			# Triggers whose hook passes the post ID first (post_updated, wp_after_insert_post).
+			case 'WP_POST_PUBLISHED':
+			case 'WP_POST_PUBLISHED_IN_TAXONOMY':
 			case 'WP_ANON_POST_UPDATED':
 			case 'WP_USER_POST_UPDATED':
 			case 'WP_USER_POST_PUBLISHED':
-				$post_id = $trigger_args[0][0] ?? 0;
-				break;
 			case 'WPPOSTINSTATUS':
 			case 'WPPOSTINTAXONOMY':
 			case 'WPPOSTUPDATED':
@@ -108,7 +104,5 @@ class Post_Categories extends Trigger_Loopable_Token {
 		}
 
 		return absint( $post_id );
-
 	}
-
 }

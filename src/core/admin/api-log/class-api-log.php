@@ -124,14 +124,14 @@ class Api_Log {
 	public static function resend_button_html( $action_log_id ) {
 		return '<div class="uap-logs-details-re-run-action-wrapper">
 
-			<uo-button
-				size="small"
+			<uas-button
+				size="sm"
 				color="secondary"
 				class="uap-logs-details-re-run-action"
 				data-item="' . $action_log_id . '"
 			>
-				<uo-icon id="repeat"></uo-icon> ' . esc_html__( 'Resend', 'uncanny-automator' ) . '
-			</uo-button>
+				<uas-icon code="repeat"></uas-icon> ' . esc_html__( 'Resend', 'uncanny-automator' ) . '
+			</uas-button>
 
 		</div>';
 	}

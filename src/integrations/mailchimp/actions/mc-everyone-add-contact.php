@@ -13,6 +13,7 @@ class MC_EVERYONE_ADD_CONTACT extends \Uncanny_Automator\Recipe\App_Action {
 	use Mailchimp_Audience_Fields;
 	use Mailchimp_Email_Fields;
 	use Mailchimp_Subscriber_Fields;
+	use \Uncanny_Automator\Recipe\Background_Job_Without_Tokens;
 
 	/**
 	 * Setup action.
@@ -103,8 +104,12 @@ class MC_EVERYONE_ADD_CONTACT extends \Uncanny_Automator\Recipe\App_Action {
 			'merge_fields'    => $this->get_merge_fields_from_parsed(),
 		);
 
-		$this->api->add_subscriber_to_list( $subscriber_data );
+		$response = $this->api->add_subscriber_to_list( $subscriber_data, $action_data );
 
-		return true;
+		if ( $this->deferred( $response ) ) {
+			return true;
+		}
+
+		return $this->process_job( $response, $parsed, $action_data );
 	}
 }

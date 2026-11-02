@@ -7,7 +7,7 @@
  *   2. Framework  — load modern load.php integrations and AI providers
  *   3. Register   — instantiate legacy add-*-integration.php classes
  *   4. Helpers    — load helper classes for active integrations
- *   5. Parts      — load triggers, actions, closures, conditions, loop-filters, tokens
+ *   5. Parts      — load triggers, actions, conditions, loop-filters, tokens
  *
  * Delegates heavy lifting to Integration_Loader and its sub-components.
  * Maintains public properties (active_directories, directories_to_include)
@@ -67,7 +67,7 @@ class Initialize_Automator extends Set_Up_Automator {
 		// append its directory name in global-functions.php → automator_get_default_directories()
 		// AND in these locations:
 		//   1. globals.php — add AUTOMATOR_POST_TYPE_* constant
-		//   2. global-functions.php — append to automator_get_recipe_post_types() / automator_get_direct_recipe_child_types() / automator_get_loop_child_types() / automator_get_gated_directory_types() (if gated)
+		//   2. global-functions.php — append to automator_get_recipe_post_types() / automator_get_direct_recipe_child_types() / automator_get_gated_directory_types() (if gated)
 		//   3. Recipe_Part_Loader::find_class_in_integration() — type loop
 		//   4. generate-item-map.php — $code_setters map (build-time)
 		//   5. Recipe_Manifest::full_rebuild() — SQL query post types
@@ -121,7 +121,7 @@ class Initialize_Automator extends Set_Up_Automator {
 
 		$this->load_integrations();
 
-		// Loads all internal triggers, actions, and closures then provides hooks for external ones
+		// Loads all internal triggers and actions then provides hooks for external ones
 		// All extensions are loaded.
 		do_action( 'automator_configuration_complete', $this );
 
@@ -182,7 +182,7 @@ class Initialize_Automator extends Set_Up_Automator {
 		}
 		\Uncanny_Automator\Integration_Loader\Backward_Compat_Reconciler::bridge_legacy_helper_contracts();
 
-		// Phase 5: Load recipe parts (triggers, actions, closures, conditions, loop-filters, tokens).
+		// Phase 5: Load recipe parts (triggers, actions, conditions, loop-filters, tokens).
 		// Deferred to a later init priority for 6.7 translation fix with trigger engine.
 		add_action( 'init', array( $this, 'load_recipe_parts' ), AUTOMATOR_RECIPE_PARTS_PRIORITY_TRIGGER_ENGINE );
 	}
@@ -203,9 +203,17 @@ class Initialize_Automator extends Set_Up_Automator {
 
 		$this->restore_cached_directories();
 
-		if ( empty( self::$auto_loaded_directories ) || empty( self::$all_integrations ) ) {
+		if (
+			empty( self::$auto_loaded_directories )
+			|| empty( self::$all_integrations )
+			|| ! $this->is_discovered_from_this_folder( self::$auto_loaded_directories, self::$all_integrations )
+		) {
 			$this->discover_and_cache_directories();
 		}
+
+		// The lists above replaced the directories add-ons added before `init`; put them back.
+		// After caching, so the cache holds only what discovery found.
+		self::merge_addon_directories();
 
 		$this->load_framework_integrations();
 		$this->load_framework_ai();
@@ -235,6 +243,45 @@ class Initialize_Automator extends Set_Up_Automator {
 		if ( empty( self::$all_integrations ) ) {
 			self::$all_integrations = get_transient( 'automator_get_all_integrations' );
 		}
+	}
+
+	/**
+	 * Whether cached integration folders were discovered from this plugin folder.
+	 *
+	 * Discovery lists every one of Free's integration folders, and they all sit
+	 * under its integrations folder. A cache that holds none of them was written
+	 * for another plugin folder (the folder was moved or renamed, or the database
+	 * was copied from another site), so its absolute paths point there.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param mixed $directories Cached integration folder paths.
+	 * @param mixed $integrations Cached file map, restored independently of the folder list.
+	 *
+	 * @return bool
+	 */
+	private function is_discovered_from_this_folder( $directories, $integrations ) {
+
+		$integrations_folder = trailingslashit( wp_normalize_path( $this->integrations_directory_path ) );
+
+		foreach ( (array) $directories as $directory ) {
+			if ( ! is_string( $directory ) || 0 !== strpos( wp_normalize_path( $directory ), $integrations_folder ) ) {
+				continue;
+			}
+
+			$folder = trailingslashit( wp_normalize_path( $directory ) );
+			$files  = $integrations[ basename( untrailingslashit( $folder ) ) ] ?? array();
+
+			// The two cache keys can come from different generations. A current folder
+			// list must not authorize a file map still pointing at the previous install.
+			foreach ( new \RecursiveIteratorIterator( new \RecursiveArrayIterator( (array) $files ) ) as $file ) {
+				if ( is_string( $file ) ) {
+					return 0 === strpos( wp_normalize_path( $file ), $folder );
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -304,7 +351,7 @@ class Initialize_Automator extends Set_Up_Automator {
 	}
 
 	/**
-	 * Phase 5: Load recipe parts (triggers, actions, closures, conditions, loop-filters, tokens).
+	 * Phase 5: Load recipe parts (triggers, actions, conditions, loop-filters, tokens).
 	 *
 	 * Delegates to Recipe_Part_Loader::load_recipe_parts() via the loader.
 	 * Uses $this->active_directories (which Pro may have modified via hooks).
@@ -354,8 +401,10 @@ class Initialize_Automator extends Set_Up_Automator {
 	 *      Covers : add-&#42;-integration.php files — never contains third-party add-ons.
 	 *
 	 *   3. Third-party add-ons — LEGACY pattern (e.g. AcyMailing)
-	 *      Entry  : automator_add_integration_directory( $code, $dir ) called at plugins_loaded.
-	 *      Effect : pushes $dir into Set_Up_Automator::$auto_loaded_directories before init fires.
+	 *      Entry  : automator_add_integration_directory( $code_or_folder, $dir ) called at
+	 *               plugins_loaded or on the automator_add_integration hook.
+	 *      Effect : adds $dir, keyed by its folder name, to Set_Up_Automator::$auto_loaded_directories;
+	 *               load_integrations() puts it back after restoring the cached lists.
 	 *      Handler: Integration_Registrar picks it up on the same pass.
 	 *
 	 *   4. Third-party add-ons — MODERN pattern (e.g. Custom User Fields, Dynamic Content)

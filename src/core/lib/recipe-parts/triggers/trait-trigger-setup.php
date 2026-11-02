@@ -64,6 +64,14 @@ trait Trigger_Setup {
 	protected $is_deprecated = false;
 
 	/**
+	 * Whether a recipe step built from this trigger can be switched on and
+	 * off in the builder.
+	 *
+	 * @var bool
+	 */
+	protected $has_status_toggle = true;
+
+	/**
 	 * @var
 	 */
 	protected $trigger_code;
@@ -301,6 +309,21 @@ trait Trigger_Setup {
 	}
 
 	/**
+	 * Declare whether the builder renders an on / off switch for this trigger.
+	 *
+	 * Pass false for a trigger that is always live once configured, such as
+	 * Run now. Without a switch it goes live when the builder adds it (nothing
+	 * to configure) or when its configuration is saved.
+	 *
+	 * @param bool $has_status_toggle Whether the builder renders the switch.
+	 *
+	 * @return void
+	 */
+	public function set_has_status_toggle( bool $has_status_toggle ) {
+		$this->has_status_toggle = $has_status_toggle;
+	}
+
+	/**
 	 * @param $action_priority
 	 */
 	public function set_action_priority( $action_priority = 10 ) {
@@ -414,6 +437,13 @@ trait Trigger_Setup {
 	 */
 	public function get_is_deprecated() {
 		return $this->is_deprecated;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function get_has_status_toggle() {
+		return $this->has_status_toggle;
 	}
 
 	/**

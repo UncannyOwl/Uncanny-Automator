@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\App\Infrastructure\Database\Database;
+
 /**
  * Class UOA_ERRORS
  *
@@ -69,23 +71,18 @@ class UOA_ERRORS {
 	 */
 	public function error( $recipe_id, $user_id, $recipe_log_id, $args ) {
 
-		global $wpdb;
-		/**
-		 * Only look at the status #2, which is set only when there's an error
-		 */
-		$errors = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT automator_action_id
-FROM {$wpdb->prefix}uap_action_log
-WHERE automator_recipe_log_id = %d
-  AND completed = %d",
-				$recipe_log_id,
-				2
-			)
-		);
+		// The run's own status decides, not its action rows: a run with none (its trigger
+		// failed) would be missed. Completed with errors is the status the runner fires
+		// automator_recipe_completed_with_errors for.
+		if ( Automator_Status::COMPLETED_WITH_ERRORS !== Database::get_execution_log_store()->get_recipe_status( absint( $recipe_log_id ) ) ) {
+			return;
+		}
 
-		if ( empty( $errors ) ) {
-			// bail early
+		// A run either "completes with errors" trigger started fires neither: a recipe on one
+		// whose own action fails would fire itself, or a recipe on the other, until the trigger
+		// queue stops. The run args carry the ID of the trigger that started the run.
+		$started_by = get_post_meta( absint( $args['trigger_id'] ?? 0 ), 'code', true );
+		if ( in_array( $started_by, array( 'UOAERRORS', 'UOA_USER_RECIPE_COMPLETED_WITH_ERRORS' ), true ) ) {
 			return;
 		}
 

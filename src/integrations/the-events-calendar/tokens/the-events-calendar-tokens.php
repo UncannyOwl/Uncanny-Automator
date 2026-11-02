@@ -752,7 +752,7 @@ class The_Events_Calendar_Tokens {
 		$exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
 
 		if ( $exists === $table ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- The Events Calendar Pro's own table; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
 			$event_count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE series_post_id = %d", $series->ID ) );
 		}
 
@@ -832,12 +832,12 @@ class The_Events_Calendar_Tokens {
 
 			$tokens[] = array(
 				'tokenId'   => $ticket_id . '|tribe-tickets-plus-iac-name',
-				'tokenName' => $ticket_name . ' — ' . esc_html_x( 'Attendee name', 'The Events Calendar', 'uncanny-automator' ),
+				'tokenName' => $ticket_name . ', ' . esc_html_x( 'Attendee name', 'The Events Calendar', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			);
 			$tokens[] = array(
 				'tokenId'   => $ticket_id . '|tribe-tickets-plus-iac-email',
-				'tokenName' => $ticket_name . ' — ' . esc_html_x( 'Attendee email', 'The Events Calendar', 'uncanny-automator' ),
+				'tokenName' => $ticket_name . ', ' . esc_html_x( 'Attendee email', 'The Events Calendar', 'uncanny-automator' ),
 				'tokenType' => 'email',
 			);
 
@@ -860,7 +860,7 @@ class The_Events_Calendar_Tokens {
 
 				$tokens[] = array(
 					'tokenId'   => $ticket_id . '|' . ( $field['slug'] ?? '' ),
-					'tokenName' => $ticket_name . ' — ' . ( $field['label'] ?? '' ),
+					'tokenName' => $ticket_name . ', ' . ( $field['label'] ?? '' ),
 					'tokenType' => $type,
 				);
 			}

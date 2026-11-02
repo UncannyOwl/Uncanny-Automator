@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\App\Infrastructure\Database\Database;
+
 /**
  * Class UOA_USER_COMPLETES_RECIPE_NUMTIMES
  *
@@ -24,7 +26,9 @@ class UOA_USER_COMPLETES_RECIPE_NUMTIMES {
 					return;
 				}
 				global $wpdb;
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API rewrites a meta key or value across posts.
 				$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_key = %s WHERE meta_key LIKE %s", 'UOARECIPES', 'UOA_RECIPES' ) );
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API rewrites a meta key or value across posts.
 				$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_key = %s WHERE meta_key LIKE %s", 'UOARECIPES_readable', 'UOA_RECIPES_readable' ) );
 				automator_update_option( 'uoa_recipe_completed_migrated', 'yes', false );
 			},
@@ -89,16 +93,10 @@ class UOA_USER_COMPLETES_RECIPE_NUMTIMES {
 			$this->set_user_id( $user_id );
 		}
 
-		global $wpdb;
-		// get recipe actions
-		$table_name    = $wpdb->prefix . Automator()->db->tables->action;
-		$recipe_status = $wpdb->get_var( $wpdb->prepare( "SELECT completed FROM $table_name WHERE automator_recipe_log_id = %d", $recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-
-		if ( 0 === absint( $recipe_status ) || 5 === absint( $recipe_status ) ) {
-			return false;
-		}
-
-		return true;
+		// The run's own status decides, not its first action row: a run with none (no
+		// actions, or its trigger failed) would read as not completed. Completed is also
+		// the status the count in validate_conditions() counts.
+		return Automator_Status::COMPLETED === Database::get_execution_log_store()->get_recipe_status( absint( $recipe_log_id ) );
 	}
 
 	/**

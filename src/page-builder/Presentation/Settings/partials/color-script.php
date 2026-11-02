@@ -7,6 +7,7 @@
  */
 
 defined('ABSPATH') || exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
 
 $resetConfirmMessage = $resetConfirmMessage ?? _x('Restore the default brand colors?', 'Page Builder', 'uncanny-automator');
 

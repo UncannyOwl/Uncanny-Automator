@@ -7,7 +7,11 @@ use UncannyPageBuilder\Plugin;
 
 defined('ABSPATH') || exit;
 
-$postId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
-if ($postId !== null) {
-    Plugin::getPublishedCanvasRenderer()->render($postId);
-}
+// WordPress includes this file from template-loader.php at global scope, so the
+// work happens in a closure and leaves no global variable behind.
+(static function (): void {
+    $postId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
+    if ($postId !== null) {
+        Plugin::getPublishedCanvasRenderer()->render($postId);
+    }
+})();

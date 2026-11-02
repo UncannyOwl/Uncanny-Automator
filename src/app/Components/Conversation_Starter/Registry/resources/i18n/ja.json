@@ -17,7 +17,6 @@
         "All Subscriptions": "すべてのサブスクリプション",
         "All Topics": "すべてのトピック",
         "All Users": "すべてのユーザー",
-        "All integrations": "すべての連携機能",
         "All recipes": "すべてのレシピ",
         "App integrations": "アプリ連携",
         "Assignments": "課題",
@@ -76,26 +75,6 @@
         "Automator.Addons.5": {
             "Starter": "アドオンの設定を計画",
             "Prompt": "アドオンのインストールと設定の計画を手助けしてください。どのワークフローを自動化したいかを質問し、次のステップを提案してください。"
-        },
-        "Automator.All integrations.1": {
-            "Starter": "連携機能を推奨",
-            "Prompt": "インストール済みのプラグインと連携済みのアプリ連携を確認し、サイトに最も関連性の高いAutomator連携を提案してください。"
-        },
-        "Automator.All integrations.2": {
-            "Starter": "自動化の機会を発見",
-            "Prompt": "インストール済みのプラグインと連携済みのアプリ連携に基づいて、有用な自動化のアイデアを提案してください。"
-        },
-        "Automator.All integrations.3": {
-            "Starter": "連携機能を説明",
-            "Prompt": "どの連携機能に興味があるか質問し、それがどのようなレシピを実現できるか説明してください。"
-        },
-        "Automator.All integrations.4": {
-            "Starter": "不足している連携機能を発見",
-            "Prompt": "インストール済みのプラグインや連携済みのアプリと、利用可能なAutomator連携を比較し、インストール、接続、またはアップグレードが必要なものを特定してください。"
-        },
-        "Automator.All integrations.5": {
-            "Starter": "連携機能で構築",
-            "Prompt": "Automator連携を選び、サイトで役立つレシピのアイデアに変える手助けをしてください。"
         },
         "Automator.All recipes.1": {
             "Starter": "最も活発なレシピを表示",

@@ -2,6 +2,10 @@
 
 namespace Uncanny_Automator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Admin_Settings_Advanced_Background_Actions
  *
@@ -29,9 +33,13 @@ class Admin_Settings_Advanced_Background_Actions {
 	 */
 	public function create_tab( $tabs ) {
 
-		// Background actions.
+		// Background actions, retired in 8.0.0: badged as deprecated.
 		$tabs['background_actions'] = (object) array(
 			'name'     => esc_html__( 'Background actions', 'uncanny-automator' ),
+			'chip'     => (object) array(
+				'label' => esc_html_x( 'Deprecated', 'Settings tab badge', 'uncanny-automator' ),
+				'color' => 'error',
+			),
 			'function' => array( $this, 'tab_output' ),
 			'preload'  => false, // Determines if the content should be loaded even if the tab is not selected
 		);

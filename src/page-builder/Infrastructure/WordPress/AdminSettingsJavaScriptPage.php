@@ -104,9 +104,8 @@ final class AdminSettingsJavaScriptPage
         // key, otherwise a switch turned off would still read as enabled. A
         // missing key means the control was never rendered, which is also off.
         $approvedLibraries = [];
-        $rawLibraries = is_array($_POST[self::FIELD_APPROVED_LIBRARIES] ?? null)
-            ? $_POST[self::FIELD_APPROVED_LIBRARIES]
-            : [];
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- viewData() verifies the nonce and capability first; submittedFlag() unslashes and sanitizes each value.
+        $rawLibraries = is_array($_POST[self::FIELD_APPROVED_LIBRARIES] ?? null) ? $_POST[self::FIELD_APPROVED_LIBRARIES] : [];
 
         foreach (ToolSettings::knownLibrarySlugs() as $slug) {
             $approvedLibraries[$slug] = self::submittedFlag($rawLibraries[$slug] ?? null);
@@ -114,7 +113,9 @@ final class AdminSettingsJavaScriptPage
 
         return ToolSettings::fromArray([
             'custom_javascript' => [
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- viewData() verifies the nonce and capability first; submittedFlag() unslashes and sanitizes each value.
                 'page' => self::submittedFlag($_POST[self::FIELD_PAGE_CUSTOM_JAVASCRIPT] ?? null),
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- viewData() verifies the nonce and capability first; submittedFlag() unslashes and sanitizes each value.
                 'global_part' => self::submittedFlag($_POST[self::FIELD_GLOBAL_PART_CUSTOM_JAVASCRIPT] ?? null),
             ],
             'approved_libraries' => $approvedLibraries,

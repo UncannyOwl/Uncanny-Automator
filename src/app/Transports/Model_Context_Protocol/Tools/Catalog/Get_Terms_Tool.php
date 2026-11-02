@@ -22,6 +22,8 @@ use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abstract_MCP_T
  */
 class Get_Terms_Tool extends Abstract_MCP_Tool {
 
+	use Id_List_Arguments;
+
 	/**
 	 * Get tool name.
 	 *
@@ -37,7 +39,7 @@ class Get_Terms_Tool extends Abstract_MCP_Tool {
 	 * @return string
 	 */
 	public function get_description() {
-		return 'Query WordPress taxonomy terms using get_terms(). Supports categories, tags, product categories, course categories, and any custom taxonomy. Filter by parent, search, slug, or get term hierarchy.';
+		return 'Query terms from taxonomies currently registered on this WordPress site. Use the taxonomy choices in the input schema; available taxonomies depend on the active plugins and theme. Filter by parent, search, slug, or get term hierarchy.';
 	}
 
 	/**
@@ -55,7 +57,7 @@ class Get_Terms_Tool extends Abstract_MCP_Tool {
 				'taxonomy'   => array(
 					'type'        => 'string',
 					'enum'        => $taxonomies,
-					'description' => 'Taxonomy to query. Common: category, post_tag, product_cat, product_tag, ld_course_category.',
+					'description' => 'Taxonomy to query. Choose one of the taxonomies currently registered on this site.',
 				),
 				'search'     => array(
 					'type'        => 'string',
@@ -199,19 +201,17 @@ class Get_Terms_Tool extends Abstract_MCP_Tool {
 			$args['child_of'] = (int) $params['child_of'];
 		}
 
-		// Include specific IDs.
-		if ( ! empty( $params['include'] ) ) {
-			$args['include'] = array_map( 'intval', explode( ',', $params['include'] ) );
+		// Include and exclude specific IDs; an excluded ID is never returned.
+		$id_args = $this->id_list_query_args( $params, 'include', 'exclude' );
+		if ( null === $id_args ) {
+			return $this->found_answer( $taxonomy, array(), 0, $offset, $limit );
 		}
-
-		// Exclude specific IDs.
-		if ( ! empty( $params['exclude'] ) ) {
-			$args['exclude'] = array_map( 'intval', explode( ',', $params['exclude'] ) );
-		}
+		$args = array_merge( $args, $id_args );
 
 		// Meta query.
 		if ( ! empty( $params['meta_key'] ) ) {
-			$args['meta_key'] = sanitize_key( $params['meta_key'] );
+			// Meta keys are case-sensitive; sanitize_key would lowercase them.
+			$args['meta_key'] = sanitize_text_field( (string) $params['meta_key'] );
 
 			if ( ! empty( $params['meta_value'] ) ) {
 				$args['meta_value'] = sanitize_text_field( $params['meta_value'] );
@@ -241,9 +241,23 @@ class Get_Terms_Tool extends Abstract_MCP_Tool {
 					'count'       => $term->count,
 				);
 			},
-			$terms
+			array_values( $terms )
 		);
 
+		return $this->found_answer( $taxonomy, $items, $total, $offset, $limit );
+	}
+
+	/**
+	 * The answer listing the terms found.
+	 *
+	 * @param string $taxonomy Taxonomy queried.
+	 * @param array  $items    Terms on this page.
+	 * @param int    $total    Terms matching in all.
+	 * @param int    $offset   Terms skipped.
+	 * @param int    $limit    Page size.
+	 * @return array
+	 */
+	private function found_answer( string $taxonomy, array $items, int $total, int $offset, int $limit ): array {
 		return Json_Rpc_Response::create_success_response(
 			sprintf( 'Found %d %s terms', count( $items ), $taxonomy ),
 			array(

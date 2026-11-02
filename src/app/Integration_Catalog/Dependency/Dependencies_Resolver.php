@@ -13,6 +13,7 @@ namespace Uncanny_Automator\App\Integration_Catalog\Dependency;
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Resolvers\Integration\License\License_Resolver;
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Resolvers\Integration\Plugin\Plugin_Resolver;
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Resolvers\Integration\Account\Account_Resolver;
+use Uncanny_Automator\App\Integration_Catalog\Dependency\Resolvers\Integration\Environment\Environment_Resolver;
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Resolvers\Block\License\License_Resolver as Block_License_Resolver;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Integration;
 use Uncanny_Automator\App\Recipe_Builder\Block\Block;
@@ -20,10 +21,11 @@ use Uncanny_Automator\App\Recipe_Builder\Block\Block;
 /**
  * Orchestrates dependency resolution for blocks, integrations, and their items.
  *
- * Coordinates three types of dependencies:
+ * Coordinates four types of dependencies:
  * - license: Automator license/tier requirements
  * - plugin: Plugin installation/activation requirements (integrations only)
  * - account: App connection requirements (integrations only)
+ * - environment: What the site itself must be, e.g. a multisite network (integrations only)
  *
  * @since 7.0.0
  */
@@ -37,9 +39,9 @@ class Dependencies_Resolver {
 	private $context;
 
 	/**
-	 * Registered integration dependency resolvers.
+	 * Registered integration dependency resolvers, keyed by dependency type.
 	 *
-	 * @var array<object>
+	 * @var array<string,object>
 	 */
 	private $resolvers;
 
@@ -64,15 +66,21 @@ class Dependencies_Resolver {
 	}
 
 	/**
-	 * Register integration dependency resolvers.
+	 * Register integration dependency resolvers, keyed by dependency type.
 	 *
-	 * @return array<object> Array of resolver instances
+	 * Insertion order (license, plugin, account, environment) is preserved so
+	 * `resolve_integration_dependencies()`'s merged output order is
+	 * unchanged; the keys let `resolve_integration_setup_dependencies()`
+	 * skip the license resolver before evaluation.
+	 *
+	 * @return array<string,object> Resolver instances keyed by type
 	 */
 	private function register_integration_resolvers() {
 		return array(
-			new License_Resolver( $this->context ),
-			new Plugin_Resolver( $this->context ),
-			new Account_Resolver( $this->context ),
+			'license'     => new License_Resolver( $this->context ),
+			'plugin'      => new Plugin_Resolver( $this->context ),
+			'account'     => new Account_Resolver( $this->context ),
+			'environment' => new Environment_Resolver( $this->context ),
 		);
 	}
 
@@ -104,6 +112,37 @@ class Dependencies_Resolver {
 			if ( $resolver->should_evaluate( $integration ) ) {
 				$resolved_deps = $resolver->evaluate();
 				$dependencies  = array_merge( $dependencies, $resolved_deps );
+			}
+		}
+
+		return $this->format_dependencies_response( $dependencies );
+	}
+
+	/**
+	 * Resolve only setup dependencies — plugin installation chains and
+	 * app/account connection. The license resolver is skipped BEFORE
+	 * evaluation: tier/credits entitlements are conveyed separately by
+	 * the consumer (the template library routes them onto license tags),
+	 * and skipping avoids computing credit state that would be thrown
+	 * away.
+	 *
+	 * Response shape matches resolve_integration_dependencies():
+	 * `{ all_met: bool, items: Dependency[] }`, where `all_met` here
+	 * means "installed and connected on this site".
+	 *
+	 * @param Integration $integration Integration object
+	 *
+	 * @return array Dependencies array with 'all_met' and 'items'
+	 */
+	public function resolve_integration_setup_dependencies( Integration $integration ) {
+		$dependencies = array();
+
+		foreach ( $this->resolvers as $type => $resolver ) {
+			if ( 'license' === $type ) {
+				continue;
+			}
+			if ( $resolver->should_evaluate( $integration ) ) {
+				$dependencies = array_merge( $dependencies, $resolver->evaluate() );
 			}
 		}
 

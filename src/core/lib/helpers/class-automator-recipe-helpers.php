@@ -399,31 +399,48 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @return boolean
 	 */
 	public function is_edit_page() {
-		// Allow override via constant
+		// Allow override via constant.
 		if ( defined( 'AUTOMATOR_FORCE_EDIT_PAGE' ) && AUTOMATOR_FORCE_EDIT_PAGE ) {
 			return true;
 		}
 
-		// Early return if not admin
+		// Early return if not admin.
 		if ( ! is_admin() ) {
 			return false;
 		}
 
-		// Check if we have a post parameter
-		if ( ! automator_filter_has_var( 'post' ) || empty( automator_filter_input( 'post' ) ) ) {
-			return false;
-		}
-
-		// Get current post and validate
-		$current_post = get_post( absint( automator_filter_input( 'post' ) ) );
-		if ( ! $current_post || AUTOMATOR_POST_TYPE_RECIPE !== $current_post->post_type ) {
-			return false;
-		}
-
-		// Check if we're on the correct page
 		global $pagenow;
-		$valid_pages = array( 'post.php', 'post-new.php' );
-		return in_array( $pagenow, $valid_pages, true );
+
+		if ( null === $pagenow && isset( $_SERVER['SCRIPT_FILENAME'] ) ) {
+			$pagenow = basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_FILENAME'] ) ) ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		}
+
+		// Editing an existing post: the post itself is the authority. If it does
+		// not resolve, this is not the recipe editor — the `post_type` query arg
+		// must not stand in for a failed lookup.
+		if ( 'post.php' === $pagenow ) {
+			$post_id = absint( automator_filter_input( 'post' ) );
+
+			// Guard before the lookup: `get_post( 0 )` falls back to the global
+			// `$post`, so a missing or malformed id would resolve to whatever
+			// happens to be in scope rather than returning nothing.
+			if ( $post_id < 1 ) {
+				return false;
+			}
+
+			$current_post = get_post( $post_id );
+
+			return $current_post instanceof \WP_Post
+				&& AUTOMATOR_POST_TYPE_RECIPE === $current_post->post_type;
+		}
+
+		// Creating a post: there is no post yet, and WordPress keys the screen off
+		// `post_type`, so that is the authority here.
+		if ( 'post-new.php' === $pagenow ) {
+			return AUTOMATOR_POST_TYPE_RECIPE === automator_filter_input( 'post_type' );
+		}
+
+		return false;
 	}
 
 	/**
@@ -581,6 +598,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		// Fallback: direct DB query if manifest is not yet built.
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Joins core posts and postmeta; no WordPress API returns this.
 		$result = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT 1
@@ -764,32 +782,6 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		$option = apply_filters_deprecated( 'uap_option_less_or_greater_than', array( $option ), '3.0', 'automator_option_less_or_greater_than' );
 
 		return apply_filters( 'automator_option_less_or_greater_than', $option );
-	}
-
-	/**
-	 * @param string $option_code
-	 * @param string $label
-	 *
-	 * @return mixed
-	 */
-	public function get_redirect_url( $label = null, $option_code = 'REDIRECTURL' ) {
-
-		if ( ! $label ) {
-			$label = esc_attr__( 'Redirect URL', 'uncanny-automator' );
-		}
-
-		$option = array(
-			'option_code'     => $option_code,
-			'label'           => $label,
-			'input_type'      => 'url',
-			'supports_tokens' => true,
-			'required'        => true,
-			'placeholder'     => 'https://',
-		);
-
-		$option = apply_filters_deprecated( 'uap_option_get_redirect_url', array( $option ), '3.0', 'automator_option_get_redirect_url' );
-
-		return apply_filters( 'automator_option_get_redirect_url', $option );
 	}
 
 	/**
@@ -990,19 +982,23 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public function wp_users( $limit = 99999 ) {
 		global $wpdb;
-		// prepare transient key.
-		$transient_key = 'automator_transient_users';
+		// The key carries the network-wide version that a user change moves on.
+		$transient_key = Automator()->cache->users_list_key();
 		// attempt fetching options from transient.
-		$users = Automator()->cache->get( 'uap_transient_users' );
+		$users = Automator()->cache->get( $transient_key );
 		if ( empty( $users ) ) {
 			$query = apply_filters(
 				'automator_get_users_query',
-				"SELECT ID, display_name
+				$wpdb->prepare(
+					"SELECT ID, display_name
 					FROM $wpdb->users
 					ORDER BY display_name
-					LIMIT 0, $limit"
+					LIMIT 0, %d",
+					$limit
+				)
 			);
-			$users = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- The query is prepared above and can be adjusted by the automator_get_users_query filter; the result is cached with Automator's own cache just below.
+			$users = $wpdb->get_results( $query );
 
 			// save fetched posts in a transient for 3 minutes for performance gains.
 			$expiration_time = apply_filters( 'automator_get_users_expiry_time', Automator()->cache->expires, $users );

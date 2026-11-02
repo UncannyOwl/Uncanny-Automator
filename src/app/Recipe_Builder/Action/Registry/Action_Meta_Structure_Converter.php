@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Action\Registry;
 
@@ -10,6 +9,28 @@ namespace Uncanny_Automator\App\Recipe_Builder\Action\Registry;
  * @since 7.0.0
  */
 class Action_Meta_Structure_Converter {
+
+	/**
+	 * The meta structure an action definition declares: its `meta` map when it has one, else its converted
+	 * `options`, else none.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param array $definition Raw action definition.
+	 *
+	 * @return array Normalized meta structure keyed by option code.
+	 */
+	public function from_definition( array $definition ): array {
+		if ( isset( $definition['meta'] ) && is_array( $definition['meta'] ) && ! empty( $definition['meta'] ) ) {
+			return $definition['meta'];
+		}
+
+		if ( isset( $definition['options'] ) && is_array( $definition['options'] ) && ! empty( $definition['options'] ) ) {
+			return $this->convert( $definition['options'] );
+		}
+
+		return array();
+	}
 
 	/**
 	 * Convert WordPress style option definitions to the normalized meta structure.

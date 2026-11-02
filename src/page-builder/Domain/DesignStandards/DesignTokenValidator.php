@@ -22,15 +22,18 @@ final class DesignTokenValidator
         foreach ($tokens as $key => $value) {
             $name = (string) $key;
             if (!is_string($key) || !DesignStyleValue::isValidTokenName($name)) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
                 throw new \InvalidArgumentException("{$label} '{$name}' must be a valid CSS custom property.");
             }
 
             if (!is_string($value) && !is_numeric($value)) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
                 throw new \InvalidArgumentException("{$label} '{$name}' must be a string value.");
             }
 
             $text = (string) $value;
             if (trim($text) !== '' && !DesignStyleValue::isSafeValue($text)) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
                 throw new \InvalidArgumentException("{$label} '{$name}' contains an unsafe CSS value.");
             }
 

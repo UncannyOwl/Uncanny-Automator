@@ -56,16 +56,6 @@ class EDD_To_EDDR_Migration extends Migration {
 	}
 
 	/**
-	 * Check if conditions are met to run the migration
-	 *
-	 * @return bool
-	 */
-	public function conditions_met() {
-		// Only run in admin context
-		return is_admin();
-	}
-
-	/**
 	 * Run the migration process
 	 */
 	public function migrate() {
@@ -75,8 +65,7 @@ class EDD_To_EDDR_Migration extends Migration {
 		$error_count   = 0;
 
 		// Get all posts that have EDD integration and match our codes
-		$placeholders = implode( ',', array_fill( 0, count( self::EDD_RECURRING_CODES ), '%s' ) );
-		$query        = $wpdb->prepare( // phpcs:ignore
+		$query = $wpdb->prepare(
 			"
 			SELECT DISTINCT p.ID, p.post_type
 			FROM {$wpdb->posts} p
@@ -85,12 +74,13 @@ class EDD_To_EDDR_Migration extends Migration {
 			WHERE pm_integration.meta_key = 'integration'
 			AND pm_integration.meta_value = %s
 			AND pm_code.meta_key = 'code'
-			AND pm_code.meta_value IN ({$placeholders})
-			", // phpcs:ignore
+			AND pm_code.meta_value IN (" . implode( ',', array_fill( 0, count( self::EDD_RECURRING_CODES ), '%s' ) ) . ')
+			',
 			array_merge( array( 'EDD' ), self::EDD_RECURRING_CODES )
 		);
 
-		$posts = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; reads the query that $wpdb->prepare() built above.
+		$posts = $wpdb->get_results( $query );
 
 		if ( empty( $posts ) ) {
 			// No posts to migrate, mark as completed

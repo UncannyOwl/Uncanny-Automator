@@ -65,6 +65,7 @@ class WPP_POLLSUBMIT {
 		global $wpdb;
 
 		// Get Poll Questions
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WP Polls' own table; the plugin offers no API for this query.
 		$questions = $wpdb->get_results( "SELECT pollq_id, pollq_question FROM $wpdb->pollsq ORDER BY pollq_id DESC" );
 
 		$questions_options = array();

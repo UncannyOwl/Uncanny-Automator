@@ -24,6 +24,7 @@ class WC_BOOKINGS_ANON_BOOKING_CREATED extends Trigger {
 				}
 				$searialize = array( 'woocommerce_booking_confirmed', 'woocommerce_booking_unpaid_to_paid' );
 				global $wpdb;
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API rewrites a meta key or value across posts.
 				$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %s WHERE meta_value = %s AND meta_key LIKE %s", serialize( $searialize ), 'woocommerce_booking_unpaid_to_paid', 'add_action' ) );
 				automator_update_option( 'woo_booking_created_migrated', 'yes' );
 			},

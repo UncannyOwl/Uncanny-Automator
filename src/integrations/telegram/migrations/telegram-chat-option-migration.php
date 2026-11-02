@@ -62,6 +62,7 @@ class Telegram_Chat_Option_Migration extends Migration {
 		global $wpdb;
 
 		// Get all SEND_MESSAGE Actions post IDs that are using 'CHAT_ID' meta key with a token.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API finds posts by a raw meta value across post types.
 		$post_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT DISTINCT pm1.post_id 

@@ -155,6 +155,7 @@ class Trigger_Index {
 		global $wpdb;
 
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table joined to core posts; no WordPress API returns this, and the read must be live.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT

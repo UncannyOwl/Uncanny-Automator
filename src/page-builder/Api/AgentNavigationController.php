@@ -5,23 +5,40 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Api;
 
 use UncannyPageBuilder\Application\NavigationMenuService;
+use UncannyPageBuilder\Application\Agent\SharedRestOperationRegistryInterface;
 use UncannyPageBuilder\Domain\ErrorMessage;
 use UncannyPageBuilder\Domain\Exception\InvalidNavigationRequestException;
 use UncannyPageBuilder\Domain\Exception\NavigationChangedConcurrentlyException;
 use UncannyPageBuilder\Domain\Exception\NavigationItemTextNotSavableException;
 use UncannyPageBuilder\Domain\Exception\NavigationMenuNotFoundException;
 use UncannyPageBuilder\Domain\Exception\StaleNavigationMenuException;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 
 final class AgentNavigationController
 {
     public function __construct(
         private readonly PermissionChecker $permissions,
         private readonly NavigationMenuService $menus,
+        private readonly ?SharedRestOperationRegistryInterface $sharedRest = null,
     ) {}
 
     public function registerRoutes(): void
     {
-        register_rest_route('uncanny-page-builder/v1', '/agent/navigation', [
+        $register = function (array $handler): void {
+            register_rest_route('uncanny-page-builder/v1', '/agent/navigation', $handler);
+            try {
+                $this->sharedRest?->remember(
+                    '/uncanny-page-builder/v1/agent/navigation',
+                    $handler['methods'],
+                    $handler['callback'],
+                    $handler['permission_callback'],
+                    'manage_navigation'
+                );
+            } catch (\Throwable $failure) {
+                DiagnosticLog::write(sprintf('[Uncanny Page Builder] Shared REST navigation registration failed (%s).', $failure::class));
+            }
+        };
+        $register([
             'methods' => 'GET',
             'callback' => [$this, 'readNavigation'],
             'permission_callback' => [$this->permissions, 'canEdit'],
@@ -37,7 +54,7 @@ final class AgentNavigationController
             ],
         ]);
 
-        register_rest_route('uncanny-page-builder/v1', '/agent/navigation', [
+        $register([
             'methods' => 'POST',
             'callback' => [$this, 'manageNavigation'],
             'permission_callback' => [$this->permissions, 'canManage'],
@@ -156,7 +173,7 @@ final class AgentNavigationController
 
     private function unexpectedOperationFailure(string $operation, int $menuId, \Throwable $failure): \WP_REST_Response
     {
-        \error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] Navigation operation "%s" failed for menu %d (%s).',
             $operation,
             $menuId,
@@ -594,7 +611,7 @@ final class AgentNavigationController
             // Report a missing menu only to a caller who may edit navigation,
             // so the capability error still hides which menus exist.
             if ($this->permissions->canManageNavigation('replace_tree', 0, [])) {
-                throw new NavigationMenuNotFoundException($menuId);
+                throw new NavigationMenuNotFoundException((int) $menuId);
             }
 
             return [];
@@ -636,7 +653,7 @@ final class AgentNavigationController
 
         $id = RequestId::positive($value);
         if ($id === null) {
-            throw new InvalidNavigationRequestException($field . ' must be a positive integer.');
+            throw new InvalidNavigationRequestException(esc_html($field) . ' must be a positive integer.');
         }
 
         return $id;
@@ -650,7 +667,7 @@ final class AgentNavigationController
 
         $id = RequestId::nonNegative($value);
         if ($id === null) {
-            throw new InvalidNavigationRequestException($field . ' must be a non-negative integer.');
+            throw new InvalidNavigationRequestException(esc_html($field) . ' must be a non-negative integer.');
         }
 
         return $id;

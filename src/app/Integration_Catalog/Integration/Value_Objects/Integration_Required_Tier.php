@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects;
 
@@ -33,6 +32,25 @@ class Integration_Required_Tier {
 	public function __construct( string $value ) {
 		$this->validate( $value );
 		$this->value = $value;
+	}
+
+	/**
+	 * The tier a registered item declares with its legacy flags.
+	 *
+	 * Registered definitions carry `is_elite` / `is_pro` rather than a tier:
+	 * elite needs Pro Elite, any other Pro item Pro Basic, the rest Lite.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param array $item Registered item definition.
+	 * @return self
+	 */
+	public static function from_registry_flags( array $item ): self {
+		if ( ! empty( $item['is_elite'] ) ) {
+			return new self( 'pro-elite' );
+		}
+
+		return new self( empty( $item['is_pro'] ) ? 'lite' : 'pro-basic' );
 	}
 
 	/**
@@ -102,7 +120,7 @@ class Integration_Required_Tier {
 
 		if ( ! in_array( $value, $valid_tiers, true ) ) {
 			throw new InvalidArgumentException(
-				'Integration required tier must be one of: ' . implode( ', ', $valid_tiers ) . ', got: ' . $value
+				'Integration required tier must be one of: ' . esc_html( implode( ', ', $valid_tiers ) ) . ', got: ' . esc_html( $value )
 			);
 		}
 	}

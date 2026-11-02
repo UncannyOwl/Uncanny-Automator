@@ -54,6 +54,16 @@ interface Integration_Registry_Bridge {
 	public function get_active_integrations(): array;
 
 	/**
+	 * The integrations whose connections the Automator App Platform holds,
+	 * among those registered on this request, by name.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return array<string, string> Integration code => display name.
+	 */
+	public function get_app_platform_integrations(): array;
+
+	/**
 	 * Get a human-readable integration name from its code.
 	 *
 	 * Wraps `Automator()->get_integration_name_by_code( $code )`.
@@ -105,16 +115,6 @@ interface Integration_Registry_Bridge {
 	public function get_integration_for_trigger( string $trigger_code ): ?string;
 
 	/**
-	 * Resolve an integration code from a closure code.
-	 *
-	 * Wraps `Automator()->get->closure_integration_from_closure_code( $closure_code )`.
-	 *
-	 * @param string $closure_code Closure code.
-	 * @return string|null Integration code, or null if not resolvable.
-	 */
-	public function get_integration_for_closure( string $closure_code ): ?string;
-
-	/**
 	 * Resolve an action's execution callback by action code.
 	 *
 	 * Wraps `Automator()->get->action_execution_function_from_action_code( $action_code )`.
@@ -123,14 +123,4 @@ interface Integration_Registry_Bridge {
 	 * @return callable|null Execution callback, or null if not registered.
 	 */
 	public function get_action_execution_callback( string $action_code );
-
-	/**
-	 * Resolve a closure's execution callback by closure code.
-	 *
-	 * Wraps `Automator()->get->closure_execution_function_from_closure_code( $closure_code )`.
-	 *
-	 * @param string $closure_code Closure code.
-	 * @return callable|null Execution callback, or null if not registered.
-	 */
-	public function get_closure_execution_callback( string $closure_code );
 }

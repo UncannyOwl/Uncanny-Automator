@@ -15,6 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	return;
 }
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
+
 /**
  * Get the presentation object from the variables.
  *
@@ -88,7 +90,7 @@ $action_sentences = $presentation->get_action_sentences();
 		<div class="uap-settings-panel-top">
 			<!-- Title Section -->
 			<div class="uap-settings-panel-title">
-				<uo-icon integration="<?php echo esc_attr( $settings['icon'] ); ?>"></uo-icon>
+				<uap-d-integrations-icon code="<?php echo esc_attr( $settings['icon'] ); ?>" size="sm"></uap-d-integrations-icon>
 				<?php echo esc_html( $presentation->get_heading() ); ?>
 			</div>
 
@@ -97,9 +99,9 @@ $action_sentences = $presentation->get_action_sentences();
 				
 				<?php // Display flash messages if any. ?>
 				<?php if ( false !== $flash_message ) : ?>
-					<uo-alert class="uap-spacing-bottom uap-spacing-top" type="<?php echo esc_attr( $flash_message['type'] ); ?>">
+					<uas-alert class="uap-spacing-bottom uap-spacing-top" type="<?php echo esc_attr( $flash_message['type'] ); ?>">
 						<?php echo wp_kses_post( $flash_message['message'] ); ?>
-					</uo-alert>
+					</uas-alert>
 				<?php endif; ?>
 
 				<?php // Display connection form if not connected. ?>
@@ -124,7 +126,7 @@ $action_sentences = $presentation->get_action_sentences();
 						<ul>
 							<?php foreach ( $action_sentences as $sentence ) : ?>
 								<li>
-									<uo-icon id="bolt"></uo-icon>
+									<uas-icon code="bolt"></uas-icon>
 									<strong>
 										<?php echo esc_html_x( 'Action:', 'AI', 'uncanny-automator' ); ?>
 									</strong>
@@ -187,27 +189,27 @@ $action_sentences = $presentation->get_action_sentences();
 
 				<?php // Display connected account information. ?>
 				<?php if ( $is_connected ) : ?>
-					<uo-alert 
-						type="info" 
-						class="uap-spacing-bottom uap-spacing-bottom--big" 
-						heading="
-						<?php
-							/* translators: %1$s: Name of the AI provider */
-							printf(
-								esc_html_x( 'Uncanny Automator only supports connecting to one %1$s account at a time.', 'AI', 'uncanny-automator' ),
-								esc_html( $presentation->get_heading() )
-							);
-						?>
-						"
+					<?php
+					// Printed inline: uas-alert reads heading as markdown, so an indented value renders as a code block.
+					$single_account_heading = sprintf(
+						/* translators: %1$s: Name of the AI provider */
+						esc_html_x( 'Uncanny Automator only supports connecting to one %1$s account at a time.', 'AI', 'uncanny-automator' ),
+						esc_html( $presentation->get_heading() )
+					);
+					?>
+					<uas-alert
+						type="info"
+						class="uap-spacing-bottom uap-spacing-bottom--big"
+						heading="<?php echo esc_attr( $single_account_heading ); ?>"
 					>
 						<?php
-							/* translators: %1$s: Name of the AI provider */
 							printf(
+								/* translators: %1$s: Name of the AI provider */
 								esc_html_x( 'If you create recipes and then change the connected %1$s account, your previous recipes might no longer work.', 'AI', 'uncanny-automator' ),
 								esc_html( $presentation->get_heading() )
 							);
 						?>
-					</uo-alert>
+					</uas-alert>
 				<?php endif; ?>
 
 			</div>
@@ -218,15 +220,15 @@ $action_sentences = $presentation->get_action_sentences();
 			<!-- Left Side - Connect Button or Account Info -->
 			<div class="uap-settings-panel-bottom-left">
 				<?php if ( ! $is_connected ) : ?>
-					<uo-button type="submit">
+					<uas-button type="submit">
 						<?php
-							/* translators: %1$s: Name of the AI provider */
 							printf(
+								/* translators: %1$s: Name of the AI provider */
 								esc_html_x( 'Connect %1$s account', 'AI', 'uncanny-automator' ),
 								esc_html( $presentation->get_heading() )
 							);
 						?>
-					</uo-button>
+					</uas-button>
 				<?php else : ?>
 					<div class="uap-settings-panel-user">
 						<!-- User Avatar -->
@@ -238,13 +240,13 @@ $action_sentences = $presentation->get_action_sentences();
 						<div class="uap-settings-panel-user-info">
 							<div class="uap-settings-panel-user-info__main">
 								<?php
-									/* translators: %1$s: Name of the AI provider */
 									printf(
+										/* translators: %1$s: Name of the AI provider */
 										esc_html_x( '%1$s account', 'AI', 'uncanny-automator' ),
 										esc_html( $presentation->get_heading() )
 									);
 								?>
-								<uo-icon integration="<?php echo esc_attr( $settings['icon'] ); ?>"></uo-icon>
+								<uap-d-integrations-icon code="<?php echo esc_attr( $settings['icon'] ); ?>" size="xs"></uap-d-integrations-icon>
 							</div>
 							<div class="uap-settings-panel-user-info__additional">
 								<?php /* translators: %1$s: The secret key */ ?>
@@ -268,13 +270,13 @@ $action_sentences = $presentation->get_action_sentences();
 						admin_url( 'admin-post.php' )
 					);
 					?>
-					<uo-button 
+					<uas-button 
 						href="<?php echo esc_url( $disconnect_url ); ?>" 
 						color="danger"
 					>
-						<uo-icon id="right-from-bracket"></uo-icon>
+						<uas-icon code="right-from-bracket"></uas-icon>
 						<?php echo esc_html_x( 'Disconnect', 'AI', 'uncanny-automator' ); ?>
-					</uo-button>
+					</uas-button>
 				<?php endif; ?>
 			</div>
 		</div>

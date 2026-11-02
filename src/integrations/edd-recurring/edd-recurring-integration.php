@@ -32,14 +32,6 @@ class Edd_Recurring_Integration extends Integration {
 	 * Load the triggers and actions.
 	 */
 	protected function load() {
-		// Load migration script
-		require_once __DIR__ . '/migrations/migrate-edd-to-eddr.php';
-
-		// Initialize the migration
-		new EDD_To_EDDR_Migration();
-
-		// Load tokens
-
 		//triggers
 		new EDD_USER_SUBSCRIBES_TO_DOWNLOAD( $this->helpers );
 

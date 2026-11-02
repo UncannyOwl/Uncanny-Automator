@@ -1,6 +1,10 @@
 <?php
 namespace Uncanny_Automator\Integrations\Thrive_Apprentice;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Thrive_Apprentice_Helpers
  *
@@ -820,14 +824,14 @@ class Thrive_Apprentice_Helpers {
 			$user     = $customer->get_user();
 
 			if ( ! $course->has_certificate() ) {
-				throw new \WP_Error( 'no_certificate', 'Course does not have a certificate configured' );
+				return new \WP_Error( 'no_certificate', 'Course does not have a certificate configured' );
 			}
 
 			$certificate = $course->get_certificate();
 			$response    = $certificate->download( $customer );
 
 			if ( ! empty( $response['error'] ) ) {
-				throw new \WP_Error( 'certificate_error', 'Error generating certificate. ' . $response['error'] );
+				return new \WP_Error( 'certificate_error', 'Error generating certificate. ' . $response['error'] );
 			}
 
 			// Get course data

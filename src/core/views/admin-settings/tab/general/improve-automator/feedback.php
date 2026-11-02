@@ -12,6 +12,10 @@ namespace Uncanny_Automator;
  * @author  Daniela R. & Agustin B.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 
 <div class="uap-settings-panel-content-subtitle">
@@ -32,12 +36,12 @@ namespace Uncanny_Automator;
 
 <div class="uap-settings-panel-content-paragraph">
 
-	<uo-button
+	<uas-button
 		href="<?php echo esc_url( automator_utm_parameters( 'https://automatorplugin.com/feedback/', 'settings', 'improve_automator-send_feedback' ) ); ?>"
 		target="_blank"
 	>
 		<?php esc_html_e( 'Send feedback', 'uncanny-automator' ); ?>
-	</uo-button>
+	</uas-button>
 
 </div>
 

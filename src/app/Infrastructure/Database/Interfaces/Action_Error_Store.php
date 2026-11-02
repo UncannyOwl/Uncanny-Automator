@@ -14,8 +14,9 @@ use Uncanny_Automator\App\Recipe_Runner\Value_Objects\Action_Error;
  * the status resolver never needs strpos().
  *
  * @since 7.4.0
+ * @since 8.0.0 Rewrites the stored error_message column (Error_Message_Rewrite_Store).
  */
-interface Action_Error_Store {
+interface Action_Error_Store extends Error_Message_Rewrite_Store {
 
 	/**
 	 * Insert a structured error into uap_error_log.
@@ -39,12 +40,52 @@ interface Action_Error_Store {
 	public function store_system_error( int $recipe_log_id, Action_Error $error ): int;
 
 	/**
+	 * Store an error against a block (`item_type='block'`, `block_id` in the context).
+	 *
+	 * A run keeps at most one row per block and error code: a block in a loop body
+	 * fails once per entity, and the first reason wins.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int          $recipe_log_id The recipe log ID.
+	 * @param int          $block_id      The block's post ID.
+	 * @param Action_Error $error         The structured error.
+	 *
+	 * @return int The inserted row ID, or 0 when the run already holds this block and code.
+	 */
+	public function store_block_error( int $recipe_log_id, int $block_id, Action_Error $error ): int;
+
+	/**
+	 * Every block error of a run, oldest first.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $recipe_log_id The recipe log ID.
+	 *
+	 * @return array Row objects with `item_type='block'`, or an empty array.
+	 */
+	public function get_block_errors( int $recipe_log_id ): array;
+
+	/**
 	 * Check whether a recipe run has at least one actionable error.
 	 *
 	 * @param int $recipe_log_id The recipe log ID.
 	 * @return bool True if at least one actionable error exists.
 	 */
 	public function has_actionable_errors( int $recipe_log_id ): bool;
+
+	/**
+	 * Whether a run has at least one run-level error: a row store_system_error() wrote against this run
+	 * (`item_type` 'system') whose code escalates to the recipe status (`is_actionable`). Rows written
+	 * against no run (recipe log id 0) belong to no run.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $recipe_log_id The recipe log ID.
+	 *
+	 * @return bool
+	 */
+	public function has_system_errors( int $recipe_log_id ): bool;
 
 	/**
 	 * Get all error rows for a recipe run, ordered by ID ascending.
@@ -65,8 +106,12 @@ interface Action_Error_Store {
 	/**
 	 * Backfill uap_error_log from legacy uap_action_log rows.
 	 *
+	 * @since 8.0.0 Counts only rows the database wrote, and raises when a row was not written.
+	 *
 	 * @param int $batch_size Number of rows to process per call.
 	 * @return int Count of migrated rows.
+	 * @throws \Uncanny_Automator\App\Infrastructure\Exceptions\Store_Exception When a row of the batch was not written. The rows
+	 *         that were written stay written; the next call selects the others again.
 	 */
 	public function migrate_legacy_errors( int $batch_size = 500 ): int;
 }

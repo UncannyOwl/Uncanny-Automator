@@ -1,15 +1,29 @@
 <?php
 declare(strict_types=1);
+
+// phpcs:disable WordPress.DB.PreparedSQL -- this store receives $wpdb by
+// injection and queries through $this->wpdb. The sniff only recognises the
+// global $wpdb->prepare() form, so it reports every prepared call here as
+// unprepared. Every value below goes through a prepare() placeholder; the
+// only interpolation is the table prefix, which cannot be a placeholder.
 namespace Uncanny_Automator\App\Infrastructure\Database\Stores;
 
 use Exception;
+use Uncanny_Automator\App\Infrastructure\Cache\Recipe_Cache;
+use Uncanny_Automator\App\Events\Dispatcher;
+use Uncanny_Automator\App\Events\Recipe_Change_Record;
+use Uncanny_Automator\App\Infrastructure\Database\Database;
 use Uncanny_Automator\App\Recipe_Builder\Action\Action;
 use Uncanny_Automator\App\Recipe_Builder\Action\Action_Config;
 use Uncanny_Automator\App\Recipe_Builder\Action\Enums\Action_Status;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Action_Store;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
+use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Path_Code;
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Declared_Field_Codes_Resolver;
+use Uncanny_Automator\App\Recipe_Builder\Node_Tests\Services\Node_Test_Run_Store;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Id;
-use Uncanny_Automator\App\Infrastructure\Cache\Recipe_Cache;
 use Uncanny_Automator\Json_String_Repair;
+use Uncanny_Automator\App\Infrastructure\Database\Stores\Traits\Item_Usage_Counts;
 
 /**
  * WordPress Action Store.
@@ -19,7 +33,9 @@ use Uncanny_Automator\Json_String_Repair;
  *
  * @since 7.0.0
  */
-class WP_Action_Store implements Action_Store {
+class WP_Action_Store extends WP_Post_Store implements Action_Store {
+
+	use Item_Usage_Counts;
 
 	/**
 	 * Post type for actions.
@@ -75,22 +91,6 @@ class WP_Action_Store implements Action_Store {
 	}
 
 	/**
-	 * Get WP_Post object for action.
-	 *
-	 * @param int $action_id Action ID.
-	 * @return \WP_Post|null WP_Post object or null if not found.
-	 */
-	public function get_wp_post( int $action_id ): ?\WP_Post {
-		$post = get_post( $action_id );
-
-		if ( ! $post || self::POST_TYPE !== $post->post_type ) {
-			return null;
-		}
-
-		return $post;
-	}
-
-	/**
 	 * Delete action.
 	 *
 	 * @param Action $action Action to delete.
@@ -111,17 +111,34 @@ class WP_Action_Store implements Action_Store {
 	/**
 	 * Delete action by ID.
 	 *
-	 * Primitive delete that bypasses the post_type filter in `get()`. Use this
-	 * from call sites that have already verified ownership and do not want a
-	 * redundant cache round-trip — notably the delete transport, which is
-	 * where stale WP post caches have previously surfaced as false negatives.
+	 * Primitive delete that skips `get()` and its cache round-trip — notably for
+	 * the delete transport, where stale WP post caches have previously surfaced
+	 * as false negatives. It reads the post type from the table instead, so an
+	 * id that is not an action is refused rather than permanently deleted.
 	 *
 	 * @param int $action_id Action post ID.
-	 * @param int $recipe_id Owning recipe ID, used for cache invalidation. Pass 0 to skip.
+	 * @param int $recipe_id Owning recipe ID. Unused — `after_delete_post` covers
+	 *                       this delete. Kept because it is on the `Action_Store`
+	 *                       interface.
 	 * @return void
-	 * @throws \Exception If wp_delete_post fails.
+	 * @throws \Exception If the id is not an action, or wp_delete_post fails.
 	 */
 	public function delete_by_id( int $action_id, int $recipe_id = 0 ): void {
+		// The type comes from the table, not the post cache, so a stale cache neither blocks a real
+		// action nor lets any other post through: this delete is permanent.
+		$wpdb = $this->wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Read the current post type before a permanent delete, bypassing stale post caches.
+		$post_type = $wpdb->get_var( $wpdb->prepare( "SELECT post_type FROM {$wpdb->posts} WHERE ID = %d", $action_id ) );
+		if ( self::POST_TYPE !== $post_type ) {
+			throw new Exception(
+				sprintf(
+					/* translators: %s is the action ID. */
+					esc_html_x( 'No action found with ID: %s', 'Action store delete error with ID', 'uncanny-automator' ),
+					absint( $action_id )
+				)
+			);
+		}
+
 		$result = wp_delete_post( $action_id, true );
 
 		if ( ! $result ) {
@@ -132,10 +149,6 @@ class WP_Action_Store implements Action_Store {
 					absint( $action_id )
 				)
 			);
-		}
-
-		if ( $recipe_id > 0 ) {
-			Recipe_Cache::invalidate( $recipe_id );
 		}
 	}
 
@@ -155,26 +168,14 @@ class WP_Action_Store implements Action_Store {
 			'order'          => 'ASC',
 		);
 
-		// Include actions that are direct children of the recipe AND children of loops inside the recipe.
+		// Include actions that are direct children of the recipe AND children of
+		// any container (blocks nest arbitrarily).
 		if ( ! empty( $filters['recipe_id'] ) ) {
 			$recipe_id  = absint( $filters['recipe_id'] );
-			$parent_ids = array( $recipe_id );
-
-			// Find loops belonging to this recipe — actions inside loops have post_parent = loop_id.
-			// A recipe is not expected to contain anywhere near 100 loops; the cap is a safety ceiling.
-			$loop_posts = get_posts(
-				array(
-					'post_type'      => AUTOMATOR_POST_TYPE_LOOP,
-					'post_parent'    => $recipe_id,
-					'post_status'    => 'any',
-					'posts_per_page' => 100, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- Loops per recipe are bounded by the builder UI and never reach this cap.
-					'fields'         => 'ids',
-				)
+			$parent_ids = array_merge(
+				array( $recipe_id ),
+				Database::get_block_store()->get_recipe_container_ids( $recipe_id )
 			);
-
-			if ( ! empty( $loop_posts ) ) {
-				$parent_ids = array_merge( $parent_ids, array_map( 'absint', $loop_posts ) );
-			}
 
 			$args['post_parent__in'] = $parent_ids;
 		}
@@ -227,6 +228,34 @@ class WP_Action_Store implements Action_Store {
 	}
 
 	/**
+	 * @inheritDoc
+	 */
+	public function get_top_level_recipe_actions( int $recipe_id ): array {
+		// Strict direct-children query — distinct from get_recipe_actions(),
+		// which spans loop descendants and orders by ID.
+		$posts = get_posts(
+			array(
+				'post_type'      => self::POST_TYPE,
+				'post_parent'    => $recipe_id,
+				'post_status'    => array( Action_Status::PUBLISH, Action_Status::DRAFT ),
+				'posts_per_page' => -1, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- Top-level actions per recipe are bounded by the builder UI; no realistic cap needed.
+				'orderby'        => 'menu_order',
+				'order'          => 'ASC',
+			)
+		);
+
+		$actions = array();
+		foreach ( $posts as $post ) {
+			$action = $this->build_action_from_post( $post );
+			if ( null !== $action ) {
+				$actions[] = $action;
+			}
+		}
+
+		return $actions;
+	}
+
+	/**
 	 * Get actions by integration.
 	 *
 	 * @param string $integration Integration code (e.g., 'WP', 'WC').
@@ -234,6 +263,43 @@ class WP_Action_Store implements Action_Store {
 	 */
 	public function get_by_integration( string $integration ): array {
 		return $this->all( array( 'integration' => $integration ) );
+	}
+
+	/**
+	 * Next append position among the parent's ordered children.
+	 *
+	 * The reorder service stamps explicit menu_order values (10, 20, …) on
+	 * every reorder, so leaving wp_insert_post's default of 0 would sort a
+	 * freshly created action to the top of the flow. Blocks and actions
+	 * share one menu_order sequence per parent (see
+	 * Block_Crud_Service::get_next_menu_order(), which does the same walk
+	 * for new blocks).
+	 *
+	 * @param int $parent_id Recipe or block post ID the action is created under.
+	 * @return int Menu order placing the new action after existing siblings.
+	 */
+	private function next_menu_order( int $parent_id ): int {
+		$wpdb = $this->wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WordPress has no API for the highest menu_order among siblings; a cached value would place the new action out of order.
+		$max_order = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT MAX(menu_order) FROM `{$wpdb->posts}`
+				WHERE post_parent = %d
+				AND post_type IN (%s, %s)
+				AND post_status IN (%s, %s)",
+				$parent_id,
+				self::POST_TYPE,
+				WP_Block_Store::POST_TYPE,
+				Action_Status::PUBLISH,
+				Action_Status::DRAFT
+			)
+		);
+
+		if ( '' !== $this->wpdb->last_error ) {
+			throw new Exception( 'Failed to read the destination action order.' );
+		}
+
+		return (int) $max_order + 1;
 	}
 
 	/**
@@ -257,6 +323,7 @@ class WP_Action_Store implements Action_Store {
 			'post_title'  => $this->generate_action_title( $action ),
 			'post_parent' => $parent_id,
 			'post_status' => $action->get_status() ? $action->get_status()->get_value() : Action_Status::DRAFT,
+			'menu_order'  => $this->next_menu_order( (int) $parent_id ),
 			'meta_input'  => $this->prepare_meta_data( $action ),
 		);
 
@@ -271,8 +338,8 @@ class WP_Action_Store implements Action_Store {
 			throw new Exception( esc_html_x( 'Failed to create action: unknown error', 'Action store creation unknown error', 'uncanny-automator' ) );
 		}
 
-		// Clear recipe cache so the recipe builder picks up the new values.
-		Recipe_Cache::invalidate( $action->get_action_recipe_id()->get_value() );
+		// Maintain path code consistency.
+		$this->persist_path_code( $action, (int) $action_id, (int) $parent_id );
 
 		// Reload and return the persisted action with all values
 		$persisted_action = $this->get( $action_id );
@@ -309,7 +376,13 @@ class WP_Action_Store implements Action_Store {
 			'post_parent' => $parent_id,
 		);
 
-		$result = wp_update_post( $post_data );
+		$existing_post = get_post( $action_id );
+		if ( $existing_post && (int) $existing_post->post_parent !== (int) $parent_id ) {
+			$post_data['menu_order'] = $this->next_menu_order( (int) $parent_id );
+		}
+
+		// Request WordPress errors: a refused update otherwise answers 0 and passes as saved.
+		$result = wp_update_post( $post_data, true );
 
 		if ( is_wp_error( $result ) ) {
 			// translators: %s is the error message.
@@ -317,12 +390,53 @@ class WP_Action_Store implements Action_Store {
 		}
 
 		// Update meta data
-		$meta_data = $this->prepare_meta_data( $action );
+		$meta_data       = $this->prepare_meta_data( $action );
+		$stored          = get_post_meta( $action_id );
+		$candidate_edits = array();
+		$written         = array();
 		foreach ( $meta_data as $key => $value ) {
-			update_post_meta( $action_id, $key, $value );
+			// A value the save left as it was read goes unwritten: it was read still serialized
+			// (an array, an object), and writing it back would serialize it again.
+			if ( isset( $stored[ $key ] ) && array( $value ) === $stored[ $key ] ) {
+				continue;
+			}
+
+			// A key's first materialization is configuration, not an edit —
+			// only a key that already had a stored value can be a candidate
+			// (spec Stage 3, AMENDED 2026-08-12).
+			$existed = metadata_exists( 'post', $action_id, $key );
+			$changed = update_post_meta( $action_id, $key, $value );
+			if ( false !== $changed ) {
+				$written[] = $key;
+			}
+			if ( $existed && false !== $changed ) {
+				$candidate_edits[] = $key;
+			}
 		}
 
-		// Clear recipe cache so the recipe builder picks up the new values.
+		Recipe_Change_Record::note_item_fields(
+			Integration_Item_Types::ACTION,
+			(int) $action_id,
+			(int) $action_data['recipe_id'],
+			$action->get_action_integration_code()->get_value(),
+			$action->get_action_code()->get_value(),
+			$written
+		);
+
+		// Declared codes resolve lazily — only a save that actually edited
+		// stored values pays the definition lookup.
+		if ( ! empty( $candidate_edits )
+			&& array_intersect( $candidate_edits, $this->declared_field_codes( $action, $meta_data ) ) ) {
+			Dispatcher::action( 'automator_node_fields_changed', 'item', (int) $action_id );
+		}
+
+		// Maintain path code consistency.
+		$this->persist_path_code( $action, (int) $action_id, (int) $parent_id );
+
+		// The field meta above lands AFTER wp_update_post, so the hook's
+		// invalidation ran against the pre-edit values. Without this second
+		// bump a reader that rebuilt in between persists that stale tree and
+		// nothing clears it. See Store_Write_Ordering_Test.
 		Recipe_Cache::invalidate( $action->get_action_recipe_id()->get_value() );
 
 		// Reload and return the updated action
@@ -334,6 +448,47 @@ class WP_Action_Store implements Action_Store {
 		}
 
 		return $updated_action;
+	}
+
+	/**
+	 * The action's declared field codes — the allow-list write-time
+	 * invalidation compares candidate edits against (spec Stage 3, AMENDED
+	 * 2026-08-12). The aggregate carries the identity, so callers never
+	 * supply this; resolution is memoized per request by the registry and
+	 * only ever invoked when a save produced candidate edits.
+	 *
+	 * @param Action               $action        Action being saved.
+	 * @param array<string, mixed> $incoming_meta Meta map being written — degraded fallback source.
+	 * @return array<string>
+	 */
+	private function declared_field_codes( Action $action, array $incoming_meta ): array {
+		return ( new Declared_Field_Codes_Resolver() )->resolve(
+			$action->get_action_integration_code()->get_value(),
+			Integration_Item_Types::ACTION,
+			$action->get_action_code()->get_value(),
+			$incoming_meta
+		);
+	}
+
+	/**
+	 * Persist the child's path_code from the aggregate.
+	 *
+	 * Explicit aggregate path_code wins (stamped via the block store);
+	 * otherwise fall back to the default-or-clear reconcile. Single write
+	 * site for an action's path_code.
+	 *
+	 * @param Action $action    Saved action (carries the explicit path, if any).
+	 * @param int    $action_id Persisted action post id.
+	 * @param int    $parent_id Resolved post_parent.
+	 * @return void
+	 */
+	private function persist_path_code( Action $action, int $action_id, int $parent_id ): void {
+		$path = $action->get_path_code();
+		if ( null !== $path ) {
+			Database::get_block_store()->set_path_code( $action_id, $path->get_value() );
+			return;
+		}
+		WP_Block_Store::maybe_reconcile_item_path_code( $action_id, $parent_id );
 	}
 
 	/**
@@ -354,8 +509,15 @@ class WP_Action_Store implements Action_Store {
 		// Build meta array from all post meta fields
 		$meta = array();
 
-		// Core fields that shouldn't go into meta (they're handled separately)
-		$core_fields = array( 'integration', 'code', 'meta_code', 'user_type', 'parent_id', 'status' );
+		// Core fields that shouldn't go into meta (they're handled separately).
+		// Node_Test_Run_Store::META_KEY / ::PENDING_META_KEY (run-state postmeta)
+		// are excluded for a second reason: get_post_meta() with no $meta_key
+		// returns the raw, still-serialized column value, so an array-valued key
+		// round-tripped through this bag and back out via prepare_meta_data()'s
+		// update_post_meta() loop gets serialized a second time (WordPress
+		// re-serializes a string that already looks serialized). Excluding the
+		// key here is what keeps it out of that bag entirely.
+		$core_fields = array( 'integration', 'code', 'meta_code', 'user_type', 'parent_id', 'status', 'recipe_id', WP_Block_Store::META_PATH_CODE, Node_Test_Run_Store::META_KEY, Node_Test_Run_Store::PENDING_META_KEY );
 
 		foreach ( $all_meta as $key => $value_array ) {
 			// Skip core fields - they're handled separately
@@ -369,51 +531,52 @@ class WP_Action_Store implements Action_Store {
 			if ( Json_String_Repair::looks_like_structured_json( $meta[ $key ] ) ) {
 				$meta[ $key ] = Json_String_Repair::repair( $meta[ $key ] );
 			}
-
-			// Convert recipe_id to integer
-			if ( 'recipe_id' === $key && is_numeric( $meta[ $key ] ) ) {
-				$meta[ $key ] = (int) $meta[ $key ];
-			}
 		}
 
-		// Build config using the original fluent methods
+		// Status, parent, and recipe id derive from the post object — matching
+		// Trigger — so legacy post-meta artifacts (e.g. a 'live' status
+		// the VO rejects) are ignored and the action still hydrates.
 		$integration_code = get_post_meta( $post->ID, 'integration', true );
 		$code             = get_post_meta( $post->ID, 'code', true );
 		$meta_code        = get_post_meta( $post->ID, 'meta_code', true );
 		$user_type        = get_post_meta( $post->ID, 'user_type', true );
-		$parent_id        = get_post_meta( $post->ID, 'parent_id', true );
-		$status           = get_post_meta( $post->ID, 'status', true );
 
-		// Resolve the recipe_id by walking the parent chain.
-		// Actions nested inside a loop have post_parent = loop_id, not recipe_id.
-		// When nested, the real recipe is the loop's own parent.
-		$recipe_id   = (int) $post->post_parent;
-		$parent_post = get_post( $recipe_id );
-		if ( $parent_post instanceof \WP_Post && AUTOMATOR_POST_TYPE_LOOP === $parent_post->post_type ) {
-			$recipe_id = (int) $parent_post->post_parent;
-		}
+		// recipe_id: walk post ancestry to the owning uo-recipe. Block wrappers
+		// (loop/filter/delay) sit between the action and its recipe.
+		$resolved_recipe_id = $this->find_ancestor_recipe_id( (int) $post->post_parent );
+
+		// status: constrain post_status to the valid action statuses; anything
+		// else (auto-draft, trash, …) hydrates as draft.
+		$status = in_array( $post->post_status, Action_Status::get_all(), true )
+			? $post->post_status
+			: Action_Status::DRAFT;
 
 		$config = ( new Action_Config() )
 			->id( (int) $post->ID )
-			->recipe_id( $recipe_id )
+			->recipe_id( $resolved_recipe_id )
 			->integration_code( ! empty( $integration_code ) ? $integration_code : '' )
 			->code( ! empty( $code ) ? $code : '' )
 			->meta_code( ! empty( $meta_code ) ? $meta_code : '' )
 			->user_type( ! empty( $user_type ) ? $user_type : 'user' )
-			->status( ! empty( $status ) ? $status : Action_Status::DRAFT )
+			->status( $status )
 			->meta( $meta );
 
-		// Set parent_id - defaults to recipe_id as Recipe_Id for backward compatibility
-		if ( ! empty( $parent_id ) && is_numeric( $parent_id ) ) {
-			$config->parent_id( new Recipe_Id( (int) $parent_id ) );
-		} elseif ( ! empty( $post->post_parent ) && $post->post_parent > 0 ) {
-			$config->parent_id( new Recipe_Id( $post->post_parent ) );
+		// parent_id: post_parent is the authoritative parent (recipe or block wrapper).
+		if ( ! empty( $post->post_parent ) && $post->post_parent > 0 ) {
+			$config->parent_id( new Recipe_Id( (int) $post->post_parent ) );
+		}
+
+		// path_code: dedicated branch placement, read from the block-store meta key.
+		$persisted_path = get_post_meta( $post->ID, WP_Block_Store::META_PATH_CODE, true );
+		if ( is_string( $persisted_path ) && Block_Path_Code::is_valid( $persisted_path ) ) {
+			$config->path_code( $persisted_path );
 		}
 
 		try {
 			return new Action( $config );
 		} catch ( \Exception $e ) {
 			// Skip invalid action.
+			automator_log( sprintf( 'Failed to hydrate action %d from post: %s', $post->ID, $e->getMessage() ), 'WP Action Store Error' );
 			return null;
 		}
 	}
@@ -427,14 +590,14 @@ class WP_Action_Store implements Action_Store {
 	public function prepare_meta_data( Action $action ): array {
 		$action_data = $action->to_array();
 
-		// Core fields that must be saved as post meta for legacy compatibility
+		// Core fields that must be saved as post meta for legacy compatibility.
+		// No `status` copy of the post status: nothing reads it, and postmeta keys
+		// match case-insensitively, so it would overwrite a field coded STATUS.
 		$meta_data = array(
 			'integration' => $action->get_action_integration_code()->get_value(),
 			'code'        => $action->get_action_code()->get_value(),
 			'user_type'   => $action->get_action_type()->get_value(),
 			'recipe_id'   => $action->get_action_recipe_id()->get_value(),
-			'parent_id'   => null !== $action->get_parent_id() ? $action->get_parent_id()->get_value() : null,
-			'status'      => null !== $action->get_status() ? $action->get_status()->get_value() : Action_Status::DRAFT,
 		);
 
 		// Add sentence fields from action data
@@ -446,19 +609,11 @@ class WP_Action_Store implements Action_Store {
 			$meta_data['sentence_human_readable_html'] = $action_data['sentence_human_readable_html'];
 		}
 
-		// Add all user configuration fields
-		if ( ! empty( $action_data['config'] ) && is_array( $action_data['config'] ) ) {
-			foreach ( $action_data['config'] as $key => $value ) {
+		// Persist configured fields only; the legacy complete config invents empty slots for unsaved fields.
+		$fields = $action->get_saved_fields();
+		if ( ! empty( $fields ) ) {
+			foreach ( $fields as $key => $value ) {
 				// Save all config fields as individual post meta entries
-				$meta_data[ $key ] = Json_String_Repair::slash_for_storage( $value );
-			}
-		}
-
-		// Add async configuration fields as flat structure for legacy compatibility
-		if ( ! empty( $action_data['async'] ) && is_array( $action_data['async'] ) ) {
-			foreach ( $action_data['async'] as $key => $value ) {
-				// Save async fields with 'async_' prefix to maintain flat structure
-				// e.g., async_mode, async_delay_number, async_schedule_date, etc.
 				$meta_data[ $key ] = Json_String_Repair::slash_for_storage( $value );
 			}
 		}
@@ -485,9 +640,120 @@ class WP_Action_Store implements Action_Store {
 	}
 
 	/**
-	 * Get post type.
+	 * Walk the post_parent chain to find the ancestor uo-recipe post.
 	 *
-	 * @return string Post type.
+	 * Authoritative recipe resolution: block wrappers (loop/filter/delay) sit
+	 * between the action and its uo-recipe, so the owning recipe is found by
+	 * walking ancestry rather than trusting a (possibly stale) recipe_id meta.
+	 * Uses get_post() which leverages the WP object cache.
+	 *
+	 * @param int $parent_id Starting parent ID.
+	 * @return int The recipe post ID, or the original parent_id as fallback.
+	 */
+	private function find_ancestor_recipe_id( int $parent_id ): int {
+		$max_depth = 20;
+		$current   = $parent_id;
+
+		while ( $max_depth-- > 0 && $current > 0 ) {
+			$post = get_post( $current );
+			if ( ! $post ) {
+				return $parent_id; // Fallback to original parent.
+			}
+			if ( 'uo-recipe' === $post->post_type ) {
+				return (int) $post->ID;
+			}
+			$current = (int) $post->post_parent;
+		}
+
+		return $parent_id; // Safety fallback.
+	}
+
+
+	/**
+	 * Container-aware action ids for a recipe, filtered by post status.
+	 *
+	 * Covers direct recipe children AND actions inside any container
+	 * (blocks nest arbitrarily).
+	 *
+	 * @param int      $recipe_id Recipe post ID.
+	 * @param string[] $statuses  Post statuses to include.
+	 * @return array<int> Action post IDs.
+	 */
+	public function get_recipe_action_ids( int $recipe_id, array $statuses ): array {
+		$parent_ids = array_merge(
+			array( $recipe_id ),
+			Database::get_block_store()->get_recipe_container_ids( $recipe_id )
+		);
+
+		$ids = get_posts(
+			array(
+				'post_type'       => self::POST_TYPE,
+				'post_parent__in' => $parent_ids,
+				'post_status'     => $statuses,
+				'posts_per_page'  => -1, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- Actions per recipe are bounded by the builder UI.
+				'fields'          => 'ids',
+			)
+		);
+
+		return array_map( 'absint', $ids );
+	}
+
+	/**
+	 * Container-aware id => code map for a recipe's actions, read raw.
+	 *
+	 * Deliberately NO aggregate hydration: safety scans (the user-selector
+	 * publish gate) must see a row's code even when the row would fail
+	 * domain validation.
+	 *
+	 * @param int      $recipe_id Recipe post ID.
+	 * @param string[] $statuses  Post statuses to include.
+	 * @return array<int, string> Action ID => action code (may be empty string).
+	 */
+	public function get_recipe_action_codes( int $recipe_id, array $statuses ): array {
+		$codes = array();
+
+		foreach ( $this->get_recipe_action_ids( $recipe_id, $statuses ) as $action_id ) {
+			$codes[ $action_id ] = (string) get_post_meta( $action_id, 'code', true );
+		}
+
+		return $codes;
+	}
+
+	/**
+	 * Raw field values for one action: every non-internal meta value.
+	 *
+	 * Deliberately NO aggregate hydration — token safety scans want raw
+	 * visibility, not domain validity. Internal (underscore-prefixed)
+	 * keys are skipped; the first meta value per key is returned.
+	 *
+	 * @param int $action_id Action post ID.
+	 * @return array<string, mixed> Meta key => first value.
+	 */
+	public function get_action_field_values( int $action_id ): array {
+		$meta = get_post_meta( $action_id );
+		if ( empty( $meta ) || ! is_array( $meta ) ) {
+			return array();
+		}
+
+		$values = array();
+		foreach ( $meta as $key => $meta_values ) {
+			if ( 0 === strpos( $key, '_' ) ) {
+				continue;
+			}
+			$values[ $key ] = $meta_values[0] ?? '';
+		}
+
+		return $values;
+	}
+
+	/**
+	 * Deprecated one-line accessor retained for 8.0.0.
+	 *
+	 * Its callers (the recipe-item REST classes) move off it in a later PR;
+	 * deleting it here would break them in the interim. Removed in the
+	 * post-8.0.0 cleanup pass together with those callers.
+	 *
+	 * @deprecated 8.0.0
 	 */
 	public function get_post_type(): string {
 		return self::POST_TYPE;

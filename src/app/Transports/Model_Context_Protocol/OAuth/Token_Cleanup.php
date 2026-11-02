@@ -3,6 +3,8 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth;
 
 use Uncanny_Automator\App\Events\Dispatcher;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Server\OAuth_Artifact_Store;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Server\OAuth_Pending_Registration_Cleanup;
 
 /**
  * Token Cleanup.
@@ -13,6 +15,12 @@ use Uncanny_Automator\App\Events\Dispatcher;
  */
 class Token_Cleanup {
 
+	private const CLEANUP_LOCK           = 'automator_mcp_cleanup_run_lock';
+	private const LAST_RUN               = 'automator_mcp_token_cleanup_last_run';
+	private const CHECK_AFTER            = 'automator_mcp_token_cleanup_check_after';
+	private const IN_PROGRESS            = 'automator_mcp_token_cleanup_in_progress';
+	private const OPPORTUNISTIC_INTERVAL = 60;
+
 	/**
 	 * Token manager instance.
 	 *
@@ -21,14 +29,19 @@ class Token_Cleanup {
 	 */
 	private Token_Manager $token_manager;
 
+	private OAuth_Artifact_Store $oauth_artifacts;
+
+	private OAuth_Pending_Registration_Cleanup $pending_registrations;
+
 	/**
 	 * Constructor.
 	 *
 	 * @since 7.0.0
 	 */
 	public function __construct() {
-		$this->token_manager = new Token_Manager();
-		$this->init_hooks();
+		$this->token_manager         = new Token_Manager();
+		$this->oauth_artifacts       = new OAuth_Artifact_Store();
+		$this->pending_registrations = new OAuth_Pending_Registration_Cleanup();
 	}
 
 	/**
@@ -38,18 +51,21 @@ class Token_Cleanup {
 	 *
 	 * @return void
 	 */
-	private function init_hooks(): void {
-		// Schedule cleanup on plugin activation.
-		register_activation_hook( __FILE__, array( $this, 'schedule_cleanup' ) );
-
-		// Unschedule on deactivation.
-		register_deactivation_hook( __FILE__, array( $this, 'unschedule_cleanup' ) );
-
+	public function init(): void {
 		// Hook into the scheduled event.
 		add_action( 'automator_mcp_token_cleanup', array( $this, 'run_cleanup' ) );
+		add_action( OAuth_Pending_Registration_Cleanup::HOOK, array( $this->pending_registrations, 'run' ), 10, 0 );
 
 		// Add cleanup to daily maintenance if not already scheduled.
 		add_action( 'init', array( $this, 'ensure_cleanup_scheduled' ) );
+		add_action( 'shutdown', array( $this, 'maybe_run_opportunistic' ) );
+	}
+
+	/**
+	 * Deactivation callback registered from the actual plugin bootstrap file.
+	 */
+	public static function deactivate(): void {
+		( new self() )->unschedule_cleanup();
 	}
 
 	/**
@@ -61,7 +77,8 @@ class Token_Cleanup {
 	 */
 	public function schedule_cleanup(): void {
 		if ( ! wp_next_scheduled( 'automator_mcp_token_cleanup' ) ) {
-			// Schedule daily cleanup at 3 AM.
+			// 'tomorrow 3:00 AM' resolves in PHP's timezone, which WordPress
+			// pins to UTC, so the low-traffic-hour intent is approximate.
 			wp_schedule_event(
 				strtotime( 'tomorrow 3:00 AM' ),
 				'daily',
@@ -82,6 +99,7 @@ class Token_Cleanup {
 		if ( $timestamp ) {
 			wp_unschedule_event( $timestamp, 'automator_mcp_token_cleanup' );
 		}
+		wp_clear_scheduled_hook( OAuth_Pending_Registration_Cleanup::HOOK );
 	}
 
 	/**
@@ -105,16 +123,87 @@ class Token_Cleanup {
 	 * @return void
 	 */
 	public function run_cleanup(): void {
+		$this->run_cleanup_batch( false );
+	}
+
+	/**
+	 * Continue unfinished or missed cleanup without relying on a loopback.
+	 *
+	 * @since 8.0.0
+	 */
+	public function maybe_run_opportunistic(): void {
+		if ( wp_installing() || ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) ) {
+			return;
+		}
+		// Ordinary page loads read one timestamp, not every cleanup cursor.
+		// Check again in a minute so partial runs still recover when WP-Cron is disabled.
+		$now = time();
+		if ( (int) get_option( self::CHECK_AFTER, 0 ) > $now ) {
+			return;
+		}
+		update_option( self::CHECK_AFTER, $now + self::OPPORTUNISTIC_INTERVAL, false );
+		$next       = wp_next_scheduled( 'automator_mcp_token_cleanup' );
+		$unfinished = (bool) get_option( self::IN_PROGRESS, false )
+			|| (int) get_option( 'automator_mcp_token_credential_cleanup_cursor', 0 ) > 0
+			|| (bool) get_option( 'automator_mcp_token_credential_cleanup_retry', false )
+			|| (int) get_option( 'automator_mcp_oauth_artifact_cleanup_cursor', 0 ) > 0
+			|| (bool) get_option( 'automator_mcp_oauth_artifact_cleanup_retry', false );
+		if ( ! $unfinished ) {
+			if ( $next && $next > time() - MINUTE_IN_SECONDS ) {
+				return;
+			}
+			if ( (int) get_option( self::LAST_RUN, 0 ) > time() - DAY_IN_SECONDS ) {
+				return;
+			}
+		}
+
+		$this->run_cleanup_batch( true );
+	}
+
+	/**
+	 * Serialize cleanup and throttle opportunistic runs across PHP requests.
+	 *
+	 * @since 8.0.0
+	 */
+	private function run_cleanup_batch( bool $opportunistic ): void {
+		$lock  = new Atomic_Option_Lock();
+		$owner = $lock->acquire( self::CLEANUP_LOCK, 300, 0 );
+		if ( false === $owner ) {
+			return;
+		}
+
 		try {
-			$cleaned_count = $this->token_manager->cleanup_expired_tokens();
+			wp_cache_delete( self::LAST_RUN, 'options' );
+			wp_cache_delete( 'notoptions', 'options' );
+			$last_run = (int) get_option( self::LAST_RUN, 0 );
+			if ( $opportunistic && $last_run > time() - self::OPPORTUNISTIC_INTERVAL ) {
+				return;
+			}
+			if ( ! update_option( self::IN_PROGRESS, 1, false ) ) {
+				wp_cache_delete( self::IN_PROGRESS, 'options' );
+				wp_cache_delete( 'notoptions', 'options' );
+				if ( 1 !== (int) get_option( self::IN_PROGRESS, 0 ) ) {
+					return;
+				}
+			}
+			update_option( self::LAST_RUN, time(), false );
+			$cleaned_count  = $this->token_manager->cleanup_expired_tokens();
+			$artifact_count = $this->oauth_artifacts->cleanup_expired( 50 );
+			if ( ! $opportunistic ) {
+				$this->pending_registrations->run();
+			}
+			if ( $this->token_manager->cleanup_was_confirmed() && $this->oauth_artifacts->cleanup_was_confirmed() ) {
+				update_option( self::IN_PROGRESS, 0, false );
+			}
 
 			// Log cleanup results.
 			Dispatcher::action(
 				'automator_mcp_token_event',
 				array(
-					'event_type'    => 'automated_cleanup',
-					'cleaned_count' => $cleaned_count,
-					'timestamp'     => time(),
+					'event_type'     => 'automated_cleanup',
+					'cleaned_count'  => $cleaned_count,
+					'artifact_count' => $artifact_count,
+					'timestamp'      => time(),
 				)
 			);
 
@@ -129,6 +218,8 @@ class Token_Cleanup {
 					'timestamp'  => time(),
 				)
 			);
+		} finally {
+			$lock->release( self::CLEANUP_LOCK, $owner );
 		}
 	}
 
@@ -171,10 +262,12 @@ class Token_Cleanup {
 		global $wpdb;
 
 		// Count total encrypted tokens across all users.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Counts usermeta rows for an admin statistic; live count, must not be cached.
 		$total_tokens = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM {$wpdb->usermeta} WHERE meta_key = %s",
-				'automator_mcp_tokens_encrypted'
+				// Site-suffixed on multisite; the bare key would count zero there.
+				( new Token_Site_Policy() )->get_token_meta_key()
 			)
 		);
 

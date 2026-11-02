@@ -22,17 +22,13 @@ class Add_Pabbly_Connect_Integration {
 	 * Integration Set-up.
 	 */
 	protected function setup() {
-
 		$this->set_integration( 'PABBLYCONNECT' );
-
 		$this->set_name( 'Pabbly Connect' );
-
 		$this->set_icon( __DIR__ . '/img/pabbly-icon.svg' );
 
 		$this->set_developer_name( 'Pabbly' );
 		$this->set_integration_type( 'built-in' );
 		$this->set_distribution_type( 'saas' );
-
 	}
 
 	/**
@@ -41,8 +37,6 @@ class Add_Pabbly_Connect_Integration {
 	 * @return bool
 	 */
 	public function plugin_active() {
-
 		return true;
-
 	}
 }

@@ -92,6 +92,43 @@ class Contact_Form7_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_list_contact_form7_forms', $option );
+	}
+
+	/**
+	 * Whether Contact Form 7 accepted a submission, so a Contact Form 7 trigger may run recipes for it.
+	 *
+	 * A submission that failed validation never counts. Of the rest, mail_sent and mail_failed count by default;
+	 * spam, a missing consent box, an aborted email and an unpaid Stripe form do not.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param \WPCF7_ContactForm $form   The submitted form.
+	 * @param array              $result Contact Form 7's submission result.
+	 *
+	 * @return bool
+	 */
+	public static function is_submission_accepted( $form, $result ) {
+		$status = (string) ( $result['status'] ?? '' );
+
+		if ( 'validation_failed' === $status ) {
+			return false;
+		}
+
+		/**
+		 * Filters the Contact Form 7 submission statuses its triggers run recipes for.
+		 *
+		 * A submission that failed validation is never accepted, whatever this returns.
+		 *
+		 * @since 8.0.0
+		 *
+		 * @param string[]           $statuses Accepted statuses. Default mail_sent and mail_failed.
+		 * @param \WPCF7_ContactForm $form     The submitted form.
+		 * @param array              $result   Contact Form 7's submission result.
+		 */
+		$accepted = apply_filters( 'automator_cf7_trigger_accepted_statuses', array( 'mail_sent', 'mail_failed' ), $form, $result );
+
+		return in_array( $status, (array) $accepted, true );
 	}
 }

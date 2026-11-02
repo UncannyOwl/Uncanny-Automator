@@ -166,11 +166,13 @@ class Ws_Form_Lite_Tokens {
 				break;
 			case 'FORM_TITLE':
 				global $wpdb;
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WS Form's own table; the plugin offers no API for this query.
 				$value = $wpdb->get_var( $wpdb->prepare( "SELECT label FROM {$wpdb->prefix}wsf_form WHERE id=%d", $form_id ) );
 				break;
 			default:
 				if ( $entry_id ) {
 					global $wpdb;
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WS Form's own table; the plugin offers no API for this query.
 					$field_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}wsf_submit_meta WHERE parent_id=%d AND meta_key LIKE %s", $entry_id, $token[1] ) );
 					// Submitted field value from WS Form's table: decode without instantiating objects (prevents PHP Object Injection).
 					$value       = automator_safe_unserialize( $field_value );

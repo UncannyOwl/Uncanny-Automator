@@ -155,6 +155,7 @@ class Uog_Helpers extends Abstract_Helpers {
 			'suppress_filters'       => true,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		$groups_query_args = apply_filters( 'uap_option_learndash_validate_groups', $groups_query_args );
 
 		$groups_query = new \WP_Query( $groups_query_args );

@@ -1,6 +1,10 @@
 <?php
 namespace Uncanny_Automator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Admin_Settings_Addons
  *
@@ -13,6 +17,9 @@ class Admin_Settings_Addons {
 
 	protected $addons_tabs;
 
+	/**
+	 * Registers the Addons settings tab when at least one add-on adds a tab to it.
+	 */
 	public function __construct() {
 
 		// Get the tabs
@@ -66,8 +73,54 @@ class Admin_Settings_Addons {
 			$tab->is_selected = $tab_key === $current_addon_tab;
 		}
 
+		$this->add_legacy_backend_data();
+		$this->enqueue_legacy_regenerator_runtime();
+
 		// Load the view
 		include Utilities::automator_get_view( 'admin-settings/tab/addons.php' );
+	}
+
+	/**
+	 * Prints the `UncannyAutomatorBackend` global before the Automator admin bundle.
+	 *
+	 * The add-on settings scripts read `UncannyAutomatorBackend.rest.nonce` as soon as they load, to sign
+	 * their REST requests, and the add-ons tab is the only screen that loads them. They read nothing else
+	 * from it. The admin bundle prints in the footer, before the scripts the add-ons enqueue while their tab
+	 * renders, so the global is set by the time they run.
+	 *
+	 * @since 8.0.0
+	 * @deprecated Compatibility shim for add-ons that still read this global. They move to the nonce that
+	 *             WordPress gives `wp.apiFetch`, and this goes once they have.
+	 *
+	 * @return void
+	 */
+	private function add_legacy_backend_data() {
+
+		$backend = array(
+			'rest' => array(
+				'nonce' => wp_create_nonce( 'wp_rest' ),
+			),
+		);
+
+		wp_add_inline_script( 'uap-admin', 'window.UncannyAutomatorBackend = ' . wp_json_encode( $backend ) . ';', 'before' );
+	}
+
+	/**
+	 * Loads WordPress's `regenerator-runtime` script on the add-ons tab.
+	 *
+	 * Some add-on settings scripts call `window.regeneratorRuntime` as soon as they load without declaring
+	 * the script as a dependency, and nothing else on the screen loads it: the Automator admin bundle does
+	 * not depend on it. Enqueued here, before the add-ons enqueue their scripts, so WordPress prints it
+	 * ahead of them.
+	 *
+	 * @since 8.0.0
+	 * @deprecated Compatibility shim for add-ons whose settings scripts rely on it. They declare their own
+	 *             dependencies, and this goes once they do.
+	 *
+	 * @return void
+	 */
+	private function enqueue_legacy_regenerator_runtime() {
+		wp_enqueue_script( 'regenerator-runtime' );
 	}
 
 	/**

@@ -77,6 +77,7 @@ final class DatabasePageStateRepository implements PageStateRepositoryInterface
                 }
 
                 global $wpdb;
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
                 $updated = $wpdb->update(
                     SchemaManager::pageStateTableName(),
                     [
@@ -107,6 +108,7 @@ final class DatabasePageStateRepository implements PageStateRepositoryInterface
         $this->ensureSchema();
 
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $deleted = $wpdb->delete(SchemaManager::pageStateTableName(), ['page_id' => $pageId], ['%d']);
         if ($deleted === false) {
             throw new \RuntimeException('Failed to delete Page Builder page state.');
@@ -126,6 +128,7 @@ final class DatabasePageStateRepository implements PageStateRepositoryInterface
         $this->ensureSchema();
 
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $updated = $wpdb->update(
             SchemaManager::pageStateTableName(),
             ['draft_resume_policy' => $policy->value],
@@ -146,6 +149,7 @@ final class DatabasePageStateRepository implements PageStateRepositoryInterface
     {
         global $wpdb;
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table write.
         $inserted = $wpdb->insert(
             SchemaManager::pageStateTableName(),
             [
@@ -181,11 +185,21 @@ final class DatabasePageStateRepository implements PageStateRepositoryInterface
     {
         global $wpdb;
 
-        $lock = $forUpdate ? ' FOR UPDATE' : '';
-        $row = $wpdb->get_row($wpdb->prepare(
-            'SELECT * FROM ' . SchemaManager::pageStateTableName() . ' WHERE page_id = %d LIMIT 1' . $lock,
-            $pageId,
-        ));
+        if ($forUpdate) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Row lock for the source write; must not be cached.
+            $row = $wpdb->get_row($wpdb->prepare(
+                'SELECT * FROM %i WHERE page_id = %d LIMIT 1 FOR UPDATE',
+                SchemaManager::pageStateTableName(),
+                $pageId,
+            ));
+        } else {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+            $row = $wpdb->get_row($wpdb->prepare(
+                'SELECT * FROM %i WHERE page_id = %d LIMIT 1',
+                SchemaManager::pageStateTableName(),
+                $pageId,
+            ));
+        }
 
         return is_object($row) ? $row : null;
     }
@@ -229,18 +243,21 @@ final class DatabasePageStateRepository implements PageStateRepositoryInterface
     {
         global $wpdb;
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control; there is no WordPress API for it.
         if ($wpdb->query('START TRANSACTION') === false) {
             throw new \RuntimeException('Failed to start a page-state transaction.');
         }
 
         try {
             $result = $operation();
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control; there is no WordPress API for it.
             if ($wpdb->query('COMMIT') === false) {
                 throw new \RuntimeException('Failed to commit a page-state transaction.');
             }
 
             return $result;
         } catch (\Throwable $exception) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control; there is no WordPress API for it.
             $wpdb->query('ROLLBACK');
             throw $exception;
         }
@@ -256,10 +273,11 @@ final class DatabasePageStateRepository implements PageStateRepositoryInterface
                 continue;
             }
 
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Schema read; must not be cached.
             $status = $wpdb->get_row($wpdb->prepare('SHOW TABLE STATUS WHERE Name = %s', $table));
             $engine = is_object($status) && isset($status->Engine) ? (string) $status->Engine : '';
             if (strcasecmp($engine, 'InnoDB') !== 0) {
-                throw new SourceTransactionsUnavailableException($table, $engine !== '' ? $engine : 'unknown');
+                throw new SourceTransactionsUnavailableException(esc_html($table), esc_html($engine !== '' ? $engine : 'unknown'));
             }
 
             $this->transactionalTables[$table] = true;

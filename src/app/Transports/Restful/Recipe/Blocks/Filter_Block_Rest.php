@@ -4,12 +4,14 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Transports\Restful\Recipe\Blocks;
 
 use WP_Error;
-use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Recipe_Condition_Service;
+use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Type;
+use Uncanny_Automator\App\Recipe_Builder\Block\Services\Block_Crud_Service;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Portability\Recipe_Duplication_Service;
 
 /**
  * Filter Block REST handler.
  *
- * Handles CRUD operations for filter blocks (Action condition groups).
+ * Handles CRUD operations for filter blocks stored as uo-block posts.
  *
  * @package Uncanny_Automator\App\Transports\Restful\Recipe\Blocks
  */
@@ -18,45 +20,39 @@ class Filter_Block_Rest extends Recipe_Block_Rest {
 	/**
 	 * Add a filter block to recipe.
 	 *
-	 * Creates an empty condition group (filter block) with no conditions.
+	 * Creates a new uo-block post with block_type 'filter'.
 	 *
-	 * @return string|WP_Error Block ID (group_id) on success.
+	 * @return int|WP_Error Block post ID on success.
 	 */
 	protected function do_add_block() {
-		$service = Recipe_Condition_Service::instance();
-		$result  = $service->add_empty_condition_group(
+		$service = Block_Crud_Service::instance();
+		$result  = $service->add_block(
 			$this->get_recipe_id(),
-			'any',  // Default mode
-			10      // Default priority
+			Block_Type::FILTER,
+			(int) $this->get_parent_id(),
+			array(),
+			$this->get_path_code()
 		);
 
 		if ( is_wp_error( $result ) ) {
-			return $this->failure(
-				$result->get_error_message(),
-				400,
-				'automator_add_filter_block_failed'
-			);
+			return $this->add_block_failure( $result, 'automator_add_filter_block_failed' );
 		}
 
-		// Return the group_id as the block_id
-		return $result['group_id'] ?? '';
+		return $result['id'];
 	}
 
 	/**
 	 * Update filter block configuration.
 	 *
-	 * Updates properties like mode ('any' or 'all') and priority for the condition group.
+	 * Updates block fields (e.g. mode, priority).
 	 *
 	 * @return bool|WP_Error
 	 */
 	protected function do_update_block() {
-		$fields  = $this->get_fields();
-		$service = Recipe_Condition_Service::instance();
-		$result  = $service->update_condition_group(
-			$this->get_recipe_id(),
-			$this->get_block_id(),
-			$fields['mode'] ?? null,
-			isset( $fields['priority'] ) ? (int) $fields['priority'] : null
+		$service = Block_Crud_Service::instance();
+		$result  = $service->update_block(
+			$this->get_post_id(),
+			array( 'fields' => $this->get_fields() )
 		);
 
 		if ( is_wp_error( $result ) ) {
@@ -73,16 +69,13 @@ class Filter_Block_Rest extends Recipe_Block_Rest {
 	/**
 	 * Delete filter block from recipe.
 	 *
-	 * Removes the entire condition group (filter block) from the recipe.
+	 * Removes the filter block post and its child conditions.
 	 *
 	 * @return bool|WP_Error
 	 */
 	protected function do_delete_block() {
-		$service = Recipe_Condition_Service::instance();
-		$result  = $service->remove_condition_group(
-			$this->get_recipe_id(),
-			$this->get_block_id()
-		);
+		$service = Block_Crud_Service::instance();
+		$result  = $service->delete_block( $this->get_post_id(), $this->get_delete_content() );
 
 		if ( is_wp_error( $result ) ) {
 			return $this->failure(
@@ -93,5 +86,24 @@ class Filter_Block_Rest extends Recipe_Block_Rest {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Duplicate this filter block (and its whole subtree) within the recipe.
+	 *
+	 * @return int|WP_Error New root block id.
+	 */
+	protected function do_duplicate_block() {
+		$service = new Recipe_Duplication_Service();
+		$result  = $service->duplicate_entity( $this->get_recipe_id(), $this->get_post_id() );
+		if ( is_wp_error( $result ) ) {
+			return $this->failure(
+				$result->get_error_message(),
+				400,
+				'automator_duplicate_filter_block_failed'
+			);
+		}
+
+		return (int) $result->get_root_id();
 	}
 }

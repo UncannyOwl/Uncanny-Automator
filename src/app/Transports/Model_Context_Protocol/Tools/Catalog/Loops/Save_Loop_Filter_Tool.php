@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Catalog\Loops;
 
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Block_Modifier_Types;
 use Uncanny_Automator\App\Recipe_Builder\Loop\Filter\Services\Field_Normalizer;
 use Uncanny_Automator\App\Recipe_Builder\Shared\User\Value_Objects\User_Context;
 use Uncanny_Automator\App\Presentation\Recipe_Builder\Loop\Filters\Loop_Filter_Sentence_Composer;
@@ -22,6 +23,7 @@ use Uncanny_Automator\App\Recipe_Builder\Loop\Services\Filter\Filter_Registry_Se
 use Uncanny_Automator\App\Recipe_Builder\Loop\Services\Loop_CRUD_Service;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Utilities\Recipe_Link_Builder;
 use Uncanny_Automator\App\Recipe_Builder\Token\Services\Validation\Token_Validator;
+use Uncanny_Automator\App\Recipe_Builder\Block\Services\Block_Crud_Service;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Json_Rpc_Response;
 
 /**
@@ -78,10 +80,13 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 	 * {@inheritDoc}
 	 */
 	public function get_description(): string {
-		return 'Create or update a loop filter. Omit filter_id to create, include filter_id to update. '
-			. 'Create requires recipe_id, loop_id, filter_code, and integration_code. '
-			. 'Update requires recipe_id and filter_id. '
-			. 'CRITICAL: Each field must be an object with {value: "raw_value", label: "Human readable label"}.';
+		return 'Configure which users, posts, or token items a loop processes. '
+			. 'First inspect existing filters with get_recipe and discover compatible filter codes with search(type="loop_filter", mode="list", loop_id=the loop ID). '
+			. 'To update an existing filter, pass recipe_id and filter_id with the fields to change. '
+			. 'To add a filter, omit filter_id and pass recipe_id, loop_id, filter_code, and integration_code from discovery. '
+			. 'All filters must match. Adding one keeps the existing filters, including the default; update the default when changing its criterion. '
+			. 'Each field must contain both value and label, for example: {"CRITERIA":{"value":"has","label":"has"},"WP_USER_HAS_ROLE":{"value":"subscriber","label":"Subscriber"}} for WP_USER_HAS_ROLE. '
+			. 'Verify the resulting filters with get_recipe before running the recipe.';
 	}
 
 	/**
@@ -90,7 +95,7 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 	protected function get_annotations(): array {
 		return array(
 			'readOnlyHint'    => false,
-			'destructiveHint' => false,
+			'destructiveHint' => true,
 			'idempotentHint'  => false,
 			'openWorldHint'   => true,
 		);
@@ -120,7 +125,7 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 				),
 				'filter_code'      => array(
 					'type'        => 'string',
-					'description' => 'Filter code from registry (e.g., USER_HAS_ROLE). Required for create. Use search with type=loop_filter to find codes.',
+					'description' => 'Filter code returned by search(type="loop_filter", mode="list", loop_id=the loop ID), e.g., WP_USER_HAS_ROLE. Required for create.',
 				),
 				'integration_code' => array(
 					'type'        => 'string',
@@ -263,6 +268,8 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 
 		$backup = $this->build_filter_backup( $fields_input, $definition );
 
+		$fields_flat = ( new Field_Mcp_Input_Resolver() )->normalize_block_modifier( Block_Modifier_Types::LOOP_FILTER, $integration_code, $filter_code, $fields_flat );
+
 		$result = $this->filter_service->add_to_loop( $loop_id, $filter_code, $integration_code, $fields_flat, $backup );
 
 		if ( is_wp_error( $result ) ) {
@@ -301,7 +308,7 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 
 		// Validate filter exists and belongs to recipe.
 		$filter_post = get_post( $filter_id );
-		if ( ! $filter_post || AUTOMATOR_POST_TYPE_LOOP_FILTER !== $filter_post->post_type ) {
+		if ( ! $filter_post || AUTOMATOR_POST_TYPE_BLOCK_MODIFIER !== $filter_post->post_type ) {
 			return Json_Rpc_Response::create_error_response( "Filter not found: {$filter_id}." );
 		}
 
@@ -334,7 +341,7 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 		$merged_fields_flat    = Field_Mcp_Input_Resolver::flatten( $merged_fields_input );
 		$merged_fields_values  = $this->extract_values_for_validation( $merged_fields_input );
 
-		$validation = Token_Validator::validate( $recipe_id, $merged_fields_values );
+		$validation = ( new Token_Validator() )->validate( $recipe_id, $merged_fields_values );
 		if ( ! $validation['valid'] ) {
 			return Json_Rpc_Response::create_error_response( $validation['message'] );
 		}
@@ -346,6 +353,9 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 		}
 
 		$backup = $this->build_filter_backup( $merged_fields_input, $definition );
+
+		// The update writes every field, as the builder's does, so each checkbox is stored as the builder stores it.
+		$merged_fields_flat = ( new Field_Mcp_Input_Resolver() )->normalize_block_modifier( Block_Modifier_Types::LOOP_FILTER, $this->get_definition_integration_code( $definition ), $filter_code, $merged_fields_flat );
 
 		$result = $this->filter_service->update_filter( $filter_id, $merged_fields_flat, $backup );
 
@@ -411,7 +421,7 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 			return null;
 		}
 
-		if ( strtoupper( $integration_code ) !== strtoupper( $definition_integration_code ) ) {
+		if ( 0 !== strcasecmp( $integration_code, $definition_integration_code ) ) {
 			return Json_Rpc_Response::create_error_response(
 				sprintf(
 					'Filter "%s" belongs to integration "%s", not "%s".',
@@ -447,13 +457,19 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 	private function validate_loop_ownership( int $loop_id, int $recipe_id ): ?array {
 		$loop_post = get_post( $loop_id );
 
-		if ( ! $loop_post || AUTOMATOR_POST_TYPE_LOOP !== $loop_post->post_type ) {
+		// Loops persist as uo-block(block_type=loop); ownership rides the
+		// block store's recipe_id link (loops can nest inside other blocks).
+		if ( ! $loop_post || AUTOMATOR_POST_TYPE_BLOCK !== $loop_post->post_type ) {
 			return Json_Rpc_Response::create_error_response( sprintf( 'Loop not found: %d.', $loop_id ) );
 		}
 
-		if ( (int) $loop_post->post_parent !== $recipe_id ) {
+		$block = Block_Crud_Service::instance()->get_block( $loop_id );
+		if ( is_wp_error( $block ) || 'loop' !== (string) ( $block['block_type'] ?? '' ) ) {
+			return Json_Rpc_Response::create_error_response( sprintf( 'Loop not found: %d.', $loop_id ) );
+		}
+		if ( (int) ( $block['recipe_id'] ?? 0 ) !== $recipe_id ) {
 			return Json_Rpc_Response::create_error_response(
-				sprintf( 'Loop %d belongs to recipe %d, not recipe %d.', $loop_id, (int) $loop_post->post_parent, $recipe_id )
+				sprintf( 'Loop %d belongs to recipe %d, not recipe %d.', $loop_id, (int) ( $block['recipe_id'] ?? 0 ), $recipe_id )
 			);
 		}
 

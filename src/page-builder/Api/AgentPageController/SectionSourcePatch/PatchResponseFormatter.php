@@ -54,6 +54,9 @@ final class PatchResponseFormatter
             'This writes normal source CSS. If the visual change does not appear, call read_part include=design_targets to inspect durable element styles.',
             '',
         ];
+        if (isset($saved['source_generation'])) {
+            $lines[] = 'SOURCE_GENERATION: ' . $saved['source_generation'];
+        }
         $this->appendCssDeclarationReport($lines, $cssDeclarationReport);
         $this->appendWarnings($lines, $saved['warnings'] ?? []);
         $this->appendDiff($lines, 'HTML DIFF', $saved['html_diff']);

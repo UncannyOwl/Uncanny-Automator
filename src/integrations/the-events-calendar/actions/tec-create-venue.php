@@ -178,9 +178,11 @@ class EC_CREATE_VENUE extends \Uncanny_Automator\Recipe\Action {
 		$state_province = sanitize_text_field( $parsed['VENUE_STATE_PROVINCE'] ?? '' );
 		$country        = sanitize_text_field( $parsed['VENUE_COUNTRY'] ?? '' );
 
+		// TEC compares against esc_html__( 'United States', 'the-events-calendar' ),
+		// so read that translation directly instead of translating it ourselves.
 		$is_us = in_array(
 			$country,
-			array( 'US', 'United States', esc_html__( 'United States', 'the-events-calendar' ) ),
+			array( 'US', 'United States', esc_html( get_translations_for_domain( 'the-events-calendar' )->translate( 'United States' ) ) ),
 			true
 		);
 

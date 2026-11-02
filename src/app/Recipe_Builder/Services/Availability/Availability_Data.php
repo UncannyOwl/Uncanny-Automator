@@ -41,6 +41,16 @@ class Availability_Data {
 	public $is_integration_registered = false;
 
 	/**
+	 * Whether the integration's plugin is installed, active or not.
+	 *
+	 * Only set for an integration that isn't registered, to choose between
+	 * "Activate" and "Install"; left out of to_array() for that reason.
+	 *
+	 * @var bool
+	 */
+	public $is_plugin_installed = false;
+
+	/**
 	 * Whether the feature is registered.
 	 *
 	 * @var bool

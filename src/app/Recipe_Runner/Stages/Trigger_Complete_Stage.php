@@ -14,6 +14,8 @@ use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Execution_Log_Store
 use Uncanny_Automator\App\Recipe_Runner\Services\Recipe_Data_Provider;
 use Uncanny_Automator\App\Recipe_Runner\Services\Recipe_Log_Manager;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Run_Snapshot_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Trigger_Store;
+use Uncanny_Automator\App\Recipe_Runner\Background\Background_Actions_Setting;
 use Uncanny_Automator\App\Recipe_Runner\Services\Trigger_Diagnostics;
 use Uncanny_Automator\App\Events\Dispatcher;
 use Uncanny_Automator\App\Infrastructure\Database\Database;
@@ -75,6 +77,11 @@ class Trigger_Complete_Stage implements Stage {
 	private $diagnostics;
 
 	/**
+	 * @var Recipe_Trigger_Store
+	 */
+	private $trigger_store;
+
+	/**
 	 * Build the stage with optional dependencies.
 	 *
 	 * @param Action_Run_Stage|null      $action_run      Optional custom action run stage.
@@ -85,8 +92,9 @@ class Trigger_Complete_Stage implements Stage {
 	 * @param Recipe_Data_Provider|null  $data_provider   Optional data provider instance.
 	 * @param Error_Handler|null         $error_handler   Optional error handler instance.
 	 * @param Run_Snapshot_Store|null    $snapshot_store  Optional snapshot store instance.
+	 * @param Recipe_Trigger_Store|null  $trigger_store   Optional trigger store instance.
 	 */
-	public function __construct( ?Action_Run_Stage $action_run = null, ?Recipe_Log_Manager $log_manager = null, ?User_Resolver $user_resolver = null, ?Execution_Log_Store $log_store = null, ?Integration_Registry $integrations = null, ?Recipe_Data_Provider $data_provider = null, ?Error_Handler $error_handler = null, ?Run_Snapshot_Store $snapshot_store = null ) {
+	public function __construct( ?Action_Run_Stage $action_run = null, ?Recipe_Log_Manager $log_manager = null, ?User_Resolver $user_resolver = null, ?Execution_Log_Store $log_store = null, ?Integration_Registry $integrations = null, ?Recipe_Data_Provider $data_provider = null, ?Error_Handler $error_handler = null, ?Run_Snapshot_Store $snapshot_store = null, ?Recipe_Trigger_Store $trigger_store = null ) {
 		$this->action_run     = $action_run ?? new Action_Run_Stage();
 		$this->log_manager    = $log_manager ?? new Recipe_Log_Manager();
 		$this->user_resolver  = $user_resolver;
@@ -95,7 +103,8 @@ class Trigger_Complete_Stage implements Stage {
 		$this->data_provider  = $data_provider ?? new Recipe_Data_Provider();
 		$this->error_handler  = $error_handler ?? new Error_Handler();
 		$this->snapshot_store = $snapshot_store ?? Database::get_run_snapshot_store();
-		$this->diagnostics   = new Trigger_Diagnostics();
+		$this->diagnostics    = new Trigger_Diagnostics();
+		$this->trigger_store  = $trigger_store ?? Database::get_recipe_trigger_store();
 	}
 
 	/**
@@ -301,7 +310,7 @@ class Trigger_Complete_Stage implements Stage {
 			'triggers'     => $triggers,
 		);
 
-		$this->snapshot_store->capture( $recipe_log_id, $recipe_id, $user_id, $snapshot );
+		$this->snapshot_store->capture( $recipe_log_id, $recipe_id, $user_id, $snapshot, Run_Snapshot_Store::DEFAULT_TTL_HOURS, ! Background_Actions_Setting::enabled() );
 	}
 
 	/**
@@ -502,10 +511,7 @@ class Trigger_Complete_Stage implements Stage {
 		}
 
 		// Skip if no user selector is configured — recipe runs as anonymous without user resolution.
-		$fields      = $this->data_provider->get_recipe_user_selector_fields( $recipe_id );
-		$user_action = $this->data_provider->get_recipe_user_selector_source( $recipe_id );
-
-		if ( empty( $fields ) && empty( $user_action ) ) {
+		if ( ! $this->data_provider->has_user_selector( $recipe_id ) ) {
 			return $process;
 		}
 
@@ -714,6 +720,32 @@ class Trigger_Complete_Stage implements Stage {
 	}
 
 	/**
+	 * Whether a run of the recipe waits for every one of two or more live triggers
+	 * (trigger logic "all"): such a run stays open between trigger fires to collect them.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $recipe_id The recipe ID.
+	 *
+	 * @return bool
+	 */
+	public function collects_several_triggers( int $recipe_id ): bool {
+
+		if ( true === $this->is_any_trigger_option_set( $recipe_id ) ) {
+			return false;
+		}
+
+		$live = array_filter(
+			$this->trigger_store->get_recipe_trigger_posts( $recipe_id ),
+			static function ( $trigger_post ) {
+				return 'publish' === $trigger_post->post_status;
+			}
+		);
+
+		return count( $live ) > 1;
+	}
+
+	/**
 	 * Check if all recipe triggers are completed.
 	 *
 	 * @param array $statuses Map of trigger_id => completed status.
@@ -836,29 +868,29 @@ class Trigger_Complete_Stage implements Stage {
 	 */
 	protected function collect_trigger_statuses( int $recipe_id, int $user_id, int $recipe_log_id, array $args ): array {
 
-		$recipe_triggers  = $this->data_provider->get_recipe_data( AUTOMATOR_POST_TYPE_TRIGGER, $recipe_id );
 		$trigger_statuses = array();
 
-		foreach ( $recipe_triggers as $recipe_trigger ) {
+		foreach ( $this->trigger_store->get_recipe_trigger_posts( $recipe_id ) as $trigger_post ) {
 
-			if ( 'publish' !== (string) $recipe_trigger['post_status'] ) {
+			if ( 'publish' !== $trigger_post->post_status ) {
 				continue;
 			}
 
-			$trigger_integration = $recipe_trigger['meta']['integration'];
+			// Null when unset, which the registry passes through as unresolved.
+			$trigger_integration = $this->trigger_store->get_meta( $trigger_post->ID, 'integration', null );
 
 			if ( ! $this->integrations->is_plugin_active( $trigger_integration ) ) {
 				$this->error_handler->add_error(
 					'complete_trigger',
-					'ERROR: You are trying to complete ' . $recipe_trigger['meta']['code'] . ' and the plugin ' . $trigger_integration . ' is not active. @recipe_id ' . $recipe_id,
+					'ERROR: You are trying to complete ' . $this->trigger_store->get_meta( $trigger_post->ID, 'code' ) . ' and the plugin ' . $trigger_integration . ' is not active. @recipe_id ' . $recipe_id,
 					$this
 				);
 				continue;
 			}
 
-			$trigger_statuses[ $recipe_trigger['ID'] ] = $this->log_store->is_trigger_completed(
+			$trigger_statuses[ $trigger_post->ID ] = $this->log_store->is_trigger_completed(
 				(int) $user_id,
-				(int) $recipe_trigger['ID'],
+				(int) $trigger_post->ID,
 				(int) $recipe_id,
 				(int) $recipe_log_id,
 				true,

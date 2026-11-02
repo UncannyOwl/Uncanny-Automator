@@ -18,6 +18,19 @@ use Uncanny_Automator\App\Transient\Ports\Transient_Port;
 class WP_Transient_Adapter implements Transient_Port {
 
 	/**
+	 * Get a transient.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $key The transient key.
+	 *
+	 * @return mixed The value, or false when it is not stored.
+	 */
+	public function get( string $key ) {
+		return get_transient( $key );
+	}
+
+	/**
 	 * Add a transient.
 	 *
 	 * WordPress uses set_transient() for create and update operations.

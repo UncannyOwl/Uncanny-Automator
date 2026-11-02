@@ -97,6 +97,7 @@ class Wishlist_Member_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_wm_get_all_membership_levels', $option );
 	}
 }

@@ -74,7 +74,7 @@ final class OwnedPageRestWriteGuard
         try {
             return $this->refusalOrRequest($preparedPost);
         } catch (\Throwable $failure) {
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] WordPress REST write guard failed (%s).',
                 $failure::class,
             ));

@@ -33,7 +33,7 @@ final class Container
                 $this->services[$id] = ($this->factories[$id])($this);
                 unset($this->factories[$id]);
             } else {
-                throw new \RuntimeException(sprintf('Service %s not found in container.', $id));
+                throw new \RuntimeException(sprintf('Service %s not found in container.', esc_html($id)));
             }
         }
 

@@ -13,6 +13,9 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\App\Infrastructure\Database\Database;
+use Uncanny_Automator\App\Infrastructure\Exceptions\Store_Exception;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Token_Cleanup;
 use Uncanny_Automator\Services\CLI\Logs\Prune_Command;
 
 use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
@@ -125,6 +128,9 @@ class Automator_Load {
 		// Show set-up wizard.
 		$this->initiate_setup_wizard();
 
+		// Mount the walkthrough host on every Automator admin screen.
+		$this->initiate_walkthroughs();
+
 		// Show upgrade notice from readme.txt.
 		if ( self::$is_admin_sect ) {
 			add_action(
@@ -153,6 +159,12 @@ class Automator_Load {
 
 		// Auto-delete user logs.
 		add_action( 'deleted_user', array( $this, 'auto_prune_user_logs_handler' ), 10, 3 );
+
+		// A user removed from a site, without being deleted, leaves no run snapshots there.
+		add_action( 'remove_user_from_blog', array( $this, 'purge_removed_user_run_snapshots' ), 10, 1 );
+
+		// A user deleted from the network may have run recipes on any of its sites.
+		add_action( 'wpmu_delete_user', array( $this, 'purge_network_user_records' ), 10, 1 );
 	}
 
 	/**
@@ -542,6 +554,17 @@ class Automator_Load {
 
 		$db_version = automator_get_option( 'uap_database_version', null );
 
+		// Read before the activation below records a version: a site with no
+		// database version yet is being installed, not upgraded.
+		self::$is_fresh_install = ( null === $db_version );
+
+		// Remember which version the site started on. Features that treat
+		// new and upgraded sites differently read this; sites that
+		// upgraded from before it existed have no value.
+		if ( self::$is_fresh_install && null === automator_get_option( self::OPTION_INSTALLED_VERSION, null ) ) {
+			automator_update_option( self::OPTION_INSTALLED_VERSION, AUTOMATOR_PLUGIN_VERSION );
+		}
+
 		if ( null === $db_version || (string) AUTOMATOR_DATABASE_VERSION !== (string) $db_version ) {
 			Automator_DB::activation();
 			$config_instance->mysql_8_auto_increment_fix();
@@ -550,6 +573,35 @@ class Automator_Load {
 		if ( (string) AUTOMATOR_DATABASE_VIEWS_VERSION !== (string) automator_get_option( 'uap_database_views_version', 0 ) ) {
 			$config_instance->automator_generate_views();
 		}
+	}
+
+	/**
+	 * Option holding the plugin version the site was first installed on.
+	 *
+	 * @var string
+	 */
+	const OPTION_INSTALLED_VERSION = 'automator_installed_version';
+
+	/**
+	 * Whether this request is the plugin's first load on a site with no
+	 * Automator database version yet.
+	 *
+	 * @var bool|null
+	 */
+	private static $is_fresh_install = null;
+
+	/**
+	 * Whether this request installs the plugin on a site for the first time.
+	 *
+	 * False until initialize_automator_db() has read the database version, so
+	 * callers that run earlier treat the site as an existing install.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool
+	 */
+	public static function is_fresh_install() {
+		return true === self::$is_fresh_install;
 	}
 
 	/**
@@ -564,6 +616,8 @@ class Automator_Load {
 		self::cleanup_legacy_cron_hooks();
 
 		Automator_DB::activation();
+
+		( new Token_Cleanup() )->schedule_cleanup();
 	}
 
 	/**
@@ -623,6 +677,7 @@ class Automator_Load {
 
 		echo wp_kses_post(
 			apply_filters(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 				'uap_in_plugin_update_message',
 				$upgrade_notice ? '</p>' . wp_kses_post( $upgrade_notice ) . '<p class="dummy">' : '',
 				$args
@@ -653,11 +708,14 @@ class Automator_Load {
 		$classes['Pro_Upsell']                     = UA_ABSPATH . 'src/core/admin/pro-upgrade/class-pro-upsell.php';
 		$classes['Addons']                         = UA_ABSPATH . 'src/core/admin/addons/class-addons.php';
 		$classes['Automator_Review']               = UA_ABSPATH . 'src/core/admin/class-automator-review.php';
-		$classes['Agent_Claim_Notice']             = UA_ABSPATH . 'src/core/admin/class-agent-claim-notice.php';
 		$classes['Automator_Notifications']        = UA_ABSPATH . 'src/core/admin/notifications/notifications.php';
 		$classes['Automator_Tooltip_Notification'] = UA_ABSPATH . 'src/core/admin/tooltip-notification/class-tooltip-notification.php';
-		$classes['Automator_Tooltip_48hr']         = UA_ABSPATH . 'src/core/admin/tooltip-notification/tooltips/class-create-recipe-reminder.php';
+		$classes['Automator_Tooltip_48hr']         = UA_ABSPATH . 'src/core/admin/tooltip-notification/tooltips/class-connect-ai-reminder.php';
 		$classes['Admin_Template_Library']         = UA_ABSPATH . 'src/core/admin/class-admin-template-library.php';
+		$classes['Admin_Ai_Settings']              = UA_ABSPATH . 'src/core/admin/class-admin-ai-settings.php';
+		$classes['Ai_Connection_State']            = UA_ABSPATH . 'src/core/admin/class-ai-connection-state.php';
+		$classes['Admin_Ai_Menu']                  = UA_ABSPATH . 'src/core/admin/class-admin-ai-menu.php';
+		$classes['Admin_Menu_Order']               = UA_ABSPATH . 'src/core/admin/class-admin-menu-order.php';
 
 		$classes['Api_Log'] = UA_ABSPATH . 'src/core/admin/api-log/class-api-log.php';
 
@@ -698,13 +756,14 @@ class Automator_Load {
 
 		do_action( 'automator_before_automator_post_types_init' );
 
-		$classes['Recipe_Post_Type']      = UA_ABSPATH . 'src/core/automator-post-types/uo-recipe/class-recipe-post-type.php';
-		$classes['Recipe_Post_Metabox']   = UA_ABSPATH . 'src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php';
-		$classes['Recipe_Post_Utilities'] = UA_ABSPATH . 'src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php';
-		$classes['Triggers_Post_Type']    = UA_ABSPATH . 'src/core/automator-post-types/uo-trigger/class-triggers-post-type.php';
-		$classes['Actions_Post_Type']     = UA_ABSPATH . 'src/core/automator-post-types/uo-action/class-actions-post-type.php';
-		$classes['Closures_Post_Type']    = UA_ABSPATH . 'src/core/automator-post-types/uo-closure/class-closures-post-type.php';
-		$classes['Automator_Taxonomies']  = UA_ABSPATH . 'src/core/automator-post-types/uo-taxonomies/class-automator-taxonomies.php';
+		$classes['Recipe_Post_Type']         = UA_ABSPATH . 'src/core/automator-post-types/uo-recipe/class-recipe-post-type.php';
+		$classes['Recipe_Post_Metabox']      = UA_ABSPATH . 'src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php';
+		$classes['Recipe_Post_Utilities']    = UA_ABSPATH . 'src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php';
+		$classes['Triggers_Post_Type']       = UA_ABSPATH . 'src/core/automator-post-types/uo-trigger/class-triggers-post-type.php';
+		$classes['Actions_Post_Type']        = UA_ABSPATH . 'src/core/automator-post-types/uo-action/class-actions-post-type.php';
+		$classes['Blocks_Post_Type']         = UA_ABSPATH . 'src/core/automator-post-types/uo-block/class-blocks-post-type.php';
+		$classes['Block_Modifier_Post_Type'] = UA_ABSPATH . 'src/core/automator-post-types/uo-block-modifier/class-block-modifier-post-type.php';
+		$classes['Automator_Taxonomies']     = UA_ABSPATH . 'src/core/automator-post-types/uo-taxonomies/class-automator-taxonomies.php';
 
 		do_action( 'automator_after_automator_post_types_init' );
 
@@ -758,14 +817,12 @@ class Automator_Load {
 		// WP admin toolbar entry (admin + frontend for logged-in users).
 		$classes['Automator_WP_Admin_Bar'] = UA_ABSPATH . 'src/core/admin/class-automator-wp-admin-bar.php';
 
-		// Webhooks
-		$classes['Automator_Send_Webhook_Ajax_Handler'] = UA_ABSPATH . 'src/core/lib/webhooks/class-automator-send-webhook-ajax-handler.php';
-		$classes['Recipe_Post_Rest_Api']                = UA_ABSPATH . 'src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php';
-		$classes['Background_Actions']                  = UA_ABSPATH . 'src/core/classes/class-background-actions.php';
-		$classes['Calculation_Token']                   = UA_ABSPATH . 'src/core/classes/class-calculation-token.php';
-		$classes['Copy_Recipe_Parts']                   = UA_ABSPATH . 'src/core/admin/class-copy-recipe-parts.php';
-		$classes['Export_Recipe']                       = UA_ABSPATH . 'src/core/admin/class-export-recipe.php';
-		$classes['Import_Recipe']                       = UA_ABSPATH . 'src/core/admin/class-import-recipe.php';
+		$classes['Automator_Walkthrough_Rest_Api'] = UA_ABSPATH . 'src/core/admin/walkthroughs/class-automator-walkthrough-rest-api.php';
+		$classes['Background_Actions']             = UA_ABSPATH . 'src/core/classes/class-background-actions.php';
+		$classes['Calculation_Token']              = UA_ABSPATH . 'src/core/classes/class-calculation-token.php';
+		$classes['Copy_Recipe_Parts']              = UA_ABSPATH . 'src/core/admin/class-copy-recipe-parts.php';
+		$classes['Export_Recipe']                  = UA_ABSPATH . 'src/core/admin/class-export-recipe.php';
+		$classes['Import_Recipe']                  = UA_ABSPATH . 'src/core/admin/class-import-recipe.php';
 
 		// Load migrations
 		$this->load_migrations();
@@ -828,10 +885,8 @@ class Automator_Load {
 		}
 
 		if ( empty( $results ) ) {
-			global $wpdb;
-
-			$results = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM $wpdb->posts WHERE post_type = %s AND post_status = %s", AUTOMATOR_POST_TYPE_RECIPE, 'publish' ) );
-			$results = 0 !== absint( $results );
+			$counts  = wp_count_posts( AUTOMATOR_POST_TYPE_RECIPE );
+			$results = 0 !== absint( $counts->publish ?? 0 );
 			$val     = 'yes';
 			if ( false === $results ) {
 				$val = 'no';
@@ -853,17 +908,53 @@ class Automator_Load {
 		// Options migration.
 		$options_migration = new \Uncanny_Automator\Migrations\Automator_Options_Migration();
 		$options_migration->register_hooks();
+
+		// Block storage: the loop fold, the legacy projection and the delete cascade.
+		$block_migration = \Uncanny_Automator\App\Recipe_Builder\Block\Migration\Migration_Hooks::create_with_defaults();
+		$block_migration->register_hooks();
+
+		// Run-details modal flow translator: project uo-block tree into the
+		// legacy `actions_flow` meta the run-details modal reads, before the
+		// legacy logger fires at priority 30.
+		( new \Uncanny_Automator\App\Recipe_Builder\Block\Resolvers\Run_Log_Flow_Translator() )->register_hooks();
 	}
 
 	/**
 	 * load_migrations
 	 *
+	 * Each migration file registers its migration when it is included, so every one is
+	 * required here: the classmap would load a class only when code names it, and nothing
+	 * does. The four pre-7.0 ones were left out from 7.2.0, so a site that upgraded past
+	 * them since then runs them now.
+	 *
+	 * @since 8.0.0 Loads the trigger hook, nested token and option type migrations again.
+	 *
 	 * @return void
 	 */
 	public function load_migrations() {
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-triggers.php';
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-nested-tokens.php';
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-nested-tokens-pro.php';
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-option-types.php';
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-error-log.php';
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-orphan-readable-meta.php';
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-remove-completed-recipes-option.php';
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-seed-launcher-defaults.php';
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-trigger-custom-value-meta.php';
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-ai-intro-notice.php';
+
+		// The Redirect integration's closure retirement lives with that integration (classmap-loaded) but is
+		// registered here: integrations load on demand, and no recipe uses REDIRECT_TO_URL until it ran.
+		new Integrations\Redirect\Migrations\Closure_Retirement_Migration();
+
+		// Gemini keys in run-log errors. The action log goes first: the 7.3 backfill copies its errors into the
+		// error log, so once it is clean every later copy is clean too.
+		new Migrations\Migrate_Gemini_Key_Scrub(
+			array(
+				'uap_action_log' => \Uncanny_Automator\App\Infrastructure\Database\Database::get_execution_log_store(),
+				'uap_error_log'  => \Uncanny_Automator\App\Infrastructure\Database\Database::get_action_error_store(),
+			)
+		);
 
 		// The orphaned-label repair can only tell a maintained readable from a
 		// stale one by reading each item's field definitions, and integrations
@@ -884,6 +975,8 @@ class Automator_Load {
 		$recovery->register();
 
 		register_deactivation_hook( AUTOMATOR_BASE_FILE, array( '\Uncanny_Automator\App\Recipe_Runner\Cron\Stuck_Recipe_Recovery', 'unregister' ) );
+		register_deactivation_hook( AUTOMATOR_BASE_FILE, array( '\Uncanny_Automator\App\Recipe_Runner\Background\Background_Site_Retry', 'unregister_sweep' ) );
+		register_deactivation_hook( AUTOMATOR_BASE_FILE, array( Token_Cleanup::class, 'deactivate' ) );
 
 		// Purge expired run snapshots hourly.
 		add_action(
@@ -908,15 +1001,6 @@ class Automator_Load {
 		// src/core/lib/settings/ are covered by the "classmap": ["src/"] entry in
 		// composer.json. Composer loads each file on first use — no require_once needed.
 		do_action( 'automator_before_traits' );
-
-		// Exception to the note above: global-custom-name-field.php is a side-effect
-		// file. It ends in `new Global_Custom_Name_Field();`, so the classmap only
-		// includes it once something references the class by name, and nothing does
-		// that before `automator_options_callback_response` fires on the editor
-		// request. Without this require the per-item custom label field is never
-		// injected into any trigger or action.
-		require_once UA_ABSPATH . 'src/core/lib/recipe-parts/global-custom-name-field.php';
-
 		do_action( 'automator_after_traits' );
 	}
 
@@ -992,14 +1076,23 @@ class Automator_Load {
 		}
 
 		if ( defined( 'DOING_AJAX' ) ) {
-			// Add the ajax listener.
+			// The waiting screen polls this for the AI connection.
 			add_action(
-				'wp_ajax_uo_setup_wizard_set_tried_connecting',
+				'wp_ajax_' . Setup_Wizard::STATUS_AJAX_ACTION,
 				array(
 					'\Uncanny_Automator\Setup_Wizard',
-					'set_tried_connecting',
+					'ajax_connection_status',
 				)
 			);
+		}
+	}
+
+	/**
+	 * Mount the walkthrough host on every Automator admin screen so a walkthrough can resume across pages.
+	 */
+	public function initiate_walkthroughs() {
+		if ( self::$is_admin_sect && ! defined( 'DOING_AJAX' ) ) {
+			new Automator_Walkthrough_Host();
 		}
 	}
 
@@ -1022,6 +1115,11 @@ class Automator_Load {
 	/**
 	 * Callback method to `deleted_user` action hook.
 	 *
+	 * The user's run snapshots, which hold their trigger data, are always deleted. Their runs are deleted only when
+	 * "Delete recipe records when user is deleted" is on.
+	 *
+	 * @since 8.0.0 Always deletes the user's run snapshots.
+	 *
 	 * @param int $id
 	 * @param int|null $reassign
 	 * @param \WP_User $user
@@ -1030,6 +1128,8 @@ class Automator_Load {
 	 */
 	public function auto_prune_user_logs_handler( $id, $reassign, $user ) {
 
+		$this->purge_user_run_snapshots( absint( $id ) );
+
 		$should_delete_user_records = automator_get_option( 'automator_delete_user_records_on_user_delete', false );
 
 		// Bail on settings disabled. '0' is considered empty.
@@ -1037,14 +1137,186 @@ class Automator_Load {
 			return false;
 		}
 
+		$this->purge_user_runs( $id );
+
+		return true;
+	}
+
+	/**
+	 * Callback method to `remove_user_from_blog` action hook: a user removed from a site without being deleted loses
+	 * their run snapshots, which hold their trigger data, on that site. Their runs stay; only deleting the user
+	 * deletes them, and only when "Delete recipe records when user is deleted" is on.
+	 *
+	 * WordPress has switched to the site the user is being removed from, so the current site is that site.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $user_id The user being removed from the site.
+	 *
+	 * @return void
+	 */
+	public function purge_removed_user_run_snapshots( $user_id ) {
+		$this->purge_site_user_records( get_current_blog_id(), absint( $user_id ), false );
+	}
+
+	/**
+	 * Callback method to `wpmu_delete_user` action hook: on every site of the network that has Automator's tables,
+	 * deletes the user's run snapshots, and their runs when that site's own "Delete recipe records when user is
+	 * deleted" is on.
+	 *
+	 * `deleted_user` fires on the current site only, and a network user may have run recipes on any site, a site
+	 * they are not a member of included. A site without Automator's tables never ran Automator and is skipped.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $id The user being deleted from the network.
+	 *
+	 * @return void
+	 */
+	public function purge_network_user_records( $id ) {
+
+		$user_id = absint( $id );
+		$offset  = 0;
+
+		do {
+			$site_ids = get_sites(
+				array(
+					'fields'                 => 'ids',
+					'number'                 => 100,
+					'offset'                 => $offset,
+					'orderby'                => 'id',
+					'order'                  => 'ASC',
+					'update_site_meta_cache' => false,
+				)
+			);
+
+			foreach ( $site_ids as $site_id ) {
+				$this->purge_site_user_records( (int) $site_id, $user_id, true );
+			}
+
+			$offset     += 100;
+			$batch_count = count( $site_ids );
+		} while ( 100 === $batch_count );
+	}
+
+	/**
+	 * Deletes a site's records of a user: their run snapshots, and with `$with_runs` their runs when the site's own
+	 * "Delete recipe records when user is deleted" is on. A site without Automator's tables gets no query beyond the
+	 * table check.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int  $site_id   The site.
+	 * @param int  $user_id   The user.
+	 * @param bool $with_runs Whether the user's runs go too, as the site's setting says.
+	 *
+	 * @return void
+	 */
+	private function purge_site_user_records( int $site_id, int $user_id, bool $with_runs ) {
+
+		$tables    = $this->site_automator_tables( $site_id );
+		$snapshots = in_array( 'uap_run_snapshots', $tables, true );
+		$runs      = $with_runs && in_array( 'uap_recipe_log', $tables, true ) && in_array( 'uap_options', $tables, true );
+
+		if ( ! $snapshots && ! $runs ) {
+			return;
+		}
+
+		switch_to_blog( $site_id );
+
+		try {
+			if ( $snapshots ) {
+				$this->purge_user_run_snapshots( $user_id );
+			}
+
+			if ( $runs && $this->current_site_deletes_user_records() ) {
+				$this->purge_user_runs( $user_id );
+			}
+		} finally {
+			restore_current_blog();
+		}
+	}
+
+	/**
+	 * The names of a site's Automator tables, without the site's table prefix.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $site_id The site.
+	 *
+	 * @return string[]
+	 */
+	private function site_automator_tables( int $site_id ) {
+
+		global $wpdb;
+
+		$prefix = $wpdb->get_blog_prefix( $site_id );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Which of Automator's tables the site has; must not be cached.
+		$tables = (array) $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $prefix . 'uap_' ) . '%' ) );
+
+		return array_map(
+			static function ( $table ) use ( $prefix ) {
+				return substr( (string) $table, strlen( $prefix ) );
+			},
+			$tables
+		);
+	}
+
+	/**
+	 * Whether the current site's "Delete recipe records when user is deleted" is on, read from its own tables.
+	 *
+	 * `automator_get_option()` keeps the values of the site the request started on, and a read that bypasses that
+	 * cache stores the result in it, so after `switch_to_blog()` it would answer for the wrong site or leave this
+	 * site's value behind for the first one.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool
+	 */
+	private function current_site_deletes_user_records() {
+
+		$key   = 'automator_delete_user_records_on_user_delete';
+		$value = ( new Automator_Options_Query() )->get_option_value( $key );
+
+		// Off when unset, and '0' is off, as auto_prune_user_logs_handler() reads it.
+		return null !== $value && ! empty( Automator_Option_Formatter::format_value( $value, null, null, $key ) );
+	}
+
+	/**
+	 * Deletes the current site's runs of a user, with their logs.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $user_id The user.
+	 *
+	 * @return void
+	 */
+	private function purge_user_runs( $user_id ) {
+
 		$prune_logs = new Prune_Logs( false );
-		$user_logs  = $prune_logs->get_user_logs( $id );
+		$user_logs  = $prune_logs->get_user_logs( $user_id );
 
 		foreach ( $user_logs as $user_log ) {
 			$prune_logs->purge_logs( $user_log['automator_recipe_id'], $user_log['ID'], $user_log['run_number'] );
 		}
+	}
 
-		return true;
+	/**
+	 * Deletes the current site's run snapshots of a user; a failed delete is logged, as the user is deleted anyway.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $user_id The deleted user.
+	 *
+	 * @return void
+	 */
+	private function purge_user_run_snapshots( int $user_id ) {
+		try {
+			Database::get_run_snapshot_store()->purge_user( $user_id );
+		} catch ( Store_Exception $e ) {
+			automator_log( $e->getMessage(), 'deleted_user', true );
+		}
 	}
 
 	/**

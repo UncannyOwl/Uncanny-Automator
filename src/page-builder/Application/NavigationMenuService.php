@@ -254,7 +254,7 @@ final class NavigationMenuService
 
         $menu = $this->repository->findMenuById($menuId);
         if ($menu === null) {
-            throw new NavigationMenuNotFoundException($menuId);
+            throw new NavigationMenuNotFoundException((int) $menuId);
         }
 
         return $menu;
@@ -279,7 +279,7 @@ final class NavigationMenuService
 
         $expectedItemIds = $this->normalizedItemIds($expectedItemIds);
         if ($expectedItemIds !== $currentItemIds) {
-            throw new StaleNavigationMenuException($menuId);
+            throw new StaleNavigationMenuException((int) $menuId);
         }
 
         return $expectedItemIds;
@@ -414,7 +414,7 @@ final class NavigationMenuService
 
             $itemId = (int) ($itemInput['item_id'] ?? 0);
             if ($existingMenuHasItems && $itemId <= 0) {
-                throw new InvalidNavigationRequestException('replace_tree requires explicit item_id values for existing menus.');
+                throw new InvalidNavigationRequestException('replace_tree on a menu with items only reorders those items. Send the item_id from read_menu for each item. To add an item, use add_item.');
             }
             if ($itemId > 0) {
                 if (isset($seenIds[$itemId])) {
@@ -438,7 +438,7 @@ final class NavigationMenuService
         if ($existingMenuHasItems) {
             foreach (array_keys($existingById) as $existingId) {
                 if (!isset($seenIds[$existingId])) {
-                    throw new InvalidNavigationRequestException('replace_tree must include every existing item_id.');
+                    throw new InvalidNavigationRequestException('replace_tree must include every existing item_id. To remove an item, use delete_item.');
                 }
             }
         }

@@ -17,7 +17,6 @@
         "All Subscriptions": "Todas as assinaturas",
         "All Topics": "Todos os tópicos",
         "All Users": "Todos os usuários",
-        "All integrations": "Todas as integrações",
         "All recipes": "Todas as receitas",
         "App integrations": "Integrações de apps",
         "Assignments": "Tarefas",
@@ -76,26 +75,6 @@
         "Automator.Addons.5": {
             "Starter": "Planejar instalação de complemento",
             "Prompt": "Me ajude a planejar a instalação e configuração de um complemento. Pergunte qual fluxo de trabalho quero automatizar e depois sugira os próximos passos."
-        },
-        "Automator.All integrations.1": {
-            "Starter": "Recomendar integrações",
-            "Prompt": "Analise meus plugins instalados e integrações de apps conectadas, depois sugira integrações do Automator mais relevantes para o meu site."
-        },
-        "Automator.All integrations.2": {
-            "Starter": "Encontrar oportunidades de automação",
-            "Prompt": "Sugira ideias úteis de automação com base nos meus plugins instalados e integrações de apps conectadas."
-        },
-        "Automator.All integrations.3": {
-            "Starter": "Explicar uma integração",
-            "Prompt": "Pergunte qual integração me interessa, depois explique quais tipos de receitas ela pode habilitar."
-        },
-        "Automator.All integrations.4": {
-            "Starter": "Encontrar integrações faltantes",
-            "Prompt": "Compare meus plugins instalados e apps conectados com as integrações disponíveis no Automator, depois identifique o que talvez eu precise instalar, conectar ou atualizar."
-        },
-        "Automator.All integrations.5": {
-            "Starter": "Construir com uma integração",
-            "Prompt": "Me ajude a escolher uma integração do Automator e transformá-la em uma ideia útil de receita para o meu site."
         },
         "Automator.All recipes.1": {
             "Starter": "Mostrar minhas receitas mais ativas",

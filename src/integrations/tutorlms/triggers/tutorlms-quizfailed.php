@@ -8,7 +8,7 @@
 
 namespace Uncanny_Automator;
 
-defined( '\ABSPATH' ) || exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Adds Quiz Attempt as Trigger.

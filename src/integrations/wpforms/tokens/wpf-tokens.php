@@ -122,10 +122,19 @@ class Wpf_Tokens {
 						);
 					} else {
 						$name_tokens = explode( '-', $field['format'] );
+						$name_labels = array(
+							'first'  => esc_html_x( 'First name', 'WPForms', 'uncanny-automator' ),
+							'middle' => esc_html_x( 'Middle name', 'WPForms', 'uncanny-automator' ),
+							'last'   => esc_html_x( 'Last name', 'WPForms', 'uncanny-automator' ),
+						);
 						foreach ( $name_tokens as $name_token ) {
 							$fields[] = array(
 								'tokenId'         => $token_id . '|name|' . $name_token,
-								'tokenName'       => esc_html_x( ucfirst( $name_token ) . ' name', 'WPForms', 'uncanny-automator' ),
+								'tokenName'       => $name_labels[ $name_token ] ?? sprintf(
+									/* translators: %s: Name part of a WPForms Name field */
+									esc_html_x( '%s name', 'WPForms', 'uncanny-automator' ),
+									esc_html( ucfirst( $name_token ) )
+								),
 								'tokenType'       => 'text',
 								'tokenIdentifier' => $trigger_meta,
 							);
@@ -635,17 +644,7 @@ class Wpf_Tokens {
 			return $forms[ $form_id ];
 		}
 
-		global $wpdb;
-
-		$forms[ $form_id ] = json_decode(
-			$wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT post_content FROM $wpdb->posts WHERE id = %d",
-					$form_id
-				)
-			),
-			true
-		);
+		$forms[ $form_id ] = json_decode( (string) get_post_field( 'post_content', $form_id, 'raw' ), true );
 
 		// Parse the form data for matching fields functionality.
 		foreach ( $forms[ $form_id ]['fields'] as $field_id => $field ) {

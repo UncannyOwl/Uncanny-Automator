@@ -117,17 +117,18 @@ trait Action_Setup {
 	protected $loopable_tokens = array();
 
 	/**
+	 * Where this action may be placed: it is valid only inside a block that
+	 * matches at least one rule. Empty means no restriction.
+	 *
+	 * @var array<int,array>
+	 */
+	protected $required_block_ancestors = array();
+
+	/**
 	 * @var
 	 */
 	protected $helpers;
 
-	/**
-	 * Agent discovery registry.
-	 *
-	 * @since 5.7
-	 * @var array
-	 */
-	protected static $agent_registry = array();
 	/**
 	 * Get loopable tokens.
 	 *
@@ -143,6 +144,48 @@ trait Action_Setup {
 	 */
 	public function set_loopable_tokens( $loopable_tokens ) {
 		$this->loopable_tokens = $loopable_tokens;
+	}
+
+	/**
+	 * Declare the blocks this action may only be used inside.
+	 *
+	 * Each rule is `array( 'entity_type' => 'block', 'entity_code' => <block type>, 'reason' => <optional string> )`;
+	 * the action is valid when at least one rule matches an ancestor block.
+	 *
+	 * @param array $rules Ancestor rules.
+	 *
+	 * @return void
+	 */
+	public function set_required_block_ancestors( array $rules ): void {
+		$this->required_block_ancestors = $rules;
+	}
+
+	/**
+	 * Get the blocks this action may only be used inside.
+	 *
+	 * @return array Ancestor rules; empty when the action is unrestricted.
+	 */
+	public function get_required_block_ancestors(): array {
+		return $this->required_block_ancestors;
+	}
+
+	/**
+	 * Attach the declared placement rules to a registration payload.
+	 *
+	 * Only when non-empty, so an action that declares none registers exactly
+	 * as it did before the key existed.
+	 *
+	 * @param array $action Registration payload.
+	 *
+	 * @return array The payload, with `required_block_ancestors` when declared.
+	 */
+	private function with_required_block_ancestors( array $action ): array {
+		$rules = $this->get_required_block_ancestors();
+		if ( ! empty( $rules ) ) {
+			$action['required_block_ancestors'] = $rules;
+		}
+
+		return $action;
 	}
 
 	/**
@@ -422,53 +465,6 @@ trait Action_Setup {
 	}
 
 	/**
-	 * Enable agent discovery for this action.
-	 *
-	 * Registers the action class for agent-based execution by mapping
-	 * the action code to the implementing class.
-	 *
-	 * @since 5.7
-	 * @param string $action_code Action code identifier.
-	 * @param string $class_name  Full class name implementing Agent_Tools.
-	 * @return void
-	 */
-	public function enable_agent_discovery( $action_code, $class_name ) {
-		self::$agent_registry[ $action_code ] = $class_name;
-	}
-
-	/**
-	 * Get agent-compatible class for action code.
-	 *
-	 * @since 5.7
-	 * @param string $action_code Action code.
-	 * @return string|null Class name or null if not found.
-	 */
-	public static function get_agent_class( $action_code ) {
-		return self::$agent_registry[ $action_code ] ?? null;
-	}
-
-	/**
-	 * Get all registered agent actions.
-	 *
-	 * @since 5.7
-	 * @return array Array of action_code => class_name mappings.
-	 */
-	public static function get_agent_registry() {
-		return self::$agent_registry;
-	}
-
-	/**
-	 * Check if action supports agent execution.
-	 *
-	 * @since 5.7
-	 * @param string $action_code Action code.
-	 * @return bool True if action supports agent execution.
-	 */
-	public static function is_agent_compatible( $action_code ) {
-		return isset( self::$agent_registry[ $action_code ] );
-	}
-
-	/**
 	 * Define and register the action by pushing it into the Automator object
 	 */
 	protected function register_action() {
@@ -490,12 +486,6 @@ trait Action_Setup {
 			'should_apply_extra_formatting' => $this->get_should_apply_extra_formatting(),
 			'loopable_tokens'               => $this->get_loopable_tokens(),
 		);
-
-		$agent = $this->get_agent_class( $this->get_action_code() );
-
-		if ( ! is_null( $agent ) ) {
-			$action['agent_class'] = $agent;
-		}
 
 		if ( ! empty( $this->get_options() ) ) {
 			$action['options'] = $this->get_options();
@@ -520,6 +510,8 @@ trait Action_Setup {
 				$action['manifest'] = $manifest;
 			}
 		}
+
+		$action = $this->with_required_block_ancestors( $action );
 
 		$action = apply_filters( 'automator_register_action', $action );
 

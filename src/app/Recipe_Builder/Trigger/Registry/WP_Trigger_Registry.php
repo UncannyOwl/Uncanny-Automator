@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Trigger\Registry;
 
@@ -7,6 +6,7 @@ use Uncanny_Automator\App\Bridge\Automator_Trigger_Definition_Bridge;
 use Uncanny_Automator\App\Bridge\Trigger_Definition_Bridge;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Trigger;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Trigger_Config;
+use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Sentence_String;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Trigger_Code;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Trigger_User_Type;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Trigger_Integration;
@@ -21,6 +21,23 @@ use Uncanny_Automator\App\Events\Dispatcher;
  * @since 7.0.0
  */
 class WP_Trigger_Registry implements Trigger_Registry {
+
+	/**
+	 * Keys every definition passed to register_trigger() must carry: the ones
+	 * create_trigger_config_from_legacy() reads without a default.
+	 *
+	 * @var string[]
+	 */
+	private const DEFINITION_KEYS = array(
+		'trigger_code',
+		'trigger_meta_code',
+		'trigger_type',
+		'hook',
+		'tokens',
+		'integration',
+		'sentence',
+		'readable_sentence',
+	);
 
 	/**
 	 * Registered trigger definitions as domain objects.
@@ -153,11 +170,25 @@ class WP_Trigger_Registry implements Trigger_Registry {
 		// Store legacy definition for MCP schema generation
 		$this->legacy_triggers[ $code ] = $definition;
 
-		// Convert to domain object for type safety and business rule enforcement
+		// A definition that skipped normalization is refused here, before any key is read.
+		$missing = array_diff( self::DEFINITION_KEYS, array_keys( $definition ) );
+		if ( ! empty( $missing ) ) {
+			automator_log( sprintf( 'Failed to register trigger %s: the definition has no %s.', $code, implode( ', ', $missing ) ), 'Trigger Registry Error' );
+			return;
+		}
+
+		// Convert to domain object for type safety and business rule enforcement.
+		// \Throwable: a value of the wrong type is a TypeError, not an Exception, and one bad
+		// definition must never stop the others from registering.
 		try {
-			$config                  = $this->create_trigger_config_from_legacy( $definition );
+			$config = $this->create_trigger_config_from_legacy( $definition );
+
+			// The definition owns the sentence, so one it can't show is refused here; a stored trigger only keeps a snapshot of it.
+			new Sentence_String( (string) $config->get_sentence() );
+			Sentence_String::for_human_readable( (string) $config->get_sentence_human_readable() );
+
 			$this->triggers[ $code ] = new Trigger( $config );
-		} catch ( \Exception $e ) {
+		} catch ( \Throwable $e ) {
 			// Fail gracefully - continue processing other triggers, but log for debugging.
 			automator_log( sprintf( 'Failed to register trigger %s: %s', $code, $e->getMessage() ), 'Trigger Registry Error' );
 			return;

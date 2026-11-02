@@ -34,15 +34,23 @@ class Account_Scenario extends Abstract_Scenario {
 		$this->scenarios = array(
 			// App account connection
 			'account-app' => array(
-				'scenario_id' => 'account-app',
+				'scenario_id'         => 'account-app',
 				// translators: %s: Integration or service name.
-				'description' => esc_attr__( 'Connect your %s account to use this integration', 'uncanny-automator' ),
-				'cta_connect' => array(
+				'description'         => esc_attr__( 'Connect your %s account to use this integration', 'uncanny-automator' ),
+				// Blocked variant: names the tier so a disabled button does not read as broken.
+				// translators: %1$s: Integration or service name. %2$s: License tier name, e.g. "Elite". Asterisks are markdown emphasis and must be kept.
+				'description_blocked' => esc_attr__( 'Connect your %1$s account to use this integration. *Available once you have the %2$s license.*', 'uncanny-automator' ),
+				// The licence can be in order while the plugin carrying the integration
+				// is not installed. Nothing in the feed names that plugin yet, so this
+				// stays general rather than guessing at one.
+				// translators: %s: Integration or service name. Asterisks are markdown emphasis and must be kept.
+				'description_absent'  => esc_attr__( 'Connect your %s account to use this integration. *Available once the integration is installed and active.*', 'uncanny-automator' ),
+				'cta_connect'         => array(
 					'type'  => 'link-open-and-wait',
 					// translators: %s: Integration or service name.
 					'label' => esc_attr_x( 'Connect %s account', 'Dependency CTA', 'uncanny-automator' ),
 				),
-				'cta_get'     => array(
+				'cta_get'             => array(
 					'type'  => 'link-external',
 					// translators: %s: Integration or service name
 					'label' => esc_attr_x( 'Connect %s account', 'Dependency CTA', 'uncanny-automator' ),
@@ -83,11 +91,33 @@ class Account_Scenario extends Abstract_Scenario {
 	 *
 	 * @param string $scenario_id Scenario ID
 	 * @param string $name Integration name to insert in description
+	 * @param string $blocked_by_tier Display name of the license tier that must be
+	 *                                resolved first, e.g. "Elite". Empty when
+	 *                                the tier requirement is met.
+	 * @param bool   $is_installed    Whether the integration is loaded on this site.
 	 *
 	 * @return string Translated description
 	 */
-	public function get_description( string $scenario_id, string $name ) {
+	public function get_description( string $scenario_id, string $name, string $blocked_by_tier = '', bool $is_installed = true ) {
 		$config = $this->get_scenario_config( $scenario_id );
+
+		// The tier is the first thing to resolve, so it wins when both are unmet.
+		if ( $config && ! $is_installed && empty( $blocked_by_tier ) && ! empty( $config['description_absent'] ) ) {
+			return sprintf(
+				// translators: %s: Integration name
+				$config['description_absent'],
+				$name
+			);
+		}
+
+		if ( $config && ! empty( $blocked_by_tier ) && ! empty( $config['description_blocked'] ) ) {
+			return sprintf(
+				// translators: %1$s: Integration name. %2$s: License tier name.
+				$config['description_blocked'],
+				$name,
+				$blocked_by_tier
+			);
+		}
 
 		if ( $config && ! empty( $config['description'] ) ) {
 			return sprintf(

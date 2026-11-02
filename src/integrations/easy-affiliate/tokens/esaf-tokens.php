@@ -383,9 +383,10 @@ class Esaf_Tokens {
 	public function get_mtd_clicks( $affiliate_id ) {
 		$db = Db::fetch();
 		global $wpdb;
-		$year       = wp_date( 'Y' );
-		$month      = wp_date( 'm' );
-		$mtd_clicks = $wpdb->get_var( $wpdb->prepare( "SELECT IFNULL(COUNT(*),0) FROM {$db->clicks} as clk WHERE clk.affiliate_id = %d AND created_at BETWEEN '{$year}-{$month}-01 00:00:00' AND NOW()", $affiliate_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$year  = wp_date( 'Y' );
+		$month = wp_date( 'm' );
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Easy Affiliate's own table; the plugin offers no API for this query. Table names come from the plugin's Db object; values are placeholders.
+		$mtd_clicks = $wpdb->get_var( $wpdb->prepare( "SELECT IFNULL(COUNT(*),0) FROM {$db->clicks} as clk WHERE clk.affiliate_id = %d AND created_at BETWEEN %s AND NOW()", $affiliate_id, "{$year}-{$month}-01 00:00:00" ) );
 
 		return $mtd_clicks;
 	}
@@ -398,8 +399,9 @@ class Esaf_Tokens {
 	public function get_ytd_clicks( $affiliate_id ) {
 		$db = Db::fetch();
 		global $wpdb;
-		$year       = wp_date( 'Y' );
-		$ytd_clicks = $wpdb->get_var( $wpdb->prepare( "SELECT IFNULL(COUNT(*),0) FROM {$db->clicks} as clk WHERE clk.affiliate_id = %d AND created_at BETWEEN '{$year}-01-01 00:00:00' AND NOW()", $affiliate_id ) );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$year = wp_date( 'Y' );
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Easy Affiliate's own table; the plugin offers no API for this query. Table names come from the plugin's Db object; values are placeholders.
+		$ytd_clicks = $wpdb->get_var( $wpdb->prepare( "SELECT IFNULL(COUNT(*),0) FROM {$db->clicks} as clk WHERE clk.affiliate_id = %d AND created_at BETWEEN %s AND NOW()", $affiliate_id, "{$year}-01-01 00:00:00" ) );
 
 		return $ytd_clicks;
 	}
@@ -412,9 +414,10 @@ class Esaf_Tokens {
 	public function get_mtd_commissions( $affiliate_id ) {
 		$db = Db::fetch();
 		global $wpdb;
-		$year            = wp_date( 'Y' );
-		$month           = wp_date( 'm' );
-		$mtd_commissions = $wpdb->get_var( $wpdb->prepare( "SELECT IFNULL(SUM(commish.commission_amount),0.00) FROM {$db->commissions} AS commish LEFT JOIN {$db->transactions} txn ON commish.transaction_id = txn.id WHERE txn.status = 'complete' AND commish.affiliate_id = %d AND commish.created_at BETWEEN '{$year}-{$month}-01 00:00:00' AND NOW()", $affiliate_id ) );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$year  = wp_date( 'Y' );
+		$month = wp_date( 'm' );
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Easy Affiliate's own table; the plugin offers no API for this query. Table names come from the plugin's Db object; values are placeholders.
+		$mtd_commissions = $wpdb->get_var( $wpdb->prepare( "SELECT IFNULL(SUM(commish.commission_amount),0.00) FROM {$db->commissions} AS commish LEFT JOIN {$db->transactions} txn ON commish.transaction_id = txn.id WHERE txn.status = 'complete' AND commish.affiliate_id = %d AND commish.created_at BETWEEN %s AND NOW()", $affiliate_id, "{$year}-{$month}-01 00:00:00" ) );
 
 		return $mtd_commissions;
 	}
@@ -427,8 +430,9 @@ class Esaf_Tokens {
 	public function get_ytd_commissions( $affiliate_id ) {
 		$db = Db::fetch();
 		global $wpdb;
-		$year            = wp_date( 'Y' );
-		$ytd_commissions = $wpdb->get_var( $wpdb->prepare( "SELECT IFNULL(SUM(commish.commission_amount),0.00) FROM {$db->commissions} AS commish LEFT JOIN {$db->transactions} txn ON commish.transaction_id = txn.id WHERE txn.status = 'complete' AND commish.affiliate_id = %d AND commish.created_at BETWEEN '{$year}-01-01 00:00:00' AND NOW()", $affiliate_id ) );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$year = wp_date( 'Y' );
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Easy Affiliate's own table; the plugin offers no API for this query. Table names come from the plugin's Db object; values are placeholders.
+		$ytd_commissions = $wpdb->get_var( $wpdb->prepare( "SELECT IFNULL(SUM(commish.commission_amount),0.00) FROM {$db->commissions} AS commish LEFT JOIN {$db->transactions} txn ON commish.transaction_id = txn.id WHERE txn.status = 'complete' AND commish.affiliate_id = %d AND commish.created_at BETWEEN %s AND NOW()", $affiliate_id, "{$year}-01-01 00:00:00" ) );
 
 		return $ytd_commissions;
 	}

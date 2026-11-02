@@ -12,6 +12,22 @@ use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
 class Recipe_Post_Utilities {
 
 	/**
+	 * Post meta holding a trigger's or action's status from before its recipe went to the trash.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var string
+	 */
+	const STATUS_BEFORE_TRASH_META = '_automator_status_before_recipe_trash';
+
+	/**
+	 * Each listed recipe's items, read once per row for both the Triggers and Actions columns.
+	 *
+	 * @var array<int, array>
+	 */
+	private $recipe_items = array();
+
+	/**
 	 * Recipe_Post_Functions constructor.
 	 */
 	public function __construct() {
@@ -45,33 +61,25 @@ class Recipe_Post_Utilities {
 			999
 		);
 
-		// Deprecated in 4.15.2 (commit 4cd86c47ca). The delete_post hook was
-		// intentionally disabled by renaming it to a non-existent action.
-		// Log cleanup on permanent recipe deletion is handled by the admin
-		// "purge logs" utility and uninstall.php. The callback is retained
-		// for backwards compatibility only — it never fires.
+		// Draft every trigger and action when a recipe goes to the trash, and put each back
+		// when it leaves the trash. The status change covers every way a recipe is trashed or
+		// restored: wp_trash_post() and wp_untrash_post() (All recipes, WP-CLI's `wp post delete`)
+		// and a status written with wp_update_post() (the REST and MCP recipe tools,
+		// `wp post update`), which never fire wp_trash_post or untrashed_post.
 		add_action(
-			'_DEPRECATED_delete_post',
+			'transition_post_status',
 			array(
 				$this,
-				'delete_triggers_actions',
+				'follow_recipe_trash',
 			),
 			10,
-			1
+			3
 		);
 
-		// Draft when recipe moved to trash.
-		add_action(
-			'wp_trash_post',
-			array(
-				$this,
-				'draft_triggers_actions',
-			),
-			10,
-			1
-		);
-
-		// Prepopulate recipe from a URL query (only for admins).
+		// Prepopulate recipe from a URL query (only for admins). Must run AFTER
+		// change_default_post_status (@10): population goes through the src/app
+		// recipe aggregate, whose Recipe_Status VO rejects the transient
+		// auto-draft state — the flip to draft has to land first.
 		if ( is_admin() ) {
 			add_action(
 				'wp_insert_post',
@@ -79,7 +87,7 @@ class Recipe_Post_Utilities {
 					'Uncanny_Automator\Populate_From_Query',
 					'maybe_populate',
 				),
-				9,
+				11,
 				3
 			);
 		}
@@ -109,21 +117,6 @@ class Recipe_Post_Utilities {
 		// Remove WordPress default publish box.
 		add_action( 'admin_menu', array( $this, 'remove_publish_box' ) );
 
-		// Add the recipe builder object
-		add_filter(
-			'automator_asset_script_localize_vars_uap-admin',
-			function ( $localizable_vars ) {
-				if ( ! Automator()->helpers->recipe->is_edit_page() ) {
-					return $localizable_vars;
-				}
-
-				// @todo: It should be something like: UncannyAutomator.features.recipeBuilder
-				$localizable_vars['UncannyAutomator'] = $this->assets_get_automator_main_object();
-
-				return $localizable_vars;
-			}
-		);
-
 		add_filter(
 			'automator_asset_script_dependencies_uap-admin',
 			function ( $dependencies ) {
@@ -147,6 +140,9 @@ class Recipe_Post_Utilities {
 				return $dependencies;
 			}
 		);
+
+		// Delete a recipe's runs when the recipe is deleted for good, before its steps go (priority 10).
+		add_action( 'before_delete_post', array( $this, 'purge_deleted_recipe_runs' ), 5, 2 );
 	}
 
 	/**
@@ -420,546 +416,143 @@ class Recipe_Post_Utilities {
 	}
 
 	/**
-	 * @return mixed|void
+	 * Draft every trigger and action of a recipe going to the trash, and put each back when
+	 * the recipe leaves the trash, however its status is written.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string        $new_status The post's new status.
+	 * @param string        $old_status The post's status before.
+	 * @param \WP_Post|null $post       The post whose status changed.
+	 *
+	 * @return void
 	 */
-	private function assets_get_automator_main_object() {
-		global $post;
+	public function follow_recipe_trash( $new_status, $old_status, $post ) {
 
-		// $post return $post->ID as a string, Our JS expects an int... change it
-		$post_id = (int) $post->ID;
-
-		// Get source
-		$source = get_post_meta( $post_id, 'source', true );
-		// Create fields array
-		$fields = array(
-			'existingUser' => array(),
-			'newUser'      => array(),
-		);
-		// Check if the user defined a valid source
-		if ( in_array( $source, array( 'existingUser', 'newUser' ), true ) ) {
-			// If the user did it, then add the fields
-			$fields[ $source ] = get_post_meta( $post_id, 'fields', true );
-		}
-
-		$editable_roles = get_editable_roles();
-		$roles          = array();
-		foreach ( $editable_roles as $role_key => $role_data ) {
-			$roles[ $role_key ] = $role_data['name'];
-		}
-
-		// Invalidate cached extra options for all triggers and actions in this recipe.
-		// Single JOIN query fetches post ID + both meta values in one round-trip.
-		// Intentionally avoids get_recipes_data(): that path calls load_extra_options()
-		// which fires every options_callback only for us to immediately delete the result.
-		global $wpdb;
-
-		$recipe_items = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prepare(
-				"SELECT p.ID,
-				        pm_code.meta_value        AS code,
-				        pm_integration.meta_value AS integration
-				FROM {$wpdb->posts} p
-				LEFT JOIN {$wpdb->postmeta} pm_code
-				       ON pm_code.post_id = p.ID AND pm_code.meta_key = 'code'
-				LEFT JOIN {$wpdb->postmeta} pm_integration
-				       ON pm_integration.post_id = p.ID AND pm_integration.meta_key = 'integration'
-				WHERE p.post_parent = %d
-				  AND p.post_type IN (%s,%s)
-				  AND p.post_status != 'trash'",
-				$post_id,
-				AUTOMATOR_POST_TYPE_TRIGGER,
-				AUTOMATOR_POST_TYPE_ACTION
-			)
-		);
-
-		foreach ( $recipe_items as $item ) {
-			if ( $item->code && $item->integration ) {
-				automator_delete_option( 'uap_extra_options_' . $item->integration . '_' . $item->code );
-			}
-		}
-
-		// Lazy cleanup: remove the legacy wp_postmeta blob left by older versions.
-		delete_post_meta( $post_id, 'extra_options' );
-
-		Automator()->automator_load_textdomain();
-
-		// Integrations object (new).
-		try {
-			$core_integrations = new Services\Integrations\Structure( $post_id );
-			$integrations      = '';
-			if ( ! is_null( $core_integrations ) ) {
-				$integrations = json_decode( $core_integrations->toJSON(), true );
-			}
-		} catch ( \Error $e ) {
-			automator_log( $e->getMessage(), $post_id, AUTOMATOR_DEBUG_MODE, '$core_integrations' );
-		} catch ( \Exception $e ) {
-			automator_log( $e->getMessage(), $post_id, AUTOMATOR_DEBUG_MODE, '$core_integrations' );
-		}
-
-		// Add the Create first recipe walkthrough.
-		add_filter( 'automator_get_user_walkthroughs', array( $this, 'should_show_create_recipe_walkthrough' ), 10, 3 );
-		$_integrations   = Automator()->get_integrations();
-		$_pro_only_items = Utilities::get_pro_only_items();
-
-		// Ensure every integration has a default `items` structure so the JS
-		// integration grid never encounters an undefined `items` property,
-		// even if `groupItemsByIntegration()` fails or runs out of order.
-		$default_items = array(
-			'items' => array(
-				'triggers' => array(
-					'available'           => array(),
-					'unavailable'         => array(),
-					'hasAvailableItems'   => false,
-					'hasUnavailableItems' => false,
-					'hasTriggers'         => false,
-					'allItemsArePro'      => false,
-					'allItemsAreElite'    => false,
-				),
-				'actions'  => array(
-					'available'           => array(),
-					'unavailable'         => array(),
-					'hasAvailableItems'   => false,
-					'hasUnavailableItems' => false,
-					'hasActions'          => false,
-					'allItemsArePro'      => false,
-					'allItemsAreElite'    => false,
-				),
-			),
-		);
-
-		$_merged_integrations = automator_array_merge( $_integrations, $_pro_only_items );
-
-		foreach ( $_merged_integrations as $code => $integration ) {
-			if ( ! isset( $integration['items'] ) ) {
-				$_merged_integrations[ $code ] = array_merge( $integration, $default_items );
-			}
-		}
-
-		$api_setup = array(
-			// UncannyAutomator._recipe
-			'_recipe'        => Automator()->get_recipe_object( $post_id, ARRAY_A ),
-
-			// UncannyAutomator._site
-			'_site'          => array(
-				// UncannyAutomator._site.rest
-				'rest'                => array(
-					// UncannyAutomator._site.rest.url
-					'url'   => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
-					// UncannyAutomator._site.rest.nonce
-					'nonce' => \wp_create_nonce( 'wp_rest' ),
-				),
-
-				// UncannyAutomator._site.in_walkthrough_mode
-				// 'in_walkthrough_mode' => $this->should_show_walkthrough(),
-
-				// UncannyAutomator._site.walkthroughs
-				'walkthroughs'        => Automator()->utilities->get_user_walkthroughs( get_current_user_id() ),
-
-				// UncannyAutomator._site.has_debug_enabled
-				'has_debug_enabled'   => (bool) AUTOMATOR_DEBUG_MODE,
-
-				// UncannyAutomator._site.is_multisite
-				'is_multisite'        => is_multisite(),
-
-				// UncannyAutomator._site.is_rtl
-				'is_rtl'              => is_rtl(),
-
-				// UncannyAutomator._site.date_format
-				'date_format'         => get_option( 'date_format' ),
-
-				// UncannyAutomator._site.time_format
-				'time_format'         => get_option( 'time_format' ),
-
-				// UncannyAutomator._site.timezone
-				'timezone'            => Automator()->get_timezone_string(),
-
-				// UncannyAutomator._site.automator
-				'automator'           => array(
-					// UncannyAutomator._site.automator.version
-					'version'               => AUTOMATOR_PLUGIN_VERSION,
-
-					//UncannyAutomator._site.automator.has_pro
-					'has_pro'               => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ),
-
-					// UncannyAutomator._site.automator.version_pro
-					'version_pro'           => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? AUTOMATOR_PRO_PLUGIN_VERSION : '',
-
-					// UncannyAutomator._site.automator.has_account_connected
-					'has_account_connected' => automator_license_manager()->is_connected( automator_filter_has_var( 'ua_connecting_integration' ) ),
-
-					// UncannyAutomator._site.automator.has_valid_pro_license
-					'has_valid_pro_license' => ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === automator_get_option( 'uap_automator_pro_license_status' ) ),
-
-					// UncannyAutomator._site.automator.links.marketing_referer
-					'marketing_referer'     => automator_get_option( 'uncannyautomator_source', '' ),
-
-					// UncannyAutomator._site.automator.links
-					'links'                 => array(
-						// UncannyAutomator._site.automator.links.debugging_guide
-						'debugging_guide'         => 'https://automatorplugin.com/knowledge-base/troubleshooting-plugin-errors/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=recipe-wizard-error-modal-learn-more-debugging',
-
-						// UncannyAutomator._site.automator.links.contact_support
-						'contact_support'         => add_query_arg(
-							array(
-								'utm_source'  => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? 'uncanny-automator-pro' : 'uncanny-automator',
-								'utm_medium'  => 'in-plugin',
-								'utm_content' => 'error-handler-get-support-link',
-								'subject'     => 'technical-support',
-								'version'     => AUTOMATOR_PLUGIN_VERSION,
-								'site_url'    => get_site_url(),
-							),
-							'https://automatorplugin.com/automator-support/'
-						),
-
-						// UncannyAutomator._site.automator.links.loops_guide
-						'loops_guide'             => array(
-							// UncannyAutomator._site.automator.links.loops_guide.users_loops
-							'users_loops' => 'https://automatorplugin.com/knowledge-base/user-loops/',
-
-							// UncannyAutomator._site.automator.links.loops_guide.posts_loops
-							'posts_loops' => 'https://automatorplugin.com/knowledge-base/post-loops/',
-
-							// UncannyAutomator._site.automator.links.loops_guide.token_loops
-							'token_loops' => 'https://automatorplugin.com/knowledge-base/token-loops/',
-						),
-
-						// UncannyAutomator._site.automator.links.plugin_required_missing
-						'plugin_required_missing' => 'https://automatorplugin.com/knowledge-base/the-action-trigger-requires-a-plugin-that-is-not-installed-or-active-message/',
-
-						// UncannyAutomator._site.automator.links.all_recipes
-						'all_recipes'             => admin_url( 'edit.php?post_type=' . AUTOMATOR_POST_TYPE_RECIPE ),
-
-						// UncannyAutomator._site.automator.links.tools
-						'tools'                   => admin_url( 'edit.php?post_type=' . AUTOMATOR_POST_TYPE_RECIPE . '&page=uncanny-automator-tools' ),
-
-						// UncannyAutomator._site.automator.links.manage_license
-						'manage_license'          => admin_url( 'edit.php?post_type=' . AUTOMATOR_POST_TYPE_RECIPE . '&page=uncanny-automator-config&tab=general&general=license' ),
-
-						// UncannyAutomator._site.automator.links.styles_for_tinymce
-						// TinyMCE needs the Automator styles to be loaded again inside the iframe
-						// of the "Visual" tab. For that, we need to define an array with the URLs
-						// of both Automator stylesheets
-						'styles_for_tinymce'      => array(
-							add_query_arg( array( 'ver' => AUTOMATOR_PLUGIN_VERSION ), Utilities::automator_get_asset( 'build/main.css' ) ),
-						),
-					),
-				),
-
-				// UncannyAutomator._site.links
-				'links'               => array(
-					// UncannyAutomator._site.links.wp_admin
-					'wp_admin'      => admin_url( 'admin.php' ),
-
-					// UncannyAutomator._site.links.wp_permalinks
-					'wp_permalinks' => esc_url( admin_url( 'options-permalink.php' ) ),
-
-					// UncannyAutomator._site.links.wp_timezone
-					'wp_timezone'   => admin_url( 'options-general.php#timezone_string' ),
-				),
-
-				// UncannyAutomator._site.permalink_structure
-				'permalink_structure' => get_option( 'permalink_structure' ),
-			),
-
-			// UncannyAutomator._integrations
-			'_integrations'  => $integrations,
-
-			// UncannyAutomator.triggers
-			'triggers'       => array_values( Automator()->get_triggers() ),
-			// UncannyAutomator.actions
-			'actions'        => array_values( Automator()->get_actions() ),
-			// UncannyAutomator.closures
-			'closures'       => array_values( Automator()->get_closures() ),
-			// UncannyAutomator.pro_items
-			'pro_items'      => $this->get_pro_items(),
-
-			// UncannyAutomator.integrations
-			'integrations'   => $_merged_integrations,
-
-			// TODO Remove once the JS stops using both `recipes_object` and `recipe` objects
-			'recipes_object' => Automator()->get_recipes_data( true, $post_id ),
-			'recipe'         => array(
-				// UncannyAutomator.recipe.requiresUserData
-				'requiresUserData' => Automator()->get->get_recipe_requires_user( $post_id ),
-				// UncannyAutomator.recipe.errorMode
-				'errorMode'        => false,
-				// UncannyAutomator.recipe.isValid
-				'isValid'          => false,
-				// UncannyAutomator.recipe.userSelector
-				'userSelector'     => array(
-					'source'    => $source,
-					'data'      => $fields,
-					'isValid'   => false,
-					'resources' => array(
-						'roles' => $roles,
-					),
-				),
-				// UncannyAutomator.recipe.hasLive
-				'hasLive'          => array(
-					// UncannyAutomator.recipe.hasLive.trigger
-					'trigger' => false,
-					// UncannyAutomator.recipe.hasLive.action
-					'action'  => false,
-					// UncannyAutomator.recipe.hasLive.closure
-					'closure' => false,
-				),
-				// UncannyAutomator.recipe.message
-				'message'          => array(
-					// UncannyAutomator.recipe.message.error
-					'error'   => '',
-					// UncannyAutomator.recipe.message.warning
-					'warning' => '',
-				),
-				// UncannyAutomator.recipe.items
-				'items'            => array(),
-				// UncannyAutomator.recipe.publish
-				'publish'          => array(),
-			),
-		);
-
-		$api_setup = apply_filters_deprecated( 'uap_api_setup', array( $api_setup ), '3.0', 'automator_api_setup' ); // deprecate
-
-		return apply_filters( 'automator_api_setup', $api_setup );
-	}
-
-	/**
-	 * List of Pro features to upsell Automator Pro
-	 *
-	 * @return array
-	 */
-	private function get_pro_items() {
-
-		return Utilities::get_pro_items_list();
-	}
-
-	/**
-	 * Check user progress for Create first recipe walkthrough.
-	 *
-	 * @param array $walkthroughs
-	 * @param int   $user_id
-	 * @param Automator_User_Walkthroughs $walkthroughs_object
-	 *
-	 * @return array
-	 */
-	public function should_show_create_recipe_walkthrough( $walkthroughs, $user_id, $walkthroughs_object ) {
-
-		$id = 'create-recipe';
-
-		// Check if progress has been set.
-		$create_progress = $walkthroughs_object->get_progress_by_id( $id, false );
-		if ( ! empty( $create_progress ) ) {
-			// If progress has already been set, return it with defaults parsed.
-			$walkthroughs[ $id ] = $walkthroughs_object->get_progress_by_id( $id );
-			return $walkthroughs;
-		}
-
-		// Check if current user has any published recipes.
-		$user_recipes = get_posts(
-			array(
-				'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
-				'author'    => $user_id,
-				'status'    => 'publish',
-				'fields'    => 'ids',
-			)
-		);
-
-		// Set our progress to enabled.
-		$progress = array(
-			'show' => count( $user_recipes ) > 0 ? 0 : 1,
-			'step' => '',
-		);
-
-		// Save the progress so we don't run the checks every time.
-		$walkthroughs_object->set_progress_by_id( $id, $progress );
-
-		// Return walkthrough with enabled status.
-		$walkthroughs[ $id ] = $walkthroughs_object->get_progress_by_id( $id );
-
-		return $walkthroughs;
-	}
-
-	/**
-	 * Delete all children triggers and actions of recipe
-	 *
-	 * @param $post_ID
-	 *
-	 * @deprecated 4.15.2
-	 */
-	public function delete_triggers_actions( $post_ID ) {
-
-		$post = get_post( $post_ID );
-		if ( ! $post instanceof \WP_Post ) {
+		if ( ! $post instanceof \WP_Post || AUTOMATOR_POST_TYPE_RECIPE !== $post->post_type || $new_status === $old_status ) {
 			return;
 		}
 
-		if ( AUTOMATOR_POST_TYPE_RECIPE === $post->post_type ) {
-
-			// delete recipe logs
-			self::delete_recipe_logs( $post_ID );
+		if ( 'trash' === $new_status ) {
+			$this->draft_triggers_actions( $post->ID );
+			return;
 		}
 
-		if ( AUTOMATOR_POST_TYPE_ACTION === (string) $post->post_type ) {
-			Automator()->db->action->delete( $post_ID );
-		}
-
-		if ( AUTOMATOR_POST_TYPE_TRIGGER === (string) $post->post_type ) {
-			Automator()->db->trigger->delete( $post_ID );
-		}
-
-		if ( AUTOMATOR_POST_TYPE_CLOSURE === (string) $post->post_type ) {
-			Automator()->db->closure->delete( $post_ID );
+		if ( 'trash' === $old_status ) {
+			$this->restore_triggers_actions( $post->ID );
 		}
 	}
 
 	/**
-	 * Delete all logs and meta for triggers
+	 * Draft every trigger and action of a recipe going to the trash, including the
+	 * actions inside its filter and loop blocks, and remember each one's status so
+	 * restoring the recipe can put it back.
 	 *
-	 * @param $post_ID
-	 */
-	public static function delete_recipe_logs( $post_ID ) {
-		Automator()->db->recipe->clear_activity_log_by_recipe_id( $post_ID );
-
-		$args = array(
-			'post_parent'    => $post_ID,
-			'post_status'    => 'any',
-			'post_type'      => AUTOMATOR_POST_TYPE_TRIGGER,
-			'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-		);
-
-		$children = get_children( $args );
-
-		if ( is_array( $children ) && count( $children ) > 0 ) {
-
-			// Delete all the Children of the Parent Page
-			foreach ( $children as $child ) {
-
-				wp_delete_post( $child->ID, true );
-
-				Automator()->db->trigger->delete( $post_ID );
-			}
-		}
-
-		$args = array(
-			'post_parent'    => $post_ID,
-			'post_status'    => 'any',
-			'post_type'      => AUTOMATOR_POST_TYPE_ACTION,
-			'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-		);
-
-		$children = get_children( $args );
-
-		if ( is_array( $children ) && count( $children ) > 0 ) {
-
-			// Delete all the Children of the Parent Page
-			foreach ( $children as $child ) {
-
-				wp_delete_post( $child->ID, true );
-
-				Automator()->db->action->delete( $post_ID );
-			}
-		}
-
-		$args = array(
-			'post_parent'    => $post_ID,
-			'post_status'    => 'any',
-			'post_type'      => AUTOMATOR_POST_TYPE_CLOSURE,
-			'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-		);
-
-		$children = get_children( $args );
-
-		if ( is_array( $children ) && count( $children ) > 0 ) {
-
-			// Delete all the Children of the Parent Page
-			foreach ( $children as $child ) {
-
-				wp_delete_post( $child->ID, true );
-
-				Automator()->db->closure->delete( $post_ID );
-			}
-		}
-	}
-
-	/**
-	 * Draft all children triggers and actions of recipe
+	 * @param int $post_ID The post going to the trash.
 	 *
-	 * @param $post_ID
+	 * @return void
 	 */
 	public function draft_triggers_actions( $post_ID ) {
 
 		$post = get_post( $post_ID );
 
-		if ( $post && AUTOMATOR_POST_TYPE_RECIPE === $post->post_type ) {
+		if ( ! $post || AUTOMATOR_POST_TYPE_RECIPE !== $post->post_type ) {
+			return;
+		}
 
-			$args = array(
-				'post_parent'    => $post->ID,
-				'post_status'    => 'any',
-				'post_type'      => AUTOMATOR_POST_TYPE_TRIGGER,
-				'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-			);
+		foreach ( $this->get_recipe_item_ids( (int) $post->ID ) as $item_id ) {
 
-			$children = get_children( $args );
+			$status = (string) get_post_status( $item_id );
 
-			if ( is_array( $children ) && count( $children ) > 0 ) {
+			// Recorded for a draft too, so an older record never outlives this trash.
+			update_post_meta( $item_id, self::STATUS_BEFORE_TRASH_META, $status );
 
-				// Delete all the Children of the Parent Page
-				foreach ( $children as $child ) {
-
-					$child_update = array(
-						'ID'          => $child->ID,
+			if ( 'draft' !== $status ) {
+				wp_update_post(
+					array(
+						'ID'          => $item_id,
 						'post_status' => 'draft',
-					);
-
-					wp_update_post( $child_update );
-				}
-			}
-
-			$args = array(
-				'post_parent'    => $post->ID,
-				'post_status'    => 'any',
-				'post_type'      => AUTOMATOR_POST_TYPE_ACTION,
-				'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-			);
-
-			$children = get_children( $args );
-
-			if ( is_array( $children ) && count( $children ) > 0 ) {
-
-				// Delete all the Children of the Parent Page
-				foreach ( $children as $child ) {
-
-					$child_update = array(
-						'ID'          => $child->ID,
-						'post_status' => 'draft',
-					);
-
-					wp_update_post( $child_update );
-				}
-			}
-
-			$args = array(
-				'post_parent'    => $post->ID,
-				'post_status'    => 'any',
-				'post_type'      => AUTOMATOR_POST_TYPE_CLOSURE,
-				'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-			);
-
-			$children = get_children( $args );
-
-			if ( is_array( $children ) && count( $children ) > 0 ) {
-
-				// Delete all the Children of the Parent Page
-				foreach ( $children as $child ) {
-
-					$child_update = array(
-						'ID'          => $child->ID,
-						'post_status' => 'draft',
-					);
-
-					wp_update_post( $child_update );
-				}
+					)
+				);
 			}
 		}
+	}
+
+	/**
+	 * Put every trigger and action of a restored recipe back to the status it had
+	 * before the recipe went to the trash.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $post_ID The restored post.
+	 *
+	 * @return void
+	 */
+	public function restore_triggers_actions( $post_ID ) {
+
+		$post = get_post( $post_ID );
+
+		if ( ! $post || AUTOMATOR_POST_TYPE_RECIPE !== $post->post_type ) {
+			return;
+		}
+
+		foreach ( $this->get_recipe_item_ids( (int) $post->ID ) as $item_id ) {
+
+			$status = (string) get_post_meta( $item_id, self::STATUS_BEFORE_TRASH_META, true );
+
+			// Drafted before the status was recorded: it stays a draft.
+			if ( '' === $status ) {
+				continue;
+			}
+
+			if ( get_post_status( $item_id ) !== $status ) {
+				wp_update_post(
+					array(
+						'ID'          => $item_id,
+						'post_status' => $status,
+					)
+				);
+			}
+
+			if ( get_post_status( $item_id ) === $status ) {
+				delete_post_meta( $item_id, self::STATUS_BEFORE_TRASH_META );
+			}
+		}
+	}
+
+	/**
+	 * The recipe's triggers, its own actions, and the actions inside its blocks at
+	 * any depth (each block carries the recipe's ID, as the recipe manifest reads it).
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $recipe_id The recipe ID.
+	 *
+	 * @return int[] Trigger and action post IDs.
+	 */
+	private function get_recipe_item_ids( $recipe_id ) {
+
+		$triggers = get_posts(
+			array(
+				'post_parent'    => $recipe_id,
+				'post_status'    => 'any',
+				'post_type'      => AUTOMATOR_POST_TYPE_TRIGGER,
+				'posts_per_page' => -1, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- Every trigger of one recipe.
+				'fields'         => 'ids',
+			)
+		);
+
+		$actions = get_posts(
+			array(
+				'post_parent__in' => array_merge( array( $recipe_id ), automator_get_block_store()->get_recipe_container_ids( $recipe_id ) ),
+				'post_status'     => 'any',
+				'post_type'       => AUTOMATOR_POST_TYPE_ACTION,
+				'posts_per_page'  => -1, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- Every action of one recipe.
+				'fields'          => 'ids',
+			)
+		);
+
+		return array_map( 'absint', array_merge( $triggers, $actions ) );
 	}
 
 	/**
@@ -970,36 +563,26 @@ class Recipe_Post_Utilities {
 	 */
 	public function custom_column( $column, $post_id ) {
 
-		global $wpdb;
-
 		switch ( $column ) {
 			case 'triggers':
-				$trigger_titles = $wpdb->get_results( $wpdb->prepare( "SELECT post_status, post_title FROM {$wpdb->posts} WHERE post_parent = %d AND post_type = %s", $post_id, AUTOMATOR_POST_TYPE_TRIGGER ) );
+			case 'actions':
+				$entity  = 'triggers' === $column ? 'trigger' : 'action';
+				$post_id = (int) $post_id;
+				if ( ! isset( $this->recipe_items[ $post_id ] ) ) {
+					$this->recipe_items[ $post_id ] = automator_get_recipe_items( $post_id );
+				}
 				?>
 				<div class="uap">
 					<div class="uo-post-column__list">
 						<?php
-						foreach ( $trigger_titles as $title ) {
+						foreach ( $this->recipe_items[ $post_id ] as $item ) {
+							if ( $entity !== $item['entity'] ) {
+								continue;
+							}
 							?>
 							<div class="uo-post-column__item">
-								<?php echo 'publish' === $title->post_status ? '<span class="dashicons dashicons-yes-alt recipe-ui-dash" title="Live"></span>' : '<span class="dashicons dashicons-warning recipe-ui-dash" title="Draft"></span>'; ?>
-								<?php echo esc_html( $title->post_title ); ?>
-							</div>
-						<?php } ?>
-					</div>
-				</div>
-				<?php
-
-				break;
-			case 'actions':
-				$action_titles = $wpdb->get_results( $wpdb->prepare( "SELECT post_status, post_title FROM {$wpdb->posts} WHERE post_parent=%d AND post_type=%s ORDER BY `menu_order` ASC", $post_id, AUTOMATOR_POST_TYPE_ACTION ) );
-				?>
-				<div class="uap">
-					<div class="uo-post-column__list">
-						<?php foreach ( $action_titles as $title ) { ?>
-							<div class="uo-post-column__item">
-								<?php echo 'publish' === $title->post_status ? '<span class="dashicons dashicons-yes-alt recipe-ui-dash" title="Live"></span>' : '<span class="dashicons dashicons-warning recipe-ui-dash" title="Draft"></span>'; ?>
-								<?php echo esc_html( $title->post_title ); ?>
+								<?php echo $item['is_on'] ? '<span class="dashicons dashicons-yes-alt recipe-ui-dash" title="Live"></span>' : '<span class="dashicons dashicons-warning recipe-ui-dash" title="Draft"></span>'; ?>
+								<?php echo esc_html( $item['label'] ); ?>
 							</div>
 						<?php } ?>
 					</div>
@@ -1105,5 +688,33 @@ class Recipe_Post_Utilities {
 		}
 
 		return $new_columns;
+	}
+
+	/**
+	 * Delete the runs of a recipe that is deleted for good, as "Clear activity logs" does.
+	 *
+	 * Once the recipe is gone no screen can remove its runs: Logs > Recipe lists only
+	 * runs of recipes that exist, and Logs > Action and Logs > Trigger have no delete.
+	 * clear_recipe_logs() fires `automator_before_recipe_logs_cleared` first, so Pro
+	 * cancels the recipe's waiting delays. This runs before the recipe's blocks are
+	 * deleted, so deleting a delay block finds no waiting run to settle as Cancelled.
+	 * A recipe moved to the trash keeps its runs.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int           $post_id The post being deleted.
+	 * @param \WP_Post|null $post    The post, when WordPress passes it.
+	 *
+	 * @return void
+	 */
+	public function purge_deleted_recipe_runs( $post_id, $post = null ) {
+
+		$post = $post instanceof \WP_Post ? $post : get_post( $post_id );
+
+		if ( ! $post instanceof \WP_Post || AUTOMATOR_POST_TYPE_RECIPE !== $post->post_type ) {
+			return;
+		}
+
+		\clear_recipe_logs( (int) $post->ID );
 	}
 }

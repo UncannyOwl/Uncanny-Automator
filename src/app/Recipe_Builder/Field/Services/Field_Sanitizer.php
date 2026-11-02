@@ -143,7 +143,7 @@ class Field_Sanitizer {
 	/**
 	 * Process field value for config output.
 	 *
-	 * Handles repeater encoding, JSON slashing, and applies WordPress filters.
+	 * Handles repeater encoding and applies WordPress filters.
 	 *
 	 * @param Field  $field     Field component.
 	 * @param string $transport Transport identifier (e.g., 'rest', 'mcp').
@@ -161,11 +161,11 @@ class Field_Sanitizer {
 			$value = wp_json_encode( $value );
 		}
 
-		// Slash JSON values for proper database storage.
-		// update_post_meta() calls wp_unslash(), so we need to pre-slash JSON.
-		if ( is_string( $value ) && $this->is_json_string( $value ) ) {
-			$value = wp_slash( $value );
-		}
+		// The processed value stays wire-format: no wp_slash() here. Storage
+		// slash compensation (update_post_meta() unslashes) is owned by the
+		// stores — Json_String_Repair::slash_for_storage() in the action and
+		// trigger stores. Pre-slashing at this layer hands the validator and
+		// the update-before filters an undecodable JSON string.
 
 		$field_code = $field->get_code();
 
@@ -214,18 +214,6 @@ class Field_Sanitizer {
 			$transport,
 			$field
 		);
-	}
-
-	/**
-	 * Check if a string is valid JSON.
-	 *
-	 * @param string $input The input to check.
-	 *
-	 * @return bool True if valid JSON string, false otherwise.
-	 */
-	private function is_json_string( string $input ): bool {
-		json_decode( $input, true );
-		return JSON_ERROR_NONE === json_last_error();
 	}
 
 	/**

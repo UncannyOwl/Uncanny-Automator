@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Recipe_Builder\Field\Value_Objects;
@@ -42,11 +41,14 @@ class Field_Readable {
 	}
 
 	/**
-	 * Check if has readable value.
+	 * Check if has readable value. Only an empty string has none, so `0` is a
+	 * readable value.
+	 *
+	 * @since 8.0.0 `0` is a readable value.
 	 *
 	 * @return bool
 	 */
 	public function has_value(): bool {
-		return ! empty( $this->value );
+		return '' !== $this->value;
 	}
 }

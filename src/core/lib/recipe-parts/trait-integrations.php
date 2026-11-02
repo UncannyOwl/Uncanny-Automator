@@ -303,7 +303,6 @@ trait Integrations {
 		$directory[] = dirname( $path ) . '/actions';
 		$directory[] = dirname( $path ) . '/triggers';
 		$directory[] = dirname( $path ) . '/tokens';
-		$directory[] = dirname( $path ) . '/closures';
 		$directory[] = dirname( $path ) . '/img';
 
 		return $directory;

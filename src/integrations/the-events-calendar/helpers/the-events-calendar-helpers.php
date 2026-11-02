@@ -4,20 +4,21 @@ namespace Uncanny_Automator\Integrations\The_Events_Calendar;
 
 use Uncanny_Automator\Recipe\Abstract_Helpers;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Helper for The Events Calendar / Event Tickets integration.
  *
- * Owns four concerns:
- *   1. Legacy AJAX handlers (`get_events`, `get_organizers`, …) used by
- *      triggers/actions still on the `'ajax'` field-config pattern.
- *   2. Unified Remote_Data handlers (`remote_data_get_events`,
- *      `remote_data_get_events_strict`) auto-wired via the parent's
- *      `automator_remote_data_instance_ec` filter. Both share a single
- *      `fetch_post_options()` fetcher with the legacy AJAX template, so
- *      improvements (tribe_get_events bypass, status suffix, broader
- *      post_status) apply uniformly.
- *   3. The lazy `tokens()` accessor for the dedicated tokens class.
- *   4. Cross-provider ticket-registration normalization — RSVP,
+ * Owns three concerns:
+ *   1. Remote_Data handlers (`remote_data_get_events`,
+ *      `remote_data_get_events_strict`, …) auto-wired via the parent's
+ *      `automator_remote_data_instance_ec` filter. The post-based ones share
+ *      `fetch_post_options()` (tribe_get_events bypass, status suffix,
+ *      broader post_status).
+ *   2. The lazy `tokens()` accessor for the dedicated tokens class.
+ *   3. Cross-provider ticket-registration normalization — RSVP,
  *      WooCommerce (Event Tickets Plus), PayPal/Tribe Commerce, and
  *      modern Tickets Commerce all fan into a single internal action
  *      (USER_REGISTERED_ACTION) that the `EC_REGISTER` trigger listens
@@ -173,6 +174,7 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_ec_events', $option );
 	}
 
@@ -231,6 +233,7 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_ec_events', $option );
 	}
 
@@ -712,224 +715,11 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 	}
 
 	// =========================================================================
-	// Legacy AJAX endpoints (still used by triggers/actions on the 'ajax' pattern)
+	// Shared post-option fetcher
 	// =========================================================================
 
 	/**
-	 * AJAX endpoint: returns all published `tribe_events` posts as a
-	 * dropdown. Includes an "Any event" sentinel (`-1`) at the top.
-	 *
-	 * @return void
-	 */
-	public function get_events() {
-		$this->respond_with_post_options(
-			'tribe_events',
-			esc_html_x( 'Any event', 'The Events Calendar', 'uncanny-automator' )
-		);
-	}
-
-	/**
-	 * AJAX endpoint: returns all published `tribe_organizer` posts as a
-	 * dropdown. Includes an "Any organizer" sentinel.
-	 *
-	 * @return void
-	 */
-	public function get_organizers() {
-		$this->respond_with_post_options(
-			'tribe_organizer',
-			esc_html_x( 'Any organizer', 'The Events Calendar', 'uncanny-automator' )
-		);
-	}
-
-	/**
-	 * AJAX endpoint: returns all published `tribe_venue` posts as a
-	 * dropdown. Includes an "Any venue" sentinel.
-	 *
-	 * @return void
-	 */
-	public function get_venues() {
-		$this->respond_with_post_options(
-			'tribe_venue',
-			esc_html_x( 'Any venue', 'The Events Calendar', 'uncanny-automator' )
-		);
-	}
-
-	/**
-	 * AJAX endpoint: returns all published `tribe_event_series` posts as
-	 * a dropdown. Includes an "Any series" sentinel. Returns just the
-	 * sentinel if the series post type is not registered (Series add-on
-	 * inactive).
-	 *
-	 * @return void
-	 */
-	public function get_series() {
-		$this->respond_with_post_options(
-			'tribe_event_series',
-			esc_html_x( 'Any series', 'The Events Calendar', 'uncanny-automator' ),
-			array(
-				'gate' => function () {
-					return post_type_exists( 'tribe_event_series' );
-				},
-			)
-		);
-	}
-
-	/**
-	 * AJAX endpoint: returns all tickets attached to the parent event
-	 * field's selected event. Includes an "Any ticket" sentinel. Returns
-	 * just the sentinel if no event is selected, "Any" is selected, or
-	 * Event Tickets is not active.
-	 *
-	 * @return void
-	 */
-	public function get_tickets_for_event() {
-
-		\Automator()->utilities->ajax_auth_check();
-
-		$options  = array( $this->any_option( esc_html_x( 'Any ticket', 'The Events Calendar', 'uncanny-automator' ) ) );
-		$event_id = automator_filter_input( 'value', INPUT_POST );
-
-		if ( empty( $event_id ) || '-1' === (string) $event_id || ! class_exists( '\Tribe__Tickets__Tickets' ) ) {
-			$this->json_response_die( $options );
-		}
-
-		$tickets = \Tribe__Tickets__Tickets::get_all_event_tickets( absint( $event_id ) );
-
-		if ( ! empty( $tickets ) && is_array( $tickets ) ) {
-			foreach ( $tickets as $ticket ) {
-				if ( ! is_object( $ticket ) || empty( $ticket->ID ) ) {
-					continue;
-				}
-				$options[] = $this->option_pair(
-					(int) $ticket->ID,
-					! empty( $ticket->name ) ? (string) $ticket->name : ''
-				);
-			}
-		}
-
-		$this->json_response_die( $options );
-	}
-
-	/**
-	 * AJAX endpoint: returns published `tribe_events` posts whose end
-	 * date has already passed. Timezone-correct via `tribe_get_end_date`.
-	 *
-	 * Filtering happens in PHP rather than `meta_query` because
-	 * `_EventEndDate` is stored in the event's local timezone, not UTC,
-	 * and per-event timezones drift. `tribe_get_end_date( $id, false, 'U' )`
-	 * normalizes everything to a UTC unix timestamp.
-	 *
-	 * @return void
-	 */
-	public function get_past_events() {
-		$this->respond_with_post_options(
-			'tribe_events',
-			esc_html_x( 'Any past event', 'The Events Calendar', 'uncanny-automator' ),
-			array(
-				'gate'           => function () {
-					return class_exists( 'Tribe__Events__Main' ) && function_exists( 'tribe_get_end_date' );
-				},
-				// SQL pre-filter (coarse, site-tz) reduces the candidate
-				// set; the runtime_filter then enforces UTC correctness.
-				'get_args'       => array(
-					'meta_key'   => '_EventStartDate',
-					'orderby'    => 'meta_value',
-					'order'      => 'DESC',
-					'meta_query' => array(
-						array(
-							'key'     => '_EventEndDate',
-							'value'   => current_time( 'mysql' ),
-							'compare' => '<',
-							'type'    => 'DATETIME',
-						),
-					),
-				),
-				'runtime_filter' => function ( $event ) {
-					$end_utc = (int) tribe_get_end_date( $event->ID, false, 'U' );
-					return $end_utc > 0 && $end_utc < time();
-				},
-			)
-		);
-	}
-
-	/**
-	 * AJAX endpoint: returns all `tribe_events_cat` terms as a dropdown.
-	 * Includes an "Any category" sentinel (`-1`) at the top.
-	 *
-	 * @return void
-	 */
-	public function get_event_categories() {
-
-		\Automator()->utilities->ajax_auth_check();
-
-		$options = array(
-			array(
-				'value' => '-1',
-				'text'  => esc_html_x( 'Any category', 'The Events Calendar', 'uncanny-automator' ),
-			),
-		);
-
-		if ( ! class_exists( 'Tribe__Events__Main' ) || ! taxonomy_exists( 'tribe_events_cat' ) ) {
-			$this->json_response_die( $options );
-		}
-
-		$terms = get_terms(
-			array(
-				'taxonomy'   => 'tribe_events_cat',
-				'hide_empty' => false,
-				'orderby'    => 'name',
-				'order'      => 'ASC',
-				'number'     => 999,
-			)
-		);
-
-		if ( ! is_wp_error( $terms ) && is_array( $terms ) ) {
-			foreach ( $terms as $term ) {
-				$options[] = array(
-					'value' => (string) $term->term_id,
-					'text'  => '' !== $term->name
-						? $term->name
-						/* translators: %d is a term ID */
-						: sprintf( esc_html_x( 'ID: %d (no name)', 'The Events Calendar', 'uncanny-automator' ), $term->term_id ),
-				);
-			}
-		}
-
-		$this->json_response_die( $options );
-	}
-
-	// =========================================================================
-	// AJAX response template + shared fetcher
-	// =========================================================================
-
-	/**
-	 * Template method shared by every "list posts of type X as select
-	 * options" AJAX handler. Auth-checks, calls the shared fetcher, and
-	 * emits the JSON `text/value` shape the recipe builder expects.
-	 * Always echoes + dies — never returns.
-	 *
-	 * @param string                                 $post_type   WP post type to query.
-	 * @param string                                 $any_label   Translated label for the `-1` sentinel.
-	 * @param array{
-	 *     gate?: callable():bool,
-	 *     get_args?: array<string,mixed>,
-	 *     runtime_filter?: callable(\WP_Post):bool,
-	 * }                                             $opts        Optional overrides.
-	 *
-	 * @return void
-	 */
-	private function respond_with_post_options( $post_type, $any_label, array $opts = array() ) {
-
-		\Automator()->utilities->ajax_auth_check();
-
-		$options = $this->fetch_post_options( $post_type, $any_label, $opts );
-
-		$this->json_response_die( $options );
-	}
-
-	/**
-	 * Shared post-option fetcher used by both the legacy AJAX template
-	 * (`respond_with_post_options`) and the modern Remote_Data segments.
+	 * Post-option fetcher behind the Remote_Data segments.
 	 *
 	 * Improvements that apply uniformly to every consumer:
 	 *
@@ -1056,25 +846,6 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 		);
 	}
 
-	/**
-	 * Echo the canonical AJAX JSON envelope and die. Never use
-	 * `wp_send_json_success()` — it nests under a `data` key, which the
-	 * Automator AJAX field consumer doesn't unwrap.
-	 *
-	 * @param array $options
-	 *
-	 * @return void
-	 */
-	private function json_response_die( array $options ) {
-		echo wp_json_encode(
-			array(
-				'success' => true,
-				'options' => $options,
-			)
-		);
-		die();
-	}
-
 	// =========================================================================
 	// Cross-provider ticket-registration normalization
 	// =========================================================================
@@ -1145,6 +916,7 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 	 * @return void
 	 */
 	public function normalize_checkin( $attendee_id, $qr = null, $event_id = null ) {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is an automator_event_tickets_ constant.
 		do_action( self::CHECKIN_ACTION, absint( $attendee_id ), $qr, null === $event_id ? null : absint( $event_id ) );
 	}
 
@@ -1159,6 +931,7 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 	 * @return void
 	 */
 	public function normalize_legacy_checkin( $attendee_id, $qr = null ) {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is an automator_event_tickets_ constant.
 		do_action( self::CHECKIN_ACTION, absint( $attendee_id ), $qr, null );
 	}
 
@@ -1170,6 +943,7 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 	 * @return void
 	 */
 	public function normalize_uncheckin( $attendee_id ) {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is an automator_event_tickets_ constant.
 		do_action( self::UNCHECKIN_ACTION, absint( $attendee_id ) );
 	}
 
@@ -1192,6 +966,7 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 			return;
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is an automator_event_tickets_ constant.
 		do_action( self::USER_REGISTERED_ACTION, $event->ID, $product_id, $order_id, get_current_user_id() );
 	}
 
@@ -1219,6 +994,7 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 			}
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is an automator_event_tickets_ constant.
 		do_action( self::USER_REGISTERED_ACTION, absint( $post_id ), $product_id, $order_id, $user_id );
 	}
 
@@ -1241,6 +1017,7 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 			return;
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is an automator_event_tickets_ constant.
 		do_action( self::USER_REGISTERED_ACTION, $event->ID, $product_id, $order_id, get_current_user_id() );
 	}
 
@@ -1279,6 +1056,7 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 			$user_id = get_current_user_id();
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is an automator_event_tickets_ constant.
 		do_action( self::USER_REGISTERED_ACTION, $event_id, $product_id, $order_id, $user_id );
 	}
 

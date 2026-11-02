@@ -3,30 +3,32 @@ declare( strict_types=1 );
 
 namespace Uncanny_Automator\App\Infrastructure\Http;
 
+use Uncanny_Automator\App\Events\Dispatcher;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Response;
+
 /**
- * Class Transient_Retry
+ * Retry a bounded set of connection-stage failures reported by WordPress.
  *
  * Wraps wp_remote_request() with a small, bounded retry for transient
  * transport failures that PROVE the request never reached the Automator
- * Platform application:
+ * Platform application: connection-class WP_Error only — DNS resolution
+ * failure, refused/failed TCP connect, connect-phase timeout, SSL connect
+ * failure. No bytes left the site, so nothing executed server-side, which is
+ * what makes this safe to apply to every platform call, POSTs included.
  *
- * - Connection-class WP_Error: DNS resolution failure, refused/failed TCP
- *   connect, connect-phase timeout, SSL connect failure. No bytes left the
- *   site, so nothing executed server-side.
- * - Cloudflare origin-unreachable statuses: 521, 522, 523, 525, 526. The
- *   edge could not hand the request to the origin at all — the same set
- *   Cloudflare's own zero-downtime failover retries for exactly this
- *   reason.
+ * HTTP responses, including Cloudflare's 52x statuses, do not establish
+ * whether an action ran, so none is replayed automatically. Read/operation
+ * timeouts (cURL 28 "Operation timed out ...") are not retried either: the
+ * request was sent and the response never arrived. Site owners may still
+ * override the retry policy through the existing filter.
  *
- * Because the request provably never executed, a retry can never
- * double-run a non-idempotent /v2 action — which is what makes this safe
- * to apply to EVERY platform call, POSTs included.
- *
- * Deliberately NOT retried (the request may already have executed):
- * - Read/operation timeouts (cURL 28 "Operation timed out ..."), where the
- *   request was sent and the response never arrived.
- * - Cloudflare 520 (ambiguous) and 524 (origin accepted, then timed out).
- * - Any HTTP response produced by the application itself (4xx/5xx).
+ * Retry-After, when the caller asks for it: a surface that refuses a request
+ * BEFORE acting on it and says when to come back — `429` (a throttle) or
+ * `503` (a dependency down) with a numeric `Retry-After` — is waited out once,
+ * when the wait is short ({@see self::RETRY_AFTER_MAX_WAIT_SECONDS}). A longer
+ * wait is not held in the request: the refusal goes back to the caller. Only
+ * the platform's site-signed surfaces ask (`/v3`, `/app/v1`; platform answers
+ * contract 4.1); every `/v2` call keeps the transport-only policy.
  *
  * @since 7.4.1
  * @package Uncanny_Automator\App\Infrastructure\Http
@@ -34,11 +36,28 @@ namespace Uncanny_Automator\App\Infrastructure\Http;
 class Transient_Retry {
 
 	/**
-	 * Cloudflare statuses proving the origin never received the request.
+	 * No HTTP status alone proves that an action was not executed.
 	 *
 	 * @var int[]
 	 */
-	const RETRYABLE_STATUS_CODES = array( 521, 522, 523, 525, 526 );
+	const RETRYABLE_STATUS_CODES = array();
+
+	/**
+	 * Statuses that refuse a request before it acts and say, in Retry-After,
+	 * when to come back.
+	 *
+	 * @var int[]
+	 */
+	const RETRY_AFTER_STATUS_CODES = array( 429, 503 );
+
+	/**
+	 * The longest Retry-After waited out inside the request, in seconds. It
+	 * stays well inside the client's 60-second timeout and PHP's usual
+	 * 30-second limit, so a short throttle costs one wait, not the step.
+	 *
+	 * @var int
+	 */
+	const RETRY_AFTER_MAX_WAIT_SECONDS = 10;
 
 	/**
 	 * URL fragments that are never retried. v2/credits fires multiple times
@@ -73,12 +92,41 @@ class Transient_Retry {
 	 * retries. On non-retryable outcomes (including every response produced
 	 * by the application) it behaves exactly like a single call.
 	 *
+	 * @param string $url                The request URL.
+	 * @param array  $args               The WordPress HTTP API arguments.
+	 * @param bool   $honour_retry_after Wait out a short Retry-After on a 429 or
+	 *                                   503, once. Only for a surface that sends
+	 *                                   those before acting on the request.
+	 *
+	 * @return array|\WP_Error The final response (or last transport error).
+	 */
+	public static function request( string $url, array $args, bool $honour_retry_after = false ) {
+
+		$response = self::request_with_transport_retries( $url, $args );
+
+		if ( ! $honour_retry_after ) {
+			return $response;
+		}
+
+		$wait = self::short_retry_after( $response, $url );
+		if ( 0 === $wait ) {
+			return $response;
+		}
+
+		self::wait( 'Retry-After', 1, $wait, $response, $url, 1 );
+
+		return self::request_with_transport_retries( $url, $args );
+	}
+
+	/**
+	 * Send, retrying only the provably-unsent transport failures.
+	 *
 	 * @param string $url  The request URL.
 	 * @param array  $args The WordPress HTTP API arguments.
 	 *
 	 * @return array|\WP_Error The final response (or last transport error).
 	 */
-	public static function request( string $url, array $args ) {
+	private static function request_with_transport_retries( string $url, array $args ) {
 
 		// Fire-and-forget requests return before an outcome exists — nothing
 		// to inspect, nothing safe to retry.
@@ -115,31 +163,77 @@ class Transient_Retry {
 				return $response;
 			}
 
-			/**
-			 * Fires before a transient-failure retry attempt.
-			 *
-			 * @param int             $attempt  The retry number (1-based).
-			 * @param int             $delay    Seconds slept before this retry.
-			 * @param array|\WP_Error $response The failed response being retried.
-			 * @param string          $url      The request URL.
-			 */
-			do_action( 'automator_api_transient_retry', $index + 1, (int) $delay, $response, $url );
-
-			if ( function_exists( 'automator_log' ) ) {
-				automator_log(
-					sprintf( 'Transient transport failure; retry %d of %d after %ds: %s', $index + 1, count( $delays ), (int) $delay, self::describe( $response ) ),
-					'Transient_Retry'
-				);
-			}
-
-			if ( 0 < (int) $delay ) {
-				sleep( (int) $delay ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_sleep -- Bounded (max sum of the filtered schedule); bridging a seconds-long platform front-door blip is the entire point.
-			}
+			self::wait( 'Transient transport failure', $index + 1, (int) $delay, $response, $url, count( $delays ) );
 
 			$response = wp_remote_request( $url, $args );
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Announce, log and sleep before a retry.
+	 *
+	 * @param string          $reason   Why the request is sent again, for the log.
+	 * @param int             $attempt  The retry number (1-based).
+	 * @param int             $delay    Seconds to sleep.
+	 * @param array|\WP_Error $response The failed response being retried.
+	 * @param string          $url      The request URL.
+	 * @param int             $of       How many retries the schedule allows.
+	 *
+	 * @return void
+	 */
+	private static function wait( string $reason, int $attempt, int $delay, $response, string $url, int $of ): void {
+
+		/**
+		 * Fires before a retry attempt: a transient transport failure, or a
+		 * short Retry-After the caller asked to have waited out.
+		 *
+		 * @param int             $attempt  The retry number (1-based).
+		 * @param int             $delay    Seconds slept before this retry.
+		 * @param array|\WP_Error $response The failed response being retried.
+		 * @param string          $url      The request URL.
+		 */
+		do_action( 'automator_api_transient_retry', $attempt, $delay, $response, $url );
+
+		if ( function_exists( 'automator_log' ) ) {
+			automator_log(
+				sprintf( '%s; retry %d of %d after %ds: %s', $reason, $attempt, $of, $delay, self::describe( $response ) ),
+				'Transient_Retry'
+			);
+		}
+
+		if ( 0 < $delay ) {
+			sleep( $delay ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_sleep -- Bounded: the filtered transport schedule, or one Retry-After no longer than RETRY_AFTER_MAX_WAIT_SECONDS.
+		}
+	}
+
+	/**
+	 * The Retry-After to wait out before sending again, or 0 when the answer
+	 * is not a refusal that asks for one, or asks for a longer wait than a
+	 * request should hold.
+	 *
+	 * @param array|\WP_Error $response The wp_remote_request() result.
+	 * @param string          $url      The request URL.
+	 *
+	 * @return int Seconds.
+	 */
+	private static function short_retry_after( $response, string $url ): int {
+
+		if ( is_wp_error( $response ) || ! in_array( (int) wp_remote_retrieve_response_code( $response ), self::RETRY_AFTER_STATUS_CODES, true ) ) {
+			return 0;
+		}
+
+		/**
+		 * Filter the longest Retry-After waited out inside a request.
+		 *
+		 * @param int    $seconds Default RETRY_AFTER_MAX_WAIT_SECONDS.
+		 * @param string $url     The request URL.
+		 */
+		$max_wait = (int) Dispatcher::filter( 'automator_api_retry_after_max_wait', self::RETRY_AFTER_MAX_WAIT_SECONDS, $url );
+		$wait     = Response::retry_after_seconds( $response );
+
+		return 0 < $wait && $wait <= $max_wait ? $wait : 0;
 	}
 
 	/**
@@ -190,7 +284,8 @@ class Transient_Retry {
 	private static function describe( $response ): string {
 
 		if ( is_wp_error( $response ) ) {
-			return (string) $response->get_error_message();
+			$code = (string) $response->get_error_code();
+			return preg_match( '/^[a-zA-Z0-9_-]{1,64}$/', $code ) ? 'WordPress HTTP error: ' . $code : 'WordPress HTTP error';
 		}
 
 		return 'HTTP ' . (int) wp_remote_retrieve_response_code( $response );

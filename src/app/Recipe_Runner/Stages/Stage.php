@@ -13,9 +13,9 @@ use Uncanny_Automator\App\Recipe_Runner\Dtos\Pipeline_Result;
  * 90% of Automator actions are irreversible (emails, API calls, user creation),
  * so the pipeline pattern (not saga) is the correct fit.
  *
- * Lives alongside the five `*_Stage` implementations that consume it
+ * Lives alongside the four `*_Stage` implementations that consume it
  * (Trigger_Entry_Stage, Trigger_Complete_Stage, Action_Run_Stage,
- * Recipe_Complete_Stage, Closure_Stage).
+ * Recipe_Complete_Stage).
  *
  * @package Uncanny_Automator\App\Recipe_Runner\Stages
  * @since   7.2

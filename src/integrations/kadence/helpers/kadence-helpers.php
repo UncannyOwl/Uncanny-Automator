@@ -117,8 +117,10 @@ class Kadence_Helpers extends Abstract_Helpers {
 			if ( is_array( $form_uid ) ) {
 				$post_id = $form_uid[0];
 			}
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Searches post_content for the Kadence form block marker; no core API searches content without also searching titles and excerpts.
 			$forms = $wpdb->get_results( $wpdb->prepare( "SELECT ID, post_title, post_content FROM $wpdb->posts WHERE post_content LIKE %s AND ID = %d", '%%<!-- wp:kadence/form%%', $post_id ) );
 		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Searches post_content for the Kadence form block marker; no core API searches content without also searching titles and excerpts.
 			$forms = $wpdb->get_results( $wpdb->prepare( "SELECT ID, post_title, post_content FROM $wpdb->posts WHERE post_content LIKE %s", '%%<!-- wp:kadence/form%%' ) );
 		}
 

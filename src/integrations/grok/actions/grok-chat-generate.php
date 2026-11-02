@@ -194,6 +194,7 @@ class Grok_Chat_Generate extends App_Action {
 		$messages = $this->create_simple_message( $system_content, $prompt );
 
 		$payload = $payload_builder
+			// phpcs:ignore PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- The site owner connects their own Grok account; this integration calls the provider's API for them.
 			->endpoint( 'https://api.x.ai/v1/chat/completions' )
 			->model( $model )
 			->temperature( (float) $temperature )

@@ -16,8 +16,9 @@ namespace Uncanny_Automator\App\Recipe_Builder\Action\Services;
 use Uncanny_Automator\App\Recipe_Builder\Action\Registry\WP_Action_Registry;
 use Uncanny_Automator\App\Recipe_Builder\Action\Value_Objects\Action_Code;
 use Uncanny_Automator\App\Plan\Services\Plan_Service;
-use Uncanny_Automator\Services\Integrations\Fields;
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Field_Registry_Service;
 use Uncanny_Automator\App\Recipe_Builder\Services\Availability\Availability_Data;
+use Uncanny_Automator\App\Recipe_Builder\Services\Availability\Integration_Plugin_Presence;
 use Uncanny_Automator\App\Recipe_Builder\Services\Availability\Availability_Checker;
 use Uncanny_Automator\App\Recipe_Builder\Field\Field_Json_Schema;
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
@@ -177,7 +178,8 @@ class Action_Registry_Service {
 			$rag_response = $this->call_rag_search( $query, 'action', $integration, $limit );
 
 			if ( is_wp_error( $rag_response ) ) {
-				return array();
+				// Keep the failure reason so the Agent can explain why access failed.
+				return $rag_response;
 			}
 
 			// Extract results from RAG response.
@@ -231,15 +233,19 @@ class Action_Registry_Service {
 				return $action_definition;
 			}
 
-			// Get configuration schema
-			$fields = new Fields();
-			$fields->set_config(
-				array(
-					'object_type' => 'actions',
-					'code'        => $action_code,
-				)
+			// Materialize the grouped field shape via the central service.
+			$configuration_fields = Field_Registry_Service::instance()->get_item_fields_grouped(
+				$action_definition['integration'] ?? '',
+				'action',
+				$action_code
 			);
-			$configuration_fields = $fields->get();
+
+			if ( is_wp_error( $configuration_fields ) ) {
+				return new \WP_Error(
+					$configuration_fields->get_error_code(),
+					$configuration_fields->get_error_message()
+				);
+			}
 
 			// Convert to JSON Schema format.
 			$converter    = new Field_Json_Schema();
@@ -339,6 +345,7 @@ class Action_Registry_Service {
 			->code( $action_code )
 			->type( 'action' )
 			->integration_registered( $is_integration_registered )
+			->plugin_installed( ! $is_integration_registered && ( new Integration_Plugin_Presence() )->is_installed( $integration_code ) )
 			->feature_registered( $is_action_registered )
 			->app( $is_app )
 			->connected( $is_connected )

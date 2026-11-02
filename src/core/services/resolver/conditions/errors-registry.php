@@ -30,6 +30,48 @@ class Errors_Registry {
 	protected $errors = array();
 
 	/**
+	 * The run (recipe log ID) the errors belong to.
+	 *
+	 * @var int
+	 */
+	protected $recipe_log_id = 0;
+
+	/**
+	 * Hold the failed conditions of the given run. A different run starts with none, so
+	 * runs in one PHP process (a queue drain, cron or WP-CLI) never share errors.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $recipe_log_id The run's recipe log ID.
+	 *
+	 * @return void
+	 */
+	public function use_run( $recipe_log_id ) {
+
+		$recipe_log_id = absint( $recipe_log_id );
+
+		if ( $recipe_log_id === $this->recipe_log_id ) {
+			return;
+		}
+
+		$this->recipe_log_id = $recipe_log_id;
+		$this->errors        = array();
+	}
+
+	/**
+	 * The failed conditions of the given run: none when the registry holds another run's.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $recipe_log_id The run's recipe log ID.
+	 *
+	 * @return string[]
+	 */
+	public function get_run_errors( $recipe_log_id ) {
+		return absint( $recipe_log_id ) === $this->recipe_log_id ? $this->errors : array();
+	}
+
+	/**
 	 * @param string $condition_id
 	 * @param string $error_message
 	 *
@@ -102,5 +144,4 @@ class Errors_Registry {
 	public static function get_instance() {
 		return null === self::$instance ? self::$instance = new self() : self::$instance;
 	}
-
 }

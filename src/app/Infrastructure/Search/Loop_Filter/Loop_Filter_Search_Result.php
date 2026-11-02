@@ -14,14 +14,25 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Infrastructure\Search\Loop_Filter;
 
 use Uncanny_Automator\App\Infrastructure\Search\Shared\Component_Availability;
+use Uncanny_Automator\App\Plan\Domain\Plan_Levels;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Sentence_String;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integration_Code;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integration_Name;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integration_Required_Tier;
 
 /**
  * Value object representing a loop filter in search results.
  */
 class Loop_Filter_Search_Result {
+
+	/**
+	 * The catalog's tier for a loop filter any Pro plan can use.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var string
+	 */
+	private const CATALOG_PRO_TIER = 'pro';
 
 	/**
 	 * Filter code.
@@ -59,11 +70,11 @@ class Loop_Filter_Search_Result {
 	private array $iteration_types;
 
 	/**
-	 * Whether this filter requires Pro.
+	 * The plan this filter requires.
 	 *
-	 * @var bool
+	 * @var Integration_Required_Tier
 	 */
-	private bool $is_pro;
+	private Integration_Required_Tier $required_tier;
 
 	/**
 	 * Availability information.
@@ -75,13 +86,13 @@ class Loop_Filter_Search_Result {
 	/**
 	 * Constructor.
 	 *
-	 * @param string                 $code             Filter code.
-	 * @param Sentence_String        $sentence         Human-readable sentence.
-	 * @param Integration_Code       $integration_code Integration code.
-	 * @param Integration_Name       $integration_name Integration name.
-	 * @param array                  $iteration_types  Supported iteration types.
-	 * @param bool                   $is_pro           Whether Pro is required.
-	 * @param Component_Availability $availability     Availability info.
+	 * @param string                    $code             Filter code.
+	 * @param Sentence_String           $sentence         Human-readable sentence.
+	 * @param Integration_Code          $integration_code Integration code.
+	 * @param Integration_Name          $integration_name Integration name.
+	 * @param array                     $iteration_types  Supported iteration types.
+	 * @param Integration_Required_Tier $required_tier    The plan the filter requires.
+	 * @param Component_Availability    $availability     Availability info.
 	 */
 	public function __construct(
 		string $code,
@@ -89,7 +100,7 @@ class Loop_Filter_Search_Result {
 		Integration_Code $integration_code,
 		Integration_Name $integration_name,
 		array $iteration_types,
-		bool $is_pro,
+		Integration_Required_Tier $required_tier,
 		Component_Availability $availability
 	) {
 		$this->validate_code( $code );
@@ -98,7 +109,7 @@ class Loop_Filter_Search_Result {
 		$this->integration_code = $integration_code;
 		$this->integration_name = $integration_name;
 		$this->iteration_types  = $iteration_types;
-		$this->is_pro           = $is_pro;
+		$this->required_tier    = $required_tier;
 		$this->availability     = $availability;
 	}
 
@@ -160,12 +171,23 @@ class Loop_Filter_Search_Result {
 	}
 
 	/**
+	 * Get the plan this filter requires.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return Integration_Required_Tier
+	 */
+	public function get_required_tier(): Integration_Required_Tier {
+		return $this->required_tier;
+	}
+
+	/**
 	 * Check if Pro is required.
 	 *
 	 * @return bool
 	 */
 	public function is_pro(): bool {
-		return $this->is_pro;
+		return $this->required_tier->is_pro();
 	}
 
 	/**
@@ -190,7 +212,7 @@ class Loop_Filter_Search_Result {
 			'integration_code' => $this->integration_code->get_value(),
 			'integration_name' => $this->integration_name->get_value(),
 			'iteration_types'  => $this->iteration_types,
-			'required_tier'    => $this->is_pro ? 'pro' : 'lite',
+			'required_tier'    => $this->required_tier->get_value(),
 			'availability'     => $this->availability->to_array(),
 		);
 	}
@@ -212,8 +234,6 @@ class Loop_Filter_Search_Result {
 		$integration_code = $data['integration_id'] ?? $data['integration_code'] ?? '';
 		$integration_name = $data['integration_name'] ?? $data['integration'] ?? $integration_code;
 		$iteration_types  = $data['iteration_types'] ?? array();
-		$required_tier    = $data['required_tier'] ?? 'lite';
-		$is_pro           = 'pro' === $required_tier || ! empty( $data['is_pro'] );
 
 		return new self(
 			(string) $code,
@@ -221,8 +241,31 @@ class Loop_Filter_Search_Result {
 			new Integration_Code( (string) $integration_code ),
 			new Integration_Name( (string) $integration_name ),
 			$iteration_types,
-			$is_pro,
+			self::required_tier_from( $data ),
 			$availability
 		);
+	}
+
+	/**
+	 * The plan a catalog loop filter row requires, in the plan vocabulary actions and
+	 * conditions use (lite, pro-basic, pro-plus, pro-elite).
+	 *
+	 * The catalog tags a loop filter any Pro plan can use as `pro`, or flags it with
+	 * `is_pro`; both read as Pro Basic, the first Pro plan.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param array $data Filter data from the catalog.
+	 * @return Integration_Required_Tier
+	 * @throws \InvalidArgumentException If the tier is not a plan.
+	 */
+	public static function required_tier_from( array $data ): Integration_Required_Tier {
+		$required_tier = (string) ( $data['required_tier'] ?? Plan_Levels::LITE );
+
+		if ( self::CATALOG_PRO_TIER === $required_tier || ( Plan_Levels::LITE === $required_tier && ! empty( $data['is_pro'] ) ) ) {
+			$required_tier = Plan_Levels::PRO_BASIC;
+		}
+
+		return new Integration_Required_Tier( $required_tier );
 	}
 }

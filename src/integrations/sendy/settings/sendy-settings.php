@@ -328,7 +328,7 @@ class Sendy_Settings extends App_Integration_Settings {
 							array(
 								'type' => 'icon',
 								'data' => array(
-									'id' => 'list',
+									'code' => 'list',
 								),
 							),
 						),
@@ -354,7 +354,7 @@ class Sendy_Settings extends App_Integration_Settings {
 									'color'          => 'secondary',
 									'size'           => 'extra-small',
 									'icon'           => array(
-										'id' => 'rotate',
+										'code' => 'rotate',
 									),
 								),
 							),

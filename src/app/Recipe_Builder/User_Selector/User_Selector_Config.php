@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\User_Selector;
 
@@ -42,7 +41,9 @@ class User_Selector_Config {
 	/**
 	 * Raw source type - no validation.
 	 *
-	 * Expected: 'existingUser' or 'newUser'.
+	 * Expected: 'existing-user' or 'new-user'. Legacy meta supplies the
+	 * camelCase aliases ('existingUser'/'newUser'); both shapes reach this
+	 * DTO unnormalised and `User_Selector_Source` canonicalises on read.
 	 *
 	 * @var mixed
 	 */

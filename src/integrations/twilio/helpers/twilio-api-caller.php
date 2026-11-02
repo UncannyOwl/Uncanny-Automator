@@ -95,7 +95,7 @@ class Twilio_Api_Caller extends Api_Caller {
 			// Fallback to data message.
 			$error_message = isset( $response['data']['message'] )
 				? $response['data']['message']
-				// translator: %d is the status code
+				/* translators: %d: HTTP status code */
 				: sprintf( esc_html_x( 'API request failed with status %d', 'Twilio', 'uncanny-automator' ), absint( $response['statusCode'] ) );
 
 			throw new Exception( esc_html( $error_message ) );

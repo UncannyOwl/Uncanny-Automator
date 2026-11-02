@@ -17,6 +17,7 @@ use Uncanny_Automator\App\Recipe_Builder\Condition\Services\Condition_Registry_S
 use Uncanny_Automator\App\Recipe_Builder\Loop\Services\Filter\Filter_Registry_Service;
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Block_Modifier_Types;
 
 /**
  * Builds indexed maps of integration codes for fast comparison.
@@ -48,17 +49,20 @@ class Integration_Map_Builder {
 
 			$code_lower = strtolower( $code );
 
-			// Extract item codes for fast comparison
 			$item_codes = array(
-				Integration_Item_Types::TRIGGER          => $this->extract_item_codes_from_array( $entry['integration_triggers'] ?? array() ),
-				Integration_Item_Types::ACTION           => $this->extract_item_codes_from_array( $entry['integration_actions'] ?? array() ),
-				Integration_Item_Types::FILTER_CONDITION => $this->extract_item_codes_from_array( $entry['integration_conditions'] ?? array() ),
-				Integration_Item_Types::LOOP_FILTER      => $this->extract_item_codes_from_array( $entry['integration_loop_filters'] ?? array() ),
+				Integration_Item_Types::TRIGGER => $this->extract_item_codes_from_array( $entry['integration_triggers'] ?? array() ),
+				Integration_Item_Types::ACTION  => $this->extract_item_codes_from_array( $entry['integration_actions'] ?? array() ),
+			);
+
+			$block_modifier_codes = array(
+				Block_Modifier_Types::FILTER_CONDITION => $this->extract_item_codes_from_array( $entry['integration_conditions'] ?? array() ),
+				Block_Modifier_Types::LOOP_FILTER      => $this->extract_item_codes_from_array( $entry['integration_loop_filters'] ?? array() ),
 			);
 
 			$map[ $code_lower ] = array(
-				'data'       => $entry,
-				'item_codes' => $item_codes,
+				'data'                 => $entry,
+				'item_codes'           => $item_codes,
+				'block_modifier_codes' => $block_modifier_codes,
 			);
 		}
 
@@ -83,13 +87,14 @@ class Integration_Map_Builder {
 		$map                 = array();
 
 		foreach ( $all_integrations as $code => $integration ) {
-			// Fast code extraction only - no full discovery
 			$map[ $code ] = array(
-				'item_codes' => array(
-					Integration_Item_Types::TRIGGER          => $this->extract_trigger_codes( $code, $trigger_registry ),
-					Integration_Item_Types::ACTION           => $this->extract_action_codes( $code, $action_registry ),
-					Integration_Item_Types::FILTER_CONDITION => $this->extract_condition_codes( $code, $condition_service ),
-					Integration_Item_Types::LOOP_FILTER      => $this->extract_loop_filter_codes( $code, $loop_filter_service ),
+				'item_codes'           => array(
+					Integration_Item_Types::TRIGGER => $this->extract_trigger_codes( $code, $trigger_registry ),
+					Integration_Item_Types::ACTION  => $this->extract_action_codes( $code, $action_registry ),
+				),
+				'block_modifier_codes' => array(
+					Block_Modifier_Types::FILTER_CONDITION => $this->extract_condition_codes( $code, $condition_service ),
+					Block_Modifier_Types::LOOP_FILTER      => $this->extract_loop_filter_codes( $code, $loop_filter_service ),
 				),
 			);
 		}

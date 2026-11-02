@@ -221,7 +221,13 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 
 		$all_tables = array_unique( $all_tables );
 
+		$boundary = $this->get_table_boundary_response( $all_tables, $user_context );
+		if ( null !== $boundary ) {
+			return $boundary;
+		}
+
 		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- The query string is prepared inside prepare_information_schema_query().
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Live information_schema read for the table browser, must not be cached. The query is prepared inside prepare_information_schema_query().
 		$existing = $wpdb->get_col(
 			$this->prepare_information_schema_query(
 				'SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ({table_placeholders})',
@@ -230,7 +236,13 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
-		$missing = array_diff( $all_tables, $existing );
+		// A failed probe must not be reported as "tables not found".
+		$failure = $this->get_query_failure_response();
+		if ( null !== $failure ) {
+			return $failure;
+		}
+
+		$missing = $this->missing_table_names( $all_tables, (array) $existing );
 
 		if ( ! empty( $missing ) ) {
 			return Json_Rpc_Response::create_error_response(
@@ -293,16 +305,28 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 			}
 		}
 
-		// Add LIMIT.
-		$query .= $wpdb->prepare( ' LIMIT %d', $limit );
+		// Probe one extra row to distinguish a full final page from more results.
+		// This bounds returned rows, not the engine's work for joins or aggregates;
+		// execution-time limits must be configured by the database host.
+		$query .= $wpdb->prepare( ' LIMIT %d', $limit + 1 );
 
 		// Execute query.
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Live read for the table browser, must not be cached. The query is assembled from sanitized identifiers and column references; the WHERE predicates and LIMIT are already prepared.
 		$results = $wpdb->get_results( $query, ARRAY_A );
 
-		if ( null === $results ) {
-			return Json_Rpc_Response::create_error_response( 'Query failed: ' . $wpdb->last_error );
+		// wpdb returns an empty array on SQL errors, so "0 rows" is only
+		// trustworthy when last_error is empty.
+		$failure = $this->get_query_failure_response();
+		if ( null !== $failure ) {
+			return $failure;
 		}
+
+		if ( ! is_array( $results ) ) {
+			$results = array();
+		}
+
+		$has_more = count( $results ) > $limit;
+		$results  = array_slice( $results, 0, $limit );
 
 		// Strip sensitive columns from results (covers SELECT * on wp_users, etc.).
 		$results         = $this->redact_sensitive_columns( $results );
@@ -315,7 +339,7 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 				'table'           => $table,
 				'rows'            => $results,
 				'row_count'       => count( $results ),
-				'has_more'        => count( $results ) === $limit,
+				'has_more'        => $has_more,
 				'truncated_cells' => $truncation_meta,
 			)
 		);
@@ -921,7 +945,7 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 
 		$table  = $parsed['table'];
 		$alias  = $parsed['alias'];
-		$result = '`' . $table . '`';
+		$result = $this->qualify_table_name( $table );
 
 		if ( '' !== $alias ) {
 			$result .= ' ' . $alias;
@@ -1035,9 +1059,13 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 			return '*';
 		}
 
+		$refused     = array();
 		$column_list = array_map(
-			function ( $col ) {
+			function ( $col ) use ( &$refused ) {
 				$raw = trim( $col );
+				if ( '' === $raw ) {
+					return '';
+				}
 
 				$alias = '';
 				$expr  = $raw;
@@ -1050,6 +1078,7 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 
 				$expr = $this->sanitize_select_expression( $expr );
 				if ( '' === $expr ) {
+					$refused[] = $raw;
 					return '';
 				}
 
@@ -1059,16 +1088,48 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 
 				return $expr;
 			},
-			explode( ',', $columns )
+			self::split_columns( $columns )
 		);
 
 		$column_list = array_filter( $column_list );
+		$supported   = 'Use column names, table.column, AS aliases, or COUNT, SUM, AVG, MIN or MAX of one column; authentication columns are never returned.';
 
 		if ( empty( $column_list ) ) {
-			return new \WP_Error( 'invalid_columns', 'No valid SELECT columns were provided.' );
+			return new \WP_Error( 'invalid_columns', trim( 'No valid SELECT columns were provided. ' . ( $refused ? 'Not supported: ' . implode( '; ', $refused ) . '. ' : '' ) . $supported ) );
+		}
+
+		// A column left out quietly reads as an empty value, so refuse the whole request.
+		if ( $refused ) {
+			return new \WP_Error( 'invalid_columns', sprintf( 'These SELECT columns are not supported: %s. %s', implode( '; ', $refused ), $supported ) );
 		}
 
 		return implode( ', ', $column_list );
+	}
+
+	/**
+	 * Split a column list at commas outside parentheses, so a function's arguments stay one column.
+	 *
+	 * @param string $columns Comma-separated columns.
+	 * @return string[]
+	 */
+	private static function split_columns( string $columns ): array {
+		$parts   = array();
+		$current = '';
+		$depth   = 0;
+		foreach ( str_split( $columns ) as $char ) {
+			if ( '(' === $char ) {
+				++$depth;
+			} elseif ( ')' === $char && $depth > 0 ) {
+				--$depth;
+			} elseif ( ',' === $char && 0 === $depth ) {
+				$parts[] = $current;
+				$current = '';
+				continue;
+			}
+			$current .= $char;
+		}
+		$parts[] = $current;
+		return $parts;
 	}
 
 	/**
@@ -1125,9 +1186,9 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 
 		// Check first row for redacted columns to avoid per-row overhead.
 		$columns_to_strip = array_filter(
-			self::REDACTED_COLUMNS,
-			function ( $col ) use ( $rows ) {
-				return array_key_exists( $col, $rows[0] );
+			array_keys( $rows[0] ),
+			function ( $col ) {
+				return in_array( strtolower( (string) $col ), self::REDACTED_COLUMNS, true );
 			}
 		);
 

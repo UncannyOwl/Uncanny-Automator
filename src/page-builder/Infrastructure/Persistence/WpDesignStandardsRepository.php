@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Infrastructure\Persistence;
 use UncannyPageBuilder\Domain\DesignStandards\DesignStandardsProfile;
 use UncannyPageBuilder\Domain\DesignStandards\DesignStandardsRepositoryInterface;
 use UncannyPageBuilder\Domain\Settings\Settings;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 
 /**
  * Persists the sitewide Bootstrap design standards profile inside Settings.
@@ -73,13 +74,14 @@ final class WpDesignStandardsRepository implements DesignStandardsRepositoryInte
     public function applyFilter(string $filterName, mixed $value, mixed ...$args): mixed
     {
         try {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- The only caller passes this plugin's public uncanny_engine_bootstrap_theme filter, kept for compatibility.
             return apply_filters($filterName, $value, ...$args);
         } catch (\Throwable $failure) {
             // Design filters run during API and canvas reads. Keep the stored
             // design value when an external callback fails so one extension
             // cannot replace those surfaces with a fatal response.
             try {
-                error_log(sprintf(
+                DiagnosticLog::write(sprintf(
                     '[Uncanny Page Builder] WordPress design filter "%s" failed (%s).',
                     $filterName,
                     $failure::class,

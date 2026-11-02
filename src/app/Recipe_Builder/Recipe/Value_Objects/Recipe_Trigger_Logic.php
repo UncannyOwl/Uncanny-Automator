@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects;
 
@@ -73,7 +72,7 @@ class Recipe_Trigger_Logic {
 
 		if ( ! in_array( $value, $valid_values, true ) ) {
 			throw new \InvalidArgumentException(
-				'Recipe trigger logic must be "all" or "any", got: ' . $value . ' Valid values are: ' . implode( ', ', $valid_values )
+				'Recipe trigger logic must be "all" or "any", got: ' . esc_html( $value ) . ' Valid values are: ' . esc_html( implode( ', ', $valid_values ) )
 			);
 		}
 	}

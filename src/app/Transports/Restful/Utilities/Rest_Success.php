@@ -10,8 +10,6 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Transports\Restful\Utilities;
 
-use Uncanny_Automator\App\Transports\Restful\Utilities\Interfaces\Rest_Response_Context;
-
 /**
  * REST Success Response Class.
  *
@@ -19,7 +17,7 @@ use Uncanny_Automator\App\Transports\Restful\Utilities\Interfaces\Rest_Response_
  *
  * @since 7.0
  */
-class Rest_Success implements Rest_Response_Context {
+class Rest_Success {
 
 	/**
 	 * Response data.

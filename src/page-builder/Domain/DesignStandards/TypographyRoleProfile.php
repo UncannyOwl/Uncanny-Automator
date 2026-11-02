@@ -70,12 +70,14 @@ final class TypographyRoleProfile
 
         foreach ($fields as $key => $value) {
             if (!is_string($key)) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
                 throw new \InvalidArgumentException("{$roleName} fields must use string keys.");
             }
 
             $field = self::normalizeFieldName($key);
 
             if (!is_string($value) && !is_numeric($value)) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
                 throw new \InvalidArgumentException("{$roleName} field '{$field}' must be a string value.");
             }
 
@@ -85,6 +87,7 @@ final class TypographyRoleProfile
             }
 
             if (!DesignStyleValue::isSafeValue($text)) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
                 throw new \InvalidArgumentException("{$roleName} field '{$field}' contains an unsafe CSS value.");
             }
 
@@ -127,6 +130,7 @@ final class TypographyRoleProfile
             ?? str_replace('-', '_', preg_replace('/\s+/', '_', $candidate) ?? $candidate);
 
         if (!in_array($candidate, self::ALLOWED_FIELDS, true)) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
             throw new \InvalidArgumentException("Typography field '{$field}' is not supported.");
         }
 

@@ -76,19 +76,49 @@ abstract class Integration {
 	/**
 	 * Integration instances keyed by integration code, then by owner (the root
 	 * namespace of the integration class: Free, Pro or an add-on) — the only
-	 * bridge the lazy trigger pipeline needs to reach pre-constructed helpers.
-	 * Populated in `__construct()`; read via `helpers_for()`.
+	 * bridge the lazy trigger pipeline needs to reach pre-constructed
+	 * dependencies. Populated in `__construct()`; read via
+	 * `load_arguments_for()` and `helpers_for()`.
 	 *
 	 * @var array<string, array<string, self>>
 	 */
 	private static $instances_by_code = array();
 
 	/**
+	 * How many integrations are running their load() right now.
+	 *
+	 * A load() can build another integration, so this is a count, not a flag.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var int
+	 */
+	private static $loading = 0;
+
+	/**
+	 * Whether an integration's load() is running.
+	 *
+	 * The integration's own guard records a failure inside load() under the integration and
+	 * skips the rest of it. A settings page set up there leaves its refusal to that guard
+	 * (see Premium_Integrations::setup_settings()).
+	 *
+	 * @internal
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool
+	 */
+	public static function is_loading() {
+		return 0 < self::$loading;
+	}
+
+	/**
 	 * Resolve an integration's helpers object by code. Returns null when the
 	 * integration wasn't loaded this request or has no helpers class.
 	 *
-	 * Used by `Trigger_Late_Resolver` to produce the same dependency shape
-	 * `get_load_arguments()` passes on the eager path. Pass the class of the
+	 * The helpers alone. A lazily built trigger is given
+	 * {@see load_arguments_for()} instead, which is also right for an
+	 * App_Integration's dependencies object. Pass the class of the
 	 * part being built: a Free trigger then gets Free's helpers and a Pro
 	 * trigger Pro's, even when Free and Pro share the integration code.
 	 * Without a class, or when the part's plugin registered no helpers for
@@ -101,18 +131,58 @@ abstract class Integration {
 	 */
 	public static function helpers_for( $code, $class = '' ) {
 
+		$instance = self::instance_for( $code, $class );
+
+		return null !== $instance ? $instance->helpers : null;
+	}
+
+	/**
+	 * The constructor arguments the owning integration hands its parts on the
+	 * eager path (`get_load_arguments()`): the helpers for a plain Integration,
+	 * the dependencies object (helpers, api, webhooks) for an App_Integration.
+	 * `Trigger_Late_Resolver` builds lazy triggers with these, so a lazily built
+	 * trigger gets what an eagerly built one does. The owning instance is
+	 * picked as in {@see helpers_for()}.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $code       Integration code.
+	 * @param string $part_class Optional. Fully qualified class of the part being built.
+	 *
+	 * @return array Constructor arguments; empty when the integration wasn't loaded this request.
+	 */
+	public static function load_arguments_for( $code, $part_class = '' ) {
+
+		$instance = self::instance_for( $code, $part_class );
+
+		return null !== $instance ? $instance->get_load_arguments() : array();
+	}
+
+	/**
+	 * The registered integration that owns a part: the part's own plugin's
+	 * instance for the code, else the last registered one.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $code       Integration code.
+	 * @param string $part_class Fully qualified class of the part being built, or ''.
+	 *
+	 * @return self|null
+	 */
+	private static function instance_for( $code, $part_class ) {
+
 		if ( empty( self::$instances_by_code[ $code ] ) ) {
 			return null;
 		}
 
 		$instances = self::$instances_by_code[ $code ];
-		$owner     = self::owner_of( $class );
+		$owner     = self::owner_of( $part_class );
 
 		if ( '' !== $owner && isset( $instances[ $owner ] ) ) {
-			return $instances[ $owner ]->helpers;
+			return $instances[ $owner ];
 		}
 
-		return end( $instances )->helpers;
+		return end( $instances );
 	}
 
 	/**
@@ -159,6 +229,7 @@ abstract class Integration {
 			'icon_svg'         => $this->get_icon_url(),
 			'is_third_party'   => $this->get_is_third_party(),
 			'plugin_file_path' => $this->get_plugin_file_path(),
+			'app_platform'     => $this->uses_app_platform(),
 		);
 
 		// Only integrations that declared something carry a manifest key —
@@ -197,7 +268,7 @@ abstract class Integration {
 	 *
 	 * In full-load mode (recipe editor, escape hatches): calls $this->load() as-is.
 	 * In targeted mode: runs load_shared_hooks() first (tokens, filters, AJAX, migrations),
-	 * then only instantiates triggers/actions/closures whose codes appear in the manifest.
+	 * then only instantiates triggers/actions whose codes appear in the manifest.
 	 * Falls back to $this->load() for integrations not in the item map (third-party addons).
 	 *
 	 * @return void
@@ -208,11 +279,7 @@ abstract class Integration {
 
 		// Recipe editor, escape hatch, or Automator admin page — load everything.
 		if ( $manifest->should_load_all() ) {
-			try {
-				$this->load();
-			} catch ( \Throwable $e ) {
-				( new Load_Error_Handler() )->handle( get_class( $this ), $e );
-			}
+			$this->run_load();
 			return;
 		}
 
@@ -229,11 +296,7 @@ abstract class Integration {
 		// never appear in the manifest. They ARE in the item map with empty type arrays
 		// or absent entirely. Always call load() so their tokens register.
 		if ( empty( $item_map[ $integration_code ] ) ) {
-			try {
-				$this->load();
-			} catch ( \Throwable $e ) {
-				( new Load_Error_Handler() )->handle( get_class( $this ), $e );
-			}
+			$this->run_load();
 			return;
 		}
 
@@ -249,7 +312,7 @@ abstract class Integration {
 		$integration_items = $item_map[ $integration_code ];
 		$args              = $this->get_load_arguments();
 
-		foreach ( array( 'triggers', 'actions', 'closures', 'conditions', 'loop_filters' ) as $type ) {
+		foreach ( array( 'triggers', 'actions', 'conditions', 'loop_filters' ) as $type ) {
 
 			if ( empty( $integration_items[ $type ] ) ) {
 				continue;
@@ -274,7 +337,7 @@ abstract class Integration {
 				// at init:30 — so we cannot rely on Automator()->has_trigger()
 				// here. The presence of a non-null definition() is a stable,
 				// code-level signal that the stub will be registered later.
-				// Actions / closures / conditions / loop filters have no
+				// Actions / conditions / loop filters have no
 				// definition() method and so never take this branch.
 				//
 				// method_exists() guard: a legacy trigger (no definition()) can be
@@ -288,13 +351,43 @@ abstract class Integration {
 
 				if ( class_exists( $class ) ) {
 					try {
-						$instance = new $class( ...$args );
+						// Loop_Filter constructors are ($filter_id, $args, $loop_id,
+						// $item_helpers) and only self-register into the global
+						// filter registry when $filter_id is empty — the helper must
+						// go 4th, never 1st, or runtime entity resolution finds no
+						// filter class and every loop yields zero entities.
+						$instance = 'loop_filters' === $type
+							? new $class( null, array(), null, $args[0] ?? null )
+							: new $class( ...$args );
 						Utilities::add_class_instance( $class, $instance );
 					} catch ( \Throwable $e ) {
 						( new Load_Error_Handler() )->handle( $class, $e );
 					}
 				}
 			}
+		}
+	}
+
+	/**
+	 * Run load(). A failure there is recorded under this integration for the load-errors
+	 * notice, the rest of load() is skipped, and the site keeps running.
+	 *
+	 * While it runs, is_loading() is true.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return void
+	 */
+	private function run_load() {
+
+		++self::$loading;
+
+		try {
+			$this->load();
+		} catch ( \Throwable $e ) {
+			( new Load_Error_Handler() )->handle( get_class( $this ), $e );
+		} finally {
+			--self::$loading;
 		}
 	}
 
@@ -406,6 +499,18 @@ abstract class Integration {
 	 */
 	public function get_integration() {
 		return $this->integration;
+	}
+
+	/**
+	 * Whether the Automator App Platform holds this integration's connections.
+	 * Only an app integration on its connections can; it says so.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool
+	 */
+	public function uses_app_platform() {
+		return false;
 	}
 
 	/**

@@ -183,6 +183,7 @@ class Fluent_Boards_Integration extends \Uncanny_Automator\Integration {
 
 		$this->dispatched[ $key ] = true;
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is the automator_fluent_boards_task_status_changed constant.
 		do_action( Fluent_Boards_Helpers::TASK_STATUS_CHANGED, $task, $direction );
 	}
 

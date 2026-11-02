@@ -6,6 +6,10 @@ use Uncanny_Automator\App\Presentation\Recipe_Builder\Sentence\Item_Sentence_Com
 use Uncanny_Automator\App\Recipe_Builder\Shared\Sentence_Html\Field_Label_Resolver;
 use Uncanny_Automator\Services\Integrations\Fields;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Migrate_Orphan_Readable_Meta
  *
@@ -156,6 +160,7 @@ class Migrate_Orphan_Readable_Meta extends Migration {
 
 		$cursor = (int) automator_get_option( self::CURSOR_OPTION, 0 );
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration.
 		$items = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT DISTINCT p.ID, p.post_type

@@ -93,7 +93,7 @@ final class DesignStandardsMetaBox
         } catch (\Throwable $failure) {
             // Render nothing further; a metabox failure must not fail the
             // complete WordPress edit screen.
-            error_log('[Uncanny Page Builder] Text styles metabox render failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Text styles metabox render failed (' . $failure::class . ')');
         }
     }
 
@@ -115,7 +115,7 @@ final class DesignStandardsMetaBox
         } catch (\Throwable $failure) {
             // Render nothing further; a metabox failure must not fail the
             // complete WordPress edit screen.
-            error_log('[Uncanny Page Builder] Colors metabox render failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Colors metabox render failed (' . $failure::class . ')');
         }
     }
 
@@ -215,8 +215,10 @@ final class DesignStandardsMetaBox
         }
 
         $lockedKeys = $this->designStandardsService->resolve()->lockedKeys();
-        $tokens = $this->sanitizeTokens($_POST['upb_ds_token'] ?? [], $lockedKeys['tokens'] ?? []);
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitizeTokens() sanitizes every key and value.
+        $tokens = $this->sanitizeTokens(wp_unslash($_POST['upb_ds_token'] ?? []), $lockedKeys['tokens'] ?? []);
         $typographyRoles = TypographyRolesPostPayload::sparseOverrides(
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sparseOverrides() keeps only string values, and TypographyRoleProfile::fromArray() validates each one.
             wp_unslash($_POST['upb_ds_typography']['roles'] ?? null),
         );
 
@@ -298,6 +300,7 @@ final class DesignStandardsMetaBox
 
     public function renderSaveNotice(): void
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
         $postId = absint(sanitize_text_field(wp_unslash($_GET['post'] ?? '0')));
         if ($postId <= 0) {
             return;

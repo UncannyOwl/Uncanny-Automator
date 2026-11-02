@@ -29,7 +29,7 @@ class LD_COURSE_PROGRESS_PERCENTAGE extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_sentence(
 			sprintf(
-			// translator: %1$s: percentage, %2$s: course
+				/* translators: %1$s: Percentage, %2$s: Course */
 				esc_html_x( 'A user has completed {{percentage:%1$s}}%% of {{a course:%2$s}}', 'LearnDash', 'uncanny-automator' ),
 				'PERCENTAGE:' . $this->get_trigger_meta(),
 				'COURSE:' . $this->get_trigger_meta()

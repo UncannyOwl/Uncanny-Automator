@@ -223,6 +223,7 @@ class Eventin_Update_Order_Status extends Action {
 			return;
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Eventin's own order status hooks, picked from a fixed list.
 		do_action( $hook, $order );
 	}
 }

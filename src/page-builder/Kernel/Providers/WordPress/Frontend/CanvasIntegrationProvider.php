@@ -18,6 +18,7 @@ use UncannyPageBuilder\Infrastructure\i18\PageBuilderJsStrings;
 use UncannyPageBuilder\Infrastructure\WordPress\CanvasAssetAllowlist;
 use UncannyPageBuilder\Infrastructure\WordPress\CanvasHijacker;
 use UncannyPageBuilder\Infrastructure\WordPress\DesignTokenInjector;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 use UncannyPageBuilder\Infrastructure\WordPress\FontInjector;
 use UncannyPageBuilder\Infrastructure\WordPress\MagicBridgeEnqueuer;
 use UncannyPageBuilder\Infrastructure\WordPress\PublishedPageAssetEnqueuer;
@@ -141,7 +142,7 @@ final class CanvasIntegrationProvider implements ServiceProviderInterface
             } catch (\Throwable $failure) {
                 // wp_enqueue_scripts is a shared WordPress surface. A Page
                 // Builder failure must not terminate the request.
-                error_log('[Uncanny Page Builder] Canvas asset enqueue failed (' . $failure::class . ')');
+                DiagnosticLog::write('[Uncanny Page Builder] Canvas asset enqueue failed (' . $failure::class . ')');
             }
         });
 

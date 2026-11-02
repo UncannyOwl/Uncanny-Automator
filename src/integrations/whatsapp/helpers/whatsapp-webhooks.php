@@ -53,7 +53,7 @@ class WhatsApp_Webhooks extends App_Webhooks {
 	 *
 	 * @param WP_REST_Request $request The request object.
 	 *
-	 * @return bool
+	 * @return true
 	 * @throws Exception If validation fails.
 	 */
 	protected function validate_webhook_request( $request ) {
@@ -68,7 +68,7 @@ class WhatsApp_Webhooks extends App_Webhooks {
 		);
 
 		if ( ! in_array( $user_agent, $allowed_user_agents, true ) ) {
-			return false;
+			throw new Exception( 'Invalid user agent' );
 		}
 
 		// Handle hub challenge verification handshake (can be GET or POST).

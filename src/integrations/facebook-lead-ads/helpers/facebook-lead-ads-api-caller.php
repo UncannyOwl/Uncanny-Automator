@@ -3,6 +3,9 @@
 namespace Uncanny_Automator\Integrations\Facebook_Lead_Ads;
 
 use Exception;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Platform_Http;
+use Uncanny_Automator\App\Infrastructure\Connections\Connection;
+use Uncanny_Automator\App\Recipe_Runner\Exceptions\Action_Error_Exception;
 use Uncanny_Automator\App_Integrations\Api_Caller;
 use WP_Error;
 
@@ -18,6 +21,14 @@ use WP_Error;
  * @property Facebook_Lead_Ads_Webhooks $webhooks
  */
 class Facebook_Lead_Ads_Api_Caller extends Api_Caller {
+
+	/**
+	 * The /v3 surface of Facebook Lead Ads. The integration's other calls
+	 * still go to its /v2 endpoint; a page's connection is subscribed here.
+	 *
+	 * @var string
+	 */
+	const V3_ENDPOINT = 'v3/facebook-lead-ads';
 
 	////////////////////////////////////////////////////////////
 	// Abstract methods
@@ -216,6 +227,108 @@ class Facebook_Lead_Ads_Api_Caller extends Api_Caller {
 		}
 
 		return (array) ( $response['data'] ?? array() );
+	}
+
+	////////////////////////////////////////////////////////////
+	// Signed delivery subscription
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Subscribe one page's connection to signed lead events.
+	 *
+	 * Events arrive at the plugin's shared platform receiver, not at the
+	 * Facebook Lead Ads route; the platform sends every integration's events
+	 * there.
+	 *
+	 * Sent without an Idempotency-Key, as is the unregister: each only sets
+	 * the connection's subscription, so a repeat changes nothing. A key would
+	 * let the platform replay an earlier "subscribed" answer for 24 hours,
+	 * after the connection was unsubscribed in between (a disconnect and
+	 * reconnect reactivate the same connection), and the page would read as
+	 * subscribed while the platform delivers nothing.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param Connection $connection The page's v3 connection.
+	 *
+	 * @return array The answer's data — `{status, webhook_revision}`.
+	 *
+	 * @throws Action_Error_Exception When the platform did not subscribe the connection.
+	 */
+	public function register_site_for_webhooks( Connection $connection ) {
+
+		return $this->send_subscription_request(
+			'register-site-for-webhooks',
+			$connection,
+			array( 'webhook_url' => rest_url( AUTOMATOR_PLATFORM_WEBHOOK_RECEIVER_ROUTE ) ),
+			'subscribed'
+		);
+	}
+
+	/**
+	 * Stop signed lead events for one page's connection. Idempotent.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param Connection $connection The page's v3 connection.
+	 *
+	 * @return array The answer's data — `{status}`.
+	 *
+	 * @throws Action_Error_Exception When the platform did not unsubscribe the connection.
+	 */
+	public function unregister_site_for_webhooks( Connection $connection ) {
+
+		return $this->send_subscription_request( 'unregister-site-for-webhooks', $connection, array(), 'unsubscribed' );
+	}
+
+	/**
+	 * Send a /v3 subscription request for one connection, authenticated by the
+	 * connection's own id and signature in the body.
+	 *
+	 * @param string     $action     The route under the /v3 surface.
+	 * @param Connection $connection The page's v3 connection.
+	 * @param array      $body       Fields besides the connection's.
+	 * @param string     $status     The `data.status` a success answers with.
+	 *
+	 * @return array The answer's data.
+	 *
+	 * @throws Action_Error_Exception When the connection cannot be sent, or the answer is not that status.
+	 */
+	private function send_subscription_request( $action, Connection $connection, array $body, $status ) {
+
+		$signature = (string) $connection->connection_signature();
+
+		if ( '' === $signature ) {
+			throw Action_Error_Exception::validation_failed(
+				esc_html_x( 'This Facebook page has no Automator App Platform connection to subscribe. Reconnect Facebook Lead Ads.', 'Facebook Lead Ads', 'uncanny-automator' )
+			);
+		}
+
+		$response = $this->make_api_call(
+			array(
+				'endpoint' => self::V3_ENDPOINT . '/' . $action,
+				'body'     => array_merge(
+					array(
+						'connection_id'        => $connection->connection_id(),
+						'connection_signature' => $signature,
+					),
+					$body
+				),
+				'timeout'  => Platform_Http::TIMEOUT_SECONDS,
+			)
+		);
+
+		$code     = (int) ( $response['statusCode'] ?? 0 );
+		$data     = isset( $response['data'] ) && is_array( $response['data'] ) ? $response['data'] : array();
+		$answered = isset( $data['status'] ) && is_string( $data['status'] ) ? $data['status'] : '';
+
+		if ( 200 !== $code || $answered !== $status ) {
+			throw Action_Error_Exception::execution_failed(
+				esc_html_x( 'The Automator App Platform did not confirm the Facebook page subscription.', 'Facebook Lead Ads', 'uncanny-automator' )
+			);
+		}
+
+		return $data;
 	}
 
 	////////////////////////////////////////////////////////////

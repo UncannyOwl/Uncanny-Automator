@@ -52,8 +52,8 @@ final class Replay_Service {
 		?Execution_Log_Store $log_store = null
 	) {
 		$this->snapshot_store = $snapshot_store ?? Database::get_run_snapshot_store();
-		$this->log_manager   = $log_manager ?? new Recipe_Log_Manager();
-		$this->log_store     = $log_store ?? Database::get_execution_log_store();
+		$this->log_manager    = $log_manager ?? new Recipe_Log_Manager();
+		$this->log_store      = $log_store ?? Database::get_execution_log_store();
 	}
 
 	/**
@@ -63,6 +63,10 @@ final class Replay_Service {
 	 * and meta, records replay provenance, and returns an execution-ready
 	 * Pipeline_Result. The caller (Recipe_Runner) feeds this into
 	 * execute_stages_from( 'action_run' ).
+	 *
+	 * A run whose uap_recipe_log row is gone was deleted, and is never replayed, even while its snapshot outlives it.
+	 *
+	 * @since 8.0.0 Refuses a run whose log is gone.
 	 *
 	 * @param int $original_recipe_log_id The recipe log ID to replay.
 	 *
@@ -75,6 +79,11 @@ final class Replay_Service {
 		if ( null === $snapshot_vo ) {
 			$result = new Pipeline_Result();
 			return $result->halt( 'Snapshot not found or expired.' );
+		}
+
+		if ( null === $this->log_store->get_recipe_log_row( $original_recipe_log_id ) ) {
+			$result = new Pipeline_Result();
+			return $result->halt( 'The run was deleted, so it cannot be replayed.' );
 		}
 
 		$snapshot  = $snapshot_vo->to_array();

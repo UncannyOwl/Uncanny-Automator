@@ -228,6 +228,7 @@ class Woocommerce_Helpers {
 			'relevant_tokens' => $relevant_tokens,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_wc_products', $option );
 	}
 
@@ -251,6 +252,7 @@ class Woocommerce_Helpers {
 			'options'     => wc_get_order_statuses(),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_woocommerce_statuses', $option );
 	}
 
@@ -269,6 +271,7 @@ class Woocommerce_Helpers {
 			'options'     => $this->get_trigger_condition_labels(),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_woocommerce_trigger_conditions', $options );
 	}
 
@@ -285,6 +288,7 @@ class Woocommerce_Helpers {
 		 * @param array $trigger_conditions An array of key-value pairs of action hook handle and human readable label.
 		 */
 		return apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 			'uap_wc_trigger_conditions',
 			array(
 				'woocommerce_payment_complete'       => _x( 'pays for', 'WooCommerce', 'uncanny-automator' ),

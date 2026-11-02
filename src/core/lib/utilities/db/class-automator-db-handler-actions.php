@@ -51,6 +51,7 @@ class Automator_DB_Handler_Actions {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$action_log_id = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT ID FROM {$wpdb->prefix}uap_action_log
@@ -127,6 +128,7 @@ class Automator_DB_Handler_Actions {
 
 		$date_time = null !== $date_time ? $date_time : current_time( 'mysql' );
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Write to Automator's own table.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -162,6 +164,7 @@ class Automator_DB_Handler_Actions {
 		global $wpdb;
 		$table_name = $wpdb->prefix . Automator()->db->tables->action;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		return $wpdb->update( $table_name, $data, $where );
 	}
 
@@ -184,6 +187,7 @@ class Automator_DB_Handler_Actions {
 
 		$table_name = $wpdb->prefix . Automator()->db->tables->action_meta;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Write to Automator's own table.
 		$inserted = $wpdb->insert(
 			$table_name,
 			array(
@@ -250,6 +254,7 @@ class Automator_DB_Handler_Actions {
 
 		$table_name = $wpdb->prefix . Automator()->db->tables->action_meta;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		return $wpdb->delete(
 			$table_name,
 			array(
@@ -272,7 +277,8 @@ class Automator_DB_Handler_Actions {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . Automator()->db->tables->action_meta;
-		$result     = $wpdb->get_row( $wpdb->prepare( "SELECT meta_value FROM $table_name WHERE meta_key =%s AND automator_action_log_id =%d", $meta_key, $action_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$result = $wpdb->get_row( $wpdb->prepare( 'SELECT meta_value FROM `' . esc_sql( $table_name ) . '` WHERE meta_key =%s AND automator_action_log_id =%d', $meta_key, $action_log_id ) );
 
 		if ( ! $result ) {
 			return $result;
@@ -293,7 +299,7 @@ class Automator_DB_Handler_Actions {
 
 		global $wpdb;
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT meta_value FROM $wpdb->uap_action_log_meta WHERE meta_key = %s AND automator_action_log_id = %d",
@@ -316,7 +322,8 @@ class Automator_DB_Handler_Actions {
 	public function get_meta_by_id( $meta_id ) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . Automator()->db->tables->action_meta;
-		$result     = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE ID =%s", $meta_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$result = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `' . esc_sql( $table_name ) . '` WHERE ID =%s', $meta_id ) );
 
 		if ( ! $result ) {
 			return $result;
@@ -474,7 +481,8 @@ class Automator_DB_Handler_Actions {
 		global $wpdb;
 		$tbl = Automator()->db->tables->action;
 
-		return $wpdb->get_results( $wpdb->prepare( "SELECT error_message, completed FROM {$wpdb->prefix}{$tbl} WHERE error_message != '' AND automator_recipe_log_id = %d ORDER BY ID ASC", $recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		return $wpdb->get_results( $wpdb->prepare( 'SELECT error_message, completed FROM `' . esc_sql( $wpdb->prefix . $tbl ) . "` WHERE error_message != '' AND automator_recipe_log_id = %d ORDER BY ID ASC", $recipe_log_id ) );
 	}
 
 	/**
@@ -493,12 +501,14 @@ class Automator_DB_Handler_Actions {
 		);
 
 		// delete from uap_action_log
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->delete(
 			$wpdb->prefix . Automator()->db->tables->action,
 			array( 'automator_action_id' => $action_id )
 		);
 
 		// delete from uap_action_log_meta
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->delete(
 			$wpdb->prefix . Automator()->db->tables->action_meta,
 			array( 'automator_action_id' => $action_id )
@@ -515,15 +525,18 @@ class Automator_DB_Handler_Actions {
 		$action_meta_tbl = $wpdb->prefix . Automator()->db->tables->action_meta;
 
 		// Delete from uap_error_log.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->delete(
 			$wpdb->prefix . 'uap_error_log',
 			array( 'recipe_log_id' => $automator_recipe_log_id )
 		);
 
-		$actions = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $action_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$actions = $wpdb->get_col( $wpdb->prepare( 'SELECT `ID` FROM `' . esc_sql( $action_tbl ) . '` WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d', $recipe_id, $automator_recipe_log_id ) );
 		if ( $actions ) {
 			foreach ( $actions as $automator_action_log_id ) {
 				// delete from uap_action_log_meta
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 				$wpdb->delete(
 					$action_meta_tbl,
 					array( 'automator_action_log_id' => $automator_action_log_id )
@@ -532,6 +545,7 @@ class Automator_DB_Handler_Actions {
 		}
 
 		// delete from uap_action_log
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->delete(
 			$action_tbl,
 			array(
@@ -577,10 +591,12 @@ class Automator_DB_Handler_Actions {
 			)
 		);
 
-		$actions = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $action_tbl WHERE automator_recipe_id=%d", $recipe_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$actions = $wpdb->get_col( $wpdb->prepare( 'SELECT `ID` FROM `' . esc_sql( $action_tbl ) . '` WHERE automator_recipe_id=%d', $recipe_id ) );
 		if ( $actions ) {
 			foreach ( $actions as $automator_action_log_id ) {
 				// delete from uap_action_log_meta
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 				$wpdb->delete(
 					$action_meta_tbl,
 					array( 'automator_action_log_id' => $automator_action_log_id )
@@ -589,6 +605,7 @@ class Automator_DB_Handler_Actions {
 		}
 
 		// delete from uap_action_log
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->delete(
 			$action_tbl,
 			array(
@@ -611,6 +628,7 @@ class Automator_DB_Handler_Actions {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$action_log_result = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT *

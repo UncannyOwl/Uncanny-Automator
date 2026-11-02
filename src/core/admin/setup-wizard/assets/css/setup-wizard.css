@@ -1,3 +1,14 @@
+/**
+ * Setup wizard.
+ *
+ * A full-screen page: the WordPress chrome is hidden and one card sits on the
+ * same flat ground the Dashboard uses (white card, no border, 12px radius).
+ * Colours, spacing and radii come from the design-system tokens (`--uas--*`),
+ * with fallbacks for a page that loads before the bundle.
+ */
+
+/* Full-screen chrome -------------------------------------------------------- */
+
 #wpfooter,
 #adminmenumain,
 #wpadminbar,
@@ -6,382 +17,861 @@
 #screen-meta-links,
 #screen-meta,
 .uo-recipe_page_uncanny-automator-setup-wizard .error,
-.uo-recipe_page_uncanny-automator-setup-wizard .notice {
-    display: none!important;
+.uo-recipe_page_uncanny-automator-setup-wizard .notice,
+.admin_page_uncanny-automator-setup-wizard .error,
+.admin_page_uncanny-automator-setup-wizard .notice {
+    display: none !important;
 }
 
-body.uo-recipe_page_uncanny-automator-setup-wizard {
-    font-family: var(--uap-font-family);
-    font-size: var(--uap-font-size--body-regular);
-}
-
-.automator-setup-wizard__footer {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.automator-setup-wizard__footer a {
-    text-decoration: none;
-    font-family: var(--uap-font-family);
-    font-size: var(--uap-font-size--body-regular);
-    color: var(--uap-font-color-secondary);
-}
-
-#wpcontent, #wpfooter {
+#wpcontent,
+#wpfooter {
     margin-left: 0;
     padding-left: 0;
 }
-.automator-setup-wizard a {
-    text-decoration: none;
+
+body.uo-recipe_page_uncanny-automator-setup-wizard,
+body.admin_page_uncanny-automator-setup-wizard {
+    background: #f0f0f0;
+    font-family: var(--uas--typography--font--family, "Figtree", sans-serif);
+    color: var(--uas--typography--color, #1d2129);
+}
+
+/* Ground and card ----------------------------------------------------------- */
+
+.automator-setup-wizard-wrap {
+    --automator-setup-wizard-ok: var(--uas--color--status-on-success-container, #1b7f4b);
+    --automator-setup-wizard-ok-bg: var(--uas--color--status-success-container, #e6f4ec);
+    --automator-setup-wizard-primary: var(--uas--color--primary, #0790e8);
+    --automator-setup-wizard-border: var(--uas--color--border, #e4e4e4);
+    --automator-setup-wizard-border-strong: var(--uas--color--field-border, #c9ced6);
+    --automator-setup-wizard-muted: var(--uas--typography--color-secondary, #676b6f);
+    --automator-setup-wizard-radius: var(--uas--base--border-radius-md, 12px);
+    --automator-setup-wizard-radius-sm: var(--uas--base--border-radius-sm, 8px);
+    --automator-setup-wizard-box: #f6f6f7;
+    --automator-setup-wizard-lift: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px -12px rgba(0, 0, 0, 0.18);
+
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding: 48px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .automator-setup-wizard {
-    display: block;
-    margin: 0 auto;
-    max-width: 800px;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1);
-    border: 1px solid #d3d3d3;
-    background: #fff;
-    border-radius: var(--uap-border-radius);
-    padding: 4em 4.5em;
-    box-sizing: border-box;
-    font-family: var(--uap-font-family);
-    color: var(--uap-font-color);
-}
-
-body.uo-recipe_page_uncanny-automator-setup-wizard .lity {
-    background: #0006;
-}
-.automator-setup-wizard .center {
-    text-align: center;
-}
-
-.automator-setup-wizard .text-align-right {
-    text-align: right;
-}
-.automator-setup-wizard h2.title {
-    font-family: var(--uap-typescale-headline-small-font-family);
-    font-size: var(--uap-typescale-headline-small-font-size);
-    line-height: var(--uap-typescale-headline-small-line-height);
-    font-weight: var(--uap-typescale-headline-small-font-weight);
-    letter-spacing: var(--uap-typescale-headline-small-letter-spacing);
-}
-.automator-setup-wizard p {
-    font-size: var(--uap-font-size--body-regular);
-    line-height: var(--uap-line-height--body-regular);
-}
-.automator-setup-wizard-wrap {
-    min-height: 85vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.automator-setup-wizard-wrap h3 {
-    font-family: var(--uap-typescale-title-large-font-family);
-    font-size: var(--uap-typescale-title-large-font-size);
-    line-height: var(--uap-typescale-title-large-line-height);
-    font-weight: var(--uap-typescale-title-large-font-weight);
-    letter-spacing: var(--uap-typescale-title-large-letter-spacing);
-}
-
-.automator-setup-wizard-wrap.step-3 {
-    min-height: 100vh;
-}
-.automator-setup-wizard .row-1 {
-    margin-bottom: 35px;
-}
-
-.automator-setup-wizard.step-1 .footer-actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0;
-    margin-top: 20px;
-}
-
-.automator-setup-wizard.step-1 .footer-actions--center {
-    justify-content: center;
-}
-
-.automator-setup-wizard__benefits {
-    list-style: none;
-    margin: 25px auto 30px;
-    padding: 0;
-    max-width: 560px;
-    text-align: left;
-    display: grid;
-    gap: 18px;
-}
-
-.automator-setup-wizard__benefits li {
-    display: grid;
-    grid-template-columns: 32px minmax(0, 1fr);
-    column-gap: 14px;
-    align-items: start;
-    margin: 0;
-}
-
-.automator-setup-wizard__benefits li uo-icon,
-.automator-setup-wizard__benefits li uo-icon-ai {
-    font-size: var(--uap-typescale-title-large-font-size);
-    justify-self: center;
-    margin-top: 2px;
-    color: var(--uap-color-primary);
-}
-
-.automator-setup-wizard__benefits li strong {
-    display: block;
-    font-family: var(--uap-typescale-title-small-font-family);
-    font-size: var(--uap-typescale-title-small-font-size);
-    line-height: var(--uap-typescale-title-small-line-height);
-    font-weight: var(--uap-typescale-title-small-font-weight);
-    letter-spacing: var(--uap-typescale-title-small-letter-spacing);
-}
-
-.automator-setup-wizard__benefits li p {
-    margin: 2px 0 0;
-    color: var(--uap-font-color-secondary);
-}
-
-.automator-setup-wizard__status {
-    display: block;
-    max-width: 420px;
-    margin: 0 auto;
-    text-align: left;
-}
-
-/* Back stays left-justified; the "Maybe later" link is centered in the card. */
-.automator-setup-wizard__step-nav {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    margin-top: 25px;
-}
-
-.automator-setup-wizard__step-nav-start {
-    grid-column: 1;
-    justify-self: start;
-}
-
-.automator-setup-wizard__step-nav-center {
-    grid-column: 2;
-    justify-self: center;
-}
-
-a.automator-setup-wizard__nav-link {
-    color: var(--uap-font-color-secondary);
-    text-decoration: none;
-    font-family: var(--uap-font-family);
-    font-size: var(--uap-font-size--body-regular);
-    line-height: var(--uap-line-height--body-regular);
-}
-
-a.automator-setup-wizard__nav-link:hover {
-    color: var(--uap-color-primary);
-}
-
-/* Step 1's skip control is a web component — match the nav links above. */
-uap-setup-wizard-step-1-skip {
-    --uap-button-style-custom-color: var(--uap-font-color-secondary);
-    --uap-button-style-custom-hover-color: var(--uap-color-primary);
-    --uap-button-style-custom-hover-background: transparent;
-    --uap-button-style-custom-font-weight: 400;
-}
-
-.automator-setup-wizard__options {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin: 30px 0 10px;
-    align-items: start;
-}
-
-.automator-setup-wizard__final-step .automator-setup-wizard__steps__inner-wrap {
-    margin: 24px 0;
-}
-
-.automator-setup-wizard__final-step .automator-setup-wizard__steps__inner-wrap ol {
-    margin: 0;
-}
-
-.automator-setup-wizard__final-step h2.title {
-    margin: 0 0 12px;
-}
-
-.automator-setup-wizard__final-step > p {
-    margin: 0;
-}
-
-.automator-setup-wizard__final-step .automator-setup-wizard__options {
-    margin-top: 24px;
-}
-
-.automator-setup-wizard__option {
-    --automator-setup-wizard-option-inline-padding: 15px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-}
-
-.automator-setup-wizard__create-page-form {
     width: 100%;
-}
-
-.automator-setup-wizard__option uo-button {
-    --uap-button-host-style-width: 100%;
-    --uap-button-style-padding-left: var(--automator-setup-wizard-option-inline-padding);
-    --uap-button-style-padding-right: var(--automator-setup-wizard-option-inline-padding);
-}
-
-/* Disabled buttons default to the primary fill at 60% opacity, which reads as
-   emphasis rather than "unavailable" — grey them out instead. */
-.automator-setup-wizard__option uo-button[disabled] {
-    --uap-button-style-custom-background: #f0f0f1;
-    --uap-button-style-custom-color: var(--uap-color-gray);
-    --uap-button-style-custom-border-color: var(--uap-color-placeholder-gray);
-    --uap-button-style-custom-hover-background: #f0f0f1;
-    --uap-button-style-custom-hover-color: var(--uap-color-gray);
-    --uap-button-style-custom-hover-border-color: var(--uap-color-placeholder-gray);
-}
-
-.automator-setup-wizard__option--unavailable p {
-    color: var(--uap-color-gray);
-}
-
-.automator-setup-wizard__option p {
-    align-self: stretch;
-    margin: 0;
-    padding: 0 var(--automator-setup-wizard-option-inline-padding);
+    max-width: 840px;
     box-sizing: border-box;
-    text-align: left;
-    font-size: var(--uap-font-size--body-xsmall);
-    line-height: var(--uap-line-height--body-xsmall);
-    color: var(--uap-font-color-secondary);
+    padding: 44px clamp(24px, 6vw, 64px) 40px;
+    background: var(--uas--color--surface, #fff);
+    border-radius: var(--automator-setup-wizard-radius);
+    font-size: 16px;
+    line-height: 1.6;
 }
 
-.automator-setup-wizard__connect-callout {
-    margin: 25px 0 10px;
-    padding: 20px;
-    text-align: center;
-    background: var(--uap-info-background);
-    border-radius: var(--uap-border-radius);
+/* Nothing in the wizard goes below 15px, including the design-system small
+   buttons (Copy, Ask) once they are defined. */
+.automator-setup-wizard uas-button[size="sm"] {
+    --uas--button--size-custom-font-size: 15px;
 }
 
-.automator-setup-wizard__connect-callout p {
-    margin: 0 0 12px;
-    font-weight: 500;
+.automator-setup-wizard a {
+    color: var(--uas--typography--color-link, var(--automator-setup-wizard-primary));
 }
 
-.automator-setup-wizard__steps__inner-wrap ol {
-    margin-left: 0;
+/* wp-admin sets p { font-size: 13px } and list margins. :where() keeps these
+   resets at element specificity, so they beat wp-admin by source order while
+   every block class below still wins over them. */
+:where(.automator-setup-wizard) p {
+    margin: 0;
+    font-size: inherit;
+    line-height: inherit;
 }
 
-.automator-setup-wizard__steps__inner-wrap ol,
-.automator-setup-wizard__steps__inner-wrap li {
-    list-style: none;
+:where(.automator-setup-wizard) ul,
+:where(.automator-setup-wizard) ol {
+    margin: 0;
 }
 
-.automator-setup-wizard__steps__inner-wrap ol {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+:where(.automator-setup-wizard) h2,
+:where(.automator-setup-wizard) h3 {
+    margin: 0;
+    color: inherit;
 }
 
-.automator-setup-wizard__steps__inner-wrap {
-    margin: 35px 0;
-}
-
-.automator-setup-wizard__steps__inner-wrap ol > li,
-.automator-setup-wizard__steps__inner-wrap ol > li > span {
-    display: block;
-}
-
-.automator-setup-wizard__steps__inner-wrap ol > li {
-    text-indent: -9999px;
-}
-
-.automator-setup-wizard__steps__inner-wrap ol > li > span {
-    width: 12px;
-    height: 12px;
-    border-radius: 20px;
-    border: 2px solid var(--uap-switch-main-color);
-    background: #d3d3d3;
-}
-.automator-setup-wizard__steps__inner-wrap ol > li {
-    display: flex;
-    align-items: center;
-}
-.automator-setup-wizard__steps__inner-wrap ol > li::after {
-    content: " ";
-    display: inline-block;
-    height: 2px;
-    width: 40px;
-    background: var(--uap-switch-main-color);
-}
-.automator-setup-wizard__steps__inner-wrap ol > li:last-child:after {
-    content: "";
+.automator-setup-wizard .hidden {
     display: none;
 }
 
-.automator-setup-wizard__steps__inner-wrap ol > li.active > span {
-    background: #0e87e8;
-    border: 2px solid #006dc5;
+/* Design-system elements before the bundle defines them -------------------- */
+/* The page is usable and keeps its layout while main.js loads (or lags behind
+   this stylesheet). Once an element is defined, its own styles take over. */
+
+.automator-setup-wizard uas-button:not(:defined) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box;
+    padding: 10px 16px;
+    border: 1px solid var(--automator-setup-wizard-border-strong);
+    border-radius: 999px;
+    background: var(--uas--color--surface, #fff);
+    color: var(--uas--typography--color, #1d2129);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.2;
+    cursor: pointer;
 }
 
-a#ua-connect-account-btn {
-    margin-top: 15px;
+.automator-setup-wizard uas-button[filled]:not(:defined) {
+    background: var(--automator-setup-wizard-primary);
+    border-color: var(--automator-setup-wizard-primary);
+    color: #fff;
 }
 
-p.footer-actions span a {
-    color: #7f7e7e;
+.automator-setup-wizard uas-button[size="lg"]:not(:defined) {
+    padding: 14px 18px;
+    font-size: 16px;
 }
 
-/* Uncanny Automator Pro license key form */
-/* Label */
-#license_label {
+.automator-setup-wizard uas-button[size="sm"]:not(:defined) {
+    padding: 6px 10px;
+    font-size: 15px;
+}
+
+.automator-setup-wizard uas-alert:not(:defined):not(.hidden) {
+    display: block;
+    padding: 12px 14px;
+    border-radius: var(--automator-setup-wizard-radius-sm);
+    background: var(--uas--color--status-error-container, #fdecea);
+    color: var(--uas--color--status-on-error-container, #8a1f11);
+    font-size: 15px;
+}
+
+.automator-setup-wizard uas-alert[type="success"]:not(:defined) {
+    background: var(--automator-setup-wizard-ok-bg);
+    color: var(--automator-setup-wizard-ok);
+}
+
+.automator-setup-wizard uas-alert:not(:defined)::before {
+    content: attr(heading);
+    display: block;
     font-weight: 600;
+}
+
+.automator-setup-wizard uap-d-ai-app-logo {
+    display: block;
+    width: 36px;
+    height: 36px;
+}
+
+.automator-setup-wizard uap-d-ai-app-logo:not(:defined) {
+    border-radius: 8px;
+    background: var(--automator-setup-wizard-box);
+}
+
+.automator-setup-wizard__alert {
+    display: block;
+    max-width: 480px;
+    margin: 28px auto 0;
+    text-align: left;
+}
+
+.automator-setup-wizard__branding {
+    text-align: center;
+}
+
+.automator-setup-wizard__branding img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Stepper ------------------------------------------------------------------- */
+
+.automator-setup-wizard__stepper {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    max-width: 660px;
+    margin: 32px auto 0;
+    padding: 0;
+    list-style: none;
+}
+
+.automator-setup-wizard__stepper-step {
+    margin: 0;
+    padding-top: 10px;
+    border-top: 3px solid var(--automator-setup-wizard-border);
+    text-align: center;
+    font-size: 15px;
+    color: var(--automator-setup-wizard-muted);
+    min-width: 0;
+}
+
+.automator-setup-wizard__stepper-step b {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.automator-setup-wizard__stepper-step--done {
+    border-top-color: var(--automator-setup-wizard-ok);
+    color: var(--uas--typography--color, #1d2129);
+}
+
+.automator-setup-wizard__stepper-step--done b {
+    color: var(--automator-setup-wizard-ok);
+}
+
+.automator-setup-wizard__stepper-step--now {
+    border-top-color: var(--automator-setup-wizard-primary);
+    color: var(--uas--typography--color, #1d2129);
+    font-weight: 500;
+}
+
+.automator-setup-wizard__stepper-step--now b {
+    color: var(--automator-setup-wizard-primary);
+}
+
+/* Heading block ------------------------------------------------------------- */
+
+.automator-setup-wizard__head {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.automator-setup-wizard__title {
+    font-size: clamp(24px, 3.2vw, 30px);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+}
+
+.automator-setup-wizard__pill + .automator-setup-wizard__title {
+    margin-top: 18px;
+}
+
+.automator-setup-wizard__lead {
+    max-width: 58ch;
+    margin: 14px auto 0;
+    color: var(--automator-setup-wizard-muted);
+}
+
+.automator-setup-wizard__lead--center {
+    text-align: center;
+}
+
+.automator-setup-wizard__small {
+    font-size: 15px;
+    color: var(--automator-setup-wizard-muted);
+    text-align: center;
+}
+
+.automator-setup-wizard__fine {
+    margin-top: 24px;
+    font-size: 15px;
+    color: var(--automator-setup-wizard-muted);
+    text-align: center;
+}
+
+/* Status pill --------------------------------------------------------------- */
+
+.automator-setup-wizard__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border: 1px solid var(--automator-setup-wizard-border-strong);
+    border-radius: 999px;
+    font-size: 15px;
+    background: var(--uas--color--surface, #fff);
+    text-align: left;
+}
+
+.automator-setup-wizard__pill i {
+    display: block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--automator-setup-wizard-primary);
+    flex: none;
+}
+
+.automator-setup-wizard__pill--ok {
+    border-color: transparent;
+    background: var(--automator-setup-wizard-ok-bg);
+    color: var(--automator-setup-wizard-ok);
+}
+
+.automator-setup-wizard__pill--ok i {
+    background: var(--automator-setup-wizard-ok);
+}
+
+.automator-setup-wizard__pill a {
+    margin-left: 4px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .automator-setup-wizard__pill--wait i {
+        animation: automator-setup-wizard-pulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes automator-setup-wizard-pulse {
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.25;
+        }
+    }
+}
+
+/* Cards, tiles, callouts ---------------------------------------------------- */
+
+.automator-setup-wizard__card {
+    display: grid;
+    gap: 14px;
+    padding: 24px;
+    border: 1px solid var(--automator-setup-wizard-border);
+    border-radius: var(--automator-setup-wizard-radius);
+    background: var(--uas--color--surface, #fff);
+    box-shadow: var(--automator-setup-wizard-lift);
+}
+
+.automator-setup-wizard__card--center {
+    max-width: 500px;
+    margin: 36px auto 0;
+    padding: 32px;
+    text-align: center;
+}
+
+.automator-setup-wizard__card h3 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.automator-setup-wizard__cta {
+    width: 100%;
+    margin-top: 4px;
+}
+
+.automator-setup-wizard__buildline {
+    max-width: 56ch;
+    margin: 28px auto 0;
+    text-align: center;
+    font-size: 15px;
+    color: var(--automator-setup-wizard-muted);
+}
+
+.automator-setup-wizard__buildline strong {
+    color: var(--uas--typography--color, #1d2129);
+    font-weight: 600;
+}
+
+.automator-setup-wizard__tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 32px;
+}
+
+.automator-setup-wizard__tile {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+    padding: 24px;
+    border: 1px solid var(--automator-setup-wizard-border);
+    border-radius: var(--automator-setup-wizard-radius);
+    background: var(--uas--color--surface, #fff);
+}
+
+.automator-setup-wizard__tile--primary {
+    box-shadow: var(--automator-setup-wizard-lift);
+}
+
+.automator-setup-wizard__tile h3 {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.automator-setup-wizard__tile p {
+    font-size: 15px;
+    color: var(--automator-setup-wizard-muted);
+}
+
+.automator-setup-wizard__tile uas-button {
+    justify-self: start;
+    margin-top: 6px;
+}
+
+/* App credits --------------------------------------------------------------- */
+
+.automator-setup-wizard__apps {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    margin: 32px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.automator-setup-wizard__apps-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px solid var(--automator-setup-wizard-border);
+    border-radius: var(--automator-setup-wizard-radius-sm);
+    font-size: 15px;
+    font-weight: 500;
+    min-width: 0;
+}
+
+.automator-setup-wizard__apps-item img {
+    width: 32px;
+    height: 32px;
+    flex: none;
+    box-sizing: border-box;
+    padding: 4px;
+    border: 1px solid var(--automator-setup-wizard-border);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.automator-setup-wizard__more {
+    margin-top: 16px;
+    text-align: center;
+    font-size: 15px;
+}
+
+/* Choose your AI ------------------------------------------------------------ */
+
+.automator-setup-wizard__picker {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 32px;
+}
+
+.automator-setup-wizard a.automator-setup-wizard__app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    min-height: 136px;
+    box-sizing: border-box;
+    padding: 22px 14px;
+    border: 1px solid var(--automator-setup-wizard-border);
+    border-radius: var(--automator-setup-wizard-radius);
+    background: var(--uas--color--surface, #fff);
+    color: var(--uas--typography--color, #1d2129);
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    text-align: center;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.automator-setup-wizard a.automator-setup-wizard__app:hover,
+.automator-setup-wizard a.automator-setup-wizard__app:focus-visible {
+    border-color: var(--automator-setup-wizard-primary);
+    box-shadow: var(--automator-setup-wizard-lift);
+    color: var(--uas--typography--color, #1d2129);
+}
+
+.automator-setup-wizard__app-icon {
+    width: 36px;
+    height: 36px;
+}
+
+.automator-setup-wizard__app-sub {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--automator-setup-wizard-muted);
+    white-space: nowrap;
+}
+
+.automator-setup-wizard__app[data-app="other"] .automator-setup-wizard__app-sub {
+    white-space: normal;
+}
+
+.automator-setup-wizard__notes {
+    max-width: 60ch;
+    margin: 20px auto 0;
+    text-align: center;
+    font-size: 15px;
+    color: var(--automator-setup-wizard-muted);
+}
+
+.automator-setup-wizard__divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 28px 0 16px;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--automator-setup-wizard-muted);
+}
+
+.automator-setup-wizard__divider::before,
+.automator-setup-wizard__divider::after {
+    content: "";
+    flex: 1;
+    border-top: 1px solid var(--automator-setup-wizard-border);
+}
+
+.automator-setup-wizard__alt {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+.automator-setup-wizard__alt uas-button {
+    width: 100%;
+}
+
+/* Waiting ------------------------------------------------------------------- */
+
+.automator-setup-wizard__wsteps {
+    max-width: 540px;
+    margin: 32px auto 0;
+    padding-left: 24px;
+    display: grid;
+    gap: 12px;
+}
+
+.automator-setup-wizard__wsteps li {
+    margin: 0;
+    padding-left: 4px;
+}
+
+.automator-setup-wizard__wsteps + .automator-setup-wizard__lead {
+    margin-top: 24px;
+}
+
+.automator-setup-wizard__linksrow {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 24px;
+    margin-top: 28px;
+    font-size: 15px;
+}
+
+/* Offers (Uncanny Agent, Page Builder) -------------------------------------- */
+
+.automator-setup-wizard__offer {
+    max-width: 620px;
+    margin: 32px auto 0;
+    display: grid;
+    gap: 26px;
+}
+
+.automator-setup-wizard__ticks {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 12px;
+}
+
+.automator-setup-wizard__ticks li {
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr);
+    gap: 12px;
+    margin: 0;
+}
+
+.automator-setup-wizard__ticks li::before {
+    content: "\2713";
+    color: var(--automator-setup-wizard-ok);
+    font-weight: 700;
+}
+
+/* A tick list that follows a card directly (Pro's license screen) keeps the
+   offer's width and breathing room, with an optional intro line above it. */
+.automator-setup-wizard__card + .automator-setup-wizard__ticks,
+.automator-setup-wizard__ticks-intro {
+    max-width: 620px;
+    margin: 32px auto 0;
+}
+
+.automator-setup-wizard__ticks-intro {
+    font-weight: 600;
+}
+
+.automator-setup-wizard__ticks-intro + .automator-setup-wizard__ticks {
+    max-width: 620px;
+    margin: 12px auto 0;
+}
+
+/* A nav action that needs a confirmation dialog is a button styled as the
+   quiet nav link beside it. */
+.automator-setup-wizard__step-nav uas-button.automator-setup-wizard__nav-button {
+    --uas--button--custom-color: var(--automator-setup-wizard-muted);
+    --uas--button--custom-hover-color: var(--automator-setup-wizard-primary);
+    --uas--button--custom-hover-background: transparent;
+    --uas--button--size-custom-padding-left: 0;
+    --uas--button--size-custom-padding-right: 0;
+    --uas--button--size-custom-font-size: 15px;
+    --uas--button--custom-font-weight: 400;
+}
+
+.automator-setup-wizard__forline {
+    padding-left: 14px;
+    border-left: 3px solid var(--automator-setup-wizard-border);
+    font-size: 15px;
+    color: var(--automator-setup-wizard-muted);
+}
+
+.automator-setup-wizard__choice {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+
+.automator-setup-wizard__choice legend {
+    margin-bottom: 10px;
+    padding: 0;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.automator-setup-wizard__option {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 2px 12px;
+    align-items: start;
+    padding: 16px 18px;
+    border: 1px solid var(--automator-setup-wizard-border);
+    border-radius: var(--automator-setup-wizard-radius);
+    background: var(--uas--color--surface, #fff);
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.automator-setup-wizard__option input {
+    grid-row: span 2;
+    margin: 4px 0 0;
+    accent-color: var(--automator-setup-wizard-primary);
+}
+
+.automator-setup-wizard__option-label {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.automator-setup-wizard__option-sub {
+    grid-column: 2;
+    font-size: 15px;
+    color: var(--automator-setup-wizard-muted);
+}
+
+.automator-setup-wizard__option:has(input:checked) {
+    border-color: var(--automator-setup-wizard-primary);
+    box-shadow: 0 0 0 1px var(--automator-setup-wizard-primary), var(--automator-setup-wizard-lift);
+}
+
+.automator-setup-wizard__option:focus-within {
+    outline: 2px solid var(--automator-setup-wizard-primary);
+    outline-offset: 3px;
+}
+
+.automator-setup-wizard__go {
+    display: flex;
+    justify-content: center;
+    margin-top: 4px;
+}
+
+.automator-setup-wizard__go uas-button {
+    min-width: 240px;
+}
+
+/* Try it -------------------------------------------------------------------- */
+
+.automator-setup-wizard__groups {
+    display: grid;
+    gap: 28px;
+    margin-top: 32px;
+}
+
+.automator-setup-wizard__group h3 {
+    margin-bottom: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--automator-setup-wizard-muted);
+}
+
+.automator-setup-wizard__prompt {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 18px;
+    border: 1px solid var(--automator-setup-wizard-border);
+    border-radius: var(--automator-setup-wizard-radius);
+    background: var(--uas--color--surface, #fff);
+}
+
+.automator-setup-wizard__prompt + .automator-setup-wizard__prompt {
+    margin-top: 10px;
+}
+
+.automator-setup-wizard__prompt-text {
+    font-size: 15px;
+    min-width: 0;
+}
+
+.automator-setup-wizard__prompt-text::before {
+    content: "\201C";
+    color: var(--automator-setup-wizard-muted);
+}
+
+.automator-setup-wizard__prompt-text::after {
+    content: "\201D";
+    color: var(--automator-setup-wizard-muted);
+}
+
+.automator-setup-wizard__prompt uas-button[data-copied="true"] {
+    --uas--button--custom-color: var(--automator-setup-wizard-ok);
+    --uas--button--custom-border: 1px solid var(--automator-setup-wizard-ok);
+}
+
+.automator-setup-wizard__tooluse {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 15px;
+    color: var(--automator-setup-wizard-muted);
+}
+
+.automator-setup-wizard__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+/* Navigation ---------------------------------------------------------------- */
+
+.automator-setup-wizard__step-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 36px;
+    font-size: 15px;
+}
+
+a.automator-setup-wizard__nav-link {
+    color: var(--automator-setup-wizard-muted);
+    text-decoration: none;
+}
+
+a.automator-setup-wizard__nav-link:hover,
+a.automator-setup-wizard__nav-link:focus-visible {
+    color: var(--automator-setup-wizard-primary);
+}
+
+.automator-setup-wizard__footer {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 15px;
+}
+
+.automator-setup-wizard__footer a {
+    color: var(--automator-setup-wizard-muted);
+    text-decoration: none;
+}
+
+.automator-setup-wizard__footer a:hover,
+.automator-setup-wizard__footer a:focus-visible {
+    color: var(--automator-setup-wizard-primary);
+}
+
+/* Pro license form (Pro's step-1 override) ---------------------------------- */
+
+.automator-pro-setup-wizard-step-1__form {
+    display: grid;
+    gap: 6px;
+    margin-top: 6px;
+    text-align: left;
+}
+
+.automator-pro-setup-wizard-step-1__form .uap-form-control {
+    display: block;
+    width: 100%;
+}
+
+#license_label {
+    display: block;
+    font-weight: 500;
     font-size: 15px;
 }
 
 #license_key {
-    margin: 15px 0px;
-    width: 80%;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 42px;
+    margin: 0 0 10px;
+    padding: 10px 14px;
+    border: 1px solid var(--automator-setup-wizard-border-strong);
+    border-radius: var(--automator-setup-wizard-radius-sm);
+    font-size: 15px;
 }
 
 .uap-form-control-bottom {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+    display: grid;
+    gap: 14px;
 }
 
 #feedback {
-    width: 80%;
     text-align: left;
-    margin-bottom: 15px;
 }
+
+/* Small screens ------------------------------------------------------------- */
 
 @media screen and (max-width: 782px) {
     .automator-setup-wizard-wrap {
-        min-height: auto;
         padding: 16px;
-        align-items: flex-start;
     }
 
     .automator-setup-wizard {
-        width: 100%;
-        padding: 32px 24px;
+        padding: 28px 18px;
     }
 
-    .automator-setup-wizard__branding img {
-        max-width: 100%;
-        height: auto;
+    .automator-setup-wizard__stepper {
+        gap: 6px;
     }
 
-    .automator-setup-wizard__options {
-        grid-template-columns: 1fr;
-        gap: 24px;
+    .automator-setup-wizard__stepper-step span {
+        display: none;
+    }
+
+    .automator-setup-wizard__picker {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .automator-setup-wizard__prompt {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .automator-setup-wizard__prompt uas-button {
+        justify-self: start;
     }
 }

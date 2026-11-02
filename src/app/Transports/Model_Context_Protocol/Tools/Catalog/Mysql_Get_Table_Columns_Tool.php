@@ -89,7 +89,7 @@ class Mysql_Get_Table_Columns_Tool extends Abstract_MCP_Tool {
 								),
 							),
 							'primary_keys' => array(
-								'type' => 'array',
+								'type'  => 'array',
 								'items' => array( 'type' => 'string' ),
 							),
 							'column_count' => array( 'type' => 'integer' ),
@@ -136,7 +136,13 @@ class Mysql_Get_Table_Columns_Tool extends Abstract_MCP_Tool {
 			return Json_Rpc_Response::create_error_response( 'Maximum 20 tables per request.' );
 		}
 
+		$boundary = $this->get_table_boundary_response( $table_names, $user_context );
+		if ( null !== $boundary ) {
+			return $boundary;
+		}
+
 		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- The query string is prepared inside prepare_information_schema_query().
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Live information_schema read for the table browser, must not be cached. The query is prepared inside prepare_information_schema_query().
 		$existing_tables = $wpdb->get_col(
 			$this->prepare_information_schema_query(
 				'SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ({table_placeholders})',
@@ -145,7 +151,13 @@ class Mysql_Get_Table_Columns_Tool extends Abstract_MCP_Tool {
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
-		$missing = array_diff( $table_names, $existing_tables );
+		// A failed probe must not be reported as "tables not found".
+		$failure = $this->get_query_failure_response();
+		if ( null !== $failure ) {
+			return $failure;
+		}
+
+		$missing = $this->missing_table_names( $table_names, (array) $existing_tables );
 
 		if ( ! empty( $missing ) ) {
 			return Json_Rpc_Response::create_error_response(
@@ -154,6 +166,7 @@ class Mysql_Get_Table_Columns_Tool extends Abstract_MCP_Tool {
 		}
 
 		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- The query string is prepared inside prepare_information_schema_query().
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Live information_schema read for the table browser, must not be cached. The query is prepared inside prepare_information_schema_query().
 		$columns = $wpdb->get_results(
 			$this->prepare_information_schema_query(
 				'SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE, IS_NULLABLE, COLUMN_KEY, COLUMN_DEFAULT, EXTRA
@@ -165,8 +178,13 @@ class Mysql_Get_Table_Columns_Tool extends Abstract_MCP_Tool {
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
-		if ( null === $columns ) {
-			return Json_Rpc_Response::create_error_response( 'Failed to retrieve columns: ' . $wpdb->last_error );
+		$failure = $this->get_query_failure_response();
+		if ( null !== $failure ) {
+			return $failure;
+		}
+
+		if ( ! is_array( $columns ) ) {
+			$columns = array();
 		}
 
 		// Group columns by table.

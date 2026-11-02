@@ -85,6 +85,7 @@ class Give_Helpers {
 			'relevant_tokens' => $tokens,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_list_all_give_forms', $option );
 	}
 
@@ -186,6 +187,7 @@ class Give_Helpers {
 			}
 
 			if ( ! empty( $custom_fields ) && empty( $custom_fields[2] ) ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- GiveWP's own hook.
 				if ( apply_filters( 'give_telemetry_form_uses_addon_form_field_manager', false, $form_id ) ) {
 					$form_builder_fields = give()->form_meta->get_meta( $form_id, 'formBuilderFields', true );
 					if ( ! empty( $form_builder_fields ) && strpos( $form_builder_fields, 'givewp-form-field-manager' ) !== false ) {

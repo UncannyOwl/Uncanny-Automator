@@ -412,13 +412,14 @@ trait Action_Helpers_Email {
 			'is_html'    => $this->is_is_html(),
 		);
 
-		if ( true === apply_filters( 'automator_send_email', true, $pass, $this->get_actions_data(), $this ) ) {
-			$mailed = Automator()->helpers->email->send( $pass );
-		} else {
-			$error = Automator()->error;
-			$error->add_error( 'wp_mail', esc_attr__( 'Email action is disabled by `automator_send_email` filter.', 'uncanny-automator' ), $pass );
-			$mailed = $error;
+		if ( true !== apply_filters( 'automator_send_email', true, $pass, $this->get_actions_data(), $this ) ) {
+			// The site switched email off: nothing is sent, and the action fails with the reason.
+			$this->set_error_message( esc_attr__( 'Email action is disabled by `automator_send_email` filter.', 'uncanny-automator' ) );
+
+			return false;
 		}
+
+		$mailed = Automator()->helpers->email->send( $pass );
 
 		if ( is_automator_error( $mailed ) ) {
 			$errors = $mailed->get_messages( 'wp_mail' ) + $mailed->get_messages( 'wp_mail_to' );

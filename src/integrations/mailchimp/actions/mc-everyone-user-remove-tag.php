@@ -13,6 +13,7 @@ class MC_EVERYONE_USER_REMOVE_TAG extends \Uncanny_Automator\Recipe\App_Action {
 	use Mailchimp_Audience_Fields;
 	use Mailchimp_Email_Fields;
 	use Mailchimp_Tag_Fields;
+	use \Uncanny_Automator\Recipe\Background_Job_Without_Tokens;
 
 	/**
 	 * Setup action.
@@ -74,8 +75,12 @@ class MC_EVERYONE_USER_REMOVE_TAG extends \Uncanny_Automator\Recipe\App_Action {
 		$list_id = $this->get_audience_from_parsed();
 		$tag     = $this->get_tag_from_parsed( 'MCLISTTAGS' );
 
-		$this->api->remove_tag_from_contact( $list_id, $email, array( $tag ) );
+		$response = $this->api->remove_tag_from_contact( $list_id, $email, array( $tag ), $action_data );
 
-		return true;
+		if ( $this->deferred( $response ) ) {
+			return true;
+		}
+
+		return $this->process_job( $response, $parsed, $action_data );
 	}
 }

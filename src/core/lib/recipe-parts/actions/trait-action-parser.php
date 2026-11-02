@@ -2,6 +2,7 @@
 
 namespace Uncanny_Automator\Recipe;
 
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Utilities\Custom_Value_Resolver;
 use WP_Error;
 
 /**
@@ -142,9 +143,7 @@ trait Action_Parser {
 			// sentinel; the real value lives in the sibling {meta_key}_custom key and
 			// may itself carry tokens, so swap it in before parsing. Without this the
 			// sentinel string passes through verbatim (no {{token}} braces to expand).
-			if ( 'automator_custom_value' === $meta_value && isset( $metas[ $meta_key . '_custom' ] ) ) {
-				$meta_value = $metas[ $meta_key . '_custom' ];
-			}
+			$meta_value = Custom_Value_Resolver::value_of( $metas, $meta_key );
 
 			$is_json_string = Automator()->utilities->is_json_string( $meta_value );
 

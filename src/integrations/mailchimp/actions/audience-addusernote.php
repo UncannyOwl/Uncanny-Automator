@@ -13,6 +13,7 @@ class AUDIENCE_ADDUSERNOTE extends \Uncanny_Automator\Recipe\App_Action {
 	use Mailchimp_Audience_Fields;
 	use Mailchimp_Email_Fields;
 	use Mailchimp_Note_Fields;
+	use \Uncanny_Automator\Recipe\Background_Job_Without_Tokens;
 
 	/**
 	 * Setup action.
@@ -65,8 +66,12 @@ class AUDIENCE_ADDUSERNOTE extends \Uncanny_Automator\Recipe\App_Action {
 		$note       = $this->get_note_from_parsed();
 		$user_email = $this->get_email_from_user( $user_id );
 
-		$this->api->add_note_to_contact( $list_id, $user_email, $note );
+		$response = $this->api->add_note_to_contact( $list_id, $user_email, $note, $action_data );
 
-		return true;
+		if ( $this->deferred( $response ) ) {
+			return true;
+		}
+
+		return $this->process_job( $response, $parsed, $action_data );
 	}
 }

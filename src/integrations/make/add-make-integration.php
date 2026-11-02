@@ -22,11 +22,8 @@ class Add_Make_Integration {
 	 * Integration Set-up.
 	 */
 	protected function setup() {
-
 		$this->set_integration( 'MAKE' );
-
 		$this->set_name( 'Make' );
-
 		$this->set_icon( __DIR__ . '/img/make-icon.svg' );
 
 		$this->set_developer_name( 'Make' );
@@ -40,8 +37,6 @@ class Add_Make_Integration {
 	 * @return bool
 	 */
 	public function plugin_active() {
-
 		return true;
-
 	}
 }

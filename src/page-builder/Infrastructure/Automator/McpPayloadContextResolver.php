@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Infrastructure\Automator;
 use UncannyPageBuilder\Application\Access\GetPageBuilderAllowedCapabilities;
 use UncannyPageBuilder\Application\ContentType\SupportsPostTypeUseCase;
 use UncannyPageBuilder\Application\Personalization\SitePersonalizationService;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
 use UncannyPageBuilder\Application\ShellModeService;
 use UncannyPageBuilder\Application\Settings\ToolSettingsAccess;
@@ -142,7 +143,7 @@ final class McpPayloadContextResolver
 
     private function reportContextFailure(\Throwable $error): void
     {
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] MCP context unavailable (%s).',
             $error::class,
         ));
@@ -198,14 +199,13 @@ final class McpPayloadContextResolver
 
     private function currentAdminCanvasId(): ?int
     {
-        if (
-            ! is_admin()
-            || ! is_string($_GET['page'] ?? null)
-            || $_GET['page'] !== AdminCanvasPage::PAGE_SLUG
-        ) {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        $page = isset($_GET['page']) && is_string($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
+        if (! is_admin() || $page !== AdminCanvasPage::PAGE_SLUG) {
             return null;
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
         $postId = absint($_GET['canvas_id'] ?? 0);
         return $postId > 0 ? $postId : null;
     }

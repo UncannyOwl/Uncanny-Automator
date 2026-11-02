@@ -130,6 +130,7 @@ class Ameliabooking_Helpers {
 
 		$items = array();
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Amelia's own table; the plugin offers no API for this query.
 		$categories = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT id, name FROM {$wpdb->prefix}amelia_categories WHERE status = %s ORDER BY name ASC LIMIT 100",
@@ -156,6 +157,7 @@ class Ameliabooking_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Amelia's own table; the plugin offers no API for this query.
 		return $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT id, name FROM {$wpdb->prefix}amelia_services
@@ -177,6 +179,7 @@ class Ameliabooking_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Amelia's own table; the plugin offers no API for this query.
 		return $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT id, name FROM {$wpdb->prefix}amelia_services WHERE status = %s ORDER BY name ASC LIMIT 999",
@@ -217,6 +220,7 @@ class Ameliabooking_Helpers {
 
 		$options = array();
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Amelia's own table; the plugin offers no API for this query.
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT id, name from {$wpdb->prefix}amelia_events WHERE status = %s ORDER BY name ASC LIMIT 999",
@@ -360,6 +364,7 @@ class Ameliabooking_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Amelia's own table; the plugin offers no API for this query.
 		$results = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->prefix}amelia_users WHERE id = %d",
@@ -383,6 +388,7 @@ class Ameliabooking_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Amelia's own table; the plugin offers no API for this query.
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->prefix}amelia_coupons WHERE id = %d",
@@ -403,6 +409,7 @@ class Ameliabooking_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Amelia's own table; the plugin offers no API for this query.
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT name FROM {$wpdb->prefix}amelia_coupons_to_events as coupons
@@ -428,6 +435,7 @@ class Ameliabooking_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Amelia's own table; the plugin offers no API for this query.
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT name FROM {$wpdb->prefix}amelia_coupons_to_events as coupons
@@ -453,6 +461,7 @@ class Ameliabooking_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Amelia's own table; the plugin offers no API for this query.
 		$results = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT count(*) as total FROM {$wpdb->prefix}amelia_customer_bookings

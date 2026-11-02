@@ -121,6 +121,7 @@ trait Trello_Card_Data {
 				),
 				array(
 					'option_code' => 'FIELD_OBJ',
+					'label'       => esc_html_x( 'Field object (hidden)', 'Trello', 'uncanny-automator' ),
 					'input_type'  => 'text',
 					'required'    => false,
 					'read_only'   => true,

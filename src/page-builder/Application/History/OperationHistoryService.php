@@ -65,7 +65,7 @@ final class OperationHistoryService
 
         $before = $this->pageSource->generation($pageId);
         if ($before !== $expectedGeneration) {
-            throw new StaleSourceGenerationException('page', $expectedGeneration, $before);
+            throw new StaleSourceGenerationException('page', (int) $expectedGeneration, (int) $before);
         }
 
         $entry = $direction === 'undo'
@@ -73,7 +73,7 @@ final class OperationHistoryService
             : $this->repository->latestRedoable(self::SCOPE_PAGE, $pageId);
         $after = $this->pageSource->generation($pageId);
         if ($after !== $expectedGeneration) {
-            throw new StaleSourceGenerationException('page', $expectedGeneration, $after);
+            throw new StaleSourceGenerationException('page', (int) $expectedGeneration, (int) $after);
         }
         if (!$entry instanceof OperationEntry) {
             return null;
@@ -191,7 +191,7 @@ final class OperationHistoryService
         if (!HistoryOperationRestorer::supports($operation)) {
             throw new \InvalidArgumentException(sprintf(
                 'History operation "%s" has no complete working-source restore path.',
-                $operation,
+                esc_html($operation),
             ));
         }
         if ($beforePayload === $afterPayload) {

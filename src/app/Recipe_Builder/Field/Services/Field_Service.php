@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Recipe_Builder\Field\Services;
 
+use Uncanny_Automator\App\Recipe_Builder\Field\Enums\Field_Types;
 use Uncanny_Automator\App\Recipe_Builder\Field\Field;
 use Uncanny_Automator\App\Recipe_Builder\Field\Field_Transformer;
 use Uncanny_Automator\App\Recipe_Builder\Field\Value_Objects\Flattened_Field_Config;
@@ -119,6 +120,39 @@ class Field_Service {
 	public function flatten_fields( array $fields, string $transport ): array {
 		$field_objects = $this->create_fields( $fields );
 		return $this->to_config_array( $field_objects, $transport );
+	}
+
+	/**
+	 * Resolve each incoming field's `type` to its internal-only type
+	 * (html / markdown) from the authoritative field definitions, BEFORE
+	 * flattening.
+	 *
+	 * The sanitizer receives pre-resolved types: a `supports_tinymce`
+	 * textarea sanitized as a plain textarea loses its HTML to
+	 * sanitize_textarea_field(). Resolving here routes it to the sanitizer's
+	 * raw-passthrough html branch instead. Definitions are keyed by
+	 * option_code and MUST come from the registry (authoritative), never the
+	 * request payload — see Field_Types::resolve_internal_type().
+	 *
+	 * @param array<string, array> $fields              Structured wire fields (code => {type, value, ...}).
+	 * @param array<string, array> $definitions_by_code option_code => authoritative field definition.
+	 * @return array<string, array> Fields with internal types resolved.
+	 */
+	public function resolve_internal_field_types( array $fields, array $definitions_by_code ): array {
+		foreach ( $fields as $code => $field_data ) {
+			if ( ! is_array( $field_data ) || ! isset( $field_data['type'] ) ) {
+				continue;
+			}
+
+			$definition = $definitions_by_code[ $code ] ?? null;
+			if ( ! is_array( $definition ) ) {
+				continue;
+			}
+
+			$fields[ $code ]['type'] = Field_Types::resolve_internal_type( (string) $field_data['type'], $definition );
+		}
+
+		return $fields;
 	}
 
 	/**

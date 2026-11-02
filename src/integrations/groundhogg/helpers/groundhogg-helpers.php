@@ -469,8 +469,7 @@ class Groundhogg_Helpers extends Abstract_Helpers {
 
 		$table = $wpdb->prefix . 'gh_contactmeta';
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name is safe, built from $wpdb->prefix.
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Groundhogg's own table; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
 		$keys = $wpdb->get_col( "SELECT DISTINCT meta_key FROM {$table} ORDER BY meta_key ASC" );
 
 		if ( ! is_array( $keys ) ) {
@@ -515,7 +514,8 @@ class Groundhogg_Helpers extends Abstract_Helpers {
 		// which causes side effects (script enqueues, admin hook registration) during AJAX.
 		// The same filter is applied so extensions can add their own exclusions.
 		$exclusions = apply_filters(
-			'groundhogg/admin/contacts/exclude_meta_list', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- Groundhogg's own filter name.
+			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Groundhogg's own filter name.
+			'groundhogg/admin/contacts/exclude_meta_list',
 			array(
 				'alternate_emails',
 				'alternate_phones',

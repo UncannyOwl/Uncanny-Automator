@@ -24,7 +24,7 @@ final class RestNonceRefresher
         try {
             $this->sendNonce();
         } catch (\Throwable $failure) {
-            error_log('[Uncanny Page Builder] REST nonce refresh failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] REST nonce refresh failed (' . $failure::class . ')');
             wp_send_json_error([
                 'message' => 'Uncanny Page Builder could not refresh the REST nonce.',
             ], 500);

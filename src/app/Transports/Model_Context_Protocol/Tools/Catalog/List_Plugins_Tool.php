@@ -91,6 +91,15 @@ class List_Plugins_Tool extends Abstract_MCP_Tool {
 	}
 
 	/**
+	 * Whether network activation applies to this install.
+	 *
+	 * @return bool
+	 */
+	protected function is_network(): bool {
+		return is_multisite();
+	}
+
+	/**
 	 * Execute tool.
 	 *
 	 * @param User_Context $user_context User context.
@@ -107,7 +116,23 @@ class List_Plugins_Tool extends Abstract_MCP_Tool {
 		}
 
 		$all_plugins    = get_plugins();
-		$active_plugins = get_option( 'active_plugins', array() );
+		$active_plugins = (array) get_option( 'active_plugins', array() );
+
+		// Network-activated plugins are recorded on the network, keyed by file.
+		// Only a network may consult that option: on a single site
+		// get_site_option() falls back to the ordinary options table, where a
+		// leftover active_sitewide_plugins row would mark plugins active that
+		// WordPress itself treats as inactive.
+		if ( $this->is_network() ) {
+			$active_plugins = array_values(
+				array_unique(
+					array_merge(
+						$active_plugins,
+						array_keys( (array) get_site_option( 'active_sitewide_plugins', array() ) )
+					)
+				)
+			);
+		}
 
 		$items = array();
 

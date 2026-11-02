@@ -73,45 +73,97 @@ class Integration_Registrar {
 		}
 
 		foreach ( Set_Up_Automator::$auto_loaded_directories as $directory ) {
-
-			$dir_name = basename( $directory );
-			$file     = $this->get_main_file( $dir_name );
-
-			if ( null === $file ) {
-				continue;
-			}
-
-			$class = apply_filters(
-				'automator_integrations_class_name',
-				$this->resolver->resolve( $file, false, $dir_name ),
-				$file
-			);
-
-			if ( false !== Utilities::get_class_instance( $class ) ) {
-				continue;
-			}
-
-			include_once $file;
-
-			try {
-				$instance = new $class();
-			} catch ( \Throwable $e ) {
-				$this->error_handler->handle( $class, $e );
-				continue;
-			}
-
-			$this->store_integration_metadata( $instance, $class );
-
-			if ( ! $this->is_integration_active( $instance, $class ) ) {
-				unset( $instance );
-				continue;
-			}
-
-			$this->activate_integration( $instance, $class, $dir_name, $file );
+			$this->register_directory( basename( $directory ) );
 		}
 
 		$this->active_directories = apply_filters( 'automator_active_integration_directories', $this->active_directories );
 		Automator()->cache->set( 'automator_active_integrations', $this->active_directories );
+	}
+
+	/**
+	 * Load, build and register the legacy integration in one directory.
+	 *
+	 * Every step here runs the integration's own code: resolving its class (which can run
+	 * its autoloader), including its main file, building it, reading its name and icon,
+	 * asking whether its plugin is active, and registering it. All of them run inside one
+	 * guard. A failure in any step, a parse error or a refused registration
+	 * (Automator_Registration's 1001/1002/1003) included, is recorded for the load-errors
+	 * notice and skips this integration only; the loop goes on to the next one.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $dir_name Directory name.
+	 *
+	 * @return void
+	 */
+	private function register_directory( $dir_name ) {
+
+		$file = $this->get_main_file( $dir_name );
+
+		if ( null === $file ) {
+			return;
+		}
+
+		// The record names the main file until its class is resolved.
+		$class = basename( $file, '.php' );
+
+		try {
+			$class = $this->resolve_class( $file, $dir_name );
+			$this->register_integration( $class, $dir_name, $file );
+		} catch ( \Throwable $e ) {
+			$this->error_handler->handle( $class, $e );
+		}
+	}
+
+	/**
+	 * The fully qualified class name of a directory's main file.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $file     The main file path.
+	 * @param string $dir_name The directory name.
+	 *
+	 * @return string
+	 */
+	private function resolve_class( $file, $dir_name ) {
+		return apply_filters(
+			'automator_integrations_class_name',
+			$this->resolver->resolve( $file, false, $dir_name ),
+			$file
+		);
+	}
+
+	/**
+	 * Build an integration from its main file and register it when its plugin is active.
+	 *
+	 * Inactive integrations only give the catalog their name and icon. An integration
+	 * already built on this request is left as it is.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $class_name The FQCN.
+	 * @param string $dir_name   The directory name.
+	 * @param string $file       The main file path.
+	 *
+	 * @return void
+	 */
+	private function register_integration( $class_name, $dir_name, $file ) {
+
+		if ( false !== Utilities::get_class_instance( $class_name ) ) {
+			return;
+		}
+
+		include_once $file;
+
+		$instance = new $class_name();
+
+		$this->store_integration_metadata( $instance, $class_name );
+
+		if ( ! $this->is_integration_active( $instance, $class_name ) ) {
+			return;
+		}
+
+		$this->activate_integration( $instance, $class_name, $dir_name, $file );
 	}
 
 	/**
@@ -185,6 +237,9 @@ class Integration_Registrar {
 	/**
 	 * Register an active integration — legacy callbacks, directory mapping, system registration.
 	 *
+	 * Every call into the integration runs before anything is marked active, so an
+	 * integration whose registration is refused, or that fails, leaves no trace here.
+	 *
 	 * @param object $instance The integration instance.
 	 * @param string $class    The FQCN.
 	 * @param string $dir_name The directory name.
@@ -200,42 +255,40 @@ class Integration_Registrar {
 			$instance->add_integration_func();
 		}
 
+		if ( method_exists( $instance, 'add_integration' ) ) {
+			$instance->add_integration( $instance->get_integration(), array( $instance->get_name(), $instance->get_icon() ) );
+		}
+
+		$directories = $this->declared_directories( $instance, $file );
+
 		Set_Up_Automator::set_active_integration_code( $integration_code );
 
 		$this->active_directories[ $dir_name ] = $instance;
-		$this->collect_directories_to_include( $instance, $dir_name, $file );
 
-		if ( method_exists( $instance, 'add_integration' ) ) {
-			$instance->add_integration( $instance->get_integration(), array( $instance->get_name(), $instance->get_icon() ) );
+		foreach ( $directories as $dir ) {
+			$this->directories_to_include[ $dir_name ][] = basename( $dir );
 		}
 
 		Utilities::add_class_instance( $class, $instance );
 	}
 
 	/**
-	 * Collect subdirectories to include for an integration.
+	 * The subdirectories an integration declares for its parts.
 	 *
 	 * @param object $instance The integration instance.
-	 * @param string $dir_name The directory name.
 	 * @param string $file     The main file path.
 	 *
-	 * @return void
+	 * @return array The directories as the integration returned them; empty when it declares none.
 	 */
-	private function collect_directories_to_include( $instance, $dir_name, $file ) {
+	private function declared_directories( $instance, $file ) {
 
 		if ( ! method_exists( $instance, 'add_integration_directory_func' ) ) {
-			return;
+			return array();
 		}
 
 		$directories = $instance->add_integration_directory_func( array(), $file );
 
-		if ( empty( $directories ) ) {
-			return;
-		}
-
-		foreach ( $directories as $dir ) {
-			$this->directories_to_include[ $dir_name ][] = basename( $dir );
-		}
+		return empty( $directories ) ? array() : $directories;
 	}
 
 	/**

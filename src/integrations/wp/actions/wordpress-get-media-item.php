@@ -19,6 +19,7 @@ class WP_GET_MEDIA_ITEM extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Media item */
 				esc_html_x( 'Get {{a media item:%1$s}} from the media library', 'WordPress', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)

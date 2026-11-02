@@ -175,6 +175,7 @@ class Mec_Event_Tokens {
 			return '';
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 		$meta_value = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT meta_value

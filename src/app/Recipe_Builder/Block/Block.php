@@ -1,15 +1,18 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Block;
 
 use InvalidArgumentException;
-use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Details;
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Dependency_Evaluatable;
-use Uncanny_Automator\App\Integration_Catalog\Scope_Tag\Scope_Tag_Evaluatable;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
+use Uncanny_Automator\App\Integration_Catalog\Scope_Tag\Scope_Tag_Evaluatable;
 use Uncanny_Automator\App\Plan\Services\Plan_Levels_Helper;
+use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Layout;
 use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Type;
+use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Default_Modifier;
+use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Details;
+use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Modifier_Type;
+use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Sentence;
 
 /**
  * Block Aggregate.
@@ -77,11 +80,41 @@ class Block implements Dependency_Evaluatable, Scope_Tag_Evaluatable {
 	private array $paths;
 
 	/**
+	 * How the block encloses the items placed inside it. One of {@see Block_Layout}.
+	 *
+	 * Declared by the block definition rather than derived from `$paths` or `$modifier_types`: a surface laying the recipe out reads a stated shape, so a block that accepts no modifiers is still a container when it says it is one.
+	 *
+	 * @var string
+	 */
+	private string $layout;
+
+	/**
+	 * Accepted modifier types as value objects. Each entry carries the wire `id` (`block_modifier_type` code) and a contextual display `name`.
+	 *
+	 * @var Block_Modifier_Type[]
+	 */
+	private array $modifier_types;
+
+	/**
+	 * Default modifiers auto-attached on block creation.
+	 *
+	 * @var Block_Default_Modifier[]
+	 */
+	private array $default_modifiers;
+
+	/**
 	 * The dependency description.
 	 *
 	 * @var string
 	 */
 	private string $dependency_description;
+
+	/**
+	 * The block sentence (optional).
+	 *
+	 * @var Block_Sentence|null
+	 */
+	private ?Block_Sentence $sentence;
 
 	/**
 	 * Constructor.
@@ -102,7 +135,20 @@ class Block implements Dependency_Evaluatable, Scope_Tag_Evaluatable {
 		$this->details                = $config->get_details();
 		$this->fields                 = $config->get_fields();
 		$this->paths                  = $config->get_paths();
+		$this->layout                 = $config->get_layout();
+		$this->modifier_types         = $config->get_modifier_types();
+		$this->default_modifiers      = $config->get_default_modifiers();
 		$this->dependency_description = $config->get_dependency_description();
+		$this->sentence               = $config->get_sentence();
+	}
+
+	/**
+	 * Get the block sentence.
+	 *
+	 * @return Block_Sentence|null
+	 */
+	public function get_sentence(): ?Block_Sentence {
+		return $this->sentence;
 	}
 
 	/**
@@ -178,6 +224,44 @@ class Block implements Dependency_Evaluatable, Scope_Tag_Evaluatable {
 	}
 
 	/**
+	 * Get how the block encloses the items placed inside it.
+	 *
+	 * @return string One of {@see Block_Layout}.
+	 */
+	public function get_layout(): string {
+		return $this->layout;
+	}
+
+	/**
+	 * Get the accepted modifier types as value objects.
+	 *
+	 * @return Block_Modifier_Type[]
+	 */
+	public function get_modifier_types(): array {
+		return $this->modifier_types;
+	}
+
+	/**
+	 * Get the default modifiers as value objects.
+	 *
+	 * @return Block_Default_Modifier[]
+	 */
+	public function get_default_modifiers(): array {
+		return $this->default_modifiers;
+	}
+
+	/**
+	 * Whether the block accepts modifiers.
+	 *
+	 * Convenience helper: `true` when at least one modifier type is declared, `false` otherwise.
+	 *
+	 * @return bool
+	 */
+	public function accepts_modifiers(): bool {
+		return ! empty( $this->modifier_types );
+	}
+
+	/**
 	 * Get dependency description.
 	 *
 	 * @return string
@@ -241,6 +325,8 @@ class Block implements Dependency_Evaluatable, Scope_Tag_Evaluatable {
 			'name'                 => $this->name,
 			'supported_scopes'     => $this->supported_scopes,
 			'required_tier'        => $this->required_tier,
+			// FE blocks-catalog schema requires the key on every block; no block declares tests yet.
+			'has_tests'            => false,
 			'unsupported_entities' => array_map(
 				function ( $entity ) {
 					return $entity->to_array();
@@ -249,6 +335,7 @@ class Block implements Dependency_Evaluatable, Scope_Tag_Evaluatable {
 			),
 			'details'              => $this->details->to_array(),
 			'fields'               => $this->fields,
+			'layout'               => $this->layout,
 			'paths'                => array_map(
 				function ( $path ) {
 					return $path->to_array();
@@ -256,6 +343,27 @@ class Block implements Dependency_Evaluatable, Scope_Tag_Evaluatable {
 				$this->paths
 			),
 		);
+
+		if ( $this->accepts_modifiers() ) {
+			$data['modifiers'] = array(
+				'types'    => array_map(
+					function ( $type ) {
+						return $type->to_array();
+					},
+					array_values( $this->modifier_types )
+				),
+				'defaults' => array_map(
+					function ( $default ) {
+						return $default->to_array();
+					},
+					$this->default_modifiers
+				),
+			);
+		}
+
+		if ( null !== $this->sentence ) {
+			$data['sentence'] = $this->sentence->to_array();
+		}
 
 		return $data;
 	}
@@ -274,7 +382,7 @@ class Block implements Dependency_Evaluatable, Scope_Tag_Evaluatable {
 		}
 
 		if ( ! Block_Type::is_valid( $config->get_type() ) ) {
-			throw new InvalidArgumentException( 'Block type must be one of: ' . implode( ', ', Block_Type::get_all() ) );
+			throw new InvalidArgumentException( 'Block type must be one of: ' . esc_html( implode( ', ', Block_Type::get_all() ) ) );
 		}
 
 		if ( empty( $config->get_name() ) ) {
@@ -288,13 +396,13 @@ class Block implements Dependency_Evaluatable, Scope_Tag_Evaluatable {
 
 		foreach ( $supported_scopes as $scope ) {
 			if ( ! Integration_Item_Types::is_valid( $scope ) ) {
-				throw new InvalidArgumentException( 'Block supported_scopes must contain only valid scopes: ' . implode( ', ', Integration_Item_Types::get_all() ) );
+				throw new InvalidArgumentException( 'Block supported_scopes must contain only valid scopes: ' . esc_html( implode( ', ', Integration_Item_Types::get_all() ) ) );
 			}
 		}
 
 		$required_tier = $config->get_required_tier();
 		if ( empty( $required_tier ) || ! Plan_Levels_Helper::is_valid( $required_tier ) ) {
-			throw new InvalidArgumentException( 'Block required_tier must be one of: ' . implode( ', ', Plan_Levels_Helper::get_all() ) );
+			throw new InvalidArgumentException( 'Block required_tier must be one of: ' . esc_html( implode( ', ', Plan_Levels_Helper::get_all() ) ) );
 		}
 
 		if ( empty( $config->get_unsupported_entities() ) ) {
@@ -303,6 +411,10 @@ class Block implements Dependency_Evaluatable, Scope_Tag_Evaluatable {
 
 		if ( empty( $config->get_paths() ) ) {
 			$config->paths( array() );
+		}
+
+		if ( ! Block_Layout::is_valid( $config->get_layout() ) ) {
+			throw new InvalidArgumentException( 'Block layout must be one of: ' . esc_html( implode( ', ', Block_Layout::get_all() ) ) );
 		}
 
 		$this->validate_path_codes( $config->get_paths() );
@@ -323,7 +435,7 @@ class Block implements Dependency_Evaluatable, Scope_Tag_Evaluatable {
 			$path_code = $path->get_path_code();
 
 			if ( isset( $path_codes[ $path_code ] ) ) {
-				throw new InvalidArgumentException( sprintf( 'Duplicate path code found: %s. Path codes must be unique within a block.', $path_code ) );
+				throw new InvalidArgumentException( sprintf( 'Duplicate path code found: %s. Path codes must be unique within a block.', esc_html( $path_code ) ) );
 			}
 
 			$path_codes[ $path_code ] = true;

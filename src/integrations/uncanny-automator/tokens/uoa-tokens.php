@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\App\Infrastructure\Database\Database;
+
 /**
  * Class Uoa_Tokens
  *
@@ -99,9 +101,13 @@ class Uoa_Tokens {
 			$recipe_id         = $args['trigger_args'][0];
 			$trigger_log_entry = $args['trigger_entry'];
 
+			// The runner's completion hooks carry no 'completed' in their args; the run's own
+			// status is the value that key held.
+			$recipe_status = Database::get_execution_log_store()->get_recipe_status( absint( $args['trigger_args'][2] ) );
+
 			$tokens = array(
-				'status'        => $args['trigger_args'][3]['completed'],
-				'error_message' => $args['trigger_args'][3]['completed'],
+				'status'        => $recipe_status,
+				'error_message' => $recipe_status,
 			);
 
 			if ( ! empty( $recipe_id ) ) {
@@ -308,6 +314,7 @@ class Uoa_Tokens {
 					global $wpdb;
 					$meta_field = $pieces[1];
 					$trigger_id = $trigger['ID'];
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 					$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key LIKE %s AND automator_trigger_id = %d ORDER BY ID DESC LIMIT 0,1", "%%$meta_field%%", $trigger_id ) );
 					if ( ! empty( $meta_value ) ) {
 						$value = automator_safe_unserialize( $meta_value );
@@ -358,6 +365,7 @@ class Uoa_Tokens {
 				case 'UOARECIPES_recipe_edit_link':
 				case 'UOARECIPES_recipe_log_url':
 				case 'UOARECIPES_action_log_url':
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 					$value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE automator_trigger_log_id = %d && meta_key = %s", $replace_args['trigger_log_id'], $pieces[1] ) );
 
 					if ( 'UOAERRORS_recipe_log_url' === $pieces[1] || 'UOARECIPES_recipe_log_url' === $pieces[1] ) {
@@ -529,6 +537,7 @@ class Uoa_Tokens {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 		$value = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE automator_trigger_log_id = %d AND meta_key = %s ORDER BY ID DESC LIMIT 1",

@@ -13,6 +13,8 @@ use Uncanny_Automator\App\Bridge\Recipe_Object_Bridge;
 use Uncanny_Automator\App\Bridge\Sentence_Bridge;
 use Uncanny_Automator\App\Bridge\Token_Parse_Bridge;
 use Uncanny_Automator\App\Bridge\Trigger_Log_Bridge;
+use Uncanny_Automator\App\Infrastructure\Database\Database;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Settings\Services\Recipe_Settings_Service;
 
 /**
  * Recipe data provider — pipeline-facing wrapper around recipe data,
@@ -49,21 +51,11 @@ class Recipe_Data_Provider {
 		?Trigger_Log_Bridge $trigger_logs = null,
 		?Process_User_Bridge $process_user = null
 	) {
-		$this->recipes       = $recipes ?? new Automator_Recipe_Object_Bridge();
-		$this->parser        = $parser ?? new Automator_Token_Parse_Bridge();
-		$this->sentences     = $sentences ?? new Automator_Sentence_Bridge();
-		$this->trigger_logs  = $trigger_logs ?? new Automator_Trigger_Log_Bridge();
-		$this->process_user  = $process_user ?? new Automator_Process_User_Bridge();
-	}
-
-	/**
-	 * @param string $type      Post type (AUTOMATOR_POST_TYPE_TRIGGER, etc.).
-	 * @param int    $recipe_id The recipe ID.
-	 *
-	 * @return array
-	 */
-	public function get_recipe_data( string $type, int $recipe_id ): array {
-		return $this->recipes->get_recipe_data_by_type( $type, $recipe_id );
+		$this->recipes      = $recipes ?? new Automator_Recipe_Object_Bridge();
+		$this->parser       = $parser ?? new Automator_Token_Parse_Bridge();
+		$this->sentences    = $sentences ?? new Automator_Sentence_Bridge();
+		$this->trigger_logs = $trigger_logs ?? new Automator_Trigger_Log_Bridge();
+		$this->process_user = $process_user ?? new Automator_Process_User_Bridge();
 	}
 
 	/**
@@ -72,7 +64,7 @@ class Recipe_Data_Provider {
 	 * @return string The recipe type (user, anonymous, etc.).
 	 */
 	public function get_recipe_type( int $recipe_id ): string {
-		return $this->recipes->get_recipe_type( $recipe_id );
+		return Recipe_Settings_Service::instance()->get_recipe_type( $recipe_id );
 	}
 
 	/**
@@ -94,29 +86,20 @@ class Recipe_Data_Provider {
 	 * @return string The trigger logic value ('any' or empty for 'all').
 	 */
 	public function get_trigger_logic( int $recipe_id ): string {
-		return (string) get_post_meta( $recipe_id, 'automator_trigger_logic', true );
+		return Recipe_Settings_Service::instance()->get_trigger_logic( $recipe_id );
 	}
 
 	/**
-	 * Get the user selector fields meta for a recipe.
+	 * Whether the recipe has a run-as (user selector) configured.
+	 *
+	 * @since 8.0.0
 	 *
 	 * @param int $recipe_id The recipe post ID.
 	 *
-	 * @return string The fields value (serialized or empty).
+	 * @return bool
 	 */
-	public function get_recipe_user_selector_fields( int $recipe_id ): string {
-		return (string) get_post_meta( $recipe_id, 'fields', true );
-	}
-
-	/**
-	 * Get the user selector source meta for a recipe.
-	 *
-	 * @param int $recipe_id The recipe post ID.
-	 *
-	 * @return string The source value or empty.
-	 */
-	public function get_recipe_user_selector_source( int $recipe_id ): string {
-		return (string) get_post_meta( $recipe_id, 'source', true );
+	public function has_user_selector( int $recipe_id ): bool {
+		return Database::get_user_selector_store()->exists_for_recipe( $recipe_id );
 	}
 
 	/**
@@ -158,25 +141,12 @@ class Recipe_Data_Provider {
 	 */
 	public function recipe_number_times_completed( int $recipe_id, int $completed_count ): bool {
 
-		$threshold = new \Uncanny_Automator\Services\Recipe\Process\User_Run_Number_Threshold( $this->field_manager() );
+		$threshold = new \Uncanny_Automator\Services\Recipe\Process\User_Run_Number_Threshold();
 
 		$threshold->set_recipe_id( $recipe_id );
 		$threshold->set_completed_times( $completed_count );
 
 		return $threshold->has_run_times_reached_limit();
-	}
-
-	/**
-	 * Lazy-loaded Field_Manager instance (stateless, safe to reuse).
-	 *
-	 * @return \Uncanny_Automator\Services\Recipe\Builder\Settings\Fields\Field_Manager
-	 */
-	private function field_manager(): \Uncanny_Automator\Services\Recipe\Builder\Settings\Fields\Field_Manager {
-		static $instance = null;
-		$instance = $instance ?? new \Uncanny_Automator\Services\Recipe\Builder\Settings\Fields\Field_Manager(
-			new \Uncanny_Automator\Services\Recipe\Builder\Settings\Repository\Settings_Repository()
-		);
-		return $instance;
 	}
 
 	/**

@@ -113,7 +113,7 @@ final class WpCronWorkingCanvasRefreshRunner
         }
 
         if ($requeued) {
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 'Uncanny Page Builder working canvas refresh failed for page %d (attempt %d of %d, %s): %s',
                 $pageId,
                 $attempts + 1,
@@ -125,7 +125,7 @@ final class WpCronWorkingCanvasRefreshRunner
             return true;
         }
 
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             'Uncanny Page Builder working canvas refresh for page %d reached the attempt cap (%d, %s) and will not retry until the page is queued again: %s',
             $pageId,
             WpCronWorkingCanvasRefreshQueue::MAX_ATTEMPTS,
@@ -161,7 +161,7 @@ final class WpCronWorkingCanvasRefreshRunner
     {
         $pageContext = $pageId > 0 ? sprintf(' for page %d', $pageId) : '';
 
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] Working canvas cron step "%s" failed%s (%s).',
             $step,
             $pageContext,

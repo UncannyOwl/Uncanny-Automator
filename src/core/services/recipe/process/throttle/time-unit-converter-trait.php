@@ -23,6 +23,8 @@ trait Time_Unit_Converter_Trait {
 		'days'    => 86400,
 		'week'    => 604800,
 		'weeks'   => 604800,
+		'month'   => 2592000,
+		'months'  => 2592000,
 		'year'    => 31536000,
 		'years'   => 31536000,
 	);

@@ -11,6 +11,7 @@
  */
 
 defined('ABSPATH') || exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
 ?>
 <form method="post" id="uncanny-page-builder-javascript-form">
     <input

@@ -81,14 +81,15 @@ class Zoho_Campaigns_Settings extends App_Integration_Settings {
 	}
 
 	/**
-	 * Before disconnect - notify API proxy to delete vault.
+	 * Once the platform confirmed the disconnect (handoff R8): notify the API
+	 * proxy to delete the vault. Errors are ignored, so it is safe to run twice.
 	 *
 	 * @param array $response The current response array.
 	 * @param array $data     The posted data.
 	 *
 	 * @return array Modified response array.
 	 */
-	protected function before_disconnect( $response = array(), $data = array() ) {
+	protected function after_platform_disconnect( $response = array(), $data = array() ) {
 		// Delete the vault.
 		try {
 			// Request API proxy to remove vault credentials.

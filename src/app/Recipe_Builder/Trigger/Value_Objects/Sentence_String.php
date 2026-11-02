@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects;
 
@@ -8,9 +7,9 @@ use Uncanny_Automator\App\Recipe_Builder\Shared\Polyfill\Str;
 /**
  * Sentence String Value Object.
  *
- * Ensures trigger sentences are properly validated and safe from AI drift.
+ * Validates the sentences a definition registers and catalog search results carry.
  * Enforces length limits and basic content validation.
- * Used for both regular sentences and human-readable sentences.
+ * A stored trigger's sentences are display snapshots and never pass through here.
  *
  * @since 7.0.0
  */
@@ -97,7 +96,9 @@ class Sentence_String {
 			throw new \InvalidArgumentException( 'Sentence cannot be empty' );
 		}
 
-		// Check minimum length
+		// Check minimum length. Bytes on purpose: a short sentence in a script of
+		// several bytes per character, such as four Chinese characters, is complete.
+		// Trade-off: two Chinese characters also pass, where two Latin letters don't.
 		if ( strlen( $sentence ) < 5 ) {
 			throw new \InvalidArgumentException( 'Sentence must be at least 5 characters long' );
 		}
@@ -117,7 +118,7 @@ class Sentence_String {
 		// Plain text validation below (stricter).
 
 		// Check maximum length
-		if ( strlen( $sentence ) > 250 ) {
+		if ( $this->character_count( $sentence ) > 250 ) {
 			throw new \InvalidArgumentException( 'Sentence cannot exceed 250 characters' );
 		}
 
@@ -126,19 +127,55 @@ class Sentence_String {
 			throw new \InvalidArgumentException( 'Sentence contains potentially malicious content' );
 		}
 
-		// Check for SQL injection patterns (basic protection)
-		if ( preg_match( '/\b(DROP|DELETE|INSERT|UPDATE|SELECT)\b.*\b(TABLE|FROM|WHERE)\b/i', $sentence ) ) {
-			throw new \InvalidArgumentException( 'Sentence contains potentially malicious SQL patterns' );
-		}
+		// No SQL-pattern check: a sentence is display text from an item's
+		// definition, and every query that stores it is prepared. A word
+		// check here only hid real items ("Delete {{a term}} from {{a taxonomy}}").
 
 		// Check for excessive special characters (AI drift protection)
-		$special_char_count = strlen( $sentence ) - strlen( preg_replace( '/[^a-zA-Z0-9\s{}.,!?()-]/', '', $sentence ) );
-		if ( $special_char_count > 30 ) {
+		if ( $this->special_character_count( $sentence ) > 30 ) {
 			throw new \InvalidArgumentException( 'Sentence contains too many special characters (possible AI drift)' );
 		}
 
 		// Store validated sentence
 		$this->value = $sentence;
+	}
+
+	/**
+	 * Length in characters, so a sentence in any script has the same limit.
+	 *
+	 * Trade-off: text that isn't valid UTF-8 counts bytes, as this check always
+	 * did, so an older encoding keeps working but reaches the limit sooner.
+	 *
+	 * @param string $sentence Sentence to measure.
+	 * @return int Characters, or bytes when the text isn't valid UTF-8.
+	 */
+	private function character_count( string $sentence ): int {
+		$count = preg_match_all( '/./su', $sentence );
+
+		return false === $count ? strlen( $sentence ) : $count;
+	}
+
+	/**
+	 * Characters that are neither letters, marks, digits nor ordinary punctuation.
+	 *
+	 * Letters and marks of every script count as text, so a translated sentence
+	 * isn't mistaken for drift.
+	 *
+	 * Trade-off: drift made of letters from any script now passes, because this
+	 * check can't tell it from a translation. Punctuation outside ASCII, such as
+	 * the Chinese comma, still counts, so a long sentence full of it can be refused.
+	 *
+	 * @param string $sentence Sentence to check.
+	 * @return int Special characters, or bytes outside ASCII text when the text isn't valid UTF-8.
+	 */
+	private function special_character_count( string $sentence ): int {
+		$count = preg_match_all( '/[^\p{L}\p{M}\p{N}\s{}.,!?()-]/u', $sentence );
+
+		if ( false !== $count ) {
+			return $count;
+		}
+
+		return strlen( $sentence ) - strlen( (string) preg_replace( '/[^a-zA-Z0-9\s{}.,!?()-]/', '', $sentence ) );
 	}
 
 	/**

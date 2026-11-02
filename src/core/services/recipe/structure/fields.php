@@ -17,6 +17,13 @@ final class Fields implements \JsonSerializable {
 
 	protected static $original_fields;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param mixed[] $item
+	 * @param \Uncanny_Automator\Services\Recipe\Structure $recipe
+	 * @param string $object_type Can be "trigger" or "action".
+	 */
 	public function __construct( $item, $recipe, $object_type = 'trigger' ) {
 		$this->hydrate_values( $item, $recipe, $object_type );
 	}
@@ -45,7 +52,6 @@ final class Fields implements \JsonSerializable {
 		$this->fields = $config['fields']['show_original_field_resolver_structure']
 			? self::$original_fields // If showing original field resolve structure
 			: $this->restructure_fields( self::$original_fields ); // Otherwise, restructure for recipe ui.
-
 	}
 
 	/**
@@ -60,9 +66,16 @@ final class Fields implements \JsonSerializable {
 	/**
 	 * Retrieves the restructured fields.
 	 *
-	 * @return mixed[]
+	 * Returns empty stdClass when no fields exist to ensure JSON serializes as {} not [].
+	 *
+	 * @return mixed[]|\stdClass
 	 */
 	public function get_fields() {
+		// Return empty object instead of empty array for consistent JSON serialization as {}.
+		if ( empty( $this->fields ) ) {
+			return new \stdClass();
+		}
+
 		return $this->fields;
 	}
 
@@ -106,7 +119,5 @@ final class Fields implements \JsonSerializable {
 		}
 
 		return $trigger_fields;
-
 	}
-
 }

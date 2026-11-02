@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects;
 
@@ -66,7 +65,7 @@ class Trigger_Integration {
 		// Check format: alphanumeric with underscores and dashes only
 		if ( ! preg_match( '/^[A-Za-z0-9_-]+$/', $integration ) ) {
 			throw new \InvalidArgumentException(
-				'Integration code must contain only alphanumeric characters, underscores, and dashes. Got: ' . $integration
+				'Integration code must contain only alphanumeric characters, underscores, and dashes. Got: ' . esc_html( $integration )
 			);
 		}
 

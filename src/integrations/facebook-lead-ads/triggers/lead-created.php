@@ -125,6 +125,11 @@ class Lead_Created extends \Uncanny_Automator\Recipe\App_Trigger {
 			'tokenName' => esc_html_x( 'Page ID', 'Facebook Lead Ads', 'uncanny-automator' ),
 		);
 
+		$tokens[] = array(
+			'tokenId'   => 'LEAD_SOURCE',
+			'tokenName' => esc_html_x( 'Lead source (signed or legacy)', 'Facebook Lead Ads', 'uncanny-automator' ),
+		);
+
 		$form_fields = (array) automator_safe_unserialize( $trigger['meta'][ $this->helpers->get_const( 'FORM_FIELDS_META_KEY' ) ] ?? '' );
 
 		foreach ( $form_fields as $fields ) {
@@ -140,6 +145,16 @@ class Lead_Created extends \Uncanny_Automator\Recipe\App_Trigger {
 	/**
 	 * Populate the tokens with actual values when a trigger runs.
 	 *
+	 * The lead's field values come from the signed event when it carries
+	 * them, and are fetched with get_lead, with this site's own page token,
+	 * otherwise: a legacy forward, or a signed lead the platform could not
+	 * fetch (`lead` null: the page would not release it, or Graph rejected
+	 * the platform's stored token). A get_lead that fails leaves the ids, as
+	 * it always has. LEAD_SOURCE is the path the lead arrived by, so a signed
+	 * lead whose fields were fetched here is still `signed`. Only the signed
+	 * fanout sets `verified_lead` and `source`, at the top level of the hook
+	 * argument; the legacy REST route passes its POST under `data`.
+	 *
 	 * @param mixed[] $trigger The Trigger args.
 	 * @param mixed[] $hook_args The accepted action hook arguments.
 	 *
@@ -147,7 +162,9 @@ class Lead_Created extends \Uncanny_Automator\Recipe\App_Trigger {
 	 */
 	public function hydrate_tokens( $trigger, $hook_args ) {
 
-		$payload = $hook_args[0]['data']['data'] ?? array();
+		$arg     = isset( $hook_args[0] ) && is_array( $hook_args[0] ) ? $hook_args[0] : array();
+		$payload = $arg['data']['data'] ?? array();
+		$signed  = 'platform_signed' === ( $arg['source'] ?? '' );
 
 		$json       = wp_json_encode( (array) $payload, true );
 		$leadgen_id = $payload['leadgen_id'] ?? '';
@@ -158,12 +175,12 @@ class Lead_Created extends \Uncanny_Automator\Recipe\App_Trigger {
 			'PAGE_ID'      => $payload['page_id'] ?? '',
 			'LEADGEN_ID'   => $leadgen_id,
 			'FORM_ID'      => $payload['form_id'] ?? '',
+			'LEAD_SOURCE'  => $signed ? 'signed' : 'legacy',
 		);
 
-		$page_id = absint( $trigger['meta'][ $this->trigger_meta ] ?? 0 );
-
-		// Use injected dependencies instead of direct class instantiation.
-		$the_lead = $this->api->get_lead( $page_id, $leadgen_id );
+		$the_lead = $signed && isset( $arg['verified_lead']['field_data'] ) && is_array( $arg['verified_lead']['field_data'] )
+			? $arg['verified_lead']
+			: $this->api->get_lead( absint( $trigger['meta'][ $this->trigger_meta ] ?? 0 ), $leadgen_id );
 
 		if ( is_wp_error( $the_lead ) ) {
 			return $token_values;

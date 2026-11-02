@@ -17,6 +17,7 @@ use UncannyPageBuilder\Application\ShellModeService;
 use UncannyPageBuilder\Domain\ErrorMessage;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartType;
 use UncannyPageBuilder\Domain\GlobalPart\PageGlobalPartResolverInterface;
+use UncannyPageBuilder\Domain\GlobalPart\ReadOnlyPageGlobalPartResolverInterface;
 use UncannyPageBuilder\Domain\Section\ComponentCategory;
 use UncannyPageBuilder\Domain\Section\Section;
 use UncannyPageBuilder\Domain\Shell\ShellMode;
@@ -24,6 +25,7 @@ use UncannyPageBuilder\Domain\Shell\ShellModeContext;
 use UncannyPageBuilder\Infrastructure\Persistence\DatabaseSectionRepository;
 use UncannyPageBuilder\Infrastructure\Section\ComponentCategoryClassifier;
 use UncannyPageBuilder\Infrastructure\Section\DomSectionManifestExtractor;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 
 /**
  * Reads Agent-facing page identity, structure, shell, and reusable context.
@@ -41,6 +43,7 @@ final class PageContextController
         private readonly ?ShellModeService $shellModes = null,
         private readonly ?PageGlobalPartResolverInterface $pagePartResolver = null,
         private readonly ?PageDetailsPortInterface $pageDetails = null,
+        private readonly ?ReadOnlyPageGlobalPartResolverInterface $readOnlyPageParts = null,
     ) {}
 
     public function readContext(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
@@ -48,7 +51,7 @@ final class PageContextController
         try {
             return $this->readContextText($request, 'read_page_context');
         } catch (\Throwable $failure) {
-            error_log(sprintf('[Uncanny Page Builder] read_page_context failed (%s).', $failure::class));
+            DiagnosticLog::write(sprintf('[Uncanny Page Builder] read_page_context failed (%s).', $failure::class));
 
             return $this->textToolError('read_page_context', 500, 'read_failed', [
                 'NEXT STEP',
@@ -93,7 +96,14 @@ final class PageContextController
         }
 
         // Shell ownership determines which header/footer changes can render.
-        $shellContext = $this->shellModes?->resolveForPage($pageId);
+        $shellContext = $this->readOnlyPageParts !== null && $this->shellModes !== null
+            ? new ShellModeContext(
+                $this->shellModes->modeForPage($pageId),
+                $this->readOnlyPageParts->resolveForPageReadOnly($pageId, GlobalPartType::Header) !== null,
+                $this->readOnlyPageParts->resolveForPageReadOnly($pageId, GlobalPartType::Footer) !== null,
+                false,
+            )
+            : $this->shellModes?->resolveForPage($pageId);
         if ($shellContext !== null) {
             $lines[] = 'PAGE_MODE: ' . $shellContext->mode->value . ' — ' . match ($shellContext->mode) {
                 ShellMode::UncannyNative => $this->describeUncannyNativeShell($shellContext),
@@ -168,9 +178,15 @@ final class PageContextController
      */
     private function resolvePagePart(int $pageId, GlobalPartType $type): ?array
     {
-        $mode = $this->shellModes?->resolveForPage($pageId)->mode;
+        $mode = $this->readOnlyPageParts !== null
+            ? $this->shellModes?->modeForPage($pageId)
+            : $this->shellModes?->resolveForPage($pageId)->mode;
         if ($mode !== null && $mode !== ShellMode::UncannyNative) {
             return null;
+        }
+
+        if ($this->readOnlyPageParts !== null) {
+            return $this->readOnlyPageParts->resolveForPageReadOnly($pageId, $type);
         }
 
         if ($this->pagePartResolver !== null) {

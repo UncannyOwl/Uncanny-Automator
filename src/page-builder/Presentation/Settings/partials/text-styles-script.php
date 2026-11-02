@@ -10,6 +10,7 @@
  */
 
 defined('ABSPATH') || exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
 
 $customFontValue = '__custom__';
 $defaultDisplayValue = _x('Use default', 'Page Builder', 'uncanny-automator');

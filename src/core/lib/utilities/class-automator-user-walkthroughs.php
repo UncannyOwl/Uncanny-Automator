@@ -26,13 +26,6 @@ class Automator_User_Walkthroughs {
 	private $user_progress_meta = null;
 
 	/**
-	 * User walkthroughs.
-	 *
-	 * @var mixed ( array ) - Null when not set yet.
-	 */
-	private $user_walkthroughs = null;
-
-	/**
 	 * Default progress array.
 	 *
 	 * @var array
@@ -91,36 +84,6 @@ class Automator_User_Walkthroughs {
 		}
 
 		return $this->user_progress_meta;
-	}
-
-	/**
-	 * Get / set user walkthroughs.
-	 *
-	 * @return array
-	 */
-	public function get_user_walkthroughs() {
-
-		// Check if walkthroughs are disabled.
-		if ( defined( 'AUTOMATOR_DISABLE_WALKTHROUGHS' ) && AUTOMATOR_DISABLE_WALKTHROUGHS ) {
-			$this->user_walkthroughs = array();
-			return $this->user_walkthroughs;
-		}
-
-		// Property not set yet.
-		if ( is_null( $this->user_walkthroughs ) ) {
-			$walkthroughs            = array();
-			$walkthroughs            = apply_filters( 'automator_get_user_walkthroughs', $walkthroughs, $this->user_id, $this );
-			$this->user_walkthroughs = empty( $walkthroughs ) || ! is_array( $walkthroughs ) ? array() : $walkthroughs;
-		}
-
-		// Parse default values.
-		if ( ! empty( $this->user_walkthroughs ) ) {
-			foreach ( $this->user_walkthroughs as $id => $walkthrough ) {
-				$this->user_walkthroughs[ $id ] = wp_parse_args( $walkthrough, $this->default_progress );
-			}
-		}
-
-		return $this->user_walkthroughs;
 	}
 
 	/**
@@ -192,26 +155,6 @@ class Automator_User_Walkthroughs {
 			unset( $this->user_progress_meta[ $id ] );
 			$this->save_progress();
 		}
-	}
-
-	/**
-	 * Restart user walkthrough.
-	 *
-	 * @param string $id
-	 *
-	 * @return void
-	 */
-	public function restart_user_walkthrough( string $id ) {
-
-		$this->validate_walkthrough_id( $id );
-
-		$progress         = $this->default_progress;
-		$progress['show'] = 1;
-		$progress         = apply_filters( 'automator_restart_user_walkthrough', $progress, $this->user_id, $id, $this );
-		$progress         = apply_filters( 'automator_restart_user_walkthrough_' . $id, $progress, $this->user_id, $this );
-
-		$this->set_progress_by_id( $id, $progress );
-
 	}
 
 	/**

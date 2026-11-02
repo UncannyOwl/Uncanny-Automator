@@ -8,6 +8,7 @@
  */
 
 defined('ABSPATH') || exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
 ?>
 <div class="uap-settings-panel upb-settings-tools">
     <div class="uap-settings-panel-top">

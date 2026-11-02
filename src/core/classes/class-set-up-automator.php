@@ -86,6 +86,19 @@ class Set_Up_Automator {
 	public static $external_integrations_namespace = array();
 
 	/**
+	 * Integration directories add-ons added through automator_add_integration_directory().
+	 *
+	 * Initialize_Automator::load_integrations() replaces $auto_loaded_directories and
+	 * $all_integrations with the cached or discovered lists on `init`, then puts these
+	 * back, so a directory added before `init` registers on the same pass.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var array<string, array> Folder name => file map from read_directory().
+	 */
+	private static $addon_directories = array();
+
+	/**
 	 * Subdirectories to include per integration (e.g. 'actions', 'helpers').
 	 *
 	 * Public because Pro's finalize_directory_merge() modifies it via the
@@ -269,6 +282,65 @@ class Set_Up_Automator {
 	}
 
 	/**
+	 * Add an add-on's legacy integration directory to the loading pipeline.
+	 *
+	 * Keyed by the directory's folder name, the key Integration_Registrar and
+	 * Class_Resolver look the directory up by.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param array  $files            The directory's file map from read_directory(), with its 'main' file.
+	 * @param string $plugin_namespace The PHP namespace of the add-on's integration classes.
+	 *
+	 * @return void
+	 */
+	public static function register_addon_directory( $files, $plugin_namespace = '' ) {
+
+		$dir_name = basename( dirname( $files['main'] ) );
+
+		self::$addon_directories[ $dir_name ]               = $files;
+		self::$external_integrations_namespace[ $dir_name ] = $plugin_namespace;
+
+		self::merge_addon_directory( $dir_name, $files );
+	}
+
+	/**
+	 * Put back the add-on directories after the integration lists were restored or discovered.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return void
+	 */
+	public static function merge_addon_directories() {
+		foreach ( self::$addon_directories as $dir_name => $files ) {
+			self::merge_addon_directory( $dir_name, $files );
+		}
+	}
+
+	/**
+	 * Add one add-on directory to the auto-loaded directories and the file map.
+	 *
+	 * @param string $dir_name The directory's folder name.
+	 * @param array  $files    The directory's file map.
+	 *
+	 * @return void
+	 */
+	private static function merge_addon_directory( $dir_name, $files ) {
+
+		$directory = dirname( $files['main'] );
+
+		self::$all_integrations[ $dir_name ] = $files;
+
+		if ( ! is_array( self::$auto_loaded_directories ) ) {
+			self::$auto_loaded_directories = array();
+		}
+
+		if ( ! in_array( $directory, self::$auto_loaded_directories, true ) ) {
+			self::$auto_loaded_directories[] = $directory;
+		}
+	}
+
+	/**
 	 * Convert a hyphenated file name to a PascalCase (underscore-joined) class name.
 	 *
 	 * Delegates to Class_Resolver::file_name_to_class().
@@ -294,22 +366,6 @@ class Set_Up_Automator {
 		$part_loader   = new Recipe_Part_Loader( $resolver, $error_handler );
 
 		$part_loader->load_helpers( $this->active_directories, $this->directories_to_include );
-	}
-
-	/**
-	 * Load triggers, actions, closures, conditions, loop-filters, and tokens
-	 * for all active integrations.
-	 *
-	 * Delegates to Recipe_Part_Loader::load_recipe_parts().
-	 *
-	 * @return void
-	 */
-	public function initialize_triggers_actions_closures() {
-		$resolver      = new Class_Resolver( $this->integrations_directory_path );
-		$error_handler = new Load_Error_Handler();
-		$part_loader   = new Recipe_Part_Loader( $resolver, $error_handler );
-
-		$part_loader->load_recipe_parts( $this->active_directories, $this->directories_to_include );
 	}
 
 	/**

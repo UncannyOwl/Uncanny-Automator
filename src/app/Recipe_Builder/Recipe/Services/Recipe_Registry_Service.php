@@ -13,9 +13,13 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Services;
 
+use Uncanny_Automator\App\Recipe_Builder\Action\Enums\Action_Status;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Recipe;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Status;
+use Uncanny_Automator\App\Infrastructure\Database\Database;
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Action_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Trigger_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Recipe_Store;
 use Uncanny_Automator\App\Recipe_Builder\Services\Traits\Service_Response_Formatter;
 use WP_Error;
@@ -44,13 +48,31 @@ class Recipe_Registry_Service {
 	private $recipe_store;
 
 	/**
+	 * Trigger store, for a recipe's trigger count.
+	 *
+	 * @var Recipe_Trigger_Store
+	 */
+	private $trigger_store;
+
+	/**
+	 * Action store, for a recipe's action count.
+	 *
+	 * @var Action_Store
+	 */
+	private $action_store;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 7.0.0
-	 * @param Recipe_Store|null $recipe_store Recipe storage implementation.
+	 * @param Recipe_Store|null         $recipe_store  Recipe storage implementation.
+	 * @param Recipe_Trigger_Store|null $trigger_store Trigger store, for the trigger counts; defaults to the production one.
+	 * @param Action_Store|null         $action_store  Action store, for the action counts; defaults to the production one.
 	 */
-	public function __construct( $recipe_store = null ) {
-		$this->recipe_store = $recipe_store ?? new WP_Recipe_Store();
+	public function __construct( $recipe_store = null, ?Recipe_Trigger_Store $trigger_store = null, ?Action_Store $action_store = null ) {
+		$this->recipe_store  = $recipe_store ?? new WP_Recipe_Store();
+		$this->trigger_store = $trigger_store ?? Database::get_recipe_trigger_store();
+		$this->action_store  = $action_store ?? Database::get_action_store();
 	}
 
 	/**
@@ -70,9 +92,11 @@ class Recipe_Registry_Service {
 	/**
 	 * Search for recipes using fuzzy matching.
 	 *
+	 * Scores every recipe the filters allow, then returns the best `$limit`.
+	 *
 	 * @since 7.0.0
 	 * @param string $query Search query.
-	 * @param array  $filters Optional filters (status, type).
+	 * @param array  $filters Optional filters (status, type). Paging keys (limit, offset) are ignored: they would leave recipes unscored.
 	 * @param int    $limit Optional. Maximum results to return. Default 10, max 50.
 	 * @return array|\WP_Error Array of matching recipes or error.
 	 */
@@ -83,8 +107,11 @@ class Recipe_Registry_Service {
 
 		$limit = min( $limit, 50 );
 
+		// The limit applies to the ranked results, never to the recipes loaded for scoring.
+		unset( $filters['limit'], $filters['offset'] );
+
 		try {
-			// Get all recipes with basic filters
+			// Get every recipe the filters allow
 			$all_recipes = $this->recipe_store->all( $filters );
 
 			if ( empty( $all_recipes ) ) {
@@ -97,7 +124,7 @@ class Recipe_Registry_Service {
 				);
 			}
 
-			// Filter out null values and convert to arrays for search
+			// Filter out null values
 			$valid_recipes = array_filter(
 				$all_recipes,
 				function ( $recipe ) {
@@ -105,15 +132,8 @@ class Recipe_Registry_Service {
 				}
 			);
 
-			$recipe_arrays = array_map(
-				function ( Recipe $recipe ) {
-					return $recipe->to_array();
-				},
-				$valid_recipes
-			);
-
 			// Perform fuzzy search
-			$results = $this->search_recipes_with_similarity( $query, $recipe_arrays, $limit );
+			$results = $this->search_recipes_with_similarity( $query, $valid_recipes, $limit );
 
 			return array(
 				'success'      => true,
@@ -137,7 +157,7 @@ class Recipe_Registry_Service {
 	 * @return array|\WP_Error Array of recipes or error.
 	 */
 	public function get_recipes_by_status( string $status, int $limit = 0 ) {
-		if ( ! in_array( $status, array( Recipe_Status::DRAFT, Recipe_Status::PUBLISH, 'trash' ), true ) ) {
+		if ( ! Recipe_Status::is_valid( $status ) ) {
 			return $this->error_response( 'recipe_invalid_status_filter', 'Invalid recipe status. Must be: draft, publish, or trash', array( 'status' => $status ) );
 		}
 
@@ -159,7 +179,7 @@ class Recipe_Registry_Service {
 
 			$formatted_recipes = array_map(
 				function ( Recipe $recipe ) {
-					return $this->format_recipe_summary( $recipe->to_array() );
+					return $this->format_recipe_summary( $recipe );
 				},
 				$valid_recipes
 			);
@@ -208,7 +228,7 @@ class Recipe_Registry_Service {
 
 			$formatted_recipes = array_map(
 				function ( Recipe $recipe ) {
-					return $this->format_recipe_summary( $recipe->to_array() );
+					return $this->format_recipe_summary( $recipe );
 				},
 				$valid_recipes
 			);
@@ -250,9 +270,8 @@ class Recipe_Registry_Service {
 			);
 
 			foreach ( $all_recipes as $recipe ) {
-				$recipe_data = $recipe->to_array();
-				$status      = $recipe_data['status'] ?? Recipe_Status::DRAFT;
-				$type        = $recipe_data['type'] ?? 'user';
+				$status = $recipe->get_recipe_status()->get_value();
+				$type   = $recipe->get_recipe_type()->get_value();
 
 				if ( isset( $stats['by_status'][ $status ] ) ) {
 					++$stats['by_status'][ $status ];
@@ -289,10 +308,10 @@ class Recipe_Registry_Service {
 	 * Search recipes using smart keyword matching.
 	 *
 	 * @since 7.0.0
-	 * @param string $query Search query.
-	 * @param array  $recipes All available recipes.
-	 * @param int    $limit Maximum results to return.
-	 * @return array Matching recipes with relevance scores.
+	 * @param string   $query Search query.
+	 * @param Recipe[] $recipes All available recipes.
+	 * @param int      $limit Maximum results to return.
+	 * @return array Summaries of the best matching recipes, most relevant first.
 	 */
 	private function search_recipes_with_similarity( string $query, array $recipes, int $limit ): array {
 		$query_lower = strtolower( $query );
@@ -306,8 +325,8 @@ class Recipe_Registry_Service {
 		$results = array();
 
 		foreach ( $recipes as $recipe ) {
-			$title_lower     = strtolower( $recipe['title'] ?? '' );
-			$notes_lower     = strtolower( $recipe['notes'] ?? '' );
+			$title_lower     = strtolower( (string) $recipe->get_recipe_title()->get_value() );
+			$notes_lower     = strtolower( $this->notes_of( $recipe ) );
 			$searchable_text = $title_lower . ' ' . $notes_lower;
 
 			$score = 0;
@@ -350,7 +369,7 @@ class Recipe_Registry_Service {
 			// Only include results with some relevance
 			if ( $score >= 10 ) {
 				$results[] = array(
-					'recipe'     => $this->format_recipe_summary( $recipe ),
+					'recipe'     => $recipe,
 					'similarity' => $score,
 				);
 			}
@@ -364,11 +383,11 @@ class Recipe_Registry_Service {
 			}
 		);
 
-		// Return top results (just the recipe data, not the scores)
+		// Return top results (just the recipe summaries, not the scores)
 		$top_results = array_slice( $results, 0, $limit );
 		return array_map(
 			function ( $result ) {
-				return $result['recipe'];
+				return $this->format_recipe_summary( $result['recipe'] );
 			},
 			$top_results
 		);
@@ -411,19 +430,38 @@ class Recipe_Registry_Service {
 	/**
 	 * Format recipe summary for search results.
 	 *
+	 * Reads the recipe's own getters. Counts take every trigger and action the
+	 * recipe holds, switched on or off, actions inside blocks included.
+	 *
 	 * @since 7.0.0
-	 * @param array $recipe_data Recipe data array.
+	 * @param Recipe $recipe Recipe.
 	 * @return array Formatted summary data.
 	 */
-	private function format_recipe_summary( array $recipe_data ): array {
+	private function format_recipe_summary( Recipe $recipe ): array {
+		$recipe_id = $recipe->get_recipe_id();
+		$id        = null === $recipe_id ? null : $recipe_id->get_value();
+
 		return array(
-			'id'            => $recipe_data['recipe_id'] ?? $recipe_data['id'] ?? null,
-			'title'         => $recipe_data['title'] ?? '',
-			'status'        => $recipe_data['status'] ?? Recipe_Status::DRAFT,
-			'type'          => $recipe_data['type'] ?? 'user',
-			'notes'         => $recipe_data['notes'] ?? '',
-			'trigger_count' => count( $recipe_data['triggers'] ?? array() ),
-			'action_count'  => count( $recipe_data['actions'] ?? array() ),
+			'id'            => $id,
+			'title'         => (string) $recipe->get_recipe_title()->get_value(),
+			'status'        => $recipe->get_recipe_status()->get_value(),
+			'type'          => $recipe->get_recipe_type()->get_value(),
+			'notes'         => $this->notes_of( $recipe ),
+			'trigger_count' => null === $id ? 0 : $this->trigger_store->count_recipe_triggers( $recipe_id ),
+			'action_count'  => null === $id ? 0 : count( $this->action_store->get_recipe_action_ids( $id, array( Action_Status::PUBLISH, Action_Status::DRAFT ) ) ),
 		);
+	}
+
+	/**
+	 * The recipe's notes, empty when it has none.
+	 *
+	 * @since 8.0.0
+	 * @param Recipe $recipe Recipe.
+	 * @return string
+	 */
+	private function notes_of( Recipe $recipe ): string {
+		$notes = $recipe->get_recipe_notes();
+
+		return null === $notes ? '' : (string) $notes->get_value();
 	}
 }

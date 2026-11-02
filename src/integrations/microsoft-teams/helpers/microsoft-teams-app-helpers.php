@@ -138,12 +138,12 @@ class Microsoft_Teams_App_Helpers extends App_Helpers {
 	/**
 	 * Get a "Learn more" link pointing to the Microsoft Teams KB article.
 	 *
-	 * @return string HTML anchor with external-link icon.
+	 * @return string HTML anchor with arrow-up-right-from-square icon.
 	 */
 	public function get_kb_learn_more_link( $utm_medium = 'action' ) {
 		return sprintf(
 			' <a href="%2$s" target="_blank">%1$s</a>',
-			esc_html_x( 'Learn more', 'Microsoft Teams', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon>',
+			esc_html_x( 'Learn more', 'Microsoft Teams', 'uncanny-automator' ) . ' <uas-icon code="arrow-up-right-from-square"></uas-icon>',
 			automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/microsoft-teams/', $utm_medium, 'microsoft-teams-kb_article' )
 		);
 	}

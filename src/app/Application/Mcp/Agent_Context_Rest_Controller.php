@@ -4,7 +4,7 @@
  *
  * GET /wp-json/automator/v1/agent-context
  *
- * Returns the ModelContext payload for the standalone app.
+ * Returns the ModelContext payload for Uncanny Agent.
  * Authenticated via Bearer token (Token_Manager).
  *
  * @since 7.1.0
@@ -84,7 +84,8 @@ class Agent_Context_Rest_Controller {
 
 			if (
 				$context instanceof Authenticated_Token_Context
-				&& $context->has_scope( Authenticated_Token_Context::SCOPE_READ )
+				&& $context->is_first_party_agent()
+				&& $context->has_scope( Authenticated_Token_Context::SCOPE_AGENT_READ )
 				&& user_can( $context->get_user(), $capability ) // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- Uncanny Agent uses a dedicated capability constant.
 			) {
 				$user = $context->get_user();
@@ -94,14 +95,17 @@ class Agent_Context_Rest_Controller {
 
 			if (
 				$context instanceof Authenticated_Token_Context
-				&& ! $context->has_scope( Authenticated_Token_Context::SCOPE_READ )
+				&& (
+					! $context->is_first_party_agent()
+					|| ! $context->has_scope( Authenticated_Token_Context::SCOPE_AGENT_READ )
+				)
 			) {
 				return new WP_Error(
 					'agent_context_insufficient_scope',
 					'Bearer token does not grant read access.',
 					array(
 						'status'         => 403,
-						'required_scope' => Authenticated_Token_Context::SCOPE_READ,
+						'required_scope' => Authenticated_Token_Context::SCOPE_AGENT_READ,
 					)
 				);
 			}

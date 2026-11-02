@@ -9,6 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
+
 $feature_state_sections = $report['feature_state'] ?? array();
 $feature_state_help     = new \Uncanny_Automator\App\Feature_State\Presentation\Feature_State_Report_Help();
 ?>

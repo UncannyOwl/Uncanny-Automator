@@ -238,11 +238,11 @@ class Manager {
 
 			$message = $this->get_error_message(
 				$this->action_i18n['error']['failed'],
-				$e->getCode(),
-				$e->getMessage()
+				$e->getMessage(),
+				$e->getCode()
 			);
 
-			throw new Exception( esc_html( $message ), $e->getCode() );
+			throw new Exception( esc_html( $message ), (int) $e->getCode() );
 		}
 	}
 

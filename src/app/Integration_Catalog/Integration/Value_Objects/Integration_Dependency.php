@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects;
 
@@ -274,7 +273,7 @@ class Integration_Dependency {
 		$required = array( 'id', 'name', 'description', 'is_met', 'is_disabled', 'cta', 'type' );
 		foreach ( $required as $field ) {
 			if ( ! isset( $data[ $field ] ) ) {
-				throw new InvalidArgumentException( "Dependency missing required field: {$field}" );
+				throw new InvalidArgumentException( sprintf( 'Dependency missing required field: %s', esc_html( $field ) ) );
 			}
 		}
 
@@ -310,7 +309,7 @@ class Integration_Dependency {
 		// Validate type enum
 		$valid_types = array( 'license', 'installable', 'account' );
 		if ( ! in_array( $data['type'], $valid_types, true ) ) {
-			throw new InvalidArgumentException( 'Dependency type must be one of: ' . implode( ', ', $valid_types ) );
+			throw new InvalidArgumentException( 'Dependency type must be one of: ' . esc_html( implode( ', ', $valid_types ) ) );
 		}
 
 		// Type-specific validation
@@ -328,7 +327,7 @@ class Integration_Dependency {
 
 		// All types require scenario_id
 		if ( ! isset( $data['scenario_id'] ) || ! is_string( $data['scenario_id'] ) || empty( $data['scenario_id'] ) ) {
-			throw new InvalidArgumentException( "Dependency scenario_id is required for type: {$type}" );
+			throw new InvalidArgumentException( sprintf( 'Dependency scenario_id is required for type: %s', esc_html( $type ) ) );
 		}
 
 		// Installable type requires icon and developer

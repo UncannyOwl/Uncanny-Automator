@@ -63,6 +63,13 @@ class Integration_Config {
 	private $items = array();
 
 	/**
+	 * The integration block modifiers.
+	 *
+	 * @var array
+	 */
+	private $block_modifiers = array();
+
+	/**
 	 * The integration tokens.
 	 *
 	 * @var array
@@ -174,6 +181,18 @@ class Integration_Config {
 	}
 
 	/**
+	 * Set integration block modifiers.
+	 *
+	 * @param array $block_modifiers Integration block modifiers array.
+	 *
+	 * @return self
+	 */
+	public function block_modifiers( array $block_modifiers ): self {
+		$this->block_modifiers = $block_modifiers;
+		return $this;
+	}
+
+	/**
 	 * Set integration tokens.
 	 *
 	 * @param array $tokens Integration tokens array.
@@ -252,6 +271,15 @@ class Integration_Config {
 	}
 
 	/**
+	 * Get integration block modifiers.
+	 *
+	 * @return array
+	 */
+	public function get_block_modifiers(): array {
+		return $this->block_modifiers;
+	}
+
+	/**
 	 * Get integration tokens.
 	 *
 	 * @return array
@@ -284,6 +312,7 @@ class Integration_Config {
 			->type( $data['type'] ?? 'plugin' )
 			->details( $data['details'] ?? array() )
 			->items( $data['items'] ?? array() )
+			->block_modifiers( $data['block_modifiers'] ?? array() )
 			->tokens( $data['tokens'] ?? array() );
 
 		// Only set connected if provided ( app or third-party that utilize settings )

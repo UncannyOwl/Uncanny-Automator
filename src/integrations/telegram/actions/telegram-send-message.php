@@ -35,7 +35,7 @@ class TELEGRAM_SEND_MESSAGE extends App_Action {
 	 *
 	 * @var string
 	 */
-	private const EXTERNAL_LINK_ICON = ' <uo-icon id="external-link"></uo-icon>';
+	private const EXTERNAL_LINK_ICON = ' <uas-icon code="arrow-up-right-from-square"></uas-icon>';
 
 	/**
 	 * Setup Action.
@@ -114,7 +114,7 @@ class TELEGRAM_SEND_MESSAGE extends App_Action {
 				'input_type'         => 'textarea',
 				'supports_tokens'    => true,
 				'required'           => false,
-				'dynamic_visibility' => $this->get_format_visibility_rules( 'show', 'Markdown' ),
+				'dynamic_visibility' => $this->get_format_visibility_rules( 'Markdown' ),
 				'description'        => sprintf(
 					// translators: %1$s: opening anchor tag for Markdown docs, %2$s: closing anchor tag
 					esc_html_x( 'Simple text - supports Markdown flavored content. %1$sMore info%2$s', 'Telegram', 'uncanny-automator' ),
@@ -128,7 +128,7 @@ class TELEGRAM_SEND_MESSAGE extends App_Action {
 				'input_type'         => 'textarea',
 				'supports_tokens'    => true,
 				'required'           => false,
-				'dynamic_visibility' => $this->get_format_visibility_rules( 'hidden', 'HTML' ),
+				'dynamic_visibility' => $this->get_format_visibility_rules( 'HTML' ),
 				'supports_tinymce'   => true,
 				'supports_media'     => false,
 				'allowed_html_tags'  => $this->get_allowed_html_tags(),
@@ -216,14 +216,13 @@ class TELEGRAM_SEND_MESSAGE extends App_Action {
 	/**
 	 * Generate dynamic visibility rules based on MESSAGE_FORMAT field
 	 *
-	 * @param string $default_state Default visibility state ('show' or 'hidden')
 	 * @param string $value The MESSAGE_FORMAT value to match ('Markdown' or 'HTML')
 	 *
 	 * @return array
 	 */
-	private function get_format_visibility_rules( $default_state, $value ) {
+	private function get_format_visibility_rules( $value ) {
 		return array(
-			'default_state'    => $default_state,
+			'default_state'    => 'hidden',
 			'visibility_rules' => array(
 				array(
 					'operator'             => 'AND',

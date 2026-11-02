@@ -12,6 +12,8 @@
 namespace Uncanny_Automator\Settings;
 
 use Exception;
+use Uncanny_Automator\Integration;
+use Uncanny_Automator\Integration_Loader\Load_Error_Handler;
 
 /**
  * Trait to create settings pages of Premium Integrations
@@ -29,8 +31,8 @@ trait Premium_Integrations {
 
 	/**
 	 * The icon of the integration
-	 * This expects a valid <uo-icon> ID.
-	 * Check the Design Guidelines to see the list of valid IDs.
+	 * This expects a valid <uas-icon> code.
+	 * Check the Design Guidelines to see the list of valid codes.
 	 *
 	 * @var String
 	 */
@@ -59,7 +61,7 @@ trait Premium_Integrations {
 
 	/**
 	 * The status of the integration
-	 * This expects a valid <uo-tab> status
+	 * This expects a valid <uas-tab> status
 	 * Check the Design Guidelines to see the list of valid statuses
 	 *
 	 * @var String
@@ -114,20 +116,52 @@ trait Premium_Integrations {
 	/**
 	 * Placeholder function to call two main functions
 	 *
+	 * A page that can't be set up, such as one without an ID or a name, is refused and never
+	 * becomes a tab (see refuse_settings_page()).
+	 *
 	 * @return void
-	 * @throws Exception
+	 * @throws Exception Inside an integration's load(), when the page is refused.
 	 */
 	protected function setup_settings() {
-		// Set up the properties
-		$this->set_properties();
+		try {
+			// Set up the properties
+			$this->set_properties();
 
-		// Register the settings page
-		// Invoke this method last
-		$this->register_settings();
+			// Register the settings page
+			// Invoke this method last
+			$this->register_settings();
+		} catch ( Exception $e ) {
+			$this->refuse_settings_page( $e );
+			return;
+		}
 
 		if ( $this->is_current_page_settings() ) {
 			$this->maybe_settings_updated();
 		}
+	}
+
+	/**
+	 * Refuse a settings page that could not be set up.
+	 *
+	 * Inside an integration's load(), the refusal goes on to that integration's own guard,
+	 * which records it under the integration and skips the rest of its load(). Anywhere
+	 * else (an Automator hook such as automator_add_integration, a WordPress hook), it is
+	 * recorded for the load-errors admin notice under this page's class, only this page is
+	 * skipped, and the site keeps running.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param Exception $refusal Why the page could not be set up.
+	 *
+	 * @return void
+	 * @throws Exception Inside an integration's load().
+	 */
+	private function refuse_settings_page( Exception $refusal ) {
+		if ( Integration::is_loading() ) {
+			throw $refusal;
+		}
+
+		( new Load_Error_Handler() )->handle( get_class( $this ), $refusal );
 	}
 
 	/**
@@ -161,8 +195,8 @@ trait Premium_Integrations {
 
 	/**
 	 * Sets the icon of the integration
-	 * This expects a valid <uo-icon> ID.
-	 * Check the Design Guidelines to see the list of valid IDs.
+	 * This expects a valid <uas-icon> code.
+	 * Check the Design Guidelines to see the list of valid codes.
 	 *
 	 * @param String $icon The icon
 	 */
@@ -246,7 +280,7 @@ trait Premium_Integrations {
 
 	/**
 	 * Sets the status of the integration
-	 * This expects a valid <uo-tab> status
+	 * This expects a valid <uas-tab> status
 	 * Check the Design Guidelines to see the list of valid statuses
 	 *
 	 * @param String $status The status
@@ -386,7 +420,7 @@ trait Premium_Integrations {
 	 */
 	public function register_settings() {
 		// Check if the required data is defined
-		if ( empty( $this->get_id() || empty( $this->get_name() ) ) ) {
+		if ( empty( $this->get_id() ) || empty( $this->get_name() ) ) {
 			throw new Exception( 'Premium Integration: Define the ID and name of the integration' );
 		}
 
@@ -566,22 +600,23 @@ trait Premium_Integrations {
 		$alert = wp_parse_args( $alert, $default );
 
 		$allowed_html = array(
-			'a'       => array(
+			'a'        => array(
 				'href'   => array(),
 				'target' => array(),
 			),
-			'uo-icon' => array(
-				'id' => array(),
+			'uas-icon' => array(
+				'code'  => array(),
+				'brand' => array(),
 			),
 		);
 
 		?>
 
-		<uo-alert
+		<uas-alert
 			type="<?php echo esc_attr( $alert['type'] ); ?>"
 			heading="<?php echo esc_attr( $alert['heading'] ); ?>"
 			class="uap-spacing-bottom uap-spacing-top"
-		><?php echo( wp_kses( $alert['content'], $allowed_html ) ); ?></uo-alert>
+		><?php echo( wp_kses( $alert['content'], $allowed_html ) ); ?></uas-alert>
 
 		<?php
 	}

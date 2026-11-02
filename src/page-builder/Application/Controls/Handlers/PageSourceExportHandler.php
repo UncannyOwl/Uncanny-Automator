@@ -36,8 +36,10 @@ final class PageSourceExportHandler implements ControlHandlerInterface
         } catch (StaleSourceGenerationException $e) {
             throw $e;
         } catch (SourcePackageValidationException $e) {
-            throw new PageSourceExportException($e->userMessage(), 422, $e);
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- $e is the previous exception, not message text.
+            throw new PageSourceExportException(esc_html($e->userMessage()), 422, $e);
         } catch (\Throwable $e) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Application cannot reach the Infrastructure diagnostic log; this records a failed export for the site administrator.
             error_log(sprintf(
                 '[Uncanny Page Builder] Page source export failed for page %d: %s: %s',
                 $request->pageId(),
@@ -47,6 +49,7 @@ final class PageSourceExportHandler implements ControlHandlerInterface
             throw new PageSourceExportException(
                 'The page export could not be created. Try again. Ask your site administrator for help if the problem continues.',
                 500,
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- $e is the previous exception, not message text.
                 $e,
             );
         }
@@ -54,6 +57,7 @@ final class PageSourceExportHandler implements ControlHandlerInterface
         try {
             $token = $this->artifacts->store($request->pageId(), $artifact);
         } catch (\Throwable $e) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Application cannot reach the Infrastructure diagnostic log; this records a failed export for the site administrator.
             error_log(sprintf(
                 '[Uncanny Page Builder] Page source export failed for page %d: %s: %s',
                 $request->pageId(),
@@ -63,6 +67,7 @@ final class PageSourceExportHandler implements ControlHandlerInterface
             throw new PageSourceExportException(
                 'The page export was created but could not be prepared for download. Try again.',
                 500,
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- $e is the previous exception, not message text.
                 $e,
             );
         }

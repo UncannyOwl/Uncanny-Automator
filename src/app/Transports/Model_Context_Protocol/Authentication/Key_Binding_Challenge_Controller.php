@@ -11,6 +11,7 @@ namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Authentication
 
 use Uncanny_Automator\Api_Server;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Mcp_Rest_Controller;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Mcp_Resource_Identifier;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Authenticated_Token_Context;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Token_Manager;
 use WP_Error;
@@ -81,7 +82,9 @@ class Key_Binding_Challenge_Controller {
 		$this->key_manager        = $key_manager ?? new Site_Signing_Key_Manager();
 		$this->site_name_provider = $site_name_provider ?? array( Api_Server::class, 'get_site_name' );
 		$this->mcp_url_provider   = $mcp_url_provider ?? static function (): string {
-			return (string) rest_url( Mcp_Rest_Controller::ROUTE_NAMESPACE . '/' . Mcp_Rest_Controller::ROUTE_BASE );
+			// The same pinned-scheme identifier the handshake registered; a raw
+			// rest_url() would follow is_ssl() and diverge behind a TLS proxy.
+			return ( new Mcp_Resource_Identifier() )->get();
 		};
 		$this->clock              = $clock ?? 'time';
 	}
@@ -120,6 +123,10 @@ class Key_Binding_Challenge_Controller {
 
 		if ( ! $context instanceof Authenticated_Token_Context ) {
 			return new WP_Error( 'rest_invalid_bearer', 'The Bearer token is invalid or expired.', array( 'status' => 401 ) );
+		}
+
+		if ( ! $context->is_first_party_agent() ) {
+			return new WP_Error( 'rest_forbidden', 'Only Uncanny Agent can bind an Agent key.', array( 'status' => 403 ) );
 		}
 
 		if ( ! user_can( $context->get_user(), 'manage_options' ) ) {

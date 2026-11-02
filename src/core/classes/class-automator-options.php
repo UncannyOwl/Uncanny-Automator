@@ -124,6 +124,11 @@ final class Automator_Options {
 	 */
 	private function get_from_cached( $key, $default_value ) {
 
+		// A request that switched to another network site warms that site's autoloaded options on its first read.
+		if ( ! $this->cache->is_warmed() ) {
+			$this->warm_autoloaded();
+		}
+
 		// Check in-process memory cache first.
 		$memory_value = $this->cache->get_from_memory( $key, Automator_Options_Cache::ABSENT );
 
@@ -203,6 +208,7 @@ final class Automator_Options {
 			$error = $this->query->get_db()->last_error;
 
 			// Send an action hook when Automator_Options encounters a database error fetching an option.
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 			do_action( 'uap_options_db_error', $error, $key );
 
 			if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
@@ -266,7 +272,7 @@ final class Automator_Options {
 	}
 
 	/**
-	 * Warm the autoloaded options.
+	 * Warm the current site's autoloaded options.
 	 */
 	public function warm_autoloaded() {
 

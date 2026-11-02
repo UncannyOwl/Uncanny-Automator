@@ -277,27 +277,35 @@ class Cf7_Tokens {
 			}
 		}
 
-		foreach ( $trigger_data as $trigger ) {
-			if ( empty( $trigger ) ) {
-				continue;
-			}
-			$trigger_id     = absint( $trigger['ID'] );
-			$trigger_log_id = absint( $replace_args['trigger_log_id'] );
-			$prefix         = $pieces[1];
-			$token_info     = explode( '|', $pieces[2] );
-			$form_id        = absint( $token_info[0] );
-			$meta_key       = $token_info[1];
-			$meta_field     = $prefix . '_' . $form_id;
-			$user_meta      = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_field, $trigger_id, $trigger_log_id, $user_id );
+		$token_info = explode( '|', $pieces[2] ?? '' );
 
-			if ( is_array( $user_meta ) && key_exists( trim( $meta_key ), $user_meta ) ) {
-				if ( is_array( $user_meta[ $meta_key ] ) ) {
-					$value = join( ', ', $user_meta[ $meta_key ] );
-				} else {
-					$value = $user_meta[ $meta_key ];
+		// A field token ({{trigger:meta:form|field}}) shows only the stored submission. The core parser
+		// hands in the form's title for it, which must not show when the field has no stored value.
+		if ( 2 === count( $token_info ) ) {
+			$value    = '';
+			$form_id  = absint( $token_info[0] );
+			$meta_key = trim( $token_info[1] );
+			// automator_save_cf7_form_func() stores a CF7FIELDS trigger's submission under CF7FORMS_.
+			$prefix     = $piece_fields === $pieces[1] ? $piece : $pieces[1];
+			$meta_field = $prefix . '_' . $form_id;
+
+			foreach ( $trigger_data as $trigger ) {
+				if ( empty( $trigger ) ) {
+					continue;
 				}
-			}
-		}//end foreach
+				$trigger_id     = absint( $trigger['ID'] );
+				$trigger_log_id = absint( $replace_args['trigger_log_id'] );
+				$user_meta      = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_field, $trigger_id, $trigger_log_id, $user_id );
+
+				if ( is_array( $user_meta ) && key_exists( $meta_key, $user_meta ) ) {
+					if ( is_array( $user_meta[ $meta_key ] ) ) {
+						$value = join( ', ', $user_meta[ $meta_key ] );
+					} else {
+						$value = $user_meta[ $meta_key ];
+					}
+				}
+			}//end foreach
+		}
 
 		if ( in_array( 'CF7SUBFIELD', $pieces ) ) {
 			if ( $trigger_data ) {

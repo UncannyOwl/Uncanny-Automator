@@ -17,7 +17,6 @@
         "All Subscriptions": "Tüm Abonelikler",
         "All Topics": "Tüm Konular",
         "All Users": "Tüm Kullanıcılar",
-        "All integrations": "Tüm entegrasyonlar",
         "All recipes": "Tüm tarifler",
         "App integrations": "Uygulama entegrasyonları",
         "Assignments": "Ödevler",
@@ -76,26 +75,6 @@
         "Automator.Addons.5": {
             "Starter": "Eklenti kurulumunu planla",
             "Prompt": "Bir eklentiyi kurmayı ve yapılandırmayı planlamama yardım et. Hangi iş akışını otomatikleştirmek istediğimi sor, ardından sonraki adımları öner."
-        },
-        "Automator.All integrations.1": {
-            "Starter": "Entegrasyonlar öner",
-            "Prompt": "Kurulu eklentilerimi ve bağlı uygulama entegrasyonlarımı incele, ardından siteme en uygun Automator entegrasyonlarını öner."
-        },
-        "Automator.All integrations.2": {
-            "Starter": "Otomasyon fırsatlarını bul",
-            "Prompt": "Kurulu eklentilerime ve bağlı uygulama entegrasyonlarıma göre faydalı otomasyon fikirleri öner."
-        },
-        "Automator.All integrations.3": {
-            "Starter": "Bir entegrasyonu açıkla",
-            "Prompt": "Hangi entegrasyonla ilgilendiğimi sor, ardından ne tür tariflerin kilidini açabileceğini açıkla."
-        },
-        "Automator.All integrations.4": {
-            "Starter": "Eksik entegrasyonları bul",
-            "Prompt": "Kurulu eklentilerimi ve bağlı uygulamalarımı mevcut Automator entegrasyonlarıyla karşılaştır, ardından kurmam, bağlamam veya yükseltmem gereken her şeyi belirle."
-        },
-        "Automator.All integrations.5": {
-            "Starter": "Bir entegrasyonla oluştur",
-            "Prompt": "Bir Automator entegrasyonu seçmeme ve onu siteme uygun faydalı bir tarif fikrine dönüştürmeme yardım et."
         },
         "Automator.All recipes.1": {
             "Starter": "En yoğun tariflerimi göster",

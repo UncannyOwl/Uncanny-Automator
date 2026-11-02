@@ -15,10 +15,12 @@
 
 namespace Uncanny_Automator\App\Integration_Catalog\Services;
 
+use Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Store\Catalog_Build_Report;
 use Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Store\Integration_Map_Builder;
 use Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Store\Integration_Feed_Registration_Merger;
 use Uncanny_Automator\Traits\Singleton;
 use Uncanny_Automator\App\Events\Dispatcher;
+use Uncanny_Automator\App\Components\Translation\Locale_Resolver;
 
 /**
  * Service for fetching and processing integration feed data.
@@ -58,6 +60,35 @@ class Integration_Feed_Service {
 	const CACHE_TTL = HOUR_IN_SECONDS;
 
 	/**
+	 * Transient value meaning "no file for this language yet; use English".
+	 *
+	 * @var string
+	 */
+	const FALLBACK = 'fallback';
+
+	/**
+	 * Transient value meaning "the CDN did not answer"; kept briefly so a build
+	 * during an outage does not repeat a fifteen-second request.
+	 *
+	 * @var string
+	 */
+	const UNAVAILABLE = 'unavailable';
+
+	/**
+	 * How long an unavailable English feed is remembered (five minutes).
+	 *
+	 * @var int
+	 */
+	const UNAVAILABLE_TTL = 5 * MINUTE_IN_SECONDS;
+
+	/**
+	 * Option listing every language suffix a transient has been written for.
+	 *
+	 * @var string
+	 */
+	const LANGUAGES_OPTION = 'uap_complete_json_languages';
+
+	/**
 	 * Map builder utility for creating indexed lookups.
 	 *
 	 * @var Integration_Map_Builder|null
@@ -70,6 +101,20 @@ class Integration_Feed_Service {
 	 * @var Integration_Feed_Registration_Merger|null
 	 */
 	private $merger = null;
+
+	/**
+	 * Which file the last fetch_raw() served, for the build report.
+	 *
+	 * @var string
+	 */
+	private string $active_feed = '';
+
+	/**
+	 * Processed integration data, cached for the request.
+	 *
+	 * @var array|null
+	 */
+	private ?array $processed = null;
 
 	/**
 	 * Initialize dependencies lazily.
@@ -88,7 +133,7 @@ class Integration_Feed_Service {
 	/**
 	 * Get processed integration data with static caching.
 	 *
-	 * Performance: Uses static variable for per-request caching.
+	 * Performance: Cached on the (singleton) instance for the request.
 	 * This is the main entry point for accessing merged integration data.
 	 *
 	 * Processing steps:
@@ -96,19 +141,18 @@ class Integration_Feed_Service {
 	 * 2. Build indexed map of complete.json (O(1) lookups)
 	 * 3. Build indexed map of registered integrations (O(1) lookups)
 	 * 4. For each registered: merge with feed OR discover
-	 * 5. Add unregistered integrations from feed
+	 * 5. Add unregistered integrations from feed, and report the scenario split
 	 * 6. Apply integration-specific filters
 	 *
 	 * @return array Processed integration data arrays
 	 */
 	public function get_processed(): array {
-		static $processed = null;
-
-		if ( null !== $processed ) {
-			return $processed;
+		if ( null !== $this->processed ) {
+			return $this->processed;
 		}
 
 		$this->init();
+		Catalog_Build_Report::start_discovery();
 
 		// Step 1: Fetch raw complete.json from CDN (transient cached).
 		$raw_json = $this->fetch_raw();
@@ -122,6 +166,7 @@ class Integration_Feed_Service {
 		// Step 4: Process registered integrations.
 		$processed           = array();
 		$processed_from_feed = array();
+		$discovered_count    = 0;
 
 		foreach ( $registered_map as $code => $registered_data ) {
 			$code_lower = strtolower( $code );
@@ -140,6 +185,7 @@ class Integration_Feed_Service {
 			$discovered = $discovery->discover_integration_by_code( $code );
 			if ( ! empty( $discovered ) ) {
 				$processed[] = $discovered;
+				++$discovered_count;
 			}
 		}
 
@@ -151,6 +197,9 @@ class Integration_Feed_Service {
 			}
 		}
 
+		$merged_count = count( $processed_from_feed );
+		Catalog_Build_Report::scenarios( $merged_count, $discovered_count, count( $processed ) - $merged_count - $discovered_count );
+
 		// Step 6: Apply integration-specific filters.
 		foreach ( $processed as $key => $integration_data ) {
 			$code = $integration_data['integration_id'] ?? '';
@@ -159,40 +208,153 @@ class Integration_Feed_Service {
 			}
 		}
 
+		$this->processed = $processed;
+
 		return $processed;
 	}
 
 	/**
-	 * Fetch raw complete.json from CDN.
+	 * Fetch the catalog feed for the current user's language.
 	 *
-	 * Performance: Uses transient cache with 1-hour TTL to avoid repeated
-	 * network calls. This is the only method that makes external HTTP requests.
+	 * A non-English user gets complete-{lang}.json when it exists, else English.
+	 * The only method that performs HTTP; every copy is transient-cached.
 	 *
-	 * @return array Raw JSON data or empty array on failure
+	 * @return array Raw feed records, or an empty array when nothing could be fetched.
 	 */
 	public function fetch_raw(): array {
-		$cached = get_transient( self::CACHE_KEY );
-		if ( false !== $cached && is_array( $cached ) ) {
+		$language = $this->resolve_language();
+
+		return '' === $language ? $this->fetch_english() : $this->fetch_language( $language );
+	}
+
+	/**
+	 * The file the last fetch_raw() served: `complete.json`, `complete-fr.json`,
+	 * or `complete.json (fr: fallback)` when the language file was missing.
+	 *
+	 * @return string
+	 */
+	public function get_active_feed(): string {
+		return $this->active_feed;
+	}
+
+	/**
+	 * The current user's language as a feed suffix, '' for English.
+	 *
+	 * Filterable so a site can opt out (return '') or exercise a language
+	 * before marketing publishes it (return 'fr'). Anything that is not a
+	 * plain lowercase code is treated as English rather than built into a URL.
+	 *
+	 * @return string
+	 */
+	private function resolve_language(): string {
+		$language = ( new Locale_Resolver() )->get_language_code();
+		$language = (string) Dispatcher::filter( 'automator_integration_feed_language', $language );
+
+		if ( 'en' === $language || 1 !== preg_match( '/^[a-z][a-z0-9-]{1,9}$/', $language ) ) {
+			return '';
+		}
+
+		return $language;
+	}
+
+	/**
+	 * Serve a language copy, falling back to English when there is none.
+	 *
+	 * @param string $language Language suffix, e.g. 'fr'.
+	 *
+	 * @return array
+	 */
+	private function fetch_language( string $language ): array {
+		$key    = self::CACHE_KEY . '_' . $language;
+		$cached = get_transient( $key );
+
+		if ( is_array( $cached ) ) {
+			$this->active_feed = "complete-{$language}.json";
 			return $cached;
 		}
 
-		$response = wp_remote_get( self::COMPLETE_JSON_URL, array( 'timeout' => 15 ) );
+		if ( self::FALLBACK !== $cached ) {
+			$data = $this->request( str_replace( 'complete.json', "complete-{$language}.json", self::COMPLETE_JSON_URL ) );
+			$this->remember_language( $language );
+			if ( null !== $data ) {
+				set_transient( $key, $data, self::CACHE_TTL );
+				$this->active_feed = "complete-{$language}.json";
+				return $data;
+			}
+			// No file for this language yet: remember that for an hour so the
+			// miss costs one request, not one per catalog build.
+			set_transient( $key, self::FALLBACK, self::CACHE_TTL );
+		}
 
-		if ( is_wp_error( $response ) ) {
+		$english            = $this->fetch_english();
+		$this->active_feed .= " ({$language}: fallback)";
+
+		return $english;
+	}
+
+	/**
+	 * Serve the English feed.
+	 *
+	 * @return array
+	 */
+	private function fetch_english(): array {
+		$this->active_feed = 'complete.json';
+
+		$cached = get_transient( self::CACHE_KEY );
+		if ( is_array( $cached ) ) {
+			return $cached;
+		}
+
+		if ( self::UNAVAILABLE === $cached ) {
+			$this->active_feed .= ' (unavailable)';
 			return array();
 		}
 
-		$body = wp_remote_retrieve_body( $response );
-		$data = json_decode( $body, true );
-
-		if ( ! is_array( $data ) ) {
+		$data = $this->request( self::COMPLETE_JSON_URL );
+		if ( null === $data ) {
+			set_transient( self::CACHE_KEY, self::UNAVAILABLE, self::UNAVAILABLE_TTL );
+			$this->active_feed .= ' (unavailable)';
 			return array();
 		}
 
-		// Cache for 1 hour.
 		set_transient( self::CACHE_KEY, $data, self::CACHE_TTL );
 
 		return $data;
+	}
+
+	/**
+	 * GET a feed file. Anything but a 200 carrying a JSON array is a miss.
+	 *
+	 * @param string $url Feed URL.
+	 *
+	 * @return array|null Decoded records, or null on any failure.
+	 */
+	private function request( string $url ): ?array {
+		$response = wp_remote_get( $url, array( 'timeout' => 15 ) );
+
+		if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
+			return null;
+		}
+
+		$data = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		return is_array( $data ) ? $data : null;
+	}
+
+	/**
+	 * Index a language so clear_cache() can reach its transient later.
+	 *
+	 * @param string $language Language suffix.
+	 *
+	 * @return void
+	 */
+	private function remember_language( string $language ): void {
+		$languages = (array) automator_get_option( self::LANGUAGES_OPTION, array() );
+		if ( in_array( $language, $languages, true ) ) {
+			return;
+		}
+		$languages[] = $language;
+		automator_update_option( self::LANGUAGES_OPTION, $languages, false );
 	}
 
 	/**
@@ -242,13 +404,16 @@ class Integration_Feed_Service {
 	}
 
 	/**
-	 * Clear transient cache.
+	 * Drop every cached copy of the feed - English and each language - and the index.
 	 *
-	 * Call this when complete.json needs to be re-fetched (e.g., after plugin update).
-	 *
-	 * @return bool True if cache was cleared
+	 * @return bool Whether the English transient existed and was deleted.
 	 */
 	public function clear_cache(): bool {
+		foreach ( (array) automator_get_option( self::LANGUAGES_OPTION, array() ) as $language ) {
+			delete_transient( self::CACHE_KEY . '_' . $language );
+		}
+		automator_delete_option( self::LANGUAGES_OPTION );
+
 		return delete_transient( self::CACHE_KEY );
 	}
 }

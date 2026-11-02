@@ -65,11 +65,12 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
         try {
             $pluginAssets = $this->pluginAssets->resolveFallback($fallback);
         } catch (PublishedPageRuntimeUnavailable $failure) {
-            throw $this->failure(
+            $unavailable = $this->failure(
                 'fallback_asset_source_invalid',
                 'The fallback asset source cannot be resolved.',
                 $failure,
             );
+            throw $unavailable;
         }
         [$uploadsUrl, $productRoot] = $this->prepareUploadRoot();
         $lock = $this->acquireLock($productRoot);
@@ -104,11 +105,12 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
                 ? ($this->uploadsReader)()
                 : wp_upload_dir(null, false);
         } catch (\Throwable $failure) {
-            throw $this->failure(
+            $unavailable = $this->failure(
                 'fallback_upload_dir_invalid',
                 'The WordPress uploads directory is unavailable.',
                 $failure,
             );
+            throw $unavailable;
         }
 
         $error = is_array($uploads) ? trim((string) ($uploads['error'] ?? '')) : '';
@@ -231,11 +233,12 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
         } catch (\Throwable $failure) {
             // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- WP_Filesystem has no advisory-lock stream to close.
             fclose($lock);
-            throw $this->filesystemFailure(
+            $unavailable = $this->filesystemFailure(
                 'fallback_asset_write_failed',
                 'The fallback asset lock cannot be checked.',
                 $failure,
             );
+            throw $unavailable;
         }
 
         if (!$acquired) {
@@ -550,11 +553,12 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
         } catch (PublishedPageRuntimeUnavailable $failure) {
             throw $failure;
         } catch (\Throwable $failure) {
-            throw $this->filesystemFailure(
+            $unavailable = $this->filesystemFailure(
                 'fallback_asset_write_failed',
                 'The fallback asset cannot be written.',
                 $failure,
             );
+            throw $unavailable;
         } finally {
             if (is_resource($input)) {
                 fclose($input);
@@ -680,11 +684,12 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
                 ? ($this->directoryCreator)($directory)
                 : wp_mkdir_p($directory), 'fallback_upload_dir_invalid');
         } catch (\Throwable $failure) {
-            throw $this->filesystemFailure(
+            $unavailable = $this->filesystemFailure(
                 'fallback_upload_dir_invalid',
                 'The fallback asset directory cannot be created.',
                 $failure,
             );
+            throw $unavailable;
         }
     }
 
@@ -697,11 +702,12 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
 
             return $created || $this->filesystem()->is_dir($directory);
         } catch (\Throwable $failure) {
-            throw $this->filesystemFailure(
+            $unavailable = $this->filesystemFailure(
                 'fallback_asset_write_failed',
                 'The fallback asset hash directory cannot be created.',
                 $failure,
             );
+            throw $unavailable;
         }
     }
 
@@ -741,7 +747,8 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
         clearstatcache(true, $path);
         $permissions = $this->filesystemOperation('read_permissions', static fn() => @fileperms($path), $reasonCode);
         if (!is_int($permissions)) {
-            throw $this->filesystemFailure($reasonCode, 'The fallback asset permissions cannot be verified.');
+            $unavailable = $this->filesystemFailure($reasonCode, 'The fallback asset permissions cannot be verified.');
+            throw $unavailable;
         }
 
         $permissionDiagnostics = null;
@@ -765,11 +772,12 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
             || (($permissions & 0170000) === 0100000 && ($permissions & 0022) !== 0)
         ) {
             // A successful stat must not replace the chmod warning that explains the bad mode.
-            throw $this->filesystemFailure(
+            $unavailable = $this->filesystemFailure(
                 $reasonCode,
                 'The fallback asset permissions cannot be verified.',
                 diagnostics: is_int($permissions) ? $permissionDiagnostics : null,
             );
+            throw $unavailable;
         }
     }
 
@@ -786,11 +794,12 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
         } catch (PublishedPageRuntimeUnavailable $failure) {
             throw $failure;
         } catch (\Throwable $failure) {
-            throw $this->failure(
+            $unavailable = $this->failure(
                 'fallback_upload_dir_invalid',
                 'The WordPress filesystem is unavailable.',
                 $failure,
             );
+            throw $unavailable;
         }
 
         if (!is_object($filesystem)) {
@@ -884,11 +893,12 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
                 ? ($this->homeUrlReader)()
                 : home_url('/');
         } catch (\Throwable $failure) {
-            throw $this->failure(
+            $unavailable = $this->failure(
                 'fallback_upload_url_unverified',
                 'The WordPress home URL cannot be verified.',
                 $failure,
             );
+            throw $unavailable;
         }
 
         if (!$this->isPublicUrl($homeUrl)) {
@@ -945,11 +955,12 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
                 $homeUrl,
             );
         } catch (\Throwable $failure) {
-            throw $this->failure(
+            $unavailable = $this->failure(
                 'fallback_upload_url_unverified',
                 'The external WordPress uploads URL cannot be verified.',
                 $failure,
             );
+            throw $unavailable;
         }
     }
 
@@ -988,7 +999,8 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
         try {
             return $this->filesystemDiagnostics->capture($operation, $action);
         } catch (\Throwable $failure) {
-            throw $this->filesystemFailure($reasonCode, 'The fallback filesystem operation failed.', $failure);
+            $unavailable = $this->filesystemFailure($reasonCode, 'The fallback filesystem operation failed.', $failure);
+            throw $unavailable;
         }
     }
 

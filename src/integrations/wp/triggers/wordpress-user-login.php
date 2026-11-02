@@ -32,9 +32,9 @@ class WP_LOGIN extends \Uncanny_Automator\Recipe\Trigger {
 	protected function setup_trigger() {
 		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 
-		// translators: %1$s is a number of times.
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Number of times */
 				esc_html_x( 'A user logs in to the site {{a number of:%1$s}} time(s)', 'WordPress', 'uncanny-automator' ),
 				'NUMTIMES:' . $this->get_trigger_meta()
 			)

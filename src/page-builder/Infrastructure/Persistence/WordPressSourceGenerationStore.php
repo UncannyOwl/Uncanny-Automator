@@ -33,10 +33,12 @@ final class WordPressSourceGenerationStore implements SourceGenerationStoreInter
         global $wpdb;
         if (isset($wpdb) && method_exists($wpdb, 'get_var')) {
             $postmetaTable = isset($wpdb->postmeta) ? (string) $wpdb->postmeta : (string) $wpdb->prefix . 'postmeta';
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Live state read; must not be cached.
             $stored = $wpdb->get_var($wpdb->prepare(
-                "SELECT meta_value FROM {$postmetaTable}
+                "SELECT meta_value FROM %i
                  WHERE post_id = %d AND meta_key = %s
                  ORDER BY meta_id DESC LIMIT 1",
+                $postmetaTable,
                 $pageId,
                 self::PAGE_META_KEY,
             ));
@@ -53,8 +55,10 @@ final class WordPressSourceGenerationStore implements SourceGenerationStoreInter
         global $wpdb;
         if (isset($wpdb) && method_exists($wpdb, 'get_var')) {
             $optionsTable = isset($wpdb->options) ? (string) $wpdb->options : (string) $wpdb->prefix . 'options';
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Live state read; must not be cached.
             $stored = $wpdb->get_var($wpdb->prepare(
-                "SELECT option_value FROM {$optionsTable} WHERE option_name = %s LIMIT 1",
+                "SELECT option_value FROM %i WHERE option_name = %s LIMIT 1",
+                $optionsTable,
                 self::GLOBAL_OPTION_KEY,
             ));
             if ($stored !== null && $stored !== false && $stored !== '') {
@@ -188,18 +192,21 @@ final class WordPressSourceGenerationStore implements SourceGenerationStoreInter
     {
         global $wpdb;
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control; there is no WordPress API for it.
         if ($wpdb->query('START TRANSACTION') === false) {
             throw new \RuntimeException('Failed to start a source generation transaction.');
         }
 
         try {
             $result = $operation();
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control; there is no WordPress API for it.
             if ($wpdb->query('COMMIT') === false) {
                 throw new \RuntimeException('Failed to commit a source generation transaction.');
             }
 
             return $result;
         } catch (\Throwable $exception) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control; there is no WordPress API for it.
             $wpdb->query('ROLLBACK');
             throw $exception;
         }
@@ -232,11 +239,12 @@ final class WordPressSourceGenerationStore implements SourceGenerationStoreInter
                 continue;
             }
 
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Schema read; must not be cached.
             $status = $wpdb->get_row($wpdb->prepare('SHOW TABLE STATUS WHERE Name = %s', $table));
             $engine = is_object($status) && isset($status->Engine) ? (string) $status->Engine : '';
             if (strcasecmp($engine, 'InnoDB') !== 0) {
                 $reportedEngine = $engine !== '' ? $engine : 'unknown';
-                throw new SourceTransactionsUnavailableException($table, $reportedEngine);
+                throw new SourceTransactionsUnavailableException(esc_html($table), esc_html($reportedEngine));
             }
 
             $this->transactionalTables[$table] = true;
@@ -248,8 +256,10 @@ final class WordPressSourceGenerationStore implements SourceGenerationStoreInter
         global $wpdb;
 
         $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Row lock for the source write; must not be cached.
         $locked = $wpdb->query($wpdb->prepare(
-            "SELECT ID FROM {$postsTable} WHERE ID = %d FOR UPDATE",
+            "SELECT ID FROM %i WHERE ID = %d FOR UPDATE",
+            $postsTable,
             $pageId,
         ));
         if ($locked === false || $locked < 1) {
@@ -262,8 +272,10 @@ final class WordPressSourceGenerationStore implements SourceGenerationStoreInter
         global $wpdb;
 
         $optionsTable = isset($wpdb->options) ? (string) $wpdb->options : (string) $wpdb->prefix . 'options';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Row lock for the source write; must not be cached.
         $locked = $wpdb->query($wpdb->prepare(
-            "SELECT option_id FROM {$optionsTable} WHERE option_name = %s FOR UPDATE",
+            "SELECT option_id FROM %i WHERE option_name = %s FOR UPDATE",
+            $optionsTable,
             self::GLOBAL_OPTION_KEY,
         ));
         if ($locked === false || $locked < 1) {
@@ -275,9 +287,11 @@ final class WordPressSourceGenerationStore implements SourceGenerationStoreInter
     {
         global $wpdb;
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Row lock for the source write; must not be cached.
         $locked = $wpdb->query($wpdb->prepare(
-            'SELECT page_id FROM ' . SchemaManager::pageStateTableName() . '
+            'SELECT page_id FROM %i
              WHERE page_id = %d FOR UPDATE',
+            SchemaManager::pageStateTableName(),
             $pageId,
         ));
         if ($locked === false || $locked < 1) {
@@ -291,10 +305,12 @@ final class WordPressSourceGenerationStore implements SourceGenerationStoreInter
 
         $postmetaTable = isset($wpdb->postmeta) ? (string) $wpdb->postmeta : (string) $wpdb->prefix . 'postmeta';
         if (method_exists($wpdb, 'get_var')) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Live state read; must not be cached.
             $stored = $wpdb->get_var($wpdb->prepare(
-                "SELECT meta_value FROM {$postmetaTable}
+                "SELECT meta_value FROM %i
                  WHERE post_id = %d AND meta_key = %s
                  ORDER BY meta_id DESC LIMIT 1",
+                $postmetaTable,
                 $pageId,
                 self::PAGE_META_KEY,
             ));
@@ -312,8 +328,10 @@ final class WordPressSourceGenerationStore implements SourceGenerationStoreInter
 
         $optionsTable = isset($wpdb->options) ? (string) $wpdb->options : (string) $wpdb->prefix . 'options';
         if (method_exists($wpdb, 'get_var')) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Live state read; must not be cached.
             $stored = $wpdb->get_var($wpdb->prepare(
-                "SELECT option_value FROM {$optionsTable} WHERE option_name = %s LIMIT 1",
+                "SELECT option_value FROM %i WHERE option_name = %s LIMIT 1",
+                $optionsTable,
                 self::GLOBAL_OPTION_KEY,
             ));
             if ($stored !== null && $stored !== false && $stored !== '') {
@@ -378,7 +396,7 @@ final class WordPressSourceGenerationStore implements SourceGenerationStoreInter
     private function assertCurrent(string $scope, int $expected, int $current): void
     {
         if ($expected !== $current) {
-            throw new StaleSourceGenerationException($scope, $expected, $current);
+            throw new StaleSourceGenerationException(esc_html($scope), (int) $expected, (int) $current);
         }
     }
 }

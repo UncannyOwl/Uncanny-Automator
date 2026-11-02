@@ -597,6 +597,7 @@ class Edd_Tokens {
 
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
 
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 				$entry = $wpdb->get_var(
 					$wpdb->prepare(
 						"SELECT meta_value

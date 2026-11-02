@@ -64,13 +64,6 @@ class UOA_SENDWEBHOOK {
 			)
 		);
 
-		$this->set_buttons(
-			Automator()->send_webhook->fields->buttons(
-				$this->get_action_meta(),
-				$this->get_support_link()
-			)
-		);
-
 		$this->set_background_processing( true );
 
 		// add filter to inject tokens
@@ -99,6 +92,7 @@ class UOA_SENDWEBHOOK {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API finds posts by a raw meta value across post types.
 		$current_actions = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT post_id FROM $wpdb->postmeta WHERE meta_value = %s AND meta_key = %s",

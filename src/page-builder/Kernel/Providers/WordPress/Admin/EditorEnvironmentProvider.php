@@ -23,6 +23,7 @@ use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefresherInterface;
 use UncannyPageBuilder\Application\Settings\ToolSettingsAccess;
 use UncannyPageBuilder\Domain\Binding\BindingRegistry;
 use UncannyPageBuilder\Infrastructure\WordPress\BlockEditorButton;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 use UncannyPageBuilder\Infrastructure\WordPress\PageEditorMetaBoxes;
 use UncannyPageBuilder\Infrastructure\WordPress\PageOwnershipActions;
 use UncannyPageBuilder\Infrastructure\WordPress\NativePageSave;
@@ -139,8 +140,11 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
                 return;
             }
 
-            $postId = WordPressPostId::fromMixed($_POST['post_ID'] ?? null)
-                ?? WordPressPostId::fromMixed($_GET['post'] ?? null);
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Read-only access check; WordPress verifies the nonce after this hook and this code makes no change.
+            $postedId = isset($_POST['post_ID']) ? sanitize_text_field(wp_unslash($_POST['post_ID'])) : null;
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only access check; WordPress verifies the nonce after this hook and this code makes no change.
+            $queriedId = isset($_GET['post']) ? sanitize_text_field(wp_unslash($_GET['post'])) : null;
+            $postId = WordPressPostId::fromMixed($postedId) ?? WordPressPostId::fromMixed($queriedId);
             if ($postId === null) {
                 return;
             }
@@ -163,7 +167,7 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
                 }
             } catch (\Throwable $failure) {
                 try {
-                    error_log(sprintf(
+                    DiagnosticLog::write(sprintf(
                         '[Uncanny Page Builder] Owned page editor access check failed (%s).',
                         $failure::class,
                     ));
@@ -308,7 +312,7 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
                     self::pruneOwnedPostMetaBoxes($postType);
                     self::pruneForeignEditFormCallbacks();
                 } catch (\Throwable $failure) {
-                    error_log('[Uncanny Page Builder] Page metabox pruning failed (' . $failure::class . ')');
+                    DiagnosticLog::write('[Uncanny Page Builder] Page metabox pruning failed (' . $failure::class . ')');
                 }
             }, PHP_INT_MAX);
         }), PHP_INT_MAX, 2);
@@ -329,9 +333,9 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             wp_enqueue_style('thickbox');
             wp_enqueue_script(
                 'upb-admin-codemirror',
-                UNCANNY_PB_URL . 'assets/js/admin-codemirror.js',
+                UNCANNY_PB_URL . 'assets/js/admin-code-editor.js',
                 [],
-                (string) filemtime(UNCANNY_PB_PATH . 'assets/js/admin-codemirror.js'),
+                (string) filemtime(UNCANNY_PB_PATH . 'assets/js/admin-code-editor.js'),
                 true,
             );
         }));
@@ -512,7 +516,8 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             $isSwitchingToWordPress = self::hasPostedValue(PageOwnershipActions::SWITCH_FIELD, '1')
                 && self::hasValidPostedNonce(PageOwnershipActions::NONCE_FIELD, PageOwnershipActions::NONCE_ACTION);
             if ($hasShellNonce) {
-                $modeValue = sanitize_text_field((string) ($_POST['uncanny_page_builder_shell_mode'] ?? ''));
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- The nonce is verified by hasValidPostedNonce() above.
+                $modeValue = sanitize_text_field(wp_unslash((string) ($_POST['uncanny_page_builder_shell_mode'] ?? '')));
                 $mode = ShellMode::tryFrom($modeValue);
 
                 if ($mode !== null) {
@@ -591,7 +596,7 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             // WordPress completed its own save before this observer ran. A
             // Page Builder failure must not turn that save into a fatal
             // response for the shared save_post request.
-            error_log('[Uncanny Page Builder] Native page save observer failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Native page save observer failed (' . $failure::class . ')');
             self::rejectNativeSaveAfterObserverFailure($postId, $nativePageSave);
         }
     }
@@ -619,7 +624,7 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             $nativePageSave->reject($postId, $message);
             $nativePageSave->commit($postId);
         } catch (\Throwable $noticeFailure) {
-            error_log('[Uncanny Page Builder] Native page save failure notice failed (' . $noticeFailure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Native page save failure notice failed (' . $noticeFailure::class . ')');
         }
     }
 
@@ -664,7 +669,7 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             // A reporting failure cannot escape the shared save_post request.
         }
 
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] Native save for page %d completed, but %s failed (%s).',
             $postId,
             $step,
@@ -695,13 +700,14 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
 
     private static function isNativeTrashLifecycleRequest(): bool
     {
-        if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'GET') {
+        if (sanitize_text_field(wp_unslash($_SERVER['REQUEST_METHOD'] ?? '')) !== 'GET') {
             return false;
         }
 
-        $action = $_GET['action'] ?? null;
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only lifecycle detection; WordPress verifies the nonce for trash and untrash and this code makes no change.
+        $action = isset($_GET['action']) && is_string($_GET['action']) ? sanitize_text_field(wp_unslash($_GET['action'])) : '';
 
-        return is_string($action) && in_array($action, ['trash', 'untrash'], true);
+        return in_array($action, ['trash', 'untrash'], true);
     }
 
     /**
@@ -759,13 +765,16 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             return false;
         }
 
-        return (bool) wp_verify_nonce(sanitize_text_field(wp_unslash($_POST[$key])), $action);
+        $verified = wp_verify_nonce(sanitize_text_field(wp_unslash($_POST[$key])), $action);
+
+        return false !== $verified;
     }
 
     private static function hasPostedValue(string $key, string $expected): bool
     {
-        $value = $_POST[$key] ?? null;
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Compared with a fixed value; the caller verifies the nonce before acting on it.
+        $value = sanitize_text_field(wp_unslash($_POST[$key] ?? ''));
 
-        return is_scalar($value) && wp_unslash((string) $value) === $expected;
+        return $value === $expected;
     }
 }

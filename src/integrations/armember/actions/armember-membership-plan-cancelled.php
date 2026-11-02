@@ -72,8 +72,10 @@ class ARMEMBER_MEMBERSHIP_PLAN_CANCELLED extends Action {
 		// ARMember stores and compares plan ids as strings throughout.
 		$plan_arg = (string) $plan_id;
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- ARMember's own hook.
 		do_action( 'arm_before_update_user_subscription', $user_id, '0' );
 		$plans->arm_add_membership_history( $user_id, $plan_arg, 'cancel_subscription' );
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- ARMember's own hook.
 		do_action( 'arm_cancel_subscription', $user_id, $plan_arg );
 		$plans->arm_clear_user_plan_detail( $user_id, $plan_arg );
 		update_user_meta( $user_id, 'arm_secondary_status', 6 );

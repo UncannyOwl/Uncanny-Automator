@@ -233,11 +233,12 @@ class Mailchimp_Api_Caller extends Api_Caller {
 	 * Add subscriber to list.
 	 *
 	 * @param array $subscriber_data
+	 * @param array|null $action_data The running action's data; marks the write for background dispatch.
 	 *
 	 * @return array
 	 * @throws Exception
 	 */
-	public function add_subscriber_to_list( $subscriber_data ) {
+	public function add_subscriber_to_list( $subscriber_data, $action_data = null ) {
 		$user_email = $subscriber_data['email'];
 		$list_id    = $subscriber_data['list_id'];
 		$user_hash  = $this->generate_user_email_hash( $user_email );
@@ -296,7 +297,7 @@ class Mailchimp_Api_Caller extends Api_Caller {
 			'user_data' => wp_json_encode( $user_data ),
 		);
 
-		return $this->api_request( $body );
+		return $this->api_request( $body, $action_data );
 	}
 
 	/**
@@ -389,19 +390,21 @@ class Mailchimp_Api_Caller extends Api_Caller {
 	/**
 	 * Delete a subscriber from a list.
 	 *
-	 * @param string $list_id
-	 * @param string $email
+	 * @param string     $list_id     The list.
+	 * @param string     $email       The subscriber.
+	 * @param array|null $action_data The running action's data; marks the write for background dispatch.
 	 *
 	 * @return array
 	 * @throws Exception
 	 */
-	public function delete_subscriber( $list_id, $email ) {
+	public function delete_subscriber( $list_id, $email, $action_data = null ) {
 		return $this->api_request(
 			array(
 				'action'    => 'delete_subscriber',
 				'list_id'   => $list_id,
 				'user_hash' => $this->generate_user_email_hash( $email ),
-			)
+			),
+			$action_data
 		);
 	}
 
@@ -410,11 +413,12 @@ class Mailchimp_Api_Caller extends Api_Caller {
 	 *
 	 * @param string $list_id
 	 * @param string $email
+	 * @param array|null $action_data The running action's data; marks the write for background dispatch.
 	 *
 	 * @return array
 	 * @throws Exception
 	 */
-	public function unsubscribe_contact( $list_id, $email ) {
+	public function unsubscribe_contact( $list_id, $email, $action_data = null ) {
 
 		$user_data = array(
 			'status' => 'unsubscribed',
@@ -427,7 +431,7 @@ class Mailchimp_Api_Caller extends Api_Caller {
 			'user_data' => wp_json_encode( $user_data ),
 		);
 
-		return $this->api_request( $body );
+		return $this->api_request( $body, $action_data );
 	}
 
 	/**
@@ -530,52 +534,50 @@ class Mailchimp_Api_Caller extends Api_Caller {
 	}
 
 	/**
-	 * Add tag to contact.
+	 * Add tags to a contact. The platform action also adds the contact to the list when it is not on it yet.
 	 *
-	 * Uses update_subscriber_tags_add_list which also adds user to list if not exists.
+	 * @param string     $list_id     The list.
+	 * @param string     $email       The contact.
+	 * @param array      $tags        Tag names.
+	 * @param array|null $action_data The running action's data; marks the write for background dispatch.
 	 *
-	 * @param string $list_id
-	 * @param string $email
-	 * @param array  $tags Array of tag names.
-	 *
-	 * @return array
+	 * @return array The platform response.
 	 * @throws Exception
 	 */
-	public function add_tag_to_contact( $list_id, $email, $tags ) {
-		$response = $this->api_request(
+	public function add_tag_to_contact( $list_id, $email, $tags, $action_data = null ) {
+		return $this->api_request(
 			array(
 				'action'     => 'update_subscriber_tags_add_list',
 				'list_id'    => $list_id,
 				'user_hash'  => $this->generate_user_email_hash( $email ),
 				'user_email' => $email,
 				'tags'       => wp_json_encode( $this->format_tags_for_api( $tags, 'active' ) ),
-			)
+			),
+			$action_data
 		);
-
-		return $response['data'] ?? array();
 	}
 
 	/**
-	 * Remove tag from contact.
+	 * Remove tags from a contact.
 	 *
-	 * @param string $list_id
-	 * @param string $email
-	 * @param array  $tags Array of tag names.
+	 * @param string     $list_id     The list.
+	 * @param string     $email       The contact.
+	 * @param array      $tags        Tag names.
+	 * @param array|null $action_data The running action's data; marks the write for background dispatch.
 	 *
-	 * @return array
+	 * @return array The platform response.
 	 * @throws Exception
 	 */
-	public function remove_tag_from_contact( $list_id, $email, $tags ) {
-		$response = $this->api_request(
+	public function remove_tag_from_contact( $list_id, $email, $tags, $action_data = null ) {
+		return $this->api_request(
 			array(
 				'action'    => 'update_subscriber_tags',
 				'list_id'   => $list_id,
 				'user_hash' => $this->generate_user_email_hash( $email ),
 				'tags'      => wp_json_encode( $this->format_tags_for_api( $tags, 'inactive' ) ),
-			)
+			),
+			$action_data
 		);
-
-		return $response['data'] ?? array();
 	}
 
 	/**
@@ -603,26 +605,26 @@ class Mailchimp_Api_Caller extends Api_Caller {
 	}
 
 	/**
-	 * Add note to contact.
+	 * Add a note to a contact.
 	 *
-	 * @param string $list_id The list ID.
-	 * @param string $email The contact email.
-	 * @param string $note The note content.
+	 * @param string     $list_id     The list.
+	 * @param string     $email       The contact.
+	 * @param string     $note        The note.
+	 * @param array|null $action_data The running action's data; marks the write for background dispatch.
 	 *
-	 * @return array The response data.
-	 * @throws Exception If the request fails.
+	 * @return array The platform response.
+	 * @throws Exception
 	 */
-	public function add_note_to_contact( $list_id, $email, $note ) {
-		$response = $this->api_request(
+	public function add_note_to_contact( $list_id, $email, $note, $action_data = null ) {
+		return $this->api_request(
 			array(
 				'action'    => 'add_subscriber_note',
 				'list_id'   => $list_id,
 				'user_hash' => $this->generate_user_email_hash( $email ),
 				'note'      => wp_json_encode( array( 'note' => $note ) ),
-			)
+			),
+			$action_data
 		);
-
-		return $response['data'] ?? array();
 	}
 
 	/**

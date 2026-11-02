@@ -28,8 +28,8 @@ use Uncanny_Automator\App\Recipe_Builder\Trigger\Services\Trigger_Registry_Servi
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Recipe_Store;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Services\Utilities\Trigger_Schema_Converter;
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Field_Registry_Service;
 use Uncanny_Automator\App\Recipe_Builder\Field\Services\Utilities\Field_Validator;
-use Uncanny_Automator\Services\Integrations\Fields;
 
 /**
  * Trigger Validator Class.
@@ -158,19 +158,17 @@ class Trigger_Validator extends Field_Validator {
 			);
 		}
 
-		// Use Fields service to get properly structured configuration fields.
-		$fields = new Fields();
-		$fields->set_config(
-			array(
-				'object_type' => 'triggers',
-				'code'        => $trigger_code,
-			)
+		// Materialize the grouped field shape via the central service.
+		$configuration_fields = Field_Registry_Service::instance()->get_item_fields_grouped(
+			$definition['integration'] ?? '',
+			'trigger',
+			$trigger_code
 		);
 
-		try {
-			$configuration_fields = $fields->get();
-		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
-			// If we can't get fields, the trigger might not have any configurable fields.
+		if ( is_wp_error( $configuration_fields ) ) {
+			// If we can't load the trigger's fields (unknown code, callback
+			// failure, etc.) treat as valid — matches the legacy try/catch
+			// fallback semantics.
 			return true;
 		}
 

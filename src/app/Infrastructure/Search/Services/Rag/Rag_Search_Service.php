@@ -40,6 +40,13 @@ class Rag_Search_Service {
 	private const AUTHENTICATION_AUDIENCE = 'automator-component-rag';
 
 	/**
+	 * The catalog's type for a loop filter row.
+	 *
+	 * @since 8.0.0
+	 */
+	private const LOOP_FILTER_TYPE = 'loop-filter';
+
+	/**
 	 * Encrypted payload generator.
 	 *
 	 * @var Client_Payload_Service
@@ -236,6 +243,7 @@ class Rag_Search_Service {
 	 * Only includes fields used by the unified search schema:
 	 * - code, sentence, integration_id, integration_name, required_tier, type
 	 * - is_incompatible, incompatibility_reason (conditional for triggers)
+	 * - iteration_types, is_pro (loop filters: the loops a filter applies to, as the list endpoint returns them)
 	 *
 	 * @param  array $data Response data from RAG service.
 	 * @return array Transformed results.
@@ -268,6 +276,12 @@ class Rag_Search_Service {
 			if ( ! empty( $item['is_incompatible'] ) ) {
 				$result_item['is_incompatible']        = true;
 				$result_item['incompatibility_reason'] = $item['incompatibility_reason'] ?? '';
+			}
+
+			// A loop filter keeps the loops it applies to and its Pro flag.
+			if ( self::LOOP_FILTER_TYPE === $result_item['type'] ) {
+				$result_item['iteration_types'] = is_array( $item['iteration_types'] ?? null ) ? array_values( $item['iteration_types'] ) : array();
+				$result_item['is_pro']          = ! empty( $item['is_pro'] );
 			}
 
 			$transformed['results'][] = $result_item;
@@ -459,7 +473,11 @@ class Rag_Search_Service {
 		if ( '' === $license_key ) {
 			$this->log_request_failure( 'missing_license' );
 
-			return $this->authentication_error();
+			// Tell the Agent how to restore access, rather than reporting no components.
+			return new WP_Error(
+				'rag_license_missing',
+				esc_html_x( 'Cannot access the component catalog because this WordPress site has no Automator license key. Available components could not be checked. On this site, go to WP Admin → Automator → Settings → General → License, then connect your free account or enter your Pro license key.', 'RAG service error', 'uncanny-automator' )
+			);
 		}
 
 		return array(

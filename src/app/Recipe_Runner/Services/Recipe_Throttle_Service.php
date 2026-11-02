@@ -5,6 +5,7 @@ namespace Uncanny_Automator\App\Recipe_Runner\Services;
 
 use Uncanny_Automator\Services\Recipe\Process\Throttler;
 use Uncanny_Automator\App\Events\Dispatcher;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Settings\Services\Recipe_Settings_Service;
 
 /**
  * Recipe throttle checks for the recipe runner.
@@ -27,7 +28,17 @@ class Recipe_Throttle_Service {
 	 */
 	public function is_throttled( int $recipe_id, int $user_id ): bool {
 
-		$data = (array) get_post_meta( $recipe_id, 'field_recipe_throttle', true );
+		$throttle = Recipe_Settings_Service::instance()->get_throttle( $recipe_id );
+
+		// A disabled/unset throttle is never throttled. Short-circuit before the
+		// legacy Throttler so the common disabled case doesn't round-trip through
+		// to_throttler_input() + Throttler (which throws "Invalid settings" on the
+		// empty input and logs a spurious error on every fire).
+		if ( ! ( $throttle['enabled'] ?? false ) ) {
+			return false;
+		}
+
+		$data = $this->to_throttler_input( $throttle );
 
 		try {
 			$throttler = new Throttler( $recipe_id, $data );
@@ -54,5 +65,27 @@ class Recipe_Throttle_Service {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Map the service's clean throttle domain shape to the legacy on-disk
+	 * format the \Automator Throttler constructor expects.
+	 *
+	 * Precondition: the throttle is enabled — `is_throttled()` short-circuits on a
+	 * disabled one before calling this. Disappears when the legacy Throttler does.
+	 *
+	 * @param array{enabled: bool, duration: int|null, unit: string|null, scope: string|null} $throttle
+	 * @return array
+	 */
+	private function to_throttler_input( array $throttle ): array {
+		$input = array(
+			'ENABLED' => array( 'value' => true ),
+			'NUMBER'  => array( 'value' => (string) $throttle['duration'] ),
+			'UNIT'    => array( 'value' => (string) $throttle['unit'] ),
+		);
+		if ( ! empty( $throttle['scope'] ) ) {
+			$input['PER_RECIPE_OR_USER'] = array( 'value' => (string) $throttle['scope'] );
+		}
+		return $input;
 	}
 }

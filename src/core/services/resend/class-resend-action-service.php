@@ -24,7 +24,7 @@ class Resend_Action_Service {
 			return $raw;
 		}
 
-		// Future gz1: format (PR #7232 / 7.4.0). Prefer the canonical decoder when present.
+		// Future gz1: format (PR #7232 / 7.6.0). Prefer the canonical decoder when present.
 		if ( 0 === strpos( $raw, 'gz1:' ) ) {
 			if ( class_exists( Api_Log_Compressor::class ) ) {
 				return Api_Log_Compressor::decode( $raw );
@@ -64,7 +64,12 @@ class Resend_Action_Service {
 		$api_request   = Automator()->db->api->get_by_log_id( 'action', $action_log_id );
 
 		if ( empty( $api_request ) || empty( $api_request->params ) ) {
-			return array( 'ok' => false, 'outcome' => 'skipped', 'message' => 'No API log to resend', 'api_log_id' => 0 );
+			return array(
+				'ok' => false,
+				'outcome' => 'skipped',
+				'message' => 'No API log to resend',
+				'api_log_id' => 0,
+			);
 		}
 
 		// Intentionally NOT gated on the action's current status — this mirrors the
@@ -82,13 +87,22 @@ class Resend_Action_Service {
 		$params = self::decode_api_log_value( $api_request->params );
 
 		// Log rows are decoded with allowed_classes => false (CVE-2026-82627). Rows that
-		// stored a serialized Api_Request object decode to __PHP_Incomplete_Class and
-		// cannot be replayed; skip them cleanly. New rows store the legacy params array.
+		// stored a serialized Request object decode to __PHP_Incomplete_Class and cannot be
+		// replayed; skip them cleanly. New rows store the legacy params array. A live Request
+		// object (only possible in-process) is flattened to that array shape first.
+		if ( $params instanceof \Uncanny_Automator\App\Infrastructure\Automator_Platform\Request ) {
+			try {
+				$params = $this->api_request_to_params( $params );
+			} catch ( \Throwable $e ) {
+				$params = null;
+			}
+		}
+
 		if ( ! is_array( $params ) || empty( $params['endpoint'] ) ) {
 			return array(
 				'ok'         => false,
 				'outcome'    => 'skipped',
-				'message'    => 'Stored request payload is unreadable (legacy object format) — cannot replay',
+				'message'    => 'Stored request payload is unreadable (legacy object format), so it cannot be replayed.',
 				'api_log_id' => $api_log_id,
 			);
 		}
@@ -99,26 +113,58 @@ class Resend_Action_Service {
 		// body is replaced with the live one before the request is re-fired.
 		$params['resend'] = true;
 
+		// Platform-mediated replays (v2 + v3): the replay re-executes
+		// because no Idempotency-Key HEADER is sent (the platform's
+		// IdempotencyKey middlewares key on the header and no-op when it
+		// is absent). The fresh body key below is belt-and-suspenders —
+		// it shifts V2AsyncDispatch's (license_id, idempotency_key) dedup
+		// identity if the stored body carried one — and we carry
+		// X-Automator-Resend for ops correlation.
+		if ( isset( $params['body'] ) && is_array( $params['body'] ) ) {
+			$params['body']['idempotency_key'] = 'iak_resend_' . wp_generate_password( 24, false, false );
+
+			$headers           = isset( $params['headers'] ) && is_array( $params['headers'] ) ? $params['headers'] : array();
+			$params['headers'] = array_merge( $headers, array( 'X-Automator-Resend' => '1' ) );
+		}
+
 		try {
 			$this->fire_api_call( $params );
 		} catch ( \Exception $e ) {
 			automator_log( $e->getMessage(), 'resend_action', false );
 			$this->record_retry( $action_log_id, $api_log_id, Automator_Status::get_class_name( Automator_Status::COMPLETED_WITH_ERRORS ), $e->getMessage() );
-			return array( 'ok' => false, 'outcome' => 'failed', 'message' => $e->getMessage(), 'api_log_id' => $api_log_id );
+			return array(
+				'ok' => false,
+				'outcome' => 'failed',
+				'message' => $e->getMessage(),
+				'api_log_id' => $api_log_id,
+			);
 		}
 
+		// phpcs:ignore Uncanny_Automator.Strings.AutoContextTranslation.MissingContext, Uncanny_Automator.Strings.TranslationFunction.UnescapedTranslation -- Plain-text log message, stored and returned as JSON; its msgid is already in the .pot without a context.
 		$message = __( 'The request has been successfully resent', 'uncanny-automator' );
 		$this->record_retry( $action_log_id, $api_log_id, Automator_Status::get_class_name( Automator_Status::COMPLETED ), $message );
 		$this->mark_action_resolved( $action_log_id );
-		do_action( 'automator_recipe_app_request_resent', $action_log_id, array( 'success' => true, 'message' => $message ) );
+		do_action(
+			'automator_recipe_app_request_resent',
+			$action_log_id,
+			array(
+				'success' => true,
+				'message' => $message,
+			)
+		);
 
-		return array( 'ok' => true, 'outcome' => 'resent', 'message' => $message, 'api_log_id' => $api_log_id );
+		return array(
+			'ok' => true,
+			'outcome' => 'resent',
+			'message' => $message,
+			'api_log_id' => $api_log_id,
+		);
 	}
 
 	/**
 	 * Fire the cloud API call. Isolated in its own protected method so tests can
 	 * subclass-and-override it to force failure without a network call (no
-	 * production test hook). On 7.4.0 this is the seam PR #7232 re-points to
+	 * production test hook). On 7.6.0 this is the seam PR #7232 re-points to
 	 * Automator_Platform.
 	 *
 	 * @param mixed $params
@@ -126,6 +172,29 @@ class Resend_Action_Service {
 	 */
 	protected function fire_api_call( $params ) {
 		return Api_Server::api_call( $params );
+	}
+
+	/**
+	 * Flatten a new-infra Request value object back into the legacy params array shape
+	 * Api_Server::api_call() expects. Only endpoint + body are strictly required by api_call();
+	 * method and action (logging context) are carried through when present.
+	 *
+	 * @param \Uncanny_Automator\App\Infrastructure\Automator_Platform\Request $request
+	 * @return array
+	 */
+	private function api_request_to_params( $request ) {
+		$params = array(
+			'endpoint' => $request->endpoint(),
+			'body'     => $request->body(),
+			'method'   => $request->method(),
+		);
+
+		$action_data = $request->action_data();
+		if ( null !== $action_data ) {
+			$params['action'] = $action_data;
+		}
+
+		return $params;
 	}
 
 	/**
@@ -148,15 +217,33 @@ class Resend_Action_Service {
 			);
 		} catch ( \Exception $e ) {
 			$this->record_retry( (int) $api_request->item_log_id, $api_log_id, Automator_Status::get_class_name( Automator_Status::COMPLETED_WITH_ERRORS ), $e->getMessage() );
-			return array( 'ok' => false, 'outcome' => 'failed', 'message' => $e->getMessage(), 'api_log_id' => $api_log_id );
+			return array(
+				'ok' => false,
+				'outcome' => 'failed',
+				'message' => $e->getMessage(),
+				'api_log_id' => $api_log_id,
+			);
 		}
 
+		// phpcs:ignore Uncanny_Automator.Strings.AutoContextTranslation.MissingContext, Uncanny_Automator.Strings.TranslationFunction.UnescapedTranslation -- Plain-text log message, stored and returned as JSON; its msgid is already in the .pot without a context.
 		$message = __( 'The request has been successfully resent', 'uncanny-automator' );
 		$this->record_retry( (int) $api_request->item_log_id, $api_log_id, Automator_Status::get_class_name( Automator_Status::COMPLETED ), $message );
 		$this->mark_action_resolved( (int) $api_request->item_log_id );
-		do_action( 'automator_recipe_webhook_request_replayed', (int) $api_request->item_log_id, array( 'success' => true, 'message' => $message ) );
+		do_action(
+			'automator_recipe_webhook_request_replayed',
+			(int) $api_request->item_log_id,
+			array(
+				'success' => true,
+				'message' => $message,
+			)
+		);
 
-		return array( 'ok' => true, 'outcome' => 'resent', 'message' => $message, 'api_log_id' => $api_log_id );
+		return array(
+			'ok' => true,
+			'outcome' => 'resent',
+			'message' => $message,
+			'api_log_id' => $api_log_id,
+		);
 	}
 
 	/**
@@ -167,9 +254,15 @@ class Resend_Action_Service {
 	 */
 	protected function record_retry( $item_log_id, $api_log_id, $result, $message ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Write to Automator's own table.
 		$inserted = $wpdb->insert(
 			$wpdb->prefix . 'uap_api_log_response',
-			array( 'api_log_id' => (int) $api_log_id, 'item_log_id' => (int) $item_log_id, 'result' => (string) $result, 'message' => (string) $message ),
+			array(
+				'api_log_id' => (int) $api_log_id,
+				'item_log_id' => (int) $item_log_id,
+				'result' => (string) $result,
+				'message' => (string) $message,
+			),
 			array( '%d', '%d', '%s', '%s' )
 		);
 		return false !== $inserted ? (int) $wpdb->insert_id : false;
@@ -200,6 +293,7 @@ class Resend_Action_Service {
 		// status recompute) re-derives the run status from all of its actions.
 
 		// 1) The action itself is now Completed.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->update(
 			$wpdb->prefix . 'uap_action_log',
 			array( 'completed' => Automator_Status::COMPLETED ),
@@ -209,6 +303,7 @@ class Resend_Action_Service {
 		);
 
 		// 2) Re-resolve the run's status from ALL its action statuses and persist it.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$recipe_log_id = (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT automator_recipe_log_id FROM {$wpdb->prefix}uap_action_log WHERE ID = %d",
@@ -219,6 +314,7 @@ class Resend_Action_Service {
 			return;
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->update(
 			$wpdb->prefix . 'uap_recipe_log',
 			array( 'completed' => $this->resolve_recipe_status( $recipe_log_id ) ),
@@ -251,6 +347,7 @@ class Resend_Action_Service {
 
 		// Fallback (app layer absent): only mark notice when no sibling is in an error state.
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$still_failing = (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM {$wpdb->prefix}uap_action_log

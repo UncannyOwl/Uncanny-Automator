@@ -33,7 +33,7 @@
   ],
   "output": {
     "content_type": "text/plain",
-    "description": "Plain-text runtime read with scope, owner id, presence flag, the current JavaScript source, and next-step guidance for preview_runtime_change or edit_runtime."
+    "description": "Plain-text runtime read with scope, owner id, RUNTIME_ENABLED for that scope, JAVASCRIPT_EDIT_CAPABILITY for the current account, APPROVED_LIBRARIES as enabled slugs or none (unknown if settings are unavailable), MAX_SOURCE_BYTES, presence flag, current JavaScript source, and next-step guidance. These facts do not grant write access or establish browser execution; native write guards still apply."
   },
   "auto_approve": true,
   "group": "read"

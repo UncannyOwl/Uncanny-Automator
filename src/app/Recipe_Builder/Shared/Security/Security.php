@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 /**
  * Security class for sanitizing AI-generated input.
  *
@@ -99,7 +98,7 @@ final class Security {
 
 		// Reject objects, resources, and unknown types
 		if ( $flags & self::STRICT_MODE ) {
-			throw new InvalidArgumentException( 'Unsupported data type: ' . gettype( $data ) );
+			throw new InvalidArgumentException( 'Unsupported data type: ' . esc_html( gettype( $data ) ) );
 		}
 
 		return null;
@@ -131,7 +130,7 @@ final class Security {
 					$sanitized_key = sanitize_text_field( $key );
 					if ( $sanitized_key !== $key ) {
 						if ( $flags & self::STRICT_MODE ) {
-							throw new InvalidArgumentException( 'Invalid array key: ' . $key );
+							throw new InvalidArgumentException( 'Invalid array key: ' . esc_html( $key ) );
 						}
 						// Skip this key-value pair
 						continue;
@@ -255,7 +254,7 @@ final class Security {
 			}
 			// Existing file outside uploads
 			if ( $flags & self::STRICT_MODE ) {
-				throw new InvalidArgumentException( 'File path outside uploads directory: ' . $path );
+				throw new InvalidArgumentException( 'File path outside uploads directory: ' . esc_html( $path ) );
 			}
 			return '';
 		}
@@ -264,7 +263,7 @@ final class Security {
 		$normalized_path = self::normalize_upload_path( $path );
 		if ( empty( $normalized_path ) ) {
 			if ( $flags & self::STRICT_MODE ) {
-				throw new InvalidArgumentException( 'Invalid file path: ' . $path );
+				throw new InvalidArgumentException( 'Invalid file path: ' . esc_html( $path ) );
 			}
 			return '';
 		}
@@ -276,7 +275,7 @@ final class Security {
 
 		// Intended path outside uploads
 		if ( $flags & self::STRICT_MODE ) {
-			throw new InvalidArgumentException( 'Intended file path outside uploads directory: ' . $path );
+			throw new InvalidArgumentException( 'Intended file path outside uploads directory: ' . esc_html( $path ) );
 		}
 
 		return '';
@@ -343,6 +342,11 @@ final class Security {
 	 * @return int|float|null Sanitized number or null if invalid.
 	 */
 	private static function sanitize_numeric( $data, int $flags ) {
+		// PHP 8.5 warns when NAN is cast to string, which filter_var() and esc_html() both do, so a non-finite float goes by its name.
+		if ( is_float( $data ) && ! is_finite( $data ) ) {
+			$data = is_nan( $data ) ? 'NAN' : (string) $data;
+		}
+
 		// Try integer first
 		$int_val = filter_var( $data, FILTER_VALIDATE_INT );
 		if ( false !== $int_val ) {
@@ -357,7 +361,7 @@ final class Security {
 
 		// Invalid numeric data
 		if ( $flags & self::STRICT_MODE ) {
-			throw new InvalidArgumentException( 'Invalid numeric data: ' . $data );
+			throw new InvalidArgumentException( 'Invalid numeric data: ' . esc_html( $data ) );
 		}
 
 		return null;

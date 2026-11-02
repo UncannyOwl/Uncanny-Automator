@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Infrastructure\Persistence;
 
+use UncannyPageBuilder\Domain\ArrayShape;
 use UncannyPageBuilder\Domain\Publishing\PageArtifactStaticSafetyStatus;
 use UncannyPageBuilder\Domain\Publishing\PublishedPageArtifact;
 use UncannyPageBuilder\Domain\Publishing\PublishedPageArtifactRepositoryInterface;
@@ -30,6 +31,7 @@ final class DatabasePublishedPageArtifactRepository implements PublishedPageArti
         $createdAt = $artifact->createdAt()?->format('Y-m-d H:i:s') ?? $this->now();
 
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table write.
         $inserted = $wpdb->insert(
             SchemaManager::pageArtifactsTableName(),
             [
@@ -93,10 +95,12 @@ final class DatabasePublishedPageArtifactRepository implements PublishedPageArti
         $this->ensureSchema();
 
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
         $row = $wpdb->get_row($wpdb->prepare(
-            'SELECT * FROM ' . SchemaManager::pageArtifactsTableName() . '
+            'SELECT * FROM %i
              WHERE page_id = %d AND id = %d
              LIMIT 1',
+            SchemaManager::pageArtifactsTableName(),
             $pageId,
             $artifactId,
         ));
@@ -113,10 +117,12 @@ final class DatabasePublishedPageArtifactRepository implements PublishedPageArti
         $this->ensureSchema();
 
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
         $pageId = $wpdb->get_var($wpdb->prepare(
-            'SELECT page_id FROM ' . SchemaManager::pageArtifactsTableName() . '
+            'SELECT page_id FROM %i
              WHERE id = %d
              LIMIT 1',
+            SchemaManager::pageArtifactsTableName(),
             $artifactId,
         ));
 
@@ -133,11 +139,13 @@ final class DatabasePublishedPageArtifactRepository implements PublishedPageArti
         $limit = min($limit, 100);
 
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
         $rows = $wpdb->get_results($wpdb->prepare(
-            'SELECT * FROM ' . SchemaManager::pageArtifactsTableName() . '
+            'SELECT * FROM %i
              WHERE page_id = %d
              ORDER BY id DESC
              LIMIT %d',
+            SchemaManager::pageArtifactsTableName(),
             $pageId,
             $limit,
         ));
@@ -165,11 +173,13 @@ final class DatabasePublishedPageArtifactRepository implements PublishedPageArti
             $publishedArtifactId = $this->lockedPublishedArtifactId($pageId);
 
             global $wpdb;
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
             $cutoffId = $wpdb->get_var($wpdb->prepare(
-                'SELECT id FROM ' . SchemaManager::pageArtifactsTableName() . '
+                'SELECT id FROM %i
                  WHERE page_id = %d
                  ORDER BY id DESC
                  LIMIT 1 OFFSET %d',
+                SchemaManager::pageArtifactsTableName(),
                 $pageId,
                 self::HISTORY_KEEP_ROWS - 1,
             ));
@@ -177,17 +187,26 @@ final class DatabasePublishedPageArtifactRepository implements PublishedPageArti
                 return 0;
             }
 
-            $pointerClause = $publishedArtifactId !== null ? ' AND id <> %d' : '';
-            $args = [$pageId, (int) $cutoffId];
             if ($publishedArtifactId !== null) {
-                $args[] = $publishedArtifactId;
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
+                $deleted = $wpdb->query($wpdb->prepare(
+                    'DELETE FROM %i
+                     WHERE page_id = %d AND id < %d AND id <> %d',
+                    SchemaManager::pageArtifactsTableName(),
+                    $pageId,
+                    (int) $cutoffId,
+                    $publishedArtifactId,
+                ));
+            } else {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
+                $deleted = $wpdb->query($wpdb->prepare(
+                    'DELETE FROM %i
+                     WHERE page_id = %d AND id < %d',
+                    SchemaManager::pageArtifactsTableName(),
+                    $pageId,
+                    (int) $cutoffId,
+                ));
             }
-
-            $deleted = $wpdb->query($wpdb->prepare(
-                'DELETE FROM ' . SchemaManager::pageArtifactsTableName() . '
-                 WHERE page_id = %d AND id < %d' . $pointerClause,
-                ...$args,
-            ));
             if ($deleted === false) {
                 throw new \RuntimeException('Failed to prune old immutable page artifacts.');
             }
@@ -208,6 +227,7 @@ final class DatabasePublishedPageArtifactRepository implements PublishedPageArti
         }
 
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $deleted = $wpdb->delete(SchemaManager::pageArtifactsTableName(), ['page_id' => $pageId], ['%d']);
         if ($deleted === false) {
             throw new \RuntimeException('Failed to delete immutable page artifacts.');
@@ -227,13 +247,25 @@ final class DatabasePublishedPageArtifactRepository implements PublishedPageArti
     {
         global $wpdb;
 
-        $lock = $forUpdate ? ' FOR UPDATE' : '';
-        $artifactId = $wpdb->get_var($wpdb->prepare(
-            'SELECT published_artifact_id FROM ' . SchemaManager::pageStateTableName() . '
-             WHERE page_id = %d
-             LIMIT 1' . $lock,
-            $pageId,
-        ));
+        if ($forUpdate) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Row lock for the source write; must not be cached.
+            $artifactId = $wpdb->get_var($wpdb->prepare(
+                'SELECT published_artifact_id FROM %i
+                 WHERE page_id = %d
+                 LIMIT 1 FOR UPDATE',
+                SchemaManager::pageStateTableName(),
+                $pageId,
+            ));
+        } else {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+            $artifactId = $wpdb->get_var($wpdb->prepare(
+                'SELECT published_artifact_id FROM %i
+                 WHERE page_id = %d
+                 LIMIT 1',
+                SchemaManager::pageStateTableName(),
+                $pageId,
+            ));
+        }
 
         return $artifactId !== null && (int) $artifactId > 0 ? (int) $artifactId : null;
     }
@@ -291,7 +323,7 @@ final class DatabasePublishedPageArtifactRepository implements PublishedPageArti
             return [];
         }
 
-        return is_array($decoded) && ($decoded === [] || !array_is_list($decoded)) ? $decoded : [];
+        return is_array($decoded) && ($decoded === [] || !ArrayShape::isList($decoded)) ? $decoded : [];
     }
 
     /** @return array<int, array<string, mixed>> */
@@ -303,7 +335,7 @@ final class DatabasePublishedPageArtifactRepository implements PublishedPageArti
             return [];
         }
 
-        if (!is_array($decoded) || !array_is_list($decoded)) {
+        if (!is_array($decoded) || !ArrayShape::isList($decoded)) {
             return [];
         }
 
@@ -315,18 +347,21 @@ final class DatabasePublishedPageArtifactRepository implements PublishedPageArti
     {
         global $wpdb;
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control; there is no WordPress API for it.
         if ($wpdb->query('START TRANSACTION') === false) {
             throw new \RuntimeException('Failed to start an artifact-retention transaction.');
         }
 
         try {
             $result = $operation();
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control; there is no WordPress API for it.
             if ($wpdb->query('COMMIT') === false) {
                 throw new \RuntimeException('Failed to commit an artifact-retention transaction.');
             }
 
             return $result;
         } catch (\Throwable $exception) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control; there is no WordPress API for it.
             $wpdb->query('ROLLBACK');
             throw $exception;
         }
@@ -342,10 +377,11 @@ final class DatabasePublishedPageArtifactRepository implements PublishedPageArti
                 continue;
             }
 
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Schema read; must not be cached.
             $status = $wpdb->get_row($wpdb->prepare('SHOW TABLE STATUS WHERE Name = %s', $table));
             $engine = is_object($status) && isset($status->Engine) ? (string) $status->Engine : '';
             if (strcasecmp($engine, 'InnoDB') !== 0) {
-                throw new SourceTransactionsUnavailableException($table, $engine !== '' ? $engine : 'unknown');
+                throw new SourceTransactionsUnavailableException(esc_html($table), esc_html($engine !== '' ? $engine : 'unknown'));
             }
 
             $this->transactionalTables[$table] = true;

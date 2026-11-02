@@ -38,15 +38,9 @@ abstract class Abstract_Loop_Tool extends Abstract_MCP_Tool {
 	/**
 	 * Inject an action definition bridge (test seam).
 	 *
-	 * Subclass tests call this in setUp() to swap in a fake. Production
-	 * uses the lazy default below.
-	 *
-	 * Per review note C22, the abstract class keeps the lazy-resolver
-	 * pattern (not full constructor DI) because the concrete loop tool
-	 * subclasses already have their own constructors with their own DI
-	 * (`Loop_CRUD_Service`, etc.) — forcing them to call
-	 * `parent::__construct(...)` with bridges is invasive. Protected
-	 * setters give the same testability without that blast radius.
+	 * These protected setters are the subclass injection contract, even when
+	 * the bundled tool uses the lazy defaults below. They let a subclass supply
+	 * bridges without changing its existing service constructor signature.
 	 *
 	 * @param Action_Definition_Bridge $bridge Bridge implementation.
 	 * @return void

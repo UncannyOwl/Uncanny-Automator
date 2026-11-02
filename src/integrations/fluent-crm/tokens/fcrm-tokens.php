@@ -143,6 +143,7 @@ class Fcrm_Tokens {
 				global $wpdb;
 
 				// Get a serialized array of list_ids OR tag_ids added to subscriber
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 				$entry = $wpdb->get_var(
 					$wpdb->prepare(
 						"SELECT meta_value
@@ -232,6 +233,7 @@ class Fcrm_Tokens {
 				// value is the contact information of the subscriber
 
 				// Get the subscriber ID
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 				$entry = $wpdb->get_var(
 					$wpdb->prepare(
 						"SELECT meta_value
@@ -399,6 +401,7 @@ class Fcrm_Tokens {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- FluentCRM's own table; the plugin offers no API for this query.
 		$value = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT `value`
@@ -433,6 +436,7 @@ class Fcrm_Tokens {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 		$subscriber_id = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT meta_value

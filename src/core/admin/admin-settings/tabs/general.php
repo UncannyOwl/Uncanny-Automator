@@ -2,6 +2,10 @@
 
 namespace Uncanny_Automator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Admin_Settings_General
  *
@@ -29,6 +33,7 @@ class Admin_Settings_General {
 		// Load the files
 		$this->load_tab( 'license' );
 		$this->load_tab( 'logs' );
+		$this->load_tab( 'recipe-taxonomies' );
 		$this->load_tab( 'improve-automator' );
 	}
 

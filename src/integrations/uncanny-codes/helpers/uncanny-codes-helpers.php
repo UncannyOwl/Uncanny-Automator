@@ -81,6 +81,7 @@ class Uc_Helpers extends Abstract_Helpers {
 			);
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uncanny Codes' own table; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
 		$all_batches = $wpdb->get_results( 'SELECT DISTINCT id, name FROM ' . $wpdb->prefix . 'uncanny_codes_groups', ARRAY_A );
 
 		if ( ! empty( $all_batches ) ) {
@@ -114,7 +115,8 @@ class Uc_Helpers extends Abstract_Helpers {
 		}
 
 		$options = array();
-		$rows    = $wpdb->get_results( 'SELECT DISTINCT ' . $column . ' FROM ' . $wpdb->prefix . 'uncanny_codes_groups', ARRAY_A );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uncanny Codes' own table; the plugin offers no API for this query.
+		$rows = $wpdb->get_results( 'SELECT DISTINCT `' . esc_sql( $column ) . "` FROM `{$wpdb->prefix}uncanny_codes_groups`", ARRAY_A );
 
 		if ( ! empty( $rows ) ) {
 			foreach ( $rows as $row ) {
@@ -144,8 +146,10 @@ class Uc_Helpers extends Abstract_Helpers {
 		$tbl_groups = $wpdb->prefix . 'uncanny_codes_groups';
 		$tbl_codes  = $wpdb->prefix . 'uncanny_codes_codes';
 
-		$batch_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$tbl_groups} WHERE `ID` = %d GROUP BY ID", $batch_id ), OBJECT ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$codes_data = $wpdb->get_row( $wpdb->prepare( "SELECT GROUP_CONCAT(`code`) as codes FROM {$tbl_codes} WHERE `code_group` = %d", $batch_id ), OBJECT ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Uncanny Codes' own table; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
+		$batch_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$tbl_groups} WHERE `ID` = %d GROUP BY ID", $batch_id ), OBJECT );
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Uncanny Codes' own table; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
+		$codes_data = $wpdb->get_row( $wpdb->prepare( "SELECT GROUP_CONCAT(`code`) as codes FROM {$tbl_codes} WHERE `code_group` = %d", $batch_id ), OBJECT );
 
 		return array(
 			'batch_data' => $batch_data,
@@ -166,7 +170,8 @@ class Uc_Helpers extends Abstract_Helpers {
 
 		$tbl_codes = $wpdb->prefix . 'uncanny_codes_codes';
 
-		return (string) $wpdb->get_var( $wpdb->prepare( "SELECT `code` FROM {$tbl_codes} WHERE `ID` = %d", $coupon_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uncanny Codes' own table; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
+		return (string) $wpdb->get_var( $wpdb->prepare( "SELECT `code` FROM {$tbl_codes} WHERE `ID` = %d", $coupon_id ) );
 	}
 
 	/**
@@ -180,8 +185,9 @@ class Uc_Helpers extends Abstract_Helpers {
 
 		global $wpdb;
 
-		$tbl_codes  = $wpdb->prefix . 'uncanny_codes_codes';
-		$code_group = $wpdb->get_var( $wpdb->prepare( "SELECT `code_group` FROM {$tbl_codes} WHERE `code` = %s", $code ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$tbl_codes = $wpdb->prefix . 'uncanny_codes_codes';
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Uncanny Codes' own table; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
+		$code_group = $wpdb->get_var( $wpdb->prepare( "SELECT `code_group` FROM {$tbl_codes} WHERE `code` = %s", $code ) );
 
 		return (int) $code_group;
 	}
@@ -198,7 +204,8 @@ class Uc_Helpers extends Abstract_Helpers {
 		global $wpdb;
 
 		$tbl_codes = $wpdb->prefix . 'uncanny_codes_codes';
-		$id        = $wpdb->get_var( $wpdb->prepare( "SELECT `ID` FROM {$tbl_codes} WHERE `code` = %s", $code ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Uncanny Codes' own table; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
+		$id = $wpdb->get_var( $wpdb->prepare( "SELECT `ID` FROM {$tbl_codes} WHERE `code` = %s", $code ) );
 
 		return (int) $id;
 	}
@@ -215,7 +222,8 @@ class Uc_Helpers extends Abstract_Helpers {
 		global $wpdb;
 
 		$tbl_groups = $wpdb->prefix . 'uncanny_codes_groups';
-		$group      = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . $tbl_groups . ' WHERE ID = %d', $group_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Uncanny Codes' own table; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
+		$group = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . $tbl_groups . ' WHERE ID = %d', $group_id ) );
 
 		if ( empty( $group ) ) {
 			return array();

@@ -15,6 +15,7 @@ use UncannyPageBuilder\Domain\Canvas\CanvasResetCss;
 use UncannyPageBuilder\Infrastructure\Rendering\StyleElementCss;
 
 defined('ABSPATH') || exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
 ?>
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
@@ -27,7 +28,7 @@ defined('ABSPATH') || exit;
 
     <?php if (!empty($compiledCss)) : ?>
     <?php $canvasCss = ShadowCompiler::scopeCssToCanvas(ShadowCompiler::repairCss((string) $compiledCss)); ?>
-    <style id="uncanny-page-builder-css"><?php echo StyleElementCss::escape($canvasCss); ?></style>
+    <style id="uncanny-page-builder-css"><?php echo StyleElementCss::escape($canvasCss); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS compiled server-side; StyleElementCss::escape() neutralizes a closing style tag. ?></style>
     <?php endif; ?>
 
     <?php
@@ -37,7 +38,7 @@ defined('ABSPATH') || exit;
      * not pick up hostile admin/theme typography before section CSS applies.
      */
     ?>
-    <style id="uncanny-page-builder-reset"><?php echo StyleElementCss::escape(CanvasResetCss::render()); ?></style>
+    <style id="uncanny-page-builder-reset"><?php echo StyleElementCss::escape(CanvasResetCss::render()); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Fixed application-owned CSS; StyleElementCss::escape() neutralizes a closing style tag. ?></style>
 
     <?php $canvasHead = apply_filters('uncanny_page_builder_canvas_head', ''); ?>
     <?php echo wp_kses_post(is_string($canvasHead) ? $canvasHead : ''); ?>

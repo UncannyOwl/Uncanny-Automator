@@ -59,14 +59,14 @@ class License_Scenario extends Abstract_Scenario {
 				'scenario_id' => 'license-requires-pro-plus-not-installed',
 				'name'        => esc_html_x( 'Uncanny Automator Pro - Plus license', 'Dependency', 'uncanny-automator' ),
 				'description' => esc_html_x( 'To use this feature, you need Uncanny Automator Pro with a Plus license or higher.', 'Dependency', 'uncanny-automator' ),
-				'cta'         => $this->get_upgrade_cta( esc_html_x( 'Upgrade to Pro Plus or higher', 'Dependency CTA', 'uncanny-automator' ) ),
+				'cta'         => $this->get_upgrade_cta( esc_html_x( 'Upgrade to Plus or higher', 'Dependency CTA', 'uncanny-automator' ) ),
 			),
 			// Only Lite installed. Entity requires Pro Elite. Pro plugin missing.
 			'pro-elite-not-installed'      => array(
 				'scenario_id' => 'license-requires-pro-elite-not-installed',
 				'name'        => esc_html_x( 'Uncanny Automator Pro - Elite license', 'Dependency', 'uncanny-automator' ),
 				'description' => esc_html_x( 'To use this feature, you need Uncanny Automator Pro with an Elite license.', 'Dependency', 'uncanny-automator' ),
-				'cta'         => $this->get_upgrade_cta( esc_html_x( 'Upgrade to Pro Elite', 'Dependency CTA', 'uncanny-automator' ) ),
+				'cta'         => $this->get_upgrade_cta( esc_html_x( 'Upgrade to Elite', 'Dependency CTA', 'uncanny-automator' ) ),
 			),
 			// Pro plugin present but inactive. Entity needs Pro (any tier). Cannot check tier until plugin is active.
 			'pro-deactivated'              => array(
@@ -114,22 +114,22 @@ class License_Scenario extends Abstract_Scenario {
 			'upgrade-basic-to-plus'        => array(
 				'scenario_id' => 'license-requires-pro-installed-license-active-pro-basic-requires-plus',
 				'name'        => esc_html_x( 'Uncanny Automator Pro - Plus license', 'Dependency', 'uncanny-automator' ),
-				'description' => esc_html_x( "You're on Pro Basic, but this feature requires a Pro Plus license.", 'Dependency', 'uncanny-automator' ),
-				'cta'         => $this->get_upgrade_cta( esc_html_x( 'Upgrade to Pro Plus or higher', 'Dependency CTA', 'uncanny-automator' ) ),
+				'description' => esc_html_x( "You're on the Basic plan, but this feature requires a Plus license or higher.", 'Dependency', 'uncanny-automator' ),
+				'cta'         => $this->get_upgrade_cta( esc_html_x( 'Upgrade to Plus or higher', 'Dependency CTA', 'uncanny-automator' ) ),
 			),
 			// Pro plugin active. License = Pro Basic. Entity requires Pro Elite. Upgrade path: Basic -> Elite.
 			'upgrade-basic-to-elite'       => array(
 				'scenario_id' => 'license-requires-pro-installed-license-active-pro-basic-requires-elite',
 				'name'        => esc_html_x( 'Uncanny Automator Pro - Elite license', 'Dependency', 'uncanny-automator' ),
-				'description' => esc_html_x( "You're on Pro Basic, but this feature requires a Pro Elite license.", 'Dependency', 'uncanny-automator' ),
-				'cta'         => $this->get_upgrade_cta( esc_html_x( 'Upgrade to Pro Elite', 'Dependency CTA', 'uncanny-automator' ) ),
+				'description' => esc_html_x( "You're on the Basic plan, but this feature requires an Elite license.", 'Dependency', 'uncanny-automator' ),
+				'cta'         => $this->get_upgrade_cta( esc_html_x( 'Upgrade to Elite', 'Dependency CTA', 'uncanny-automator' ) ),
 			),
 			// Pro plugin active. License = Pro Plus. Entity requires Pro Elite. Upgrade path: Plus -> Elite.
 			'upgrade-plus-to-elite'        => array(
 				'scenario_id' => 'license-requires-pro-installed-license-active-pro-plus-requires-elite',
 				'name'        => esc_html_x( 'Uncanny Automator Pro - Elite license', 'Dependency', 'uncanny-automator' ),
-				'description' => esc_html_x( "You're on Pro Plus, but this feature requires a Pro Elite license.", 'Dependency', 'uncanny-automator' ),
-				'cta'         => $this->get_upgrade_cta( esc_html_x( 'Upgrade to Pro Elite', 'Dependency CTA', 'uncanny-automator' ) ),
+				'description' => esc_html_x( "You're on the Plus plan, but this feature requires an Elite license.", 'Dependency', 'uncanny-automator' ),
+				'cta'         => $this->get_upgrade_cta( esc_html_x( 'Upgrade to Elite', 'Dependency CTA', 'uncanny-automator' ) ),
 			),
 		);
 
@@ -380,7 +380,7 @@ class License_Scenario extends Abstract_Scenario {
 		/*
 		// TODO : Future implementation activate via fetch.
 		return array(
-			'label' => esc_html_x( 'Active Uncanny Automator Pro', 'Dependency CTA', 'uncanny-automator' ),
+			'label' => esc_html_x( 'Activate Uncanny Automator Pro', 'Dependency CTA', 'uncanny-automator' ),
 			'type'  => 'fetch',
 		);
 		*/

@@ -36,6 +36,7 @@ class Code_Snippets_Helpers {
 		if ( function_exists( 'Code_Snippets\code_snippets' ) ) {
 			$table_name = code_snippets()->db->get_table_name();
 			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Code Snippets' own table; the plugin offers no API for this query. Table name comes from the plugin's own get_table_name().
 			$all_snippets = $wpdb->get_results( "SELECT id,name FROM $table_name", ARRAY_A );
 			foreach ( $all_snippets as $snippet ) {
 				$options[] = array(

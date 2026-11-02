@@ -101,9 +101,11 @@ class UC_DELETE_BATCH_CODES extends \Uncanny_Automator\Recipe\Action {
 		global $wpdb;
 
 		if ( is_numeric( $limit ) && $limit > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uncanny Codes' own table; the plugin offers no API for this query.
 			return $wpdb->get_var( $wpdb->prepare( "SELECT count(c.ID) FROM `{$wpdb->prefix}uncanny_codes_codes` c WHERE c.code_group = %d AND used_date IS NULL AND user_id IS NULL LIMIT %d", $group, absint( $limit ) ) );
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uncanny Codes' own table; the plugin offers no API for this query.
 		return $wpdb->get_var(
 			$wpdb->prepare( "SELECT count(c.ID) FROM `{$wpdb->prefix}uncanny_codes_codes` c WHERE c.code_group = %d AND used_date IS NULL AND user_id IS NULL", $group )
 		);
@@ -125,6 +127,7 @@ class UC_DELETE_BATCH_CODES extends \Uncanny_Automator\Recipe\Action {
 			return false;
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uncanny Codes' own table; the plugin offers no API for this query.
 		return $wpdb->query(
 			$wpdb->prepare( "DELETE FROM `{$wpdb->prefix}uncanny_codes_codes` WHERE code_group = %d AND used_date IS NULL AND user_id IS NULL LIMIT %d", $group, absint( $limit ) )
 		);

@@ -186,7 +186,7 @@ final class WordPressCanvasPort implements CanvasPortInterface
         if ($pageId instanceof \WP_Error || (int) $pageId <= 0) {
             throw new \RuntimeException(
                 $pageId instanceof \WP_Error
-                    ? $pageId->get_error_message()
+                    ? esc_html($pageId->get_error_message())
                     : 'WordPress did not return a page ID.',
             );
         }
@@ -336,7 +336,7 @@ final class WordPressCanvasPort implements CanvasPortInterface
 
         $canvas = $this->find($canvasId);
         if (!$canvas instanceof Canvas) {
-            throw new CanvasNotFoundException($canvasId);
+            throw new CanvasNotFoundException((int) $canvasId);
         }
 
         $deleted = $forceDelete ? wp_delete_post($canvasId, true) : wp_trash_post($canvasId);
@@ -354,7 +354,7 @@ final class WordPressCanvasPort implements CanvasPortInterface
 
         $canvas = $this->find($canvasId);
         if (!$canvas instanceof Canvas) {
-            throw new CanvasNotFoundException($canvasId);
+            throw new CanvasNotFoundException((int) $canvasId);
         }
 
         // Keep WordPress and third-party lifecycle hooks outside the guarded
@@ -376,12 +376,12 @@ final class WordPressCanvasPort implements CanvasPortInterface
 
         $canvas = $this->find($canvasId);
         if (!$canvas instanceof Canvas || $canvas->kind() !== CanvasKind::Page) {
-            throw new CanvasNotFoundException($canvasId);
+            throw new CanvasNotFoundException((int) $canvasId);
         }
 
         $reusable = $this->globalPartRepository->findById($reusableId);
         if ($reusable === null) {
-            throw new ReusableNotFoundException($reusableId);
+            throw new ReusableNotFoundException((int) $reusableId);
         }
 
         if (GlobalPartType::fromString((string) ($reusable['type'] ?? '')) !== GlobalPartType::Section) {
@@ -460,18 +460,18 @@ final class WordPressCanvasPort implements CanvasPortInterface
     {
         $post = get_post($canvasId);
         if (!is_object($post)) {
-            throw new CanvasNotFoundException($canvasId);
+            throw new CanvasNotFoundException((int) $canvasId);
         }
 
         if ($this->isTrashedPost($post)) {
-            throw new CanvasNotFoundException($canvasId);
+            throw new CanvasNotFoundException((int) $canvasId);
         }
 
         if (
             !$this->supportsPostType->isSupported((string) ($post->post_type ?? ''))
             || !$this->sectionRepository->isOwnedPage($canvasId)
         ) {
-            throw new CanvasNotFoundException($canvasId);
+            throw new CanvasNotFoundException((int) $canvasId);
         }
 
         return $post;
@@ -481,15 +481,15 @@ final class WordPressCanvasPort implements CanvasPortInterface
     {
         $post = get_post($canvasId);
         if (!is_object($post)) {
-            throw new CanvasNotFoundException($canvasId);
+            throw new CanvasNotFoundException((int) $canvasId);
         }
 
         if ($this->isTrashedPost($post)) {
-            throw new CanvasNotFoundException($canvasId);
+            throw new CanvasNotFoundException((int) $canvasId);
         }
 
         if ((string) ($post->post_type ?? '') !== self::GLOBAL_PART_POST_TYPE || !$this->isPublishedPost($post)) {
-            throw new CanvasNotFoundException($canvasId);
+            throw new CanvasNotFoundException((int) $canvasId);
         }
 
         return $post;
@@ -509,12 +509,13 @@ final class WordPressCanvasPort implements CanvasPortInterface
     {
         global $wpdb;
         $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
-        $query = $wpdb->prepare(
-            "SELECT ID FROM {$postsTable} WHERE post_content_filtered = %s AND post_type = %s ORDER BY ID DESC LIMIT 2",
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Live state read; must not be cached.
+        $ids = $wpdb->get_col($wpdb->prepare(
+            'SELECT ID FROM %i WHERE post_content_filtered = %s AND post_type = %s ORDER BY ID DESC LIMIT 2',
+            $postsTable,
             $marker,
             'page',
-        );
-        $ids = $wpdb->get_col($query);
+        ));
         if (!is_array($ids) || count($ids) !== 1) {
             return 0;
         }
@@ -526,6 +527,7 @@ final class WordPressCanvasPort implements CanvasPortInterface
     {
         global $wpdb;
         $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Write; wp_update_post() would run save_post hooks.
         $updated = $wpdb->update(
             $postsTable,
             ['post_content_filtered' => ''],
@@ -547,12 +549,12 @@ final class WordPressCanvasPort implements CanvasPortInterface
 
         if ($forceDelete && is_object($remaining)) {
             throw new WordPressWriteVerificationException(
-                "WordPress returned from deleting the {$label}, but post {$postId} still exists.",
+                sprintf('WordPress returned from deleting the %s, but post %d still exists.', esc_html($label), (int) $postId),
             );
         }
         if (!$forceDelete && (!is_object($remaining) || !$this->isTrashedPost($remaining))) {
             throw new WordPressWriteVerificationException(
-                "WordPress returned from trashing the {$label}, but post {$postId} is not in Trash.",
+                sprintf('WordPress returned from trashing the %s, but post %d is not in Trash.', esc_html($label), (int) $postId),
             );
         }
     }
@@ -577,21 +579,23 @@ final class WordPressCanvasPort implements CanvasPortInterface
                 }
             }
         } catch (\Throwable $cleanupFailure) {
-            throw new CanvasCreationUncertainException(
+            $uncertain = new CanvasCreationUncertainException(
                 $postId,
                 $kind,
                 $failure,
                 $cleanupFailure,
             );
+            throw $uncertain;
         }
 
         if ($deleted === false || $deleted instanceof \WP_Error) {
-            throw new CanvasCreationUncertainException(
+            $uncertain = new CanvasCreationUncertainException(
                 $postId,
                 $kind,
                 $failure,
                 new \RuntimeException('The incomplete WordPress post could not be removed.'),
             );
+            throw $uncertain;
         }
 
         throw $failure;
@@ -601,6 +605,7 @@ final class WordPressCanvasPort implements CanvasPortInterface
     {
         global $wpdb;
         $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write; wp_update_post() would run save_post hooks.
         $updated = $wpdb->update(
             $postsTable,
             ['post_title' => $title],
@@ -650,7 +655,7 @@ final class WordPressCanvasPort implements CanvasPortInterface
         $title = (string) ($post->post_title ?? '');
 
         if ($kind === CanvasKind::Page) {
-            $shellMode = $this->shellModeService->resolveForPage($canvasId)->mode;
+            $shellMode = $this->shellModeService->modeForPage($canvasId);
             $draftDetails = $this->pageDetails->find($canvasId);
             $draftTitle = $draftDetails?->title();
 

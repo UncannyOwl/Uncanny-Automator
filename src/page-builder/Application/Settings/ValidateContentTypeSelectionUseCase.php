@@ -61,7 +61,7 @@ final class ValidateContentTypeSelectionUseCase
 
             if (!$this->displayPolicy->supportsSlug($slug)) {
                 throw new InvalidContentTypeSelectionException(
-                    sprintf('The post type "%s" is not supported by Page Builder.', $slug),
+                    sprintf('The post type "%s" is not supported by Page Builder.', esc_html($slug)),
                 );
             }
 

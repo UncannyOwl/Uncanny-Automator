@@ -8,6 +8,8 @@
 namespace Uncanny_Automator\Settings;
 
 use Exception;
+use Uncanny_Automator\Integration;
+use Uncanny_Automator\Integration_Loader\Load_Error_Handler;
 
 /**
  * Class to create settings pages for App Integrations.
@@ -44,7 +46,7 @@ abstract class App_Integration_Settings {
 
 	/**
 	 * The status of the integration
-	 * This expects a valid <uo-tab> status
+	 * This expects a valid <uas-tab> status
 	 * Check the Design Guidelines to see the list of valid statuses
 	 *
 	 * @var String
@@ -108,10 +110,14 @@ abstract class App_Integration_Settings {
 	/**
 	 * Constructor.
 	 *
+	 * A page that can't be set up, such as one left without an ID or a name, is refused and
+	 * never becomes a tab (see refuse_settings_page()).
+	 *
 	 * @param  object $dependencies Dependencies object
 	 * @param  array $settings     Optional settings array
 	 *
 	 * @return void
+	 * @throws Exception Inside an integration's load(), when the page is refused.
 	 */
 	final public function __construct( $dependencies, $settings = array() ) {
 
@@ -129,11 +135,40 @@ abstract class App_Integration_Settings {
 		// Store settings for later use.
 		$this->settings = $settings;
 
-		// Setup the settings page properties.
-		$this->setup_settings_properties();
+		try {
+			// Setup the settings page properties.
+			$this->setup_settings_properties();
+		} catch ( Exception $e ) {
+			$this->refuse_settings_page( $e );
+			return;
+		}
 
 		// Register the hooks.
 		$this->register_settings_hooks();
+	}
+
+	/**
+	 * Refuse a settings page that could not be set up.
+	 *
+	 * Inside an integration's load(), the refusal goes on to that integration's own guard,
+	 * which records it under the integration and skips the rest of its load(). Anywhere
+	 * else (an Automator hook such as automator_add_integration, a WordPress hook), it is
+	 * recorded for the load-errors admin notice under this page's class, only this page is
+	 * skipped, and the site keeps running.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param Exception $refusal Why the page could not be set up.
+	 *
+	 * @return void
+	 * @throws Exception Inside an integration's load().
+	 */
+	private function refuse_settings_page( Exception $refusal ) {
+		if ( Integration::is_loading() ) {
+			throw $refusal;
+		}
+
+		( new Load_Error_Handler() )->handle( get_class( $this ), $refusal );
 	}
 
 	////////////////////////////////////////////////////////////
@@ -157,8 +192,12 @@ abstract class App_Integration_Settings {
 	/**
 	 * Setup the settings page properties from the config.
 	 *
+	 * A page left without an ID or a name is refused here, before it hooks anything, so it
+	 * never reaches the App integrations screen, where add_tab() would throw while the screen
+	 * builds.
+	 *
 	 * @return void
-	 * @throws \Exception
+	 * @throws \Exception When a property can't be set, or the page has no ID or no name.
 	 */
 	public function setup_settings_properties() {
 		// Set settings if provided.
@@ -180,6 +219,11 @@ abstract class App_Integration_Settings {
 			$this->set_connected_properties();
 		} else {
 			$this->set_disconnected_properties();
+		}
+
+		// Check if the required data is defined
+		if ( empty( $this->get_id() ) || empty( $this->get_name() ) ) {
+			throw new Exception( 'Premium Integration: Define the ID and name of the integration' );
 		}
 	}
 
@@ -306,12 +350,7 @@ abstract class App_Integration_Settings {
 	 */
 	public function add_tab( $tabs ) {
 
-		// Check if the required data is defined
-		if ( empty( $this->get_id() ) || empty( $this->get_name() ) ) {
-			throw new Exception( 'Premium Integration: Define the ID and name of the integration' );
-		}
-
-		// Check if the ID is defined
+		// The ID and the name were checked when the page was set up (setup_settings_properties()).
 		// Create the tab
 		$tabs[ $this->get_id() ] = array(
 			'name'             => $this->get_name(),

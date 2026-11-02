@@ -2,6 +2,9 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	return;
 }
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
+
 ?>
 
 <?php if ( ! empty( $notifications ) ) { ?>
@@ -15,17 +18,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php esc_html_e( 'Notifications', 'uncanny-automator' ); ?>
 		</h3>
 		<ul class="uap-notifications-list">
-			<?php $counter = 0; ?>
-			<?php foreach ( $notifications as $notification ) { ?>
-				<?php $counter++; ?>
+		<?php $counter = 0; ?>
+		<?php foreach ( $notifications as $notification ) { ?>
+			<?php ++$counter; ?>
 				<li data-index="<?php echo esc_attr( $counter ); ?>" class="uap-notifications-list__item <?php echo 1 === $counter ? 'active' : ''; ?>">
 					<div class="uap-notifications__wrap">
 						<div class="uap-notifications-list__item-title">
 							<h3 class="uap-settings-panel-content-subtitle"><?php echo esc_html( $notification['title'] ); ?></h3>
-							<uo-button class="uap-notifications-action-dismiss" data-notification-id="<?php echo esc_attr( absint( $notification['id'] ) ); ?>" size="small" color="danger">
-								<uo-icon id="xmark"></uo-icon>
+							<uas-button class="uap-notifications-action-dismiss" data-notification-id="<?php echo esc_attr( absint( $notification['id'] ) ); ?>" size="sm" color="danger">
+								<uas-icon code="xmark"></uas-icon>
 								<?php esc_html_e( 'Dismiss', 'uncanny-automator' ); ?>
-							</uo-button>
+							</uas-button>
 						</div>
 						<div class="uap-notifications-list__item-content">
 							<?php
@@ -54,9 +57,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 										&& ! empty( $notification['btns']['main']['url'] ) && ! empty( $notification['btns']['main']['text'] ) ) {
 									?>
 
-										<uo-button target="_blank" href="<?php echo esc_url( $this->url_add_utm( $notification['btns']['main']['url'], $notification['title'], $notification['btns']['main']['text'] ) ); ?>">
+										<uas-button target="_blank" href="<?php echo esc_url( $this->url_add_utm( $notification['btns']['main']['url'], $notification['title'], $notification['btns']['main']['text'] ) ); ?>">
 											<?php echo esc_html( $notification['btns']['main']['text'] ); ?>
-										</uo-button>
+										</uas-button>
 
 								<?php } ?>
 
@@ -64,24 +67,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 								if ( isset( $notification['btns']['alt']['url'] ) && isset( $notification['btns']['alt']['text'] )
 										&& ! empty( $notification['btns']['alt']['url'] ) && ! empty( $notification['btns']['alt']['text'] ) ) {
 									?>
-										<uo-button color="secondary" target="_blank" href="<?php echo esc_url( $this->url_add_utm( $notification['btns']['alt']['url'], $notification['title'], $notification['btns']['alt']['text'] ) ); ?>">
+										<uas-button color="secondary" target="_blank" href="<?php echo esc_url( $this->url_add_utm( $notification['btns']['alt']['url'], $notification['title'], $notification['btns']['alt']['text'] ) ); ?>">
 											<?php echo esc_html( $notification['btns']['alt']['text'] ); ?>
-										</uo-button>
+										</uas-button>
 
 								<?php } ?>
 							</div>
 							<?php if ( count( $notifications ) >= 2 ) { ?>
 								<div class="uap-notifications-list__item-actions__controls">
-									<uo-button size="small" color="secondary" class="uap-notifications-controller-prev" href="#">
+									<uas-button size="sm" color="secondary" class="uap-notifications-controller-prev" href="#">
 										&larr;
-									</uo-button>
-									<uo-button size="small" color="secondary" class="uap-notifications-controller-next" href="#">
+									</uas-button>
+									<uas-button size="sm" color="secondary" class="uap-notifications-controller-next" href="#">
 										&rarr;
-									</uo-button>
+									</uas-button>
 								</div>
 							<?php } ?>
 						</div>
-						</uo-alert>
+						</uas-alert>
 					</div>
 				</li>
 			<?php } ?>

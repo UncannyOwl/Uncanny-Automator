@@ -19,6 +19,7 @@ class WP_GENERATE_PASSWORD_RESET_LINK extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: User */
 				esc_html_x( 'Generate a password reset link for {{a user:%1$s}}', 'WordPress', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)
@@ -113,6 +114,7 @@ class WP_GENERATE_PASSWORD_RESET_LINK extends \Uncanny_Automator\Recipe\Action {
 		if ( false === $user ) {
 			$this->add_log_error(
 				sprintf(
+					/* translators: %s: User email, username or ID */
 					esc_html_x( 'No user found matching "%s".', 'WordPress', 'uncanny-automator' ),
 					$input
 				)

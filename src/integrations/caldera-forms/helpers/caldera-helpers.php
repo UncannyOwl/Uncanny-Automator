@@ -89,6 +89,7 @@ class Caldera_Helpers {
 			'options'         => $options,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_list_caldera_forms_forms', $option );
 	}
 }

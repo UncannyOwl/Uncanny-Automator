@@ -120,13 +120,16 @@ class MPC_MARKCOURSEDONE {
 		$user_progress->completed_at = lib\Utils::ts_to_mysql_date( time() );
 		$user_progress->store();
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- MemberPress Courses' own hooks; the prefix is the plugin's SLUG_KEY constant.
 		do_action( base\SLUG_KEY . '_completed_lesson', $user_progress );
 
 		if ( models\UserProgress::has_completed_course( $user_id, $course_id ) ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- MemberPress Courses' own hooks; the prefix is the plugin's SLUG_KEY constant.
 			do_action( base\SLUG_KEY . '_completed_course', $user_progress );
 		}
 
 		if ( models\UserProgress::has_completed_section( $user_id, $section ) ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- MemberPress Courses' own hooks; the prefix is the plugin's SLUG_KEY constant.
 			do_action( base\SLUG_KEY . '_completed_section', $user_progress );
 		}
 	}

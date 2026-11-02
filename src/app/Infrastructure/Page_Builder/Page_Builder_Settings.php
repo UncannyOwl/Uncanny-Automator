@@ -17,39 +17,45 @@ final class Page_Builder_Settings {
 	/**
 	 * Return the default settings.
 	 *
+	 * Off until the site turns it on: the setup wizard does so when the
+	 * customer chooses Uncanny Page Builder, and the settings tab does so on
+	 * save. Sites that upgraded from a release where it was on by default keep
+	 * it on through the seed migration.
+	 *
 	 * @return array{enabled: bool}
 	 */
 	public static function defaults(): array {
 		return array(
-			self::ENABLED_KEY => true,
+			self::ENABLED_KEY => false,
 		);
 	}
 
 	/**
 	 * Check if new Page Builder pages are available.
 	 *
-	 * Missing and invalid values use the enabled default.
+	 * Missing and invalid values use the default.
 	 *
 	 * @param bool $force Get the value from the database.
 	 *
 	 * @return bool
 	 */
 	public function is_enabled( bool $force = false ): bool {
+		$default  = self::defaults()[ self::ENABLED_KEY ];
 		$settings = automator_get_option( self::OPTION_NAME, self::defaults(), $force );
 
 		if ( ! is_array( $settings ) || ! array_key_exists( self::ENABLED_KEY, $settings ) ) {
-			return true;
+			return $default;
 		}
 
 		$value = $settings[ self::ENABLED_KEY ];
 
 		if ( null === $value || ( is_string( $value ) && '' === trim( $value ) ) ) {
-			return true;
+			return $default;
 		}
 
 		$enabled = filter_var( $value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
 
-		return null === $enabled ? true : $enabled;
+		return null === $enabled ? $default : $enabled;
 	}
 
 	/**

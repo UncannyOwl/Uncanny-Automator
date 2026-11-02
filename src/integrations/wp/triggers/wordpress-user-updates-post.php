@@ -29,9 +29,9 @@ class WP_USER_UPDATES_POST extends \Uncanny_Automator\Recipe\Trigger {
 	protected function setup_trigger() {
 		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 		$this->set_is_login_required( true );
-		// translators: %1$s is a post type.
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Post type */
 				esc_html_x( 'A user updates {{a type of post:%1$s}}', 'WordPress', 'uncanny-automator' ),
 				$this->get_trigger_meta()
 			)

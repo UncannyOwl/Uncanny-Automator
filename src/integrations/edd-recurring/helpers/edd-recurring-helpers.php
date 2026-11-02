@@ -155,6 +155,7 @@ class Edd_Recurring_Helpers {
 			'relevant_tokens' => $relevant_tokens,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_edd_downloads', $option );
 	}
 

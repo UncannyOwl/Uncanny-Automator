@@ -186,7 +186,7 @@ class Automator_Registration {
 		//      $integrations = Automator()->get_integrations();
 		// Integration was passed in, lets try to register it
 		if ( null !== $integration_code ) {
-			if ( ! is_string( $integration_code ) || null === $integration || is_array( $integration ) ) {
+			if ( ! is_string( $integration_code ) || ! is_array( $integration ) ) {
 				throw new Automator_Exception( 'You are trying to register a trigger without passing integration code.', 1001 );
 			}
 
@@ -259,17 +259,28 @@ class Automator_Registration {
 	 */
 	public function integration( $integration_code = null, $integration = null ) {
 
-		// Only registers the integration if its not yet registered.
-		if ( ! isset( Automator()->all_integrations[ $integration_code ] ) ) {
-			Automator()->set_all_integrations( $integration_code, $integration );
-		}
-
-		if ( null === $integration_code || ! is_string( $integration_code ) ) {
+		if ( ! is_string( $integration_code ) ) {
 			throw new Automator_Exception( 'You are trying to register an integration without passing an integration code.', 1002 );
 		}
 
-		if ( null === $integration || ! is_array( $integration ) ) {
+		if ( ! is_array( $integration ) ) {
 			throw new Automator_Exception( 'You are trying to register an integration without passing an integration object.', 1002 );
+		}
+
+		// The integration list keeps only integrations with a name (sort_integrations_alphabetically()).
+		if ( ! isset( $integration['name'] ) || ! is_string( $integration['name'] ) || '' === trim( $integration['name'] ) ) {
+			throw new Automator_Exception(
+				sprintf(
+					'You are trying to register an integration (%s) without setting its name.',
+					esc_html( $integration_code )
+				),
+				1002
+			);
+		}
+
+		// Only registers the integration if its not yet registered.
+		if ( ! isset( Automator()->all_integrations[ $integration_code ] ) ) {
+			Automator()->set_all_integrations( $integration_code, $integration );
 		}
 
 		$integration = apply_filters( 'automator_register_integration', $integration, $integration_code );
@@ -292,7 +303,6 @@ class Automator_Registration {
 		Automator()->utilities->sort_integrations_alphabetically();
 
 		return true;
-
 	}
 
 	/**
@@ -375,7 +385,7 @@ class Automator_Registration {
 			if ( ! is_string( $integration_code ) ) {
 				throw new Automator_Exception( 'You are trying to register an action without passing an proper integration code.', 1003 );
 			}
-			if ( null === $integration && is_array( $integration ) ) {
+			if ( ! is_array( $integration ) ) {
 				throw new Automator_Exception( 'You are trying to register an action without passing an proper integration object.', 1003 );
 			}                    // Sanity check that the integration code does not exist already
 			//          if ( ! key_exists( $integration_code, $integrations ) ) {
@@ -418,115 +428,6 @@ class Automator_Registration {
 		}
 
 		Automator()->set_actions( Automator()->utilities->keep_order_of_options( $uap_action ) );
-
-		return true;
-	}
-
-	/**
-	 * Registers a new closure and creates a type if defined and the type does not exist
-	 *
-	 * @param null $closure
-	 * @param null|string $integration_code
-	 * @param null $integration
-	 *
-	 * @return null
-	 * @throws Automator_Exception
-	 */
-	public function closure( $closure = null, $integration_code = null, $integration = null ) {
-
-		// Sanity check that there was a trigger passed
-		if ( null === $closure || ! is_array( $closure ) ) {
-			throw new Automator_Exception( 'You are trying to register a closure without passing a closure object.', 1004 );
-		}
-
-		/**
-		 * Use this hook the stop specific closures from being registered by returning true
-		 */
-		$skip_closure_registration = false;
-		$skip_closure_registration = apply_filters_deprecated(
-			'skip_closure_registration',
-			array( $skip_closure_registration, $closure, $integration_code, $integration ),
-			'3.0',
-			'automator_skip_closure_registration'
-		);
-		$skip_closure_registration = apply_filters( 'automator_skip_closure_registration', $skip_closure_registration, $closure, $integration_code, $integration );
-		if ( true === $skip_closure_registration ) {
-			return null;
-		}
-
-		/**
-		 * Use this hook to modify the uap closures before it it error checked and registered
-		 */
-		$closure = apply_filters_deprecated(
-			'uap_register_closure',
-			array( $closure, $integration_code, $integration ),
-			'3.0',
-			'automator_register_closure'
-		);
-		$closure = apply_filters( 'automator_register_closure', $closure, $integration_code, $integration );
-
-		/**
-		 * Use this hook to modify the integration_code before it is error checked and registered
-		 */
-		$integration_code = apply_filters_deprecated(
-			'uap_register_closure_integration_code',
-			array( $integration_code, $closure, $integration ),
-			'3.0',
-			'automator_register_closure_integration_code'
-		);
-		$integration_code = apply_filters( 'automator_register_closure_integration_code', $integration_code, $closure, $integration );
-
-		/**
-		 * Use this hook to modify the integration_code before it is error checked and registered
-		 */
-		$integration = apply_filters_deprecated(
-			'uap_register_closure_integration',
-			array(
-				$integration,
-				$closure,
-				$integration_code,
-			),
-			'3.0',
-			'automator_register_closure_integration'
-		);
-		$integration = apply_filters( 'automator_register_closure_integration', $integration, $closure, $integration_code );
-		//$integrations = Automator()->get_integrations();
-
-		// Integration was passed in, lets try to register it
-		if ( null !== $integration_code ) {
-			if ( ! is_string( $integration_code ) ) {
-				throw new Automator_Exception( 'You are trying to register a closure without passing an proper integration code.', 1004 );
-			}
-			if ( null === $integration && is_array( $integration ) ) {
-				throw new Automator_Exception( 'You are trying to register a closure without passing an proper integration object.', 1004 );
-			}
-			// Sanity check that the integration code does not exist already
-			//          if ( ! key_exists( $integration_code, $integrations ) ) {
-			//              Automator()->register->integration( $integration_code, $integration );
-			//          }
-		}
-
-		// Sanity check that trigger_integration isset
-		if ( ! isset( $closure['integration'] ) ) {
-			throw new Automator_Exception( 'You are trying to register a closure without setting its closure_integration.', 1004 );
-		}
-
-		// Sanity check that the trigger has a integration that is defined
-		//      if ( ! key_exists( $closure['integration'], $integrations ) ) {
-		//          throw new Automator_Exception( 'You are trying to register a closure to an integration that does not exist.', 1004 );
-		//      }
-
-		// Sanity check that trigger_code isset
-		if ( ! isset( $closure['code'] ) ) {
-			throw new Automator_Exception( 'You are trying to register a closure without setting its closure_code.', 1004 );
-		}
-
-		// Sanity check that trigger_validation_function isset
-		if ( ! isset( $closure['execution_function'] ) ) {
-			throw new Automator_Exception( 'You are trying to register a closure without setting its closure_execution_function.', 1004 );
-		}
-
-		Automator()->set_closures( Automator()->utilities->keep_order_of_options( $closure ) );
 
 		return true;
 	}

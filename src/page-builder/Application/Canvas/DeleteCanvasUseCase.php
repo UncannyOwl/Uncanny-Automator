@@ -16,7 +16,7 @@ final class DeleteCanvasUseCase
     {
         $canvas = $this->canvasPort->find($command->canvasId());
         if (!$canvas instanceof Canvas) {
-            throw new CanvasNotFoundException($command->canvasId());
+            throw new CanvasNotFoundException((int) $command->canvasId());
         }
 
         return match ($canvas->kind()) {

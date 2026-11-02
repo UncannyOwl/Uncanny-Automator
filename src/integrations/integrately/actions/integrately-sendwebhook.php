@@ -36,7 +36,6 @@ class INTEGRATELY_SENDWEBHOOK {
 		/* translators: Action - Integrately */
 		$this->set_readable_sentence( esc_attr_x( 'Send data to Integrately {{webhook}}', 'Integrately', 'uncanny-automator' ) );
 		$this->set_options_group( Automator()->send_webhook->fields->options_group( $this->get_action_meta(), false, 'json' ) );
-		$this->set_buttons( Automator()->send_webhook->fields->buttons( $this->get_action_meta(), $this->get_support_link() ) );
 		$this->set_background_processing( true );
 		$this->register_action();
 	}

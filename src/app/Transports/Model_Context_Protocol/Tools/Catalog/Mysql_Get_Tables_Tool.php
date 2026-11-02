@@ -2,7 +2,7 @@
 /**
  * MySQL Get Tables Tool.
  *
- * Lists all database tables with their row counts.
+ * Lists the database tables this site may read, with approximate row counts.
  *
  * @package Uncanny_Automator
  * @since 7.0.0
@@ -21,6 +21,8 @@ use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abstract_MCP_T
  */
 class Mysql_Get_Tables_Tool extends Abstract_MCP_Tool {
 
+	use Information_Schema_Query;
+
 	/**
 	 * Get tool name.
 	 *
@@ -36,7 +38,7 @@ class Mysql_Get_Tables_Tool extends Abstract_MCP_Tool {
 	 * @return string
 	 */
 	public function get_description() {
-		return 'List all database tables. Use to discover plugin data structures, custom tables, or understand the database schema. Returns table names and row counts. Use search parameter to filter by table name.';
+		return 'List database tables. Use to discover plugin data structures, custom tables, or understand the database schema. Returns table names and approximate_row_count, an InnoDB estimate that can be stale or zero for small tables; use mysql_select_from_table with COUNT(*) for an exact count. On a single site, tables must start with the site prefix or be approved by the owner in Site tools settings. On a WordPress network only the current site\'s tables are listed; shared network tables also require a network administrator. total counts returned tables; has_more indicates additional matches. Narrow search when has_more is true.';
 	}
 
 	/**
@@ -79,15 +81,26 @@ class Mysql_Get_Tables_Tool extends Abstract_MCP_Tool {
 					'items' => array(
 						'type'       => 'object',
 						'properties' => array(
-							'name'       => array( 'type' => 'string' ),
-							'row_count'  => array( 'type' => 'integer' ),
-							'is_wp_core' => array( 'type' => 'boolean' ),
+							'name'                  => array( 'type' => 'string' ),
+							'row_count'             => array(
+								'type'        => 'integer',
+								'description' => 'Deprecated alias of approximate_row_count, kept for existing consumers.',
+							),
+							'approximate_row_count' => array(
+								'type'        => 'integer',
+								'description' => 'Storage-engine estimate from information_schema, not an exact count.',
+							),
+							'is_wp_core'            => array( 'type' => 'boolean' ),
 						),
 					),
 				),
-				'total'    => array( 'type' => 'integer' ),
+				'total'    => array(
+					'type'        => 'integer',
+					'description' => 'Number of tables returned, not the total number of matching tables.',
+				),
+				'has_more' => array( 'type' => 'boolean' ),
 			),
-			'required'   => array( 'database', 'prefix', 'tables', 'total' ),
+			'required'   => array( 'database', 'prefix', 'tables', 'total', 'has_more' ),
 		);
 	}
 
@@ -103,36 +116,56 @@ class Mysql_Get_Tables_Tool extends Abstract_MCP_Tool {
 
 		$search = $params['search'] ?? '';
 		$limit  = max( 1, min( (int) ( $params['limit'] ?? 50 ), 200 ) );
+		$schema = $this->get_schema_name();
 
-		// Get all tables with row counts.
-		$query = "SELECT TABLE_NAME, TABLE_ROWS
-				  FROM information_schema.TABLES
-				  WHERE TABLE_SCHEMA = %s";
-
-		$query_params = array( DB_NAME );
-
-		if ( ! empty( $search ) ) {
-			$query         .= ' AND TABLE_NAME LIKE %s';
-			$query_params[] = '%' . $wpdb->esc_like( sanitize_text_field( $search ) ) . '%';
+		if ( '' === $schema ) {
+			return Json_Rpc_Response::create_error_response( 'The database name is not available, so tables cannot be listed.' );
+		}
+		if ( ! $this->has_expected_selected_database() ) {
+			return Json_Rpc_Response::create_error_response( 'The WordPress database connection is pointing to an unexpected database. Ask your hosting provider to check the connection, then try again.' );
+		}
+		$known_mode   = $this->has_known_table_name_mode();
+		$extra_tables = $this->get_extra_tables();
+		$service      = $this->database_boundary_service( $extra_tables );
+		$can_discover = $service->can_discover();
+		if ( ! $can_discover && empty( $extra_tables ) ) {
+			return Json_Rpc_Response::create_error_response( $service->discovery_failure_message() );
 		}
 
-		$query         .= ' ORDER BY TABLE_NAME ASC LIMIT %d';
-		$query_params[] = $limit;
-
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$tables = $wpdb->get_results( $wpdb->prepare( $query, $query_params ) );
-
+		$site_prefix = $this->get_site_table_prefix();
+		$ignore_case = $known_mode && ! $this->is_network_scoped() && $this->table_names_ignore_case();
+		$tables      = $service->table_page(
+			$can_discover ? $site_prefix : '',
+			$this->get_restricted_network_tables( $user_context ),
+			$this->is_network_scoped() && $site_prefix === $this->get_base_table_prefix(),
+			$ignore_case,
+			empty( $search ) ? '' : sanitize_text_field( $search ),
+			$limit + 1
+		);
 		if ( null === $tables ) {
-			return Json_Rpc_Response::create_error_response( 'Failed to retrieve tables: ' . $wpdb->last_error );
+			return Json_Rpc_Response::create_error_response( 'Query failed: database table metadata is unavailable.' );
 		}
+		$tables = array_values(
+			array_filter(
+				$tables,
+				function ( $table ) use ( $user_context, $service ) {
+					return $this->is_table_available_on_this_site( $table['name'], $user_context )
+						&& $service->permits_type( $table['type'], '0', $service->is_owner_approved_table( $table['name'] ) );
+				}
+			)
+		);
+		// A full page alone is not proof of truncation; only the extra match is.
+		$has_more = count( $tables ) > $limit;
+		$tables   = array_slice( $tables, 0, $limit );
 
 		$items = array_map(
 			function ( $table ) use ( $wpdb ) {
-				$name = $table->TABLE_NAME; // phpcs:ignore
+				$name = $table['name'];
 				return array(
-					'name'       => $name,
-					'row_count'  => (int) $table->TABLE_ROWS, // phpcs:ignore
-					'is_wp_core' => strpos( $name, $wpdb->prefix ) === 0 && in_array(
+					'name'                  => $name,
+					'approximate_row_count' => $table['rows'],
+					'row_count'             => $table['rows'], // Deprecated alias kept for existing consumers.
+					'is_wp_core'            => strpos( $name, $wpdb->prefix ) === 0 && in_array(
 						str_replace( $wpdb->prefix, '', $name ),
 						array( 'posts', 'postmeta', 'options', 'users', 'usermeta', 'terms', 'termmeta', 'term_taxonomy', 'term_relationships', 'comments', 'commentmeta', 'links' ),
 						true
@@ -143,12 +176,13 @@ class Mysql_Get_Tables_Tool extends Abstract_MCP_Tool {
 		);
 
 		return Json_Rpc_Response::create_success_response(
-			sprintf( 'Found %d tables', count( $items ) ),
+			$can_discover ? sprintf( 'Found %d tables', count( $items ) ) : 'Only owner-approved tables and views are listed. ' . $service->schema_visibility_message(),
 			array(
-				'database' => DB_NAME,
+				'database' => $schema,
 				'prefix'   => $wpdb->prefix,
 				'tables'   => $items,
 				'total'    => count( $items ),
+				'has_more' => $has_more,
 			)
 		);
 	}

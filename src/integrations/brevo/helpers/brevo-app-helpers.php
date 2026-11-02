@@ -263,7 +263,7 @@ class Brevo_App_Helpers extends App_Helpers {
 	 */
 	public function get_authorized_ips_link() {
 		return sprintf(
-			'<a href="%1$s" target="_blank">%2$s <uo-icon id="external-link"></uo-icon></a>',
+			'<a href="%1$s" target="_blank">%2$s <uas-icon code="arrow-up-right-from-square"></uas-icon></a>',
 			esc_url( self::BREVO_IP_SECURITY_LINK ),
 			esc_html_x( 'Security → Authorized IPs', 'Brevo', 'uncanny-automator' )
 		);

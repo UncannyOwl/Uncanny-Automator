@@ -34,8 +34,8 @@ class EDD_PRODUCTPURCHASE extends Trigger {
 		$this->set_trigger_code( self::TRIGGER_CODE );
 		$this->set_trigger_meta( self::TRIGGER_META );
 		$this->add_action( 'edd_complete_purchase', 10, 3 );
-		// translators: %1$s: Download
 		$this->set_sentence(
+			/* translators: %1$s: Download */
 			sprintf( esc_html_x( 'A user purchases {{a download:%1$s}}', 'Easy Digital Downloads', 'uncanny-automator' ), $this->get_trigger_meta() )
 		);
 		$this->set_readable_sentence( esc_html_x( 'A user purchases {{a download}}', 'Easy Digital Downloads', 'uncanny-automator' ) );

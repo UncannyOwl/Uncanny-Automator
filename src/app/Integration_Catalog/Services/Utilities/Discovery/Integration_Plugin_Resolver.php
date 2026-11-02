@@ -129,27 +129,4 @@ class Integration_Plugin_Resolver {
 	public function get_plugin_description( array $plugin_data ): string {
 		return ! empty( $plugin_data ) ? ( $plugin_data['Description'] ?? '' ) : '';
 	}
-
-	/**
-	 * Process required plugins from plugin data.
-	 *
-	 * @param array $plugin_data Plugin data
-	 *
-	 * @return array Required plugins (empty if not available)
-	 */
-	public function get_required_plugins( array $plugin_data ): array {
-		if ( empty( $plugin_data ) ) {
-			return array();
-		}
-
-		$required_plugins_string = $this->plugin_service->process_required_plugins( $plugin_data['RequiresPlugins'] ?? '' );
-
-		// process_required_plugins returns ?string, convert to array.
-		if ( empty( $required_plugins_string ) ) {
-			return array();
-		}
-
-		// Convert comma-separated string to array.
-		return array_map( 'trim', explode( ',', $required_plugins_string ) );
-	}
 }

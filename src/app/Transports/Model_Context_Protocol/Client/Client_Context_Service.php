@@ -102,15 +102,6 @@ class Client_Context_Service {
 	}
 
 	/**
-	 * Whether WordPress is currently serving an admin request.
-	 *
-	 * @return bool
-	 */
-	public function is_admin_area(): bool {
-		return is_admin();
-	}
-
-	/**
 	 * Check an arbitrary capability for the current user.
 	 *
 	 * @param string $capability Capability to check.
@@ -126,13 +117,5 @@ class Client_Context_Service {
 	 */
 	public function get_current_user_plan(): string {
 		return ( new Plan_Service() )->get_current_plan_id();
-	}
-	/**
-	 * Get current user plan name.
-	 *
-	 * @return string
-	 */
-	public function get_current_user_plan_name(): string {
-		return ucwords( str_replace( '-', ' ', ( new Plan_Service() )->get_current_plan_id() ) );
 	}
 }

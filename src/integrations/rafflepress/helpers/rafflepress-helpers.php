@@ -21,6 +21,7 @@ class Rafflepress_Helpers {
 			'text'  => esc_attr_x( 'Any giveaway', 'RafflePress', 'uncanny-automator' ),
 			'value' => - 1,
 		);
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- RafflePress's own table; the plugin offers no API for this query.
 		$giveaways = $wpdb->get_results( "SELECT id,name FROM {$wpdb->prefix}rafflepress_giveaways WHERE deleted_at is null ORDER BY name ASC", ARRAY_A );
 		foreach ( $giveaways as $giveaway ) {
 			$options[] = array(
@@ -115,12 +116,15 @@ class Rafflepress_Helpers {
 		$defaults = wp_list_pluck( $this->rafflepress_common_tokens_for_giveaway(), 'tokenId' );
 		$tokens   = array_fill_keys( $defaults, '' );
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- RafflePress's own table; the plugin offers no API for this query.
 		$giveaway = $wpdb->get_row( $wpdb->prepare( "SELECT name,starts,ends,active FROM {$wpdb->prefix}rafflepress_giveaways WHERE id=%d ORDER BY name ASC", $giveaway_id ), ARRAY_A );
 		if ( ! $giveaway ) {
 			return $tokens;
 		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- RafflePress's own table; the plugin offers no API for this query.
 		$giveaway_total_entries = $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}rafflepress_entries WHERE giveaway_id = %d", $giveaway_id ) );
-		$giveaway_total_users   = $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}rafflepress_contestants WHERE giveaway_id = %d", $giveaway_id ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- RafflePress's own table; the plugin offers no API for this query.
+		$giveaway_total_users = $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}rafflepress_contestants WHERE giveaway_id = %d", $giveaway_id ) );
 
 		$tokens['GIVEAWAY_TITLE']      = $giveaway['name'];
 		$tokens['GIVEAWAY_START_DATE'] = wp_date( get_option( 'date_format' ), strtotime( $giveaway['starts'] ) );
@@ -144,6 +148,7 @@ class Rafflepress_Helpers {
 		$defaults = wp_list_pluck( $this->rafflepress_common_tokens_for_contestant(), 'tokenId' );
 		$tokens   = array_fill_keys( $defaults, '' );
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- RafflePress's own table; the plugin offers no API for this query.
 		$contestant = $wpdb->get_row( $wpdb->prepare( "SELECT fname,lname,email,status FROM {$wpdb->prefix}rafflepress_contestants WHERE id=%d", $contestant_id ), ARRAY_A );
 		if ( ! $contestant ) {
 			return $tokens;

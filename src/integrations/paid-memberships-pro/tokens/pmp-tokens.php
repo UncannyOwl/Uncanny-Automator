@@ -60,6 +60,7 @@ class Pmp_Tokens {
 		$initial_amount  = $membership_level_details->initial_payment;
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Paid Memberships Pro's own table; the plugin offers no API for this query.
 		$code = $wpdb->get_var( $wpdb->prepare( "SELECT `code` FROM $wpdb->pmpro_discount_codes WHERE id = %d", $code_id ) );
 
 		$tokens = array(

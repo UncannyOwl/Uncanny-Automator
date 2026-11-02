@@ -142,6 +142,7 @@ final class CanvasRefreshRenderer implements CanvasRefreshRendererInterface
     {
         foreach ($snapshot as $key => $state) {
             if ($state['present']) {
+                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Restores WordPress's own query globals from a snapshot taken earlier in this call.
                 $GLOBALS[$key] = $state['value'];
             } else {
                 unset($GLOBALS[$key]);

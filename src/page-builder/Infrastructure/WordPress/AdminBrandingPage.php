@@ -206,6 +206,7 @@ final class AdminBrandingPage
 
     private function saveFontsFromPost(): void
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- fontLibraryViewData() verifies the nonce and capability first; each entry is sanitized field by field below.
         $rawGf = wp_unslash($_POST['upb_gf'] ?? []);
         $googleFonts = [];
         if (is_array($rawGf)) {
@@ -221,6 +222,7 @@ final class AdminBrandingPage
             }
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- fontLibraryViewData() verifies the nonce and capability first; each entry is sanitized field by field below.
         $rawCf = wp_unslash($_POST['upb_cf'] ?? []);
         $customFonts = [];
         if (is_array($rawCf)) {
@@ -397,10 +399,12 @@ final class AdminBrandingPage
 
     private function buildTypographyProfileFromPost(TypographyProfile $current): TypographyProfile
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- typographySettingsViewData() verifies the nonce and capability before this runs.
         if (!isset($_POST['ds_typography'])) {
             return $current;
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- typographySettingsViewData() verifies the nonce and capability first; the values are sanitized or validated below.
         $raw = wp_unslash($_POST['ds_typography'] ?? []);
         if (!is_array($raw)) {
             return $current;
@@ -421,10 +425,12 @@ final class AdminBrandingPage
 
     private function buildTokenProfileFromPost(BootstrapTokenProfile $current): BootstrapTokenProfile
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- typographySettingsViewData() verifies the nonce and capability before this runs.
         if (!isset($_POST['ds_tokens'])) {
             return $current;
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- typographySettingsViewData() verifies the nonce and capability first; the values are sanitized or validated below.
         $raw = wp_unslash($_POST['ds_tokens'] ?? []);
         if (!is_array($raw)) {
             return $current;
@@ -469,10 +475,12 @@ final class AdminBrandingPage
      */
     private function buildLockedKeysFromPost(array $currentLockedKeys): array
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- typographySettingsViewData() verifies the nonce and capability before this runs.
         if (!isset($_POST['ds_locked'])) {
             return $currentLockedKeys;
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- typographySettingsViewData() verifies the nonce and capability first; the values are sanitized or validated below.
         $rawLocked = wp_unslash($_POST['ds_locked'] ?? []);
         if (!is_array($rawLocked)) {
             return $currentLockedKeys;

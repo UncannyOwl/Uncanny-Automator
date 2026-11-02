@@ -29,14 +29,14 @@ class Plan_Implementation implements Plan {
 	const NAMES = array(
 		Plan_Levels::LITE      => 'Lite',
 		Plan_Levels::PRO_BASIC => 'Pro',
-		Plan_Levels::PRO_PLUS  => 'Pro Plus',
+		Plan_Levels::PRO_PLUS  => 'Plus',
 		Plan_Levels::PRO_ELITE => 'Elite',
 	);
 
 	const DESCRIPTIONS = array(
-		Plan_Levels::LITE      => 'Free plan with limited features.',
+		Plan_Levels::LITE      => 'Free plan.',
 		Plan_Levels::PRO_BASIC => 'Pro plan with access to premium features.',
-		Plan_Levels::PRO_PLUS  => 'Pro Plus plan with advanced features.',
+		Plan_Levels::PRO_PLUS  => 'Plus plan with advanced features.',
 		Plan_Levels::PRO_ELITE => 'Elite plan with all features and premium support.',
 	);
 

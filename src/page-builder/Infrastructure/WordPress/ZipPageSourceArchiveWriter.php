@@ -164,7 +164,8 @@ final class ZipPageSourceArchiveWriter implements PageSourceArchiveWriterInterfa
             // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Standalone archive tests run without WordPress functions.
             return json_encode($value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
         } catch (\JsonException $e) {
-            throw new \RuntimeException($errorMessage, 0, $e);
+            $encodeFailure = new \RuntimeException(esc_html($errorMessage), 0, $e);
+            throw $encodeFailure;
         }
     }
 

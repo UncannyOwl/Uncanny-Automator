@@ -13,22 +13,7 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Services;
 
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Utilities\Recipe_Formatter;
-use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils;
-use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Factory\Automator_Factory;
-use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Queries\Recipe_Logs_Queries;
-use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Queries\Trigger_Logs_Queries;
-use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Queries\Action_Logs_Queries;
-use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Queries\Loop_Logs_Queries;
-use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Recipe_Logs_Resources;
-use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Trigger_Logs_Resources;
-use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Loop_Logs_Resources;
-use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Action_Logs_Resources;
-use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Action_Logs_Helpers\Conditions_Helper;
-use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Factory\Logs_Factory;
-use Uncanny_Automator\Rest\Endpoint\Log_Endpoint;
-use Uncanny_Automator\Resolver\Fields_Conditions_Resolver;
-use Uncanny_Automator\Automator_Functions;
-use Uncanny_Automator\Automator_Status;
+use Uncanny_Automator\Automator_DB;
 use WP_Error;
 
 /**
@@ -111,102 +96,6 @@ class Recipe_Log_Service {
 			'conditions' => $where_conditions,
 			'values'     => $where_values,
 		);
-	}
-
-	/**
-	 * Initialize sophisticated logging infrastructure.
-	 *
-	 * Sets up the complex logging system with queries, resources, and factories.
-	 *
-	 * @return Log_Endpoint Configured log endpoint instance.
-	 */
-	public function initialize_logging_infrastructure(): Log_Endpoint {
-		global $wpdb;
-
-		// Use the same sophisticated logging system from rest-routes.php
-		$utils = new Formatters_Utils();
-
-		$automator_factory = new Automator_Factory(
-			Automator_Functions::get_instance(),
-			new Automator_Status()
-		);
-
-		// Initialize the sophisticated query classes
-		$recipe_logs_queries  = new Recipe_Logs_Queries( $wpdb );
-		$trigger_logs_queries = new Trigger_Logs_Queries( $wpdb );
-		$action_logs_queries  = new Action_Logs_Queries( $wpdb );
-		$loop_logs_queries    = new Loop_Logs_Queries( $wpdb );
-
-		// Initialize the sophisticated resource classes
-		$recipe_logs_resources  = new Recipe_Logs_Resources( $recipe_logs_queries, $utils, $automator_factory );
-		$trigger_logs_resources = new Trigger_Logs_Resources( $trigger_logs_queries, $utils, $automator_factory );
-		$loops_logs_resources   = new Loop_Logs_Resources( $loop_logs_queries, $utils, $automator_factory );
-		$action_logs_resources  = new Action_Logs_Resources( $action_logs_queries, $utils, $automator_factory, $loops_logs_resources );
-
-		// Set up field conditions resolver
-		$fcr = new Fields_Conditions_Resolver();
-		$action_logs_resources->set_field_conditions_resolver( $fcr );
-
-		// Set up conditions helper
-		$conditions = new Conditions_Helper();
-		$action_logs_resources->set_conditions( $conditions );
-
-		// Initialize logs factory
-		$logs_factory = new Logs_Factory(
-			$recipe_logs_resources,
-			$trigger_logs_resources,
-			$action_logs_resources,
-			$loops_logs_resources
-		);
-
-		// Initialize the main log endpoint
-		$log_endpoint = new Log_Endpoint( $automator_factory, $logs_factory );
-		$log_endpoint->set_utils( $utils );
-
-		return $log_endpoint;
-	}
-
-	/**
-	 * Create REST request for log retrieval.
-	 *
-	 * @param int  $recipe_id        Recipe ID.
-	 * @param int  $run_number       Run number.
-	 * @param int  $recipe_log_id    Recipe log ID.
-	 * @param bool $enable_profiling Enable profiling flag.
-	 * @return \WP_REST_Request Configured REST request.
-	 */
-	public function create_log_request( int $recipe_id, int $run_number, int $recipe_log_id, bool $enable_profiling ): \WP_REST_Request {
-		$mock_request = new \WP_REST_Request( 'GET' );
-		$mock_request->set_param( 'recipe_id', $recipe_id );
-		$mock_request->set_param( 'run_number', $run_number );
-		$mock_request->set_param( 'recipe_log_id', $recipe_log_id );
-		$mock_request->set_param( 'enable_profiling', $enable_profiling ? 1 : 0 );
-		return $mock_request;
-	}
-
-	/**
-	 * Build detailed log response.
-	 *
-	 * Unwraps the legacy endpoint's `{success, data}` envelope and returns the
-	 * log fields directly. The outer response envelope is the caller's concern.
-	 *
-	 * Also strips admin URLs that embed WordPress nonces — a machine API has no
-	 * use for session-bound URLs, and emitting them needlessly widens surface area.
-	 *
-	 * @param array $detailed_log Log data from endpoint.
-	 * @return array|\WP_Error Flat log data or error.
-	 */
-	public function build_detailed_log_response( array $detailed_log ) {
-
-		if ( empty( $detailed_log['success'] ) ) {
-			return $this->formatter->error_response( 'recipe_log_not_found', $detailed_log['error']['message'] ?? 'Log not found' );
-		}
-
-		$data = $detailed_log['data'] ?? array();
-
-		unset( $data['log_delete_url'], $data['recipe_edit_url'] );
-
-		return $data;
 	}
 
 	/**
@@ -326,39 +215,6 @@ class Recipe_Log_Service {
 
 
 	/**
-	 * Get detailed recipe log entry using sophisticated logging system.
-	 *
-	 * This method replicates the sophisticated log endpoint functionality
-	 * from rest-routes.php for retrieving detailed individual log entries.
-	 *
-	 * @param int  $recipe_id        Recipe ID.
-	 * @param int  $run_number       Run number.
-	 * @param int  $recipe_log_id    Recipe log ID.
-	 * @param bool $enable_profiling Enable performance profiling.
-	 * @return array|\WP_Error Detailed log data or error.
-	 */
-	public function get_log( int $recipe_id, int $run_number, int $recipe_log_id, bool $enable_profiling = false ) {
-
-		try {
-			// Initialize sophisticated logging infrastructure
-			$log_endpoint = $this->initialize_logging_infrastructure();
-
-			// Create REST request
-			$mock_request = $this->create_log_request( $recipe_id, $run_number, $recipe_log_id, $enable_profiling );
-
-			// Get the detailed log using the sophisticated system
-			$detailed_log = $log_endpoint->get_log( $mock_request );
-
-			// Build and return response
-			return $this->build_detailed_log_response( $detailed_log );
-
-		} catch ( \Exception $e ) {
-			return $this->formatter->error_response( 'recipe_get_log_failed', 'Failed to retrieve detailed log: ' . $e->getMessage() );
-		}
-	}
-
-
-	/**
 	 * Query recipe logs with filtering using the sophisticated view.
 	 *
 	 * @param array $filters Filters to apply.
@@ -375,8 +231,8 @@ class Recipe_Log_Service {
 
 		$where_clause = implode( ' AND ', $where_conditions );
 
-		// Use the sophisticated view with rich data (user_email, display_name, recipe_title)
-		$query          = "SELECT * FROM {$wpdb->prefix}uap_recipe_logs_view WHERE {$where_clause} ORDER BY recipe_date_time DESC LIMIT %d OFFSET %d";
+		$source         = $this->recipe_log_source();
+		$query          = "SELECT * FROM {$source} WHERE {$where_clause} ORDER BY recipe_date_time DESC LIMIT %d OFFSET %d";
 		$where_values[] = (int) $filters['limit'];
 		$where_values[] = (int) $filters['offset'];
 
@@ -384,7 +240,12 @@ class Recipe_Log_Service {
 			$query = $wpdb->prepare( $query, $where_values ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
-		return $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table or view; live state read, must not be cached. $source is a trusted view name or derived table and $where_clause holds literal conditions with placeholders; every value is bound by prepare() above.
+		$logs = $wpdb->get_results( $query, ARRAY_A );
+		if ( '' !== $wpdb->last_error ) {
+			throw new \RuntimeException( 'Recipe log storage could not be read.' );
+		}
+		return $logs;
 	}
 
 
@@ -405,13 +266,36 @@ class Recipe_Log_Service {
 
 		$where_clause = implode( ' AND ', $where_conditions );
 
-		$count_query = "SELECT COUNT(*) FROM {$wpdb->prefix}uap_recipe_logs_view WHERE {$where_clause}";
+		$source      = $this->recipe_log_source();
+		$count_query = "SELECT COUNT(*) FROM {$source} WHERE {$where_clause}";
 
 		if ( ! empty( $where_values ) ) {
 			$count_query = $wpdb->prepare( $count_query, $where_values ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
-		return (int) $wpdb->get_var( $count_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table or view; live state read, must not be cached. $source is a trusted view name or derived table and $where_clause holds literal conditions with placeholders; every value is bound by prepare() above.
+		$count = $wpdb->get_var( $count_query );
+		if ( '' !== $wpdb->last_error ) {
+			throw new \RuntimeException( 'Recipe log storage could not be counted.' );
+		}
+		return (int) $count;
+	}
+
+	/**
+	 * Use the same log projection when a host cannot create database views.
+	 *
+	 * @return string Trusted table or derived-table expression.
+	 */
+	private function recipe_log_source(): string {
+		global $wpdb;
+
+		if ( Automator_DB::is_view_exists( 'recipe' ) ) {
+			return $wpdb->prefix . 'uap_recipe_logs_view';
+		}
+
+		// A missing optional view is not an empty history. The shared projection
+		// keeps aliases and filters identical to the admin log fallback.
+		return '(' . Automator_DB::recipe_log_view_query() . ') AS recipe_logs';
 	}
 
 
@@ -430,7 +314,8 @@ class Recipe_Log_Service {
 			$log_id
 		);
 
-		$meta_results = $wpdb->get_results( $meta_query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Custom table; live state read, must not be cached. $meta_query is already prepared above.
+		$meta_results = $wpdb->get_results( $meta_query, ARRAY_A );
 		$metadata     = array();
 
 		foreach ( $meta_results as $meta ) {

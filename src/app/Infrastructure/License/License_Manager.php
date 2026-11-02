@@ -4,9 +4,12 @@ declare( strict_types=1 );
 namespace Uncanny_Automator\App\Infrastructure\License;
 
 use Uncanny_Automator\App\Application\Mcp\Mcp_License_Provider_Interface;
-use Uncanny_Automator\App\Infrastructure\Api_Client\Api_Request;
-use Uncanny_Automator\App\Infrastructure\Api_Client\Api_Client_Interface;
+use Uncanny_Automator\App\Events\Dispatcher;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Request;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Client_Interface;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Platform_Error_Exception;
 use Uncanny_Automator\App\Infrastructure\Exceptions\Api_Exception;
+use Uncanny_Automator\App\Transient\Domain\License_Transient_Keys;
 
 /**
  * Class License_Manager
@@ -35,6 +38,9 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 	 */
 	const TRANSIENT_LICENSE_FAILED = 'automator_license_check_failed';
 
+	/** Consecutive temporary failures, retained across retry windows. */
+	const TRANSIENT_LICENSE_FAILURE_STREAK = License_Transient_Keys::LICENSE_FAILURE_STREAK;
+
 	/**
 	 * Cache duration in seconds (12 hours).
 	 *
@@ -43,17 +49,18 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 	const CACHE_DURATION = HOUR_IN_SECONDS * 12;
 
 	/**
-	 * Failed license check cache duration (1 hour — shorter to auto-recover).
+	 * Permanent failure cache and maximum temporary backoff (1 hour).
 	 *
 	 * @var int
 	 */
 	const FAILED_CACHE_DURATION = HOUR_IN_SECONDS;
 
 	/**
-	 * Lazy-loaded API client for license data fetches.
-	 * Set via set_api_client() after construction to break circular dependency.
+	 * API client for license data fetches, when one was set explicitly.
+	 * Set via set_api_client() after construction to break circular dependency;
+	 * without it a fetch uses the shared platform client (platform_client()).
 	 *
-	 * @var Api_Client_Interface|null
+	 * @var Client_Interface|null
 	 */
 	private $api_client = null;
 
@@ -67,23 +74,26 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 	/**
 	 * Set the API client (called after both License_Manager and Api_Client are constructed).
 	 *
-	 * @param Api_Client_Interface $api_client The API client instance.
+	 * @param Client_Interface $api_client The API client instance.
 	 *
 	 * @return void
 	 */
-	public function set_api_client( Api_Client_Interface $api_client ): void {
+	public function set_api_client( Client_Interface $api_client ): void {
 		$this->api_client = $api_client;
 	}
 
 	/**
 	 * Get the license type based on wp_options.
 	 *
-	 * Checks Pro first (requires AUTOMATOR_PRO_FILE constant), then Free.
+	 * Checks Pro first (the Pro plugin loaded AND its license activated), then
+	 * Free. The one rule for which license this site speaks with: the platform
+	 * registration and every request's license headers read it (handoff R3) —
+	 * a Pro key that is present but not activated is never sent.
 	 *
 	 * @return string 'pro', 'free', or empty string.
 	 */
 	public function get_type(): string {
-		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === automator_get_option( 'uap_automator_pro_license_status' ) ) {
+		if ( $this->is_pro_loaded() && 'valid' === automator_get_option( 'uap_automator_pro_license_status' ) ) {
 			return 'pro';
 		}
 
@@ -92,6 +102,18 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 		}
 
 		return '';
+	}
+
+	/**
+	 * Whether the Pro plugin's code is loaded — its license counts only then.
+	 * A stale Pro key left by a removed Pro install must not outrank the free
+	 * license. Filterable (`automator_platform_pro_is_present`) because the
+	 * constant cannot be toggled per test.
+	 *
+	 * @return bool
+	 */
+	private function is_pro_loaded(): bool {
+		return (bool) Dispatcher::filter( 'automator_platform_pro_is_present', defined( 'AUTOMATOR_PRO_FILE' ) );
 	}
 
 	/**
@@ -319,6 +341,16 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 	/**
 	 * Get license data, using transient cache with optional force refresh.
 	 *
+	 * A cached license is served whatever the failure marker says: the marker
+	 * holds back the next fetch, not a read. A forced refresh replaces the
+	 * cached license only when it succeeds and drops it only on a verdict on
+	 * the license (see is_verdict()). On a temporary failure the last good
+	 * license stays, and is what the forced refresh answers. A forced refresh
+	 * does not fetch through a temporary backoff either: it answers the kept
+	 * license, so a caller that forces whenever a field is missing (get_plan())
+	 * cannot defeat the backoff. After a verdict it does fetch, so a site can
+	 * recover once the cause is fixed.
+	 *
 	 * @param bool $force_refresh Whether to bypass cache and fetch fresh data.
 	 *
 	 * @return array|null License data array, or null if unavailable.
@@ -329,34 +361,18 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 			return $this->license_cache;
 		}
 
-		// Check failure transient to avoid hammering a failing API.
-		$has_failed = false !== get_transient( self::TRANSIENT_LICENSE_FAILED );
+		if ( ! $force_refresh ) {
+			$cached = $this->read_cached_license();
 
-		if ( true === $has_failed && ! $force_refresh ) {
-			return null;
-		}
-
-		// Check transient cache.
-		$cached = get_transient( self::TRANSIENT_LICENSE );
-
-		if ( false !== $cached && ! $force_refresh ) {
-			// The 'automator_api_license' transient is shared with the legacy
-			// class-api-server.php, which stores the raw API 'data' value and
-			// returns it untyped. A non-array there (e.g. an error-shaped body)
-			// would break this method's ?array contract and fatal downstream, so
-			// enforce the shape: serve only arrays. Otherwise drop the poisoned
-			// value and fall through to a fresh fetch so the cache self-heals.
-			if ( is_array( $cached ) ) {
+			if ( null !== $cached ) {
 				$this->license_cache = $cached;
 				return $cached;
 			}
 
-			delete_transient( self::TRANSIENT_LICENSE );
-		}
-
-		// Need API client for fresh fetch.
-		if ( null === $this->api_client ) {
-			return null;
+			// Check failure transient to avoid hammering a failing API.
+			if ( false !== get_transient( self::TRANSIENT_LICENSE_FAILED ) ) {
+				return null;
+			}
 		}
 
 		$key = $this->get_key();
@@ -365,29 +381,206 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 			return null;
 		}
 
-		if ( $force_refresh ) {
-			delete_transient( self::TRANSIENT_LICENSE );
-			delete_transient( self::TRANSIENT_LICENSE_FAILED );
+		if ( $force_refresh && $this->is_backing_off() ) {
+			return $this->last_good_license();
 		}
 
+		$client = $this->platform_client();
+
 		try {
-			$request = new Api_Request(
+			$request = new Request(
 				'v2/credits',
 				array( 'action' => 'get_credits' )
 			);
 
-			$response = $this->api_client->send( $request );
+			$response = $client->send( $request );
 			$license  = $response->data();
+
+			// An answer with no license document is no license: never cache it.
+			if ( array() === $license ) {
+				throw new Api_Exception( esc_html__( 'Invalid license response.', 'uncanny-automator' ) );
+			}
 
 			$this->license_cache = $license;
 			set_transient( self::TRANSIENT_LICENSE, $license, self::CACHE_DURATION );
 			delete_transient( self::TRANSIENT_LICENSE_FAILED );
+			delete_transient( self::TRANSIENT_LICENSE_FAILURE_STREAK );
 
 			return $license;
 		} catch ( \Exception $e ) {
-			set_transient( self::TRANSIENT_LICENSE_FAILED, $e->getMessage(), self::FAILED_CACHE_DURATION );
+			return $this->record_failure( $e );
+		}
+	}
+
+	/**
+	 * The license in the shared transient, when it is one.
+	 *
+	 * The 'automator_api_license' transient is shared with the legacy
+	 * class-api-server.php, which stores the raw API 'data' value and returns
+	 * it untyped. A non-array there (e.g. an error-shaped body) would break
+	 * get_license_data()'s ?array contract and fatal downstream, so only an
+	 * array is served. Anything else is dropped and the next read fetches, so
+	 * the cache self-heals.
+	 *
+	 * @return array|null
+	 */
+	private function read_cached_license(): ?array {
+		$cached = get_transient( self::TRANSIENT_LICENSE );
+
+		if ( false === $cached ) {
 			return null;
 		}
+
+		if ( is_array( $cached ) ) {
+			return $cached;
+		}
+
+		delete_transient( self::TRANSIENT_LICENSE );
+
+		return null;
+	}
+
+	/**
+	 * What a failed fetch costs.
+	 *
+	 * A verdict on the license drops the cached license and holds the next
+	 * fetch back for an hour. Any other failure is temporary: the next fetch
+	 * waits one minute, doubling per consecutive failure up to an hour, or the
+	 * platform's Retry-After if that is longer, and the last good license
+	 * stays.
+	 *
+	 * @param \Exception $e The failure the API client threw.
+	 *
+	 * @return array|null The last good license on a temporary failure, null on a verdict.
+	 */
+	private function record_failure( \Exception $e ): ?array {
+		if ( $this->is_verdict( $e ) ) {
+			delete_transient( self::TRANSIENT_LICENSE );
+			delete_transient( self::TRANSIENT_LICENSE_FAILURE_STREAK );
+			$this->license_cache = null;
+			set_transient( self::TRANSIENT_LICENSE_FAILED, $e->getMessage(), self::FAILED_CACHE_DURATION );
+
+			return null;
+		}
+
+		$attempt = min( 7, max( 0, (int) get_transient( self::TRANSIENT_LICENSE_FAILURE_STREAK ) ) + 1 );
+		$delay   = min( self::FAILED_CACHE_DURATION, max( MINUTE_IN_SECONDS * ( 2 ** ( $attempt - 1 ) ), $this->retry_after( $e ) ) );
+
+		set_transient( self::TRANSIENT_LICENSE_FAILURE_STREAK, $attempt, self::CACHE_DURATION );
+		set_transient( self::TRANSIENT_LICENSE_FAILED, $e->getMessage(), $delay );
+
+		return $this->last_good_license();
+	}
+
+	/**
+	 * Whether a temporary backoff is running: the failure marker is set and so
+	 * is the failure streak. A temporary failure writes both; a verdict clears
+	 * the streak and writes the marker (the latch); a success clears both.
+	 * So the marker alone is a latch, and a forced refresh goes through it.
+	 *
+	 * @return bool
+	 */
+	private function is_backing_off(): bool {
+		return false !== get_transient( self::TRANSIENT_LICENSE_FAILED ) && false !== get_transient( self::TRANSIENT_LICENSE_FAILURE_STREAK );
+	}
+
+	/**
+	 * The last license this site fetched and has not been told to drop.
+	 *
+	 * @return array|null
+	 */
+	private function last_good_license(): ?array {
+		return $this->license_cache ?? $this->read_cached_license();
+	}
+
+	/**
+	 * The client for a fresh fetch: the one wired by set_api_client(), else the
+	 * shared platform client, which wires itself back to the shared manager.
+	 *
+	 * @return Client_Interface
+	 */
+	private function platform_client(): Client_Interface {
+		return $this->api_client ?? \Uncanny_Automator\App\Infrastructure\automator_platform_client();
+	}
+
+	/**
+	 * Whether a failed license fetch is a verdict on the license: it latches
+	 * for an hour. Every other failure is temporary and backs off.
+	 *
+	 * A verdict is a 401, 402 or 403: the platform's answer about this license
+	 * or site (an unknown or mismatched key, the credit check). Everything
+	 * else is "not now": a transport failure (0), a 429, any 5xx,
+	 * and any other 4xx, a 404 from a misrouted deploy included. The platform
+	 * answers every /v2 failure that is a 5xx (a bug, a database blip, the
+	 * queue-deadline refusal) as 424, whatever its error type (SERVER_ERROR,
+	 * FAILED_DEPENDENCY): a collapsed 5xx (platform
+	 * app/Support/Http/WireStatus.php, §9.3; V2BaseController and
+	 * PlatformExceptionRenderer both go through it).
+	 *
+	 * One 401 is not a verdict: the /v2 throttle. LicenseAuthBase::applyRateLimit
+	 * answers it with 401 "Rate limit exceeded" (V2LicenseAuth::THROTTLE_STATUS,
+	 * byte-frozen for old plugins) and always sets Retry-After; a verdict 401
+	 * goes through unauthenticated(), which sets none. A 401 that carries
+	 * Retry-After is a throttle. It may carry 0: availableIn() is
+	 * max(0, timer - now), so a real throttle says 0 in the last part of each
+	 * window. The header's presence tells, not its value. (Platform_Failure
+	 * decides on status and type only and maps every UNAUTHENTICATED to
+	 * `license`; the header is read here, where the latch is decided.)
+	 *
+	 * @param \Exception $e The failure the API client threw.
+	 *
+	 * @return bool
+	 */
+	private function is_verdict( \Exception $e ): bool {
+		$status = (int) $e->getCode();
+
+		if ( 401 === $status ) {
+			return ! $this->carries_retry_after( $e );
+		}
+
+		return 402 === $status || 403 === $status;
+	}
+
+	/**
+	 * Whether the platform's answer carries a Retry-After header, whatever its value.
+	 *
+	 * @param \Exception $e The failure the API client threw.
+	 *
+	 * @return bool
+	 */
+	private function carries_retry_after( \Exception $e ): bool {
+		return $e instanceof Platform_Error_Exception && '' !== $e->response()->header( 'retry-after' );
+	}
+
+	/**
+	 * The seconds the platform asked this site to wait, 0 when it asked for nothing.
+	 *
+	 * @param \Exception $e The failure the API client threw.
+	 *
+	 * @return int
+	 */
+	private function retry_after( \Exception $e ): int {
+		return $e instanceof Platform_Error_Exception ? $e->response()->retry_after() : 0;
+	}
+
+	/**
+	 * The license refreshed from the platform, unless a recent failure is
+	 * still backing off; then the license the site already holds.
+	 *
+	 * @return array|null License data array, or null if unavailable.
+	 */
+	public function get_fresh_license_data(): ?array {
+		return $this->get_license_data( false === get_transient( self::TRANSIENT_LICENSE_FAILED ) );
+	}
+
+	/**
+	 * Whether the platform could not answer the last license fetch (no
+	 * response, 429 or 5xx) and has not answered one since.
+	 *
+	 * @return bool
+	 */
+	public function is_platform_unreachable(): bool {
+		return false !== get_transient( self::TRANSIENT_LICENSE_FAILURE_STREAK );
 	}
 
 	/**

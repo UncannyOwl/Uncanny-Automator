@@ -17,7 +17,6 @@
         "All Subscriptions": "Alle Abonnements",
         "All Topics": "Alle Themen",
         "All Users": "Alle Benutzer",
-        "All integrations": "Alle Integrationen",
         "All recipes": "Alle Rezepte",
         "App integrations": "App-Integrationen",
         "Assignments": "Aufgaben",
@@ -76,26 +75,6 @@
         "Automator.Addons.5": {
             "Starter": "Addon-Einrichtung planen",
             "Prompt": "Hilf mir, die Installation und Konfiguration eines Addons zu planen. Frag, welchen Workflow ich automatisieren möchte, und schlag dann die nächsten Schritte vor."
-        },
-        "Automator.All integrations.1": {
-            "Starter": "Integrationen empfehlen",
-            "Prompt": "Sieh dir meine installierten Plugins und verbundenen App-Integrationen an und schlag dann Automator-Integrationen vor, die für meine Website besonders relevant sind."
-        },
-        "Automator.All integrations.2": {
-            "Starter": "Automatisierungs­möglichkeiten finden",
-            "Prompt": "Schlag nützliche Automatisierungs­ideen vor, basierend auf meinen installierten Plugins und verbundenen App-Integrationen."
-        },
-        "Automator.All integrations.3": {
-            "Starter": "Eine Integration erklären",
-            "Prompt": "Frag mich, an welcher Integration ich interessiert bin, und erklär mir dann, welche Arten von Rezepten sie ermöglicht."
-        },
-        "Automator.All integrations.4": {
-            "Starter": "Fehlende Integrationen finden",
-            "Prompt": "Vergleiche meine installierten Plugins und verbundenen Apps mit den verfügbaren Automator-Integrationen und identifiziere alles, was ich möglicherweise installieren, verbinden oder upgraden muss."
-        },
-        "Automator.All integrations.5": {
-            "Starter": "Mit einer Integration aufbauen",
-            "Prompt": "Hilf mir, eine Automator-Integration auszuwählen und sie in eine nützliche Rezeptidee für meine Website umzusetzen."
         },
         "Automator.All recipes.1": {
             "Starter": "Aktivste Rezepte anzeigen",

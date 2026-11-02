@@ -18,19 +18,43 @@ class Mcp_Version_Manager {
 	 * @since 7.0.0
 	 * @var array
 	 */
-	private const SUPPORTED_VERSIONS = array(
-		'2025-11-25',
-		'2025-06-18',
-		'2025-03-26',
-	);
+	private const SUPPORTED_VERSIONS = array( '2026-07-28', '2025-11-25', '2025-06-18', '2025-03-26' );
 
 	/**
-	 * Default version for backwards compatibility when header is missing.
+	 * Stateless per-request protocol revisions.
+	 *
+	 * @var array
+	 */
+	private const MODERN_VERSIONS = array( '2026-07-28' );
+
+	/**
+	 * Initialize-handshake protocol revisions (newest first).
+	 *
+	 * The three revisions share one tools-only wire shape over Streamable HTTP,
+	 * so a client on any of them is answered with the revision it asked for.
+	 * 2024-11-05 (HTTP+SSE with a GET stream) is not offered.
+	 *
+	 * @var array
+	 */
+	private const INITIALIZE_VERSIONS = array( '2025-11-25', '2025-06-18', '2025-03-26' );
+
+	/**
+	 * Revision assumed when an operational request carries no version header.
+	 *
+	 * The MCP-Protocol-Version header was introduced in 2025-06-18; the
+	 * specification tells servers to assume 2025-03-26 when it is absent.
+	 *
+	 * @var string
+	 */
+	private const LEGACY_DEFAULT_VERSION = '2025-03-26';
+
+	/**
+	 * Default revision for modern internal callers.
 	 *
 	 * @since 7.0.0
 	 * @var string
 	 */
-	private const DEFAULT_VERSION = '2025-03-26';
+	private const DEFAULT_VERSION = '2026-07-28';
 
 	/**
 	 * Get the latest supported protocol version.
@@ -52,6 +76,33 @@ class Mcp_Version_Manager {
 	 */
 	public static function get_supported_versions(): array {
 		return self::SUPPORTED_VERSIONS;
+	}
+
+	/**
+	 * Get revisions advertised by the stateless discovery method.
+	 *
+	 * @return array
+	 */
+	public static function get_modern_versions(): array {
+		return self::MODERN_VERSIONS;
+	}
+
+	/**
+	 * Get revisions available through the initialize handshake.
+	 *
+	 * @return array
+	 */
+	public static function get_initialize_versions(): array {
+		return self::INITIALIZE_VERSIONS;
+	}
+
+	/**
+	 * Revision assumed for a headerless operational request.
+	 *
+	 * @return string
+	 */
+	public static function get_legacy_default_version(): string {
+		return self::LEGACY_DEFAULT_VERSION;
 	}
 
 	/**
@@ -78,34 +129,30 @@ class Mcp_Version_Manager {
 	}
 
 	/**
-	 * Check if a client version is compatible with server.
-	 *
-	 * Currently requires exact match, but could implement
-	 * semantic versioning compatibility in the future.
-	 *
-	 * @since 7.0.0
-	 *
-	 * @param string $client_version Client's requested version.
-	 * @return bool True if compatible, false otherwise.
+	 * Check whether a revision uses stateless per-request metadata.
 	 */
-	public static function is_compatible( string $client_version ): bool {
-		return self::is_supported( $client_version );
+	public static function is_modern( string $version ): bool {
+		return in_array( $version, self::MODERN_VERSIONS, true );
 	}
 
 	/**
-	 * Negotiate the best version between client and server.
-	 *
-	 * Returns the client's version if supported, otherwise null.
-	 *
-	 * @since 7.0.0
-	 *
-	 * @param string $client_version Client's requested version.
-	 * @return string|null Negotiated version or null if incompatible.
+	 * Check whether a revision uses the initialize handshake.
 	 */
-	public static function negotiate( string $client_version ): ?string {
-		if ( self::is_supported( $client_version ) ) {
+	public static function is_initialize_version( string $version ): bool {
+		return in_array( $version, self::INITIALIZE_VERSIONS, true );
+	}
+
+	/**
+	 * Negotiate an initialize-era request.
+	 *
+	 * The lifecycle contract requires the server to return its newest supported
+	 * initialize revision when the requested revision is unavailable.
+	 */
+	public static function negotiate_initialize( string $client_version ): string {
+		if ( self::is_initialize_version( $client_version ) ) {
 			return $client_version;
 		}
-		return null;
+
+		return self::INITIALIZE_VERSIONS[0];
 	}
 }

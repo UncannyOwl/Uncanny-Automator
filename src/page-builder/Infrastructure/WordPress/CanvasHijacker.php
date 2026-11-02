@@ -72,7 +72,7 @@ final class CanvasHijacker
         } catch (\Throwable $failure) {
             // template_include is WordPress-owned routing. A Page Builder
             // failure must leave the resolved template unchanged.
-            error_log('[Uncanny Page Builder] Canvas template routing failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Canvas template routing failed (' . $failure::class . ')');
 
             return $template;
         }
@@ -118,6 +118,7 @@ final class CanvasHijacker
         if (is_user_logged_in()) {
             nocache_headers();
             if (!defined('DONOTCACHEPAGE')) {
+                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Cache plugins' shared constant.
                 define('DONOTCACHEPAGE', true);
             }
         }

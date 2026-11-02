@@ -234,6 +234,37 @@ abstract class Abstract_Resolver {
 	}
 
 	/**
+	 * Tier requirement type for a license dependency id.
+	 *
+	 * @var string
+	 */
+	protected const LICENSE_TYPE_TIER = 'tier';
+
+	/**
+	 * App credits type for a license dependency id.
+	 *
+	 * @var string
+	 */
+	protected const LICENSE_TYPE_CREDITS = 'credits';
+
+	/**
+	 * Build the id of a license dependency.
+	 *
+	 * Two resolvers have to agree on this string: License_Resolver mints the
+	 * dependency, and Account_Resolver names it as the one blocking a connection.
+	 * A drift between them would leave the account row pointing at a dependency
+	 * that does not exist, and nothing would report it.
+	 *
+	 * @param string $type License dependency type, tier or credits.
+	 * @param string $code Integration code.
+	 *
+	 * @return string
+	 */
+	protected function license_dependency_id( string $type, string $code ): string {
+		return sprintf( 'license-%s-%s', $type, $code );
+	}
+
+	/**
 	 * Create a Dependency from configuration array.
 	 *
 	 * Centralizes Dependency_Config and Dependency instantiation.

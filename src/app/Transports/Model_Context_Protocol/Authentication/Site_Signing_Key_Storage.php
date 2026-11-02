@@ -379,13 +379,13 @@ class Site_Signing_Key_Storage {
 	private function replace_option( string $option_name, array $current_record, array $new_record, bool $autoload ): bool {
 		global $wpdb;
 
-		$table          = $wpdb->prefix . 'uap_options';
 		$serialized_old = maybe_serialize( $current_record );
 		$serialized_new = maybe_serialize( $new_record );
 		$autoload_value = $autoload ? 'yes' : 'no';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; compare-and-swap write, must not be cached.
 		$updated        = $wpdb->query(
 			$wpdb->prepare(
-				"UPDATE {$table} SET option_value = %s, autoload = %s WHERE option_name = %s AND BINARY option_value = BINARY %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is derived from wpdb.
+				"UPDATE `{$wpdb->prefix}uap_options` SET option_value = %s, autoload = %s WHERE option_name = %s AND BINARY option_value = BINARY %s",
 				$serialized_new,
 				$autoload_value,
 				$option_name,

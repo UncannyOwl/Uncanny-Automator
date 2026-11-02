@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects;
 
@@ -36,13 +35,27 @@ class Recipe_Status {
 			throw new \InvalidArgumentException(
 				sprintf(
 					'Recipe status must be one of: %s. Given: %s',
-					implode( ', ', self::$allowed_values ),
-					$value
+					esc_html( implode( ', ', self::$allowed_values ) ),
+					esc_html( $value )
 				)
 			);
 		}
 		$this->value = $value;
 	}
+
+	/**
+	 * Whether a value is one of the recipe statuses: draft, publish or trash.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $value Status value to validate.
+	 *
+	 * @return bool
+	 */
+	public static function is_valid( string $value ): bool {
+		return in_array( $value, self::$allowed_values, true );
+	}
+
 	/**
 	 * Get value.
 	 *
@@ -52,11 +65,43 @@ class Recipe_Status {
 		return $this->value;
 	}
 
+	/**
+	 * Whether the recipe is in the trash.
+	 *
+	 * @return bool
+	 */
 	public function is_trashed(): bool {
 		return self::TRASH === $this->value;
 	}
 
+	/**
+	 * Whether the recipe may still be edited.
+	 *
+	 * A trashed recipe is read-only until restored.
+	 *
+	 * @return bool
+	 */
 	public function is_writable(): bool {
 		return ! $this->is_trashed();
+	}
+
+	/**
+	 * Whether the given status means the recipe is "on" — i.e. published and
+	 * live. Single semantic home for the `'publish' === $status` check so
+	 * consumers (wire serializer, status dispatch) don't hard-code it.
+	 * Mirrors Action_Status::is_item_on for the recipe-level toggle.
+	 */
+	public static function is_recipe_on( string $status ): bool {
+		return self::PUBLISH === $status;
+	}
+
+	/**
+	 * Map a WordPress post status to the FE wire's settable publish state.
+	 * The wire enum has only `publish` / `draft`; any non-published status
+	 * (draft, trash, auto-draft, pending) reports `draft`. `running` is never
+	 * a member — running is a runtime fact carried by `can_edit`.
+	 */
+	public static function to_wire_status( string $status ): string {
+		return self::PUBLISH === $status ? self::PUBLISH : self::DRAFT;
 	}
 }

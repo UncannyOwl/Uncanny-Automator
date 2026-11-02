@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects;
 
@@ -64,7 +63,7 @@ class Trigger_Status_Value {
 	private function validate( string $value ): void {
 		if ( ! Trigger_Status::is_valid( $value ) ) {
 			throw new \InvalidArgumentException(
-				'Trigger status must be "' . Trigger_Status::DRAFT . '" or "' . Trigger_Status::PUBLISH . '", got: ' . $value
+				'Trigger status must be "' . esc_html( Trigger_Status::DRAFT ) . '" or "' . esc_html( Trigger_Status::PUBLISH ) . '", got: ' . esc_html( $value )
 			);
 		}
 	}

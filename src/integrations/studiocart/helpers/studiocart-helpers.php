@@ -85,6 +85,7 @@ class Studiocart_Helpers {
 		);
 
 		if ( ! Automator()->helpers->recipe->load_helpers ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 			return apply_filters( 'uap_option_all_studiocart_products', $option );
 		}
 
@@ -109,6 +110,7 @@ class Studiocart_Helpers {
 
 		$option['options'] = $options;
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_studiocart_products', $option );
 	}
 }

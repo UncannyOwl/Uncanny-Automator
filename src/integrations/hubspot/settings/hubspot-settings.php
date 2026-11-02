@@ -102,14 +102,15 @@ class HubSpot_Settings extends App_Integration_Settings {
 	}
 
 	/**
-	 * Before disconnect - notify API proxy to delete vault.
+	 * Once the platform confirmed the disconnect (handoff R8): notify the API
+	 * proxy to delete the vault. Errors are ignored, so it is safe to run twice.
 	 *
 	 * @param array $response
 	 * @param array $data
 	 *
 	 * @return array
 	 */
-	protected function before_disconnect( $response = array(), $data = array() ) {
+	protected function after_platform_disconnect( $response = array(), $data = array() ) {
 
 		try {
 			// Request API proxy to remove vault credentials.

@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Api;
 
 use UncannyPageBuilder\Infrastructure\Section\LucideIconFinder;
+use UncannyPageBuilder\Application\Agent\SharedRestOperationRegistryInterface;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 
 final class AgentIconController
 {
     public function __construct(
         private readonly PermissionChecker $permissions,
         private readonly LucideIconFinder $finder,
+        private readonly ?SharedRestOperationRegistryInterface $sharedRest = null,
     ) {}
 
     public function registerRoutes(): void
@@ -30,6 +33,17 @@ final class AgentIconController
                 ],
             ],
         ]);
+        try {
+            $this->sharedRest?->remember(
+                '/uncanny-page-builder/v1/agent/lucide-icons',
+                'GET',
+                [$this, 'findLucideIcons'],
+                [$this->permissions, 'canEdit'],
+                'find_lucide_icons'
+            );
+        } catch (\Throwable $failure) {
+            DiagnosticLog::write(sprintf('[Uncanny Page Builder] Shared REST icons registration failed (%s).', $failure::class));
+        }
     }
 
     public function findLucideIcons(\WP_REST_Request $request): \WP_REST_Response
@@ -37,7 +51,7 @@ final class AgentIconController
         try {
             return $this->findLucideIconsText($request);
         } catch (\Throwable $failure) {
-            error_log(sprintf('[Uncanny Page Builder] find_lucide_icons failed (%s).', $failure::class));
+            DiagnosticLog::write(sprintf('[Uncanny Page Builder] find_lucide_icons failed (%s).', $failure::class));
 
             return $this->textError(500, 'icon_search_failed', [
                 'NEXT STEP',

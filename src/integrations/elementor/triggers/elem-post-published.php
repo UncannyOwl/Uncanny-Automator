@@ -47,9 +47,11 @@ class ELEM_POST_PUBLISHED {
 					return;
 				}
 				global $wpdb;
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API finds posts by a raw meta value across post types.
 				$results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value = %s", 'code', $this->trigger_code ) );
 				if ( ! empty( $results ) ) {
 					foreach ( $results as $post_id ) {
+						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API rewrites a meta key or value across posts.
 						$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %s WHERE post_id = %d AND meta_key LIKE %s", 'wp_after_insert_post', $post_id, 'add_action' ) );
 					}
 				}

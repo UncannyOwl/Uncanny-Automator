@@ -106,6 +106,7 @@ final class LazyPublishedSourceSnapshotMigrator implements PublishedSourceSnapsh
                     $linkedArtifact = $lockedArtifact->withSourceSnapshotId($stored->id());
 
                     global $wpdb;
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
                     $artifactUpdated = $wpdb->update(
                         SchemaManager::pageArtifactsTableName(),
                         [
@@ -116,6 +117,7 @@ final class LazyPublishedSourceSnapshotMigrator implements PublishedSourceSnapsh
                         ['%d', '%s'],
                         ['%d', '%d'],
                     );
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
                     $stateUpdated = $wpdb->update(
                         SchemaManager::pageStateTableName(),
                         [

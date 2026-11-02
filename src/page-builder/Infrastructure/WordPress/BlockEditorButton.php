@@ -126,7 +126,7 @@ final class BlockEditorButton
         } catch (\Throwable $failure) {
             // Render nothing further; a failed button must not fail the
             // complete WordPress edit screen.
-            error_log('[Uncanny Page Builder] Classic editor button render failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Classic editor button render failed (' . $failure::class . ')');
         }
     }
 
@@ -143,14 +143,15 @@ final class BlockEditorButton
             return $location;
         }
 
-        $requested = $_POST[self::CLASSIC_OPEN_FIELD] ?? null;
-        if (!is_scalar($requested) || wp_unslash((string) $requested) !== '1') {
+        $requested = isset($_POST[self::CLASSIC_OPEN_FIELD]) && is_scalar($_POST[self::CLASSIC_OPEN_FIELD])
+            ? sanitize_text_field(wp_unslash((string) $_POST[self::CLASSIC_OPEN_FIELD]))
+            : '';
+        if ($requested !== '1') {
             return $location;
         }
 
-        $postedNonce = $_POST[self::CLASSIC_NONCE_FIELD] ?? null;
-        $nonce = is_scalar($postedNonce)
-            ? wp_unslash((string) $postedNonce)
+        $nonce = isset($_POST[self::CLASSIC_NONCE_FIELD]) && is_scalar($_POST[self::CLASSIC_NONCE_FIELD])
+            ? sanitize_text_field(wp_unslash((string) $_POST[self::CLASSIC_NONCE_FIELD]))
             : '';
 
         if ($nonce === '' || wp_verify_nonce($nonce, self::ACTION) === false) {
@@ -253,11 +254,12 @@ final class BlockEditorButton
     private function notifyObservers(string $hook, mixed ...$args): void
     {
         try {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Callers pass this plugin's own uncanny_page_builder_* hook names.
             do_action($hook, ...$args);
         } catch (\Throwable $error) {
             // Adoption already succeeded or failed before this notification.
             // An observer cannot change that result or replace its response.
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Observer %s failed (%s).',
                 $hook,
                 $error::class,

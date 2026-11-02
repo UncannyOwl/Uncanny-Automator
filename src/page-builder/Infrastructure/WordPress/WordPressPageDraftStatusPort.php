@@ -14,8 +14,10 @@ final class WordPressPageDraftStatusPort implements PageDraftStatusPortInterface
         global $wpdb;
 
         $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Live state read; must not be cached.
         $status = $wpdb->get_var($wpdb->prepare(
-            "SELECT post_status FROM {$postsTable} WHERE ID = %d LIMIT 1",
+            "SELECT post_status FROM %i WHERE ID = %d LIMIT 1",
+            $postsTable,
             $pageId,
         ));
         if (!is_string($status) || $status === '') {
@@ -40,6 +42,7 @@ final class WordPressPageDraftStatusPort implements PageDraftStatusPortInterface
         global $wpdb;
 
         $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Write; wp_update_post() would run save_post hooks.
         $updated = $wpdb->update(
             $postsTable,
             ['post_status' => $status],

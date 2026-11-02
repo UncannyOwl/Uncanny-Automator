@@ -132,6 +132,7 @@ class MASTERSTUDY_QUIZFAILED {
 
 					$source    = ( ! empty( automator_filter_input( 'source', INPUT_POST ) ) ) ? intval( automator_filter_input( 'source', INPUT_POST ) ) : '';
 					$course_id = ( ! empty( automator_filter_input( 'course_id', INPUT_POST ) ) ) ? intval( automator_filter_input( 'course_id', INPUT_POST ) ) : '';
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- MasterStudy LMS's own hook.
 					$course_id = apply_filters( 'user_answers__course_id', $course_id, $source );
 
 					Automator()->insert_trigger_meta(

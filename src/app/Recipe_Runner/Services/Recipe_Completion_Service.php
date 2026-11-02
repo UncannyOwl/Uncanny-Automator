@@ -7,8 +7,6 @@ use Uncanny_Automator\App\Infrastructure\Database\Database;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Execution_Log_Store;
 use Uncanny_Automator\Services\Recipe\Process\Universal_Run_Number_Threshold;
 use Uncanny_Automator\Services\Recipe\Process\User_Run_Number_Threshold;
-use Uncanny_Automator\Services\Recipe\Builder\Settings\Fields\Field_Manager;
-use Uncanny_Automator\Services\Recipe\Builder\Settings\Repository\Settings_Repository;
 
 /**
  * Recipe completion checks for the recipe runner.
@@ -22,11 +20,6 @@ use Uncanny_Automator\Services\Recipe\Builder\Settings\Repository\Settings_Repos
 class Recipe_Completion_Service {
 
 	/**
-	 * @var Field_Manager|null Cached instance — stateless, safe to reuse.
-	 */
-	private $field_manager;
-
-	/**
 	 * @var Execution_Log_Store
 	 */
 	private $log_store;
@@ -36,14 +29,6 @@ class Recipe_Completion_Service {
 	 */
 	public function __construct( ?Execution_Log_Store $log_store = null ) {
 		$this->log_store = $log_store ?? Database::get_execution_log_store();
-	}
-
-	/**
-	 * @return Field_Manager
-	 */
-	private function field_manager(): Field_Manager {
-		$this->field_manager = $this->field_manager ?? new Field_Manager( new Settings_Repository() );
-		return $this->field_manager;
 	}
 
 	/**
@@ -189,7 +174,7 @@ class Recipe_Completion_Service {
 	 */
 	protected function global_threshold_reached( int $recipe_id, int $completed_times ): bool {
 
-		$threshold = new Universal_Run_Number_Threshold( $this->field_manager() );
+		$threshold = new Universal_Run_Number_Threshold();
 
 		$threshold->set_recipe_id( $recipe_id );
 		$threshold->set_completed_times( $completed_times );
@@ -207,7 +192,7 @@ class Recipe_Completion_Service {
 	 */
 	protected function user_threshold_reached( int $recipe_id, int $completed_times ): bool {
 
-		$threshold = new User_Run_Number_Threshold( $this->field_manager() );
+		$threshold = new User_Run_Number_Threshold();
 
 		$threshold->set_recipe_id( $recipe_id );
 		$threshold->set_completed_times( $completed_times );

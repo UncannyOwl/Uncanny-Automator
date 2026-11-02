@@ -40,6 +40,62 @@ class Plugin_Service {
 	}
 
 	/**
+	 * Pro's plugin file, relative to the plugins directory.
+	 *
+	 * @return string The file, or an empty string when Pro is not loaded.
+	 */
+	public function get_pro_plugin_file(): string {
+		return (string) Info::get_pro_plugin_file();
+	}
+
+	/**
+	 * Resolve an addon's plugin file, relative to the plugins directory.
+	 *
+	 * @param array $addon Addon `key` and `name`, as carried by the addons feed.
+	 * @return string Relative plugin file, or an empty string when it cannot be resolved.
+	 */
+	public function get_addon_plugin_file( array $addon ): string {
+		$plugin_file = Info::get_addon_plugin_file( $addon );
+
+		return is_string( $plugin_file ) ? $plugin_file : '';
+	}
+
+	/**
+	 * Check if a plugin file is present on disk.
+	 *
+	 * Callers must reject an empty plugin file first: the underlying check
+	 * resolves `''` to the plugins directory itself and answers true.
+	 *
+	 * @param string $plugin_file Plugin file relative to the plugins directory.
+	 * @return bool
+	 */
+	public function is_plugin_installed( string $plugin_file ): bool {
+		return (bool) Info::is_plugin_installed( $plugin_file );
+	}
+
+	/**
+	 * Check if a plugin file is active, network activation included.
+	 *
+	 * @param string $plugin_file Plugin file relative to the plugins directory.
+	 * @return bool
+	 */
+	public function is_plugin_active( string $plugin_file ): bool {
+		return (bool) Info::is_plugin_active( $plugin_file );
+	}
+
+	/**
+	 * Read the version an addon plugin publishes through its own constant.
+	 *
+	 * @param string $constant_key Addon constant prefix, e.g. `UAEI`.
+	 * @return string Version, or an empty string when the constant is absent.
+	 */
+	public function get_addon_plugin_version( string $constant_key ): string {
+		$constant = $constant_key . '_PLUGIN_VERSION';
+
+		return defined( $constant ) ? (string) constant( $constant ) : '';
+	}
+
+	/**
 	 * Discover integration plugin file by integration code or name.
 	 *
 	 * Searches installed plugins to find a match, prioritizing integration plugins.
@@ -102,27 +158,5 @@ class Plugin_Service {
 	 */
 	public function get_plugin_search_url( string $name ): string {
 		return Info::get_plugin_search_url( $name );
-	}
-
-	/**
-	 * Process RequiresPlugins field and strip uncanny-automator.
-	 *
-	 * @param string $requires_plugins Comma-separated list of required plugins
-	 * @return string|null Filtered list or null if empty
-	 */
-	public function process_required_plugins( string $requires_plugins ): ?string {
-		if ( empty( $requires_plugins ) ) {
-			return null;
-		}
-
-		$plugins = array_map( 'trim', explode( ',', $requires_plugins ) );
-		$plugins = array_filter(
-			$plugins,
-			function ( $plugin ) {
-				return false === strpos( $plugin, 'uncanny-automator' );
-			}
-		);
-
-		return ! empty( $plugins ) ? implode( ', ', $plugins ) : null;
 	}
 }

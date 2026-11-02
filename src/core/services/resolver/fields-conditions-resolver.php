@@ -98,7 +98,6 @@ class Fields_Conditions_Resolver {
 			$integration_code,
 			$condition_code
 		);
-
 	}
 
 	/**
@@ -113,6 +112,7 @@ class Fields_Conditions_Resolver {
 		$condition_summary = array();
 
 		// @todo Move to a query class.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$conditions_results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT meta_value FROM {$wpdb->prefix}uap_recipe_log_meta
@@ -136,7 +136,6 @@ class Fields_Conditions_Resolver {
 		}
 
 		return $condition_summary;
-
 	}
 
 	/**
@@ -270,7 +269,6 @@ class Fields_Conditions_Resolver {
 		}
 
 		return $items;
-
 	}
 
 	/**
@@ -382,7 +380,7 @@ class Fields_Conditions_Resolver {
 			foreach ( $tokens[0] as $token ) {
 				$_tokens_interpolates[ $token ] = '<span class="uap-token">
 						<span class="uap-token__icon">
-							<uo-icon id="bolt"></uo-icon>
+							<uas-icon code="bolt"></uas-icon>
 						</span>
 						<span class="uap-token__name">' . $token . '</span>
 					</span>';

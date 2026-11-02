@@ -139,6 +139,7 @@ final class NativePageSave
     public function postedGeneration(): ?int
     {
         $generation = filter_var(
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Every caller verifies its nonce before reading the posted generation.
             wp_unslash($_POST[PageEditorMetaBoxes::SOURCE_GENERATION_FIELD] ?? null),
             FILTER_VALIDATE_INT,
             ['options' => ['min_range' => 0]],
@@ -149,6 +150,7 @@ final class NativePageSave
 
     public function renderNotice(): void
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
         $postId = absint(sanitize_text_field(wp_unslash($_GET['post'] ?? '0')));
         if ($postId <= 0) {
             return;

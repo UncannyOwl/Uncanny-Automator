@@ -1,8 +1,9 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Trigger;
 
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Custom_Item_Name_Field;
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Item_Field_Filter;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Trigger_Id;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Trigger_Code;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Trigger_User_Type;
@@ -10,7 +11,6 @@ use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Trigger_Hook;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Trigger_Tokens;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Trigger_Configuration;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Trigger_Integration;
-use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Sentence_String;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Trigger_Meta_Code;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Trigger_Deprecated;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Id;
@@ -91,25 +91,25 @@ class Trigger {
 	private Trigger_Integration $integration;
 
 	/**
-	 * The sentence of the trigger.
+	 * The stored sentence template, empty when the trigger stores none.
 	 *
-	 * @var Sentence_String
+	 * @var string
 	 */
-	private Sentence_String $sentence;
+	private string $sentence;
 
 	/**
-	 * The human readable sentence of the trigger.
+	 * The stored human readable sentence, empty when the trigger stores none.
 	 *
-	 * @var Sentence_String
+	 * @var string
 	 */
-	private Sentence_String $sentence_human_readable;
+	private string $sentence_human_readable;
 
 	/**
-	 * The human readable sentence HTML of the trigger.
+	 * The stored human readable sentence HTML.
 	 *
-	 * @var Sentence_String|null
+	 * @var string|null
 	 */
-	private ?Sentence_String $sentence_human_readable_html = null;
+	private ?string $sentence_human_readable_html = null;
 
 	/**
 	 * The deprecated status of the trigger.
@@ -157,17 +157,18 @@ class Trigger {
 		// Store additional metadata as Value Objects (AI drift protection).
 		$this->recipe_id   = new Recipe_Id( $config->get_recipe_id() );
 		$this->integration = new Trigger_Integration( $config->get_integration() );
-		$this->sentence    = new Sentence_String( $config->get_sentence() );
 		$this->deprecated  = new Trigger_Deprecated( $config->get_is_deprecated() );
+		$this->manifest    = $config->get_manifest();
 
-		$this->sentence_human_readable = Sentence_String::for_human_readable( $config->get_sentence_human_readable() );
-		$this->manifest                = $config->get_manifest();
+		// Display snapshots the trigger's definition owns: what is stored reads back, and none of it refuses a trigger.
+		$this->sentence                = trim( (string) $config->get_sentence() );
+		$this->sentence_human_readable = trim( (string) $config->get_sentence_human_readable() );
 
 		// Optional: sentence_human_readable_html (generated dynamically)
 		$html = $config->get_sentence_human_readable_html();
 
 		if ( null !== $html && '' !== $html ) {
-			$this->sentence_human_readable_html = Sentence_String::for_html( $html );
+			$this->sentence_human_readable_html = trim( $html );
 		}
 
 		// Set status - defaults to draft
@@ -244,6 +245,31 @@ class Trigger {
 	}
 
 	/**
+	 * Get the trigger's declarative field map — saved field values keyed
+	 * by their canonical code. Structural meta (sentence snapshots,
+	 * recipe_id) is excluded via {@see Item_Field_Filter}; use
+	 * {@see self::get_sentence_human_readable()} and
+	 * {@see self::get_sentence_human_readable_html()} for those. The custom
+	 * label IS included — it is a declared field — and
+	 * {@see self::get_custom_name()} exposes the same value for the wire's
+	 * top-level `custom_name`.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function get_fields(): array {
+		return Item_Field_Filter::omit_structural_keys( $this->trigger_configuration->get_value() );
+	}
+
+	/**
+	 * Get the user-configured custom name (the global `Custom trigger label`
+	 * field). Returns null when unset.
+	 */
+	public function get_custom_name(): ?string {
+		$value = $this->trigger_configuration->get( Custom_Item_Name_Field::FIELD_CODE );
+		return is_string( $value ) && '' !== $value ? $value : null;
+	}
+
+	/**
 	 * Get recipe ID.
 	 *
 	 * @return Recipe_Id
@@ -262,29 +288,29 @@ class Trigger {
 	}
 
 	/**
-	 * Get trigger sentence.
+	 * Get the stored sentence template.
 	 *
-	 * @return Sentence_String
+	 * @return string The template, empty when the trigger stores none.
 	 */
-	public function get_sentence(): Sentence_String {
+	public function get_sentence(): string {
 		return $this->sentence;
 	}
 
 	/**
-	 * Get trigger human readable sentence.
+	 * Get the stored human readable sentence.
 	 *
-	 * @return Sentence_String
+	 * @return string The sentence, empty when the trigger stores none.
 	 */
-	public function get_sentence_human_readable(): Sentence_String {
+	public function get_sentence_human_readable(): string {
 		return $this->sentence_human_readable;
 	}
 
 	/**
-	 * Get trigger human readable sentence HTML.
+	 * Get the stored human readable sentence HTML.
 	 *
-	 * @return Sentence_String|null
+	 * @return string|null The HTML, null when the trigger stores none.
 	 */
-	public function get_sentence_human_readable_html(): ?Sentence_String {
+	public function get_sentence_human_readable_html(): ?string {
 		return $this->sentence_human_readable_html;
 	}
 
@@ -341,9 +367,9 @@ class Trigger {
 			'configuration'                => $this->trigger_configuration->get_value(),
 			'recipe_id'                    => $this->recipe_id->get_value(),
 			'integration'                  => $this->integration->get_value(),
-			'sentence'                     => $this->sentence->get_value(),
-			'sentence_human_readable'      => $this->sentence_human_readable->get_value(),
-			'sentence_human_readable_html' => null !== $this->sentence_human_readable_html ? $this->sentence_human_readable_html->get_value() : null,
+			'sentence'                     => $this->sentence,
+			'sentence_human_readable'      => $this->sentence_human_readable,
+			'sentence_human_readable_html' => $this->sentence_human_readable_html,
 			'is_deprecated'                => $this->deprecated->get_value(),
 			'status'                       => null !== $this->status ? $this->status->get_value() : null,
 			'manifest'                     => $this->manifest,

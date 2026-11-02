@@ -65,14 +65,4 @@ class Instagram_Integration extends App_Integration {
 	protected function is_app_connected() {
 		return $this->helpers->is_connected();
 	}
-
-	/**
-	 * Register hooks.
-	 *
-	 * @return void
-	 */
-	public function register_hooks() {
-		// Register publishing photo retry hooks.
-		$this->helpers->register_retry_hooks();
-	}
 }

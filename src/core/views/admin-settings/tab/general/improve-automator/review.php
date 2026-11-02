@@ -12,6 +12,10 @@ namespace Uncanny_Automator;
  * @author  Daniela R. & Agustin B.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 
 <div class="uap-settings-panel-content-subtitle">
@@ -32,11 +36,11 @@ namespace Uncanny_Automator;
 
 <div class="uap-settings-panel-content-paragraph">
 
-	<uo-button
-		href="https://wordpress.org/support/plugin/uncanny-automator/reviews/?filter=5#new-post"
+	<uas-button
+		href="https://wordpress.org/support/plugin/uncanny-automator/reviews/#new-post"
 		target="_blank"
 	>
 		<?php esc_html_e( 'Add review', 'uncanny-automator' ); ?>
-	</uo-button>
+	</uas-button>
 
 </div>

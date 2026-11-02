@@ -36,9 +36,8 @@ final class AdminImportNoticeStore
 
     public static function render(string $screen): void
     {
-        $requestedScreen = is_string($_GET[self::QUERY_ARG] ?? null)
-            ? sanitize_key(wp_unslash($_GET[self::QUERY_ARG]))
-            : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        $requestedScreen = is_string($_GET[self::QUERY_ARG] ?? null) ? sanitize_key(wp_unslash($_GET[self::QUERY_ARG])) : '';
         if ($requestedScreen !== $screen) {
             return;
         }

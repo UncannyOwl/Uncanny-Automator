@@ -10,7 +10,7 @@ namespace Uncanny_Automator;
 
 use function tutor;
 
-defined( '\ABSPATH' ) || exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Adds Lesson Completion as Trigger.

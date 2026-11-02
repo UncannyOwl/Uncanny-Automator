@@ -22,6 +22,7 @@ class WP_UPDATE_MENU_ITEM extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Menu, %2$s: Menu item */
 				esc_html_x( 'Update {{an item:%2$s}} in {{a menu:%1$s}}', 'WordPress', 'uncanny-automator' ),
 				$this->get_action_meta(),
 				'WP_MENU_ITEM_ID:' . $this->get_action_meta()

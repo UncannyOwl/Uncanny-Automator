@@ -73,7 +73,7 @@ final class DatabaseGlobalPartRepository implements
                 if (is_wp_error($postId) || (int) $postId <= 0) {
                     throw new \RuntimeException(
                         is_wp_error($postId)
-                            ? $postId->get_error_message()
+                            ? esc_html($postId->get_error_message())
                             : 'WordPress did not return a global part ID.',
                     );
                 }
@@ -108,6 +108,7 @@ final class DatabaseGlobalPartRepository implements
                 $this->commitGlobal($generation, function () use ($globalPartId): void {
                     global $wpdb;
 
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
                     if ($wpdb->delete($this->table(), ['global_part_id' => $globalPartId], ['%d']) === false) {
                         throw new \RuntimeException('Failed to remove sections for the incomplete global part.');
                     }
@@ -213,7 +214,7 @@ final class DatabaseGlobalPartRepository implements
             $detail = is_wp_error($postResult)
                 ? ': ' . $postResult->get_error_message()
                 : '.';
-            throw new \RuntimeException('Failed to persist compiled global-part HTML' . $detail);
+            throw new \RuntimeException('Failed to persist compiled global-part HTML' . esc_html($detail));
         }
     }
 
@@ -225,10 +226,12 @@ final class DatabaseGlobalPartRepository implements
     {
         global $wpdb;
         $postmetaTable = isset($wpdb->postmeta) ? (string) $wpdb->postmeta : (string) $wpdb->prefix . 'postmeta';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Live state read; must not be cached.
         $row = $wpdb->get_row($wpdb->prepare(
-            "SELECT meta_value FROM {$postmetaTable}
+            'SELECT meta_value FROM %i
              WHERE post_id = %d AND meta_key = %s
-             ORDER BY meta_id DESC LIMIT 1",
+             ORDER BY meta_id DESC LIMIT 1',
+            $postmetaTable,
             $globalPartId,
             self::META_COMPILED,
         ));
@@ -281,7 +284,11 @@ final class DatabaseGlobalPartRepository implements
             return $firstPart;
         }
 
-        throw new StaleSourceGenerationException('global', $generation ?? 0, $this->generationStore()->globalGeneration());
+        throw new StaleSourceGenerationException(
+            'global',
+            (int) ($generation ?? 0),
+            (int) $this->generationStore()->globalGeneration(),
+        );
     }
 
     public function findAllByType(GlobalPartType $type): array
@@ -323,7 +330,11 @@ final class DatabaseGlobalPartRepository implements
             return $parts;
         }
 
-        throw new StaleSourceGenerationException('global', $generation ?? 0, $this->generationStore()->globalGeneration());
+        throw new StaleSourceGenerationException(
+            'global',
+            (int) ($generation ?? 0),
+            (int) $this->generationStore()->globalGeneration(),
+        );
     }
 
     public function findById(int $postId): ?array
@@ -353,7 +364,11 @@ final class DatabaseGlobalPartRepository implements
             return $parts[0] ?? null;
         }
 
-        throw new StaleSourceGenerationException('global', $generation ?? 0, $this->generationStore()->globalGeneration());
+        throw new StaleSourceGenerationException(
+            'global',
+            (int) ($generation ?? 0),
+            (int) $this->generationStore()->globalGeneration(),
+        );
     }
 
     /**
@@ -401,11 +416,11 @@ final class DatabaseGlobalPartRepository implements
         global $wpdb;
         $table = $this->table();
 
-        $placeholders = implode(',', array_fill(0, count($postIds), '%d'));
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
         $rows = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM {$table} WHERE global_part_id IN ({$placeholders}) ORDER BY global_part_id, position, id",
-                ...$postIds
+                'SELECT * FROM %i WHERE global_part_id IN (' . implode(',', array_fill(0, count($postIds), '%d')) . ') ORDER BY global_part_id, position, id',
+                ...array_merge([$table], $postIds)
             )
         );
 
@@ -449,8 +464,9 @@ final class DatabaseGlobalPartRepository implements
                 array_unshift($formats, '%d');
             }
 
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table write.
             if ($wpdb->insert($table, $data, $formats) === false) {
-                throw new \RuntimeException("Failed to insert global part section '{$section->name()}'.");
+                throw new \RuntimeException(sprintf("Failed to insert global part section '%s'.", esc_html($section->name())));
             }
 
             if ($section->id() === null) {
@@ -485,6 +501,7 @@ final class DatabaseGlobalPartRepository implements
             $sourceSectionId,
             $sectionId,
         ));
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $updated = $wpdb->update(
             $table,
             [
@@ -497,7 +514,7 @@ final class DatabaseGlobalPartRepository implements
             ['%d'],
         );
         if ($updated === false) {
-            throw new \RuntimeException("Failed to persist global part section {$sectionId} root identity.");
+            throw new \RuntimeException(sprintf('Failed to persist global part section %d root identity.', (int) $sectionId));
         }
     }
 
@@ -506,6 +523,7 @@ final class DatabaseGlobalPartRepository implements
         global $wpdb;
 
         $elementStyles = $source->content()->elementStyles()->toJson();
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $updated = $wpdb->update(
             $this->table(),
             [
@@ -535,11 +553,13 @@ final class DatabaseGlobalPartRepository implements
     ): bool {
         global $wpdb;
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
         $row = $wpdb->get_row($wpdb->prepare(
-            "SELECT id, global_part_id, position, name, html, css, element_styles
-             FROM {$this->table()}
+            'SELECT id, global_part_id, position, name, html, css, element_styles
+             FROM %i
              WHERE id = %d AND global_part_id = %d
-             LIMIT 1",
+             LIMIT 1',
+            $this->table(),
             $source->id(),
             $globalPartId,
         ));
@@ -568,6 +588,7 @@ final class DatabaseGlobalPartRepository implements
     {
         global $wpdb;
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         if ($wpdb->delete($this->table(), ['global_part_id' => $globalPartId], ['%d']) === false) {
             throw new \RuntimeException('Failed to delete global part sections.');
         }

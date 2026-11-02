@@ -12,6 +12,10 @@ namespace Uncanny_Automator;
  * @author  Daniela R. & Agustin B.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 
 <div class="uap-settings-panel">

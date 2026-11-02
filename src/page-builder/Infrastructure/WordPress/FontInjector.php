@@ -42,7 +42,7 @@ final class FontInjector
         } catch (\Throwable $failure) {
             // wp_head is a shared WordPress surface. A Page Builder failure
             // must not terminate the visitor request.
-            error_log('[Uncanny Page Builder] Published font injection failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Published font injection failed (' . $failure::class . ')');
         }
     }
 
@@ -61,7 +61,7 @@ final class FontInjector
         } catch (\Throwable $failure) {
             // wp_head is a shared WordPress surface. A Page Builder failure
             // must not terminate the editor request.
-            error_log('[Uncanny Page Builder] Working font injection failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Working font injection failed (' . $failure::class . ')');
         }
     }
 
@@ -95,7 +95,10 @@ final class FontInjector
 
         echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
         echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
-        echo '<link rel="stylesheet" href="' . esc_url($url) . '">' . "\n";
+        // Print the handle here, not in the footer, so the font link keeps its place after the design tokens.
+        // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- Third-party Google Fonts stylesheet; a ver query argument would change its URL.
+        wp_enqueue_style('uncanny-page-builder-google-fonts', $url, [], null);
+        wp_print_styles('uncanny-page-builder-google-fonts');
     }
 
     /** @param list<array{family: string, weight: string, url: string}> $fonts */
@@ -133,6 +136,7 @@ final class FontInjector
                 $css = $filteredCss;
             }
 
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- @font-face CSS assembled above from sanitised family, weight and escaped URL values (filterable through uncanny_page_builder_custom_fonts_css); HTML escaping would corrupt the CSS.
             echo '<style id="uncanny-page-builder-custom-fonts">' . $css . "</style>\n";
         }
     }

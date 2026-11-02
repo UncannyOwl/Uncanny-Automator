@@ -99,7 +99,7 @@ class EC_UPDATE_EVENT extends \Uncanny_Automator\Recipe\Action {
 				'options'               => array(
 					array(
 						'value' => '',
-						'text'  => esc_html_x( '— Leave unchanged —', 'The Events Calendar', 'uncanny-automator' ),
+						'text'  => esc_html_x( '- Leave unchanged -', 'The Events Calendar', 'uncanny-automator' ),
 					),
 					array(
 						'value' => 'publish',

@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Infrastructure\Binding;
 use UncannyPageBuilder\Domain\Binding\BindingDeclaration;
 use UncannyPageBuilder\Domain\Binding\BindingStaticSafety;
 use UncannyPageBuilder\Infrastructure\Rendering\SectionRendererInterface;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 
 /**
  * Scans the bindings/ directory and loads all declaration.json files.
@@ -68,7 +69,7 @@ final class BindingLoader
     private function reportFilterFailure(\Throwable $failure): void
     {
         try {
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] WordPress filter "uncanny_page_builder_bindings" failed (%s).',
                 $failure::class,
             ));
@@ -91,7 +92,7 @@ final class BindingLoader
             if (function_exists('_doing_it_wrong')) {
                 _doing_it_wrong(
                     __METHOD__,
-                    sprintf('Invalid JSON in %s: %s', $jsonPath, $e->getMessage()),
+                    sprintf('Invalid JSON in %s: %s', esc_html($jsonPath), esc_html($e->getMessage())),
                     '1.0.0'
                 );
             }
@@ -109,7 +110,7 @@ final class BindingLoader
                 if (function_exists('_doing_it_wrong')) {
                     _doing_it_wrong(
                         __METHOD__,
-                        sprintf('Binding declaration missing required field "%s" in %s', $field, $jsonPath),
+                        sprintf('Binding declaration missing required field "%s" in %s', esc_html($field), esc_html($jsonPath)),
                         '1.0.0'
                     );
                 }
@@ -122,7 +123,7 @@ final class BindingLoader
             if (function_exists('_doing_it_wrong')) {
                 _doing_it_wrong(
                     __METHOD__,
-                    sprintf('Renderer class "%s" not found for binding "%s"', $data['renderer_class'], $data['id']),
+                    sprintf('Renderer class "%s" not found for binding "%s"', esc_html($data['renderer_class']), esc_html($data['id'])),
                     '1.0.0'
                 );
             }
@@ -135,8 +136,8 @@ final class BindingLoader
                     __METHOD__,
                     sprintf(
                         'Renderer class "%s" for binding "%s" must implement %s',
-                        $data['renderer_class'],
-                        $data['id'],
+                        esc_html($data['renderer_class']),
+                        esc_html($data['id']),
                         SectionRendererInterface::class,
                     ),
                     '1.0.0'

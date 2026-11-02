@@ -3,7 +3,9 @@ declare( strict_types=1 );
 
 namespace Uncanny_Automator\App\Recipe_Runner\Services;
 
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Action_Error_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Execution_Log_Store;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Recipe_Violation_Service;
 use Uncanny_Automator\Automator_Status;
 use Uncanny_Automator\App\Infrastructure\Database\Database;
 
@@ -11,6 +13,7 @@ use Uncanny_Automator\App\Infrastructure\Database\Database;
  * Computes the final recipe status from all action statuses in one pass.
  *
  * Status is derived from action statuses (integers in uap_action_log.completed),
+ * actionable run/block errors and failed loop entries,
  * NOT from error message content.
  *
  * Used by finalize_recipe() (Stage 4) and the severity guard in persist_recipe_log().
@@ -27,10 +30,17 @@ class Recipe_Status_Resolver {
 	private $log_store;
 
 	/**
-	 * @param Execution_Log_Store|null $log_store Optional log store instance.
+	 * @var Action_Error_Store
 	 */
-	public function __construct( ?Execution_Log_Store $log_store = null ) {
-		$this->log_store = $log_store ?? Database::get_execution_log_store();
+	private $error_store;
+
+	/**
+	 * @param Execution_Log_Store|null $log_store   Optional log store instance.
+	 * @param Action_Error_Store|null  $error_store Optional error store instance; reads the run's system and block errors.
+	 */
+	public function __construct( ?Execution_Log_Store $log_store = null, ?Action_Error_Store $error_store = null ) {
+		$this->log_store   = $log_store ?? Database::get_execution_log_store();
+		$this->error_store = $error_store ?? Database::get_action_error_store();
 	}
 
 	/**
@@ -47,9 +57,11 @@ class Recipe_Status_Resolver {
 		Automator_Status::COMPLETED              => 1,
 		Automator_Status::COMPLETED_WITH_NOTICE  => 2,
 		Automator_Status::SKIPPED                => 2,
+		Automator_Status::CANCELLED              => 2,
 		Automator_Status::IN_PROGRESS            => 3,
 		Automator_Status::COMPLETED_AWAITING     => 3,
 		Automator_Status::QUEUED                 => 3,
+		Automator_Status::BLOCKED_ON_DEPENDENCY  => 3,
 		Automator_Status::IN_PROGRESS_WITH_ERROR => 4,
 		Automator_Status::COMPLETED_WITH_ERRORS  => 5,
 		Automator_Status::FAILED                 => 6,
@@ -103,6 +115,7 @@ class Recipe_Status_Resolver {
 	public function resolve( int $recipe_log_id, array $args = array(), bool $treat_incomplete_as_error = false ): int {
 
 		$action_statuses = $this->log_store->get_all_action_statuses( $recipe_log_id );
+		$has_run_error   = $this->error_store->has_system_errors( $recipe_log_id ) || $this->has_failed_loop( $recipe_log_id );
 
 		// No actions at all — fall through to flag-based resolution below.
 		if ( ! empty( $action_statuses ) ) {
@@ -111,10 +124,13 @@ class Recipe_Status_Resolver {
 			// IN_PROGRESS: background actions, Action Scheduler delayed.
 			// COMPLETED_AWAITING: waiting for external confirmation (WhatsApp delivery, Instagram publish).
 			// QUEUED: loop iterations queued but not started.
+			// BLOCKED_ON_DEPENDENCY: waiting on a background app action.
 			$has_scheduled = $this->has_status( $action_statuses, Automator_Status::IN_PROGRESS )
 				|| $this->has_status( $action_statuses, Automator_Status::COMPLETED_AWAITING )
-				|| $this->has_status( $action_statuses, Automator_Status::QUEUED );
-			$has_errors    = $this->has_actionable_error_status( $action_statuses, $treat_incomplete_as_error );
+				|| $this->has_status( $action_statuses, Automator_Status::QUEUED )
+				|| $this->has_status( $action_statuses, Automator_Status::BLOCKED_ON_DEPENDENCY );
+			$has_errors    = $has_run_error || $this->has_actionable_error_status( $action_statuses, $treat_incomplete_as_error )
+				|| $this->has_not_run_block( $recipe_log_id );
 
 			if ( $has_scheduled && $has_errors ) {
 				return Automator_Status::IN_PROGRESS_WITH_ERROR;
@@ -128,9 +144,29 @@ class Recipe_Status_Resolver {
 				return Automator_Status::COMPLETED_WITH_ERRORS;
 			}
 
+			// A run whose delayed actions were cancelled before anything executed is
+			// CANCELLED, not COMPLETED. Once any action has run the run keeps its
+			// completed status and the cancel is visible on the row that carries it.
+			// SKIPPED and NOT_COMPLETED rows never ran, so they do not count.
+			if ( $this->has_status( $action_statuses, Automator_Status::CANCELLED ) ) {
+
+				$executed = $this->has_status( $action_statuses, Automator_Status::COMPLETED )
+					|| $this->has_status( $action_statuses, Automator_Status::COMPLETED_WITH_NOTICE )
+					|| $this->has_status( $action_statuses, Automator_Status::DID_NOTHING );
+
+				if ( ! $executed ) {
+					return Automator_Status::CANCELLED;
+				}
+			}
+
 			if ( $this->all_match( $action_statuses, Automator_Status::DID_NOTHING ) ) {
 				return Automator_Status::DID_NOTHING;
 			}
+		}
+
+		// An actionable run or block error fails even a run with no action rows.
+		if ( empty( $action_statuses ) && ( $has_run_error || $this->has_not_run_block( $recipe_log_id ) ) ) {
+			return Automator_Status::COMPLETED_WITH_ERRORS;
 		}
 
 		// Recovery context only: a run with NO action rows that was stuck at
@@ -148,11 +184,97 @@ class Recipe_Status_Resolver {
 			return Automator_Status::DID_NOTHING;
 		}
 
+		// The user selector failed (for example, the user to create had no
+		// email), so every action was skipped. That is an error the owner has
+		// to fix, not "did nothing": an owner-chosen "do nothing" fallback
+		// already arrives as the do-nothing flag above. Run counts leave out
+		// both statuses, so only the label differs.
+		if ( ! empty( $args['complete_with_errors'] ) ) {
+			return Automator_Status::COMPLETED_WITH_ERRORS;
+		}
+
 		if ( ! empty( $args['complete_with_notice'] ) ) {
 			return Automator_Status::COMPLETED_WITH_NOTICE;
 		}
 
+		// A run whose rows are all SKIPPED with no flag, such as a filter whose
+		// conditions failed with nothing on its other branch, stays COMPLETED on
+		// purpose. COMPLETED counts toward per-user and total run limits and
+		// DID_NOTHING does not, so switching would let that user trigger the
+		// recipe again.
 		return Automator_Status::COMPLETED;
+	}
+
+	/**
+	 * Whether an actionable block failure occurred. Its rows read SKIPPED, so only the stored block row,
+	 * which every leg of the run can read, says the run failed.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $recipe_log_id The recipe log ID.
+	 *
+	 * @return bool
+	 */
+	private function has_not_run_block( int $recipe_log_id ): bool {
+		foreach ( $this->error_store->get_block_errors( $recipe_log_id ) as $row ) {
+			if ( Error_Code::BLOCK_NOT_RUN === $row->error_code && 1 === (int) $row->is_actionable ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Whether a loop of the run ended Completed with errors (D67). A loop the walker refused only because it has
+	 * no filter does not count: its entry carries the refusal as a note, and the run closes by its own steps. Any
+	 * other refusal, and a loop that could not start, counts.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $recipe_log_id The recipe log ID.
+	 *
+	 * @return bool
+	 */
+	private function has_failed_loop( int $recipe_log_id ): bool {
+		if ( ! $this->log_store->has_failed_loop_entries( $recipe_log_id ) ) {
+			return false;
+		}
+
+		$noted = $this->loops_refused_for_a_missing_filter( $recipe_log_id );
+
+		return array() === $noted || $this->log_store->has_failed_loop_entries( $recipe_log_id, $noted );
+	}
+
+	/**
+	 * The loops the walker refused for having no filter and for nothing else: the run's refusal record
+	 * (`Execution_Log_Store::META_BLOCK_REFUSALS`) holds that violation and no other for them.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $recipe_log_id The recipe log ID.
+	 *
+	 * @return int[] Loop block ids.
+	 */
+	private function loops_refused_for_a_missing_filter( int $recipe_log_id ): array {
+		$refusals = json_decode( (string) $this->log_store->get_recipe_log_meta( $recipe_log_id, Execution_Log_Store::META_BLOCK_REFUSALS ), true );
+		$loop_ids = array();
+
+		foreach ( is_array( $refusals ) ? $refusals : array() as $block_id => $refusal ) {
+			$violations = is_array( $refusal ) ? (array) ( $refusal['violations'] ?? array() ) : array();
+			$codes      = array_map(
+				static function ( $violation ): string {
+					return is_array( $violation ) ? (string) ( $violation['code'] ?? '' ) : '';
+				},
+				$violations
+			);
+
+			if ( array( Recipe_Violation_Service::BLOCK_MODIFIER_MISSING ) === array_values( array_unique( $codes ) ) ) {
+				$loop_ids[] = (int) $block_id;
+			}
+		}
+
+		return $loop_ids;
 	}
 
 	/**
@@ -170,6 +292,7 @@ class Recipe_Status_Resolver {
 		Automator_Status::IN_PROGRESS_WITH_ERROR => true,
 		Automator_Status::QUEUED                 => true,
 		Automator_Status::COMPLETED_AWAITING     => true,
+		Automator_Status::BLOCKED_ON_DEPENDENCY  => true,
 	);
 
 	/**

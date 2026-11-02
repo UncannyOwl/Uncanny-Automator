@@ -107,12 +107,19 @@ class Action_Logs_Queries {
 			)
 		);
 
+		// The keys Action_Logs_Resources reads: action_log_id and action_completed, not the columns' own names.
 		$results = $this->db->get_results(
 			$this->db->prepare(
-				"SELECT * 
+				"SELECT ID AS action_log_id,
+						automator_action_id,
+						completed AS action_completed,
+						date_time,
+						error_message,
+						user_id
 					FROM {$this->db->prefix}uap_action_log
 					WHERE automator_recipe_id = %d
 						AND automator_recipe_log_id = %d
+					ORDER BY ID ASC
 				",
 				$args['recipe_id'],
 				$args['recipe_log_id']
@@ -185,48 +192,6 @@ class Action_Logs_Queries {
 	}
 
 	/**
-	 * Query Closures log.
-	 *
-	 * @param int $recipe_id
-	 * @param int $recipe_log_id
-	 *
-	 * @return mixed[] The rows retrieved from the query.
-	 */
-	public function get_closures_as_action_query( $recipe_id = 0, $recipe_log_id = 0 ) {
-
-		$result = $this->db->get_row(
-			$this->db->prepare(
-				"SELECT 
-					log.ID as log_id, 
-					log.user_id,
-					log.automator_closure_id as closure_id,
-					log.date_time, 
-					log_meta.meta_value as log_entry_value
-					-- SELECT FROM closure_log table.
-					FROM {$this->db->prefix}uap_closure_log AS log
-					-- JOIN
-					INNER JOIN {$this->db->prefix}uap_closure_log_meta as log_meta
-					ON log_meta.automator_closure_log_id = log.ID
-					-- CONDITIONS
-					WHERE log_meta.meta_key = 'closure_data'
-					AND log.automator_recipe_id = %d
-					AND log.automator_recipe_log_id = %d
-				",
-				$recipe_id,
-				$recipe_log_id
-			),
-			self::QUERY_RESULTS_FORMAT
-		);
-
-		if ( empty( $result ) ) {
-			// Check the recipe meta
-			$result = $this->try_fetching_from_log( $recipe_id, $recipe_log_id );
-		}
-
-		return $this->to_array( $result );
-	}
-
-	/**
 	 * The query for fetching parsed tokens records from the _uap_tokens_log
 	 *
 	 * @param int[] $params
@@ -252,6 +217,7 @@ class Action_Logs_Queries {
 
 		global $wpdb; // We're using $wpdb here since static methods dont contain the reference to the current instance of the class.
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT tokens_record 
@@ -360,60 +326,5 @@ class Action_Logs_Queries {
 		}
 
 		return (array) json_decode( $result, true );
-	}
-
-	/**
-	 * @param int $recipe_id
-	 * @param int $recipe_log_id
-	 *
-	 * @return mixed[]
-	 */
-	private function try_fetching_from_log( $recipe_id, $recipe_log_id ) {
-
-		$result = $this->db->get_var(
-			$this->db->prepare(
-				"SELECT meta_value
-				FROM {$this->db->prefix}uap_recipe_log_meta
-				WHERE meta_key = 'closures'
-				AND recipe_log_id = %d
-				AND recipe_id = %d
-				",
-				$recipe_log_id,
-				$recipe_id
-			)
-		);
-
-		if ( empty( $result ) ) {
-			return array();
-		}
-
-		$result = wp_parse_args(
-			(array) json_decode( $result, true ),
-			array(
-				'meta' => array(
-					'sentence_human_readable_html' => '',
-				),
-			)
-		);
-
-		$meta = array(
-			'meta' => array(
-				'code'                         => 'REDIRECT',
-				'integration'                  => 'WP',
-				'sentence_human_readable_html' => $result['meta']['sentence_human_readable_html'],
-				'REDIRECTURL'                  => $result,
-			),
-		);
-		// Mock the response.
-		$result = array(
-			'mock'            => true,
-			'user_id'         => null,
-			'closure_id'      => $result['log']['ID'],
-			'log_id'          => 0,
-			'date_time'       => null,
-			'log_entry_value' => wp_json_encode( $meta ),
-		);
-
-		return $result;
 	}
 }

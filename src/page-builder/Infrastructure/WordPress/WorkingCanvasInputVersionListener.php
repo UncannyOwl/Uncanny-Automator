@@ -54,7 +54,7 @@ final class WorkingCanvasInputVersionListener
             // WordPress runs this callback during init and admin_init. A
             // failure must not terminate the shared request. The stored input
             // version stays unchanged, so the next request retries the work.
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Working canvas input-version refresh failed (%s).',
                 $failure::class,
             ));

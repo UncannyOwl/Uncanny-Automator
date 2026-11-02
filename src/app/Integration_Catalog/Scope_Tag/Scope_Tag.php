@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Integration_Catalog\Scope_Tag;
 
@@ -73,6 +72,7 @@ class Scope_Tag {
 		'dependency'   => array(
 			'dependency-not-connected',
 			'dependency-not-installed',
+			'dependency-not-active',
 		),
 		'availability' => array(
 			'availability-locked',
@@ -238,7 +238,11 @@ class Scope_Tag {
 
 		if ( ! isset( $this->scenario_map[ $type ] ) ) {
 			throw new InvalidArgumentException(
-				"Scope tag has invalid type '{$type}'. Allowed: " . implode( ', ', array_keys( $this->scenario_map ) )
+				sprintf(
+					"Scope tag has invalid type '%s'. Allowed: %s",
+					esc_html( $type ),
+					esc_html( implode( ', ', array_keys( $this->scenario_map ) ) )
+				)
 			);
 		}
 	}
@@ -261,7 +265,12 @@ class Scope_Tag {
 		$allowed_scenarios = $this->scenario_map[ $type ];
 		if ( ! in_array( $scenario_id, $allowed_scenarios, true ) ) {
 			throw new InvalidArgumentException(
-				"Scope tag has invalid scenario_id '{$scenario_id}' for type '{$type}'. Allowed: " . implode( ', ', $allowed_scenarios )
+				sprintf(
+					"Scope tag has invalid scenario_id '%s' for type '%s'. Allowed: %s",
+					esc_html( $scenario_id ),
+					esc_html( $type ),
+					esc_html( implode( ', ', $allowed_scenarios ) )
+				)
 			);
 		}
 	}
@@ -311,7 +320,11 @@ class Scope_Tag {
 
 		if ( ! in_array( $color, $this->allowed_colors, true ) ) {
 			throw new InvalidArgumentException(
-				"Scope tag has invalid color '{$color}'. Allowed: " . implode( ', ', $this->allowed_colors )
+				sprintf(
+					"Scope tag has invalid color '%s'. Allowed: %s",
+					esc_html( $color ),
+					esc_html( implode( ', ', $this->allowed_colors ) )
+				)
 			);
 		}
 	}

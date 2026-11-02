@@ -9,6 +9,12 @@ namespace Uncanny_Automator;
  * @version 2.4
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
+
 $active    = automator_filter_has_var( 'tab' ) ? automator_filter_input( 'tab' ) : 'settings';
 $tab       = isset( Admin_Menu::$tabs[ $active ] ) ? json_decode( json_encode( Admin_Menu::$tabs[ $active ] ), false ) : array();
 $connected = automator_filter_has_var( 'connect' ) ? automator_filter_input( 'connect' ) : '';

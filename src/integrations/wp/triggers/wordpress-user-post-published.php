@@ -35,9 +35,9 @@ class WP_USERS_POST_PUBLISHED extends \Uncanny_Automator\Recipe\Trigger {
 		// this; the modern validate_hook() gate reads the raw property
 		// and never consults it, so the gate must stay open here.
 		$this->set_is_login_required( false );
-		// translators: %1$s is a post type.
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Post type */
 				esc_html_x( 'A user publishes a {{type of post:%1$s}}', 'WordPress', 'uncanny-automator' ),
 				$this->get_trigger_meta()
 			)

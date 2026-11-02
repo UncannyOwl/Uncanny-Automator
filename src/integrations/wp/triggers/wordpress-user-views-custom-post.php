@@ -29,9 +29,9 @@ class WP_VIEWCUSTOMPOST extends \Uncanny_Automator\Recipe\Trigger {
 	protected function setup_trigger() {
 		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 		$this->set_is_login_required( true );
-		// translators: %1$s is a custom post type, %2$s is a number of times.
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Custom post type, %2$s: Number of times */
 				esc_html_x( 'A user views {{a custom post type:%1$s}} {{a number of:%2$s}} time(s)', 'WordPress', 'uncanny-automator' ),
 				$this->get_trigger_meta(),
 				'NUMTIMES:' . $this->get_trigger_meta()

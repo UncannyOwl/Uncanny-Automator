@@ -15,6 +15,7 @@ class WP_UPDATE_MEDIA_ITEM extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_code( 'WP_UPDATE_MEDIA' );
 		$this->set_action_meta( 'WP_MEDIA_ID' );
 		$this->set_requires_user( false );
+		/* translators: %1$s: Media item */
 		$this->set_sentence( sprintf( esc_html_x( 'Update {{a media item:%1$s}} in the media library', 'WordPress', 'uncanny-automator' ), $this->get_action_meta() ) );
 		$this->set_readable_sentence( esc_html_x( 'Update {{a media item}} in the media library', 'WordPress', 'uncanny-automator' ) );
 	}
@@ -105,6 +106,7 @@ class WP_UPDATE_MEDIA_ITEM extends \Uncanny_Automator\Recipe\Action {
 			$result = wp_update_post( $post_data, true );
 
 			if ( is_wp_error( $result ) ) {
+				/* translators: %s: Error message */
 				$this->add_log_error( sprintf( esc_html_x( '(%s)', 'WordPress', 'uncanny-automator' ), $result->get_error_message() ) );
 				return false;
 			}

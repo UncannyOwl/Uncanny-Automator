@@ -270,7 +270,7 @@ final class PageJavaScriptRuntimeService
 
         throw new \InvalidArgumentException(sprintf(
             'Custom JavaScript source exceeds the %d byte limit.',
-            self::MAX_SOURCE_BYTES,
+            (int) self::MAX_SOURCE_BYTES,
         ));
     }
 
@@ -286,7 +286,7 @@ final class PageJavaScriptRuntimeService
 
         $currentGeneration = $this->sourceGenerations->pageGeneration($pageId);
         if ($currentGeneration !== $expectedGeneration) {
-            throw new StaleSourceGenerationException('page', $expectedGeneration, $currentGeneration);
+            throw new StaleSourceGenerationException('page', (int) $expectedGeneration, (int) $currentGeneration);
         }
     }
 

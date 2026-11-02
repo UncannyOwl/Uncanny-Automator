@@ -211,7 +211,7 @@ class Utilities {
 		 *
 		 * @since 3.0
 		 */
-		if ( ! empty( $file_name ) && is_dir( dirname( $file_name ) ) ) {
+		if ( ! empty( $file_name ) && is_file( $file_name ) ) {
 			$icon            = basename( $file_name ); // icon with extension.
 			$integration_dir = basename( dirname( $file_name ) ); // integration folder path.
 			$path            = self::cleanup_icon_path( $plugin_path, $icon, $file_name ); // path relative to plugin.
@@ -222,8 +222,8 @@ class Utilities {
 			}
 		}
 
-		// fallback
-		$path      = apply_filters( 'automator_integration_icon_path_legacy', 'src/recipe-ui/dist/media/integrations/' . $file_name, $file_name, $plugin_path );
+		// An icon file that does not exist has no URL, unless an add-on places it with the legacy filters.
+		$path      = apply_filters( 'automator_integration_icon_path_legacy', '', $file_name, $plugin_path );
 		$base_path = apply_filters( 'automator_integration_icon_base_path_legacy', WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . $plugin_path, $file_name );
 
 		if ( ! empty( $path ) && ! empty( $base_path ) ) {
@@ -234,28 +234,28 @@ class Utilities {
 	}
 
 	/**
+	 * The folder of an icon file, relative to the plugin.
+	 *
 	 * @param $dirname
 	 * @param $icon
 	 * @param $file_name
 	 *
-	 * @return array|string|string[]
+	 * @return array|string|string[] The folder, or '' when the icon file does not exist.
 	 */
 	public static function cleanup_icon_path( $dirname, $icon, $file_name ) {
-		// path relative to plugin
-		if ( is_file( $file_name ) ) {
-			$val = str_replace(
-				array(
-					dirname( $dirname ),
-					$icon,
-				),
-				'',
-				$file_name
-			);
-		} else {
-			$val = '/src/recipe-ui/dist/media/integrations/';
+
+		if ( ! is_file( $file_name ) ) {
+			return '';
 		}
 
-		return $val;
+		return str_replace(
+			array(
+				dirname( $dirname ),
+				$icon,
+			),
+			'',
+			$file_name
+		);
 	}
 
 	/**
@@ -290,7 +290,7 @@ class Utilities {
 	 * @since    1.0.0
 	 */
 	public static function automator_get_vendor_asset( $file_name ) {
-		return plugins_url( 'src/assets/legacy/vendor/' . $file_name, AUTOMATOR_BASE_FILE );
+		return plugins_url( 'src/assets/_legacy/vendor/' . $file_name, AUTOMATOR_BASE_FILE );
 	}
 
 	/**
@@ -302,7 +302,7 @@ class Utilities {
 	 * @since    1.0.0
 	 */
 	public static function automator_get_css( $file_name ) {
-		return plugins_url( 'src/assets/css/' . $file_name, AUTOMATOR_BASE_FILE );
+		return plugins_url( 'src/assets/build/' . $file_name, AUTOMATOR_BASE_FILE );
 	}
 
 	/**
@@ -452,19 +452,18 @@ class Utilities {
 		// The endpoint url to S3
 		$endpoint_url = AUTOMATOR_INTEGRATIONS_JSON_LIST; // Append time to prevent caching.
 
-		$response = wp_remote_get( $endpoint_url );
+		$api_response = self::get_feed_list( wp_remote_get( $endpoint_url ) );
 
-		if ( is_wp_error( $response ) ) {
+		if ( null === $api_response ) {
 			return array();
 		}
 
-		$api_response   = json_decode( $response['body'], true );
 		$pro_only       = array();
 		$active_plugins = self::get_plugins_info();
 
 		foreach ( $api_response as $integration ) {
 			// If it's not pro, continue;
-			if ( ! $integration['is_pro_integration'] ) {
+			if ( ! is_array( $integration ) || empty( $integration['is_pro_integration'] ) ) {
 				continue;
 			}
 
@@ -505,18 +504,17 @@ class Utilities {
 		// The endpoint url to S3
 		$endpoint_url = AUTOMATOR_INTEGRATIONS_JSON_LIST_WITH_ITEMS; // Append time to prevent caching.
 
-		$response = wp_remote_get( $endpoint_url );
+		$api_response = self::get_feed_list( wp_remote_get( $endpoint_url ) );
 
-		if ( is_wp_error( $response ) ) {
+		if ( null === $api_response ) {
 			return array();
 		}
 
-		$api_response = json_decode( $response['body'], true );
-		$pro_only     = array();
+		$pro_only = array();
 
 		foreach ( $api_response as $integration ) {
 
-			if ( ! $integration['is_pro_integration'] ) {
+			if ( ! is_array( $integration ) || empty( $integration['is_pro_integration'] ) ) {
 				continue;
 			}
 
@@ -535,6 +533,27 @@ class Utilities {
 		set_transient( 'automator_pro_integrations_list_items', $pro_only, DAY_IN_SECONDS );
 
 		return $pro_only;
+	}
+
+	/**
+	 * The integrations feed's list of integrations.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param array|\WP_Error $response The feed request's response.
+	 *
+	 * @return array|null The decoded list, or null when the request failed or did not answer with a JSON list
+	 *                    (an error page, an access-denied XML body).
+	 */
+	private static function get_feed_list( $response ) {
+
+		if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
+			return null;
+		}
+
+		$list = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		return is_array( $list ) ? $list : null;
 	}
 
 
@@ -651,10 +670,10 @@ class Utilities {
 			mkdir( $log_directory, 0755, true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
 		}
 
+		self::protect_log_directory( $log_directory );
 		self::remove_old_logs();
 
-		$filename = AUTOMATOR_SITE_KEY . '-' . $file_name;
-		$file     = sprintf( '%s%s.%s', $log_directory, sanitize_file_name( $filename ), AUTOMATOR_LOGS_EXT );
+		$file = self::log_file_path( $file_name );
 
 		if ( ! $backtrace ) {
 			$complete_message = $trace_start . $trace_heading . $trace_msg_start . $trace_message . $trace_finish;
@@ -669,6 +688,76 @@ class Utilities {
 	}
 
 	/**
+	 * Write a log file that holds only this write.
+	 *
+	 * Same gate and framing as log(), but the previous contents are discarded
+	 * first, so a diagnostic that runs on every request stays one report long.
+	 *
+	 * @param mixed  $trace_message The message logged.
+	 * @param string $trace_heading The heading of the current trace.
+	 * @param bool   $force_log     Write even when debug logs are off.
+	 * @param string $file_name     The log file name.
+	 *
+	 * @return void
+	 */
+	public static function log_snapshot( $trace_message = '', $trace_heading = '', $force_log = false, $file_name = 'logs' ) {
+		if ( ! self::automator_get_debug_mode() && false === $force_log ) {
+			return;
+		}
+
+		$file = self::log_file_path( $file_name );
+		if ( file_exists( $file ) ) {
+			wp_delete_file( $file );
+		}
+
+		self::log( $trace_message, $trace_heading, $force_log, $file_name );
+	}
+
+	/**
+	 * Absolute path of a named log file: <logs dir>/<site key>-<name>.<ext>.
+	 *
+	 * @param string $file_name The log file name.
+	 *
+	 * @return string
+	 */
+	private static function log_file_path( $file_name ) {
+		return sprintf( '%s%s.%s', UA_DEBUG_LOGS_DIR, sanitize_file_name( AUTOMATOR_SITE_KEY . '-' . $file_name ), AUTOMATOR_LOGS_EXT );
+	}
+
+	/**
+	 * Deny web access to the logs directory. WordPress.org does not allow a
+	 * hidden file in a plugin package, so the .htaccess is written on first use,
+	 * and again after an update replaces the plugin folder.
+	 *
+	 * @param string $log_directory The logs directory, with a trailing slash.
+	 *
+	 * @return void
+	 */
+	private static function protect_log_directory( $log_directory ) {
+		$htaccess = $log_directory . '.htaccess';
+		if ( ! is_dir( $log_directory ) || file_exists( $htaccess ) ) {
+			return;
+		}
+		self::direct_filesystem()->put_contents(
+			$htaccess,
+			"<IfModule mod_authz_core.c>\n\tRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\n\tDeny from all\n</IfModule>\n",
+			0644
+		);
+	}
+
+	/**
+	 * The direct filesystem, for the plugin's own logs folder.
+	 *
+	 * @return \WP_Filesystem_Direct
+	 */
+	private static function direct_filesystem() {
+		require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
+		require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
+
+		return new \WP_Filesystem_Direct( false );
+	}
+
+	/**
 	 * Remove old logs.
 	 */
 	private static function remove_old_logs() {
@@ -676,10 +765,7 @@ class Utilities {
 		if ( ! is_dir( $old_path ) ) {
 			return;
 		}
-		require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
-		require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
-		$wp_filesystem_direct = new \WP_Filesystem_Direct( false );
-		$wp_filesystem_direct->rmdir( $old_path, true );
+		self::direct_filesystem()->rmdir( $old_path, true );
 	}
 
 	/**
@@ -980,7 +1066,7 @@ class Utilities {
 	 *
 	 * @since 6.7 (Modified to use wp_add_inline_script in X.Y version)
 	 * @param string $handle The unique handle for the script/style.
-	 * @param string $asset_name The base name of the asset files (e.g., 'main', 'closure').
+	 * @param string $asset_name The base name of the asset files (e.g., 'main', 'redirect').
 	 * @param array $options {
 	 * Optional. An array of options.
 	 *

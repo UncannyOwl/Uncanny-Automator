@@ -4,6 +4,10 @@ namespace Uncanny_Automator\Integrations\Wpjm;
 
 use Uncanny_Automator\Recipe\Abstract_Helpers;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Wpjm_Helpers
  *

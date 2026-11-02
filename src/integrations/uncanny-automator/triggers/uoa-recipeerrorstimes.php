@@ -109,8 +109,9 @@ class UOA_RECIPEERRORSTIMES {
 		}
 
 		global $wpdb;
-		$table_name      = $wpdb->prefix . Automator()->db->tables->recipe;
-		$completed_count = $wpdb->get_var( $wpdb->prepare( "SELECT count(ID) FROM $table_name WHERE automator_recipe_id = %d AND completed = %d", $recipe_id, 2 ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$table_name = $wpdb->prefix . Automator()->db->tables->recipe;
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Automator's own table, name built from $wpdb->prefix and the table registry; live run state read, must not be cached.
+		$completed_count = $wpdb->get_var( $wpdb->prepare( "SELECT count(ID) FROM $table_name WHERE automator_recipe_id = %d AND completed = %d", $recipe_id, 2 ) );
 		if ( 0 === $completed_count ) {
 			return;
 		}
@@ -141,7 +142,8 @@ class UOA_RECIPEERRORSTIMES {
 
 		// The errored recipe's run number — stored so tokens can link to the
 		// SPECIFIC failed run, not just a recipe-filtered log list.
-		$errored_run_number = absint( $wpdb->get_var( $wpdb->prepare( "SELECT run_number FROM {$wpdb->prefix}uap_recipe_log WHERE ID = %d", $recipe_log_id ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
+		$errored_run_number = absint( $wpdb->get_var( $wpdb->prepare( "SELECT run_number FROM {$wpdb->prefix}uap_recipe_log WHERE ID = %d", $recipe_log_id ) ) );
 
 		foreach ( $matched_recipe_ids as $matched_recipe_id ) {
 			$pass_args = array(

@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Action\Value_Objects;
 
@@ -64,7 +63,7 @@ class Action_Status_Value {
 	private function validate( string $value ): void {
 		if ( ! Action_Status::is_valid( $value ) ) {
 			throw new \InvalidArgumentException(
-				'Action status must be "' . Action_Status::DRAFT . '" or "' . Action_Status::PUBLISH . '", got: ' . $value
+				'Action status must be "' . esc_html( Action_Status::DRAFT ) . '" or "' . esc_html( Action_Status::PUBLISH ) . '", got: ' . esc_html( $value )
 			);
 		}
 	}

@@ -90,7 +90,7 @@ final class EditorLockTakeoverAction
             // admin-post.php is a public WordPress boundary. When even the
             // ownership dialog fails, the request must end in a controlled
             // error page instead of a raw fatal.
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Editor takeover failed (%s).',
                 $failure::class,
             ));
@@ -150,7 +150,7 @@ final class EditorLockTakeoverAction
 
     private function logUnconfirmedTakeover(int $postId, string $scope, string $reason): void
     {
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] Editor takeover not confirmed target=%d actor=%d scope=%s reason=%s',
             $postId,
             (int) get_current_user_id(),

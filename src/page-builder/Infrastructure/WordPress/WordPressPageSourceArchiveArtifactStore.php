@@ -70,7 +70,7 @@ final class WordPressPageSourceArchiveArtifactStore implements PageSourceArchive
                 [$archiveName],
             );
             if ($scheduled !== true) {
-                error_log('[Uncanny Page Builder] Page archive cleanup schedule failed.');
+                DiagnosticLog::write('[Uncanny Page Builder] Page archive cleanup schedule failed.');
             }
         } catch (\Throwable $e) {
             if (is_string($storedPath)) {
@@ -131,7 +131,7 @@ final class WordPressPageSourceArchiveArtifactStore implements PageSourceArchive
         } catch (\Throwable $failure) {
             // Cron must keep running. A leftover file is acceptable — the
             // next scheduled cleanup run retries it.
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Page archive cleanup failed (%s).',
                 $failure::class,
             ));
@@ -262,7 +262,7 @@ final class WordPressPageSourceArchiveArtifactStore implements PageSourceArchive
         } catch (\Throwable $failure) {
             // Legacy cleanup is optional. It cannot change a new archive's
             // storage result.
-            error_log('[Uncanny Page Builder] Legacy page archive cleanup failed (' . $failure::class . ').');
+            DiagnosticLog::write('[Uncanny Page Builder] Legacy page archive cleanup failed (' . $failure::class . ').');
         }
     }
 
@@ -314,14 +314,13 @@ final class WordPressPageSourceArchiveArtifactStore implements PageSourceArchive
             return false;
         }
 
-        $query = $wpdb->prepare(
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- The unique option name is the lock boundary.
+        $inserted = $wpdb->query($wpdb->prepare(
             "INSERT IGNORE INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, %s)",
             $lockKey,
             (string) time(),
             'no',
-        );
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- The unique option name is the lock boundary.
-        $inserted = $wpdb->query($query);
+        ));
 
         return (int) $inserted === 1;
     }

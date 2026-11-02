@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects;
 
@@ -100,7 +99,7 @@ class Integration_Tags {
 		// Maximum 5 tags.
 		if ( count( $value ) > self::MAX_TAGS ) {
 			throw new InvalidArgumentException(
-				'Maximum ' . self::MAX_TAGS . ' tags allowed, got: ' . count( $value )
+				'Maximum ' . (int) self::MAX_TAGS . ' tags allowed, got: ' . count( $value )
 			);
 		}
 	}

@@ -60,13 +60,36 @@ abstract class Integration_Item_Discoverer {
 			'type'               => $type,
 			'framework'          => $this->get_framework( $item ),
 			'is_deprecated'      => $this->is_deprecated( $item, $type ),
-			'sentence'           => $this->get_sentence( $item, $type ),
+			'sentence'           => $this->plain_sentence( $this->get_sentence( $item, $type ) ),
 			'description'        => $this->get_description( $item, $type ),
 			'required_tier'      => $this->get_required_tier( $item, $type ),
 			'requires_user_data' => $this->requires_user_data( $item, $type ),
 		);
 
 		return $normalized;
+	}
+
+	/**
+	 * The sentence variants as plain text, the form the integrations feed ships.
+	 *
+	 * Items register their sentences HTML-escaped (`esc_html_x( "A user's role changes to ..." )`),
+	 * so a sentence read from the registry carries entities such as `&#039;`. The catalog is JSON
+	 * that the recipe builder and the recipe log render as text, so each variant is decoded once.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param array<string,mixed> $sentence Sentence variants keyed by 'short' and 'dynamic'.
+	 *
+	 * @return array<string,mixed> The same variants, strings decoded.
+	 */
+	private function plain_sentence( array $sentence ): array {
+		foreach ( $sentence as $variant => $text ) {
+			if ( is_string( $text ) ) {
+				$sentence[ $variant ] = html_entity_decode( $text, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+			}
+		}
+
+		return $sentence;
 	}
 
 	/**

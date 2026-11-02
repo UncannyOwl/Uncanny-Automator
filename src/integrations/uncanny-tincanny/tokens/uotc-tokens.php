@@ -210,8 +210,9 @@ class UOTC_Tokens {
 					if ( (int) $module_id > 0 ) {
 						global $wpdb;
 
-						$table_name   = $wpdb->prefix . Database::TABLE_REPORTING;
-						$tin_can_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE user_id = %d AND module LIKE %s ORDER BY xstored DESC LIMIT 0,1", $user_id, '%%/uncanny-snc/' . $module_id . '/%%' ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+						$table_name = $wpdb->prefix . Database::TABLE_REPORTING;
+						// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Tin Canny's own table; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
+						$tin_can_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE user_id = %d AND module LIKE %s ORDER BY xstored DESC LIMIT 0,1", $user_id, '%%/uncanny-snc/' . $module_id . '/%%' ) );
 
 						if ( ! empty( $tin_can_data ) ) {
 						if ( in_array( $trigger_key_maybe_prefix . 'course', $pieces, true ) && ! empty( $tin_can_data->course_id ) ) {

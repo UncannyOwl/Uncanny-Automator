@@ -71,7 +71,7 @@ final class PageFactory
             // admin-post.php is a public WordPress boundary. Any unexpected
             // failure must end in the same controlled error response the
             // known failures use, never a raw fatal page.
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Page creation failed (%s).',
                 $failure::class,
             ));
@@ -126,7 +126,7 @@ final class PageFactory
         } catch (\Throwable $failure) {
             // Terminal containment for the upload read: an unexpected failure
             // must produce the standard import notice, not a raw fatal page.
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Page import failed while reading the upload (%s).',
                 $failure::class,
             ));
@@ -236,7 +236,7 @@ final class PageFactory
         } catch (\Throwable $failure) {
             // The import already succeeded. A notice failure must not replace
             // the success redirect with an error page.
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Page import success notice failed (%s).',
                 $failure::class,
             ));
@@ -336,7 +336,7 @@ final class PageFactory
         try {
             $deleted = \wp_delete_post($pageId, true);
         } catch (\Throwable $failure) {
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Page cleanup failed for page %d (%s).',
                 $pageId,
                 $failure::class,
@@ -344,7 +344,7 @@ final class PageFactory
             return;
         }
         if ($deleted === false || $deleted === null) {
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Failed to delete compensated page %d after import failure.',
                 $pageId,
             ));
@@ -384,10 +384,12 @@ final class PageFactory
      */
     private function validatedImportReturnPageId(): int
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- importPage() verifies the nonce and capability before this runs.
         if (sanitize_key((string) ($_POST['return_context'] ?? '')) !== 'editor') {
             return 0;
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- importPage() verifies the nonce and capability before this runs.
         $pageId = absint($_POST['return_page_id'] ?? 0);
         if (
             $pageId <= 0
@@ -405,7 +407,7 @@ final class PageFactory
 
     private function reportImportFailure(int $pageId, string $phase, \Throwable $error): void
     {
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] Page import failed during %s for page %d (%s).',
             sanitize_key($phase),
             $pageId,
@@ -416,11 +418,12 @@ final class PageFactory
     private function notifyObservers(string $hook, mixed ...$args): void
     {
         try {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Callers pass this plugin's own uncanny_page_builder_* hook names.
             do_action($hook, ...$args);
         } catch (\Throwable $error) {
             // These observers run after the page write. Their failure cannot
             // reverse that write and must not replace the success response.
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Observer %s failed (%s).',
                 $hook,
                 $error::class,
@@ -451,7 +454,7 @@ final class PageFactory
 
     private function assertPostRequest(): void
     {
-        if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? '')) === 'POST') {
+        if (strtoupper(sanitize_text_field(wp_unslash($_SERVER['REQUEST_METHOD'] ?? ''))) === 'POST') {
             return;
         }
 

@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Loop\Filter\Value_Objects;
 
@@ -86,7 +85,7 @@ class Code {
 
 		if ( strlen( $value ) > self::MAX_LENGTH ) {
 			throw new \InvalidArgumentException(
-				sprintf( 'Code exceeds maximum length of %d characters', self::MAX_LENGTH )
+				sprintf( 'Code exceeds maximum length of %d characters', (int) self::MAX_LENGTH )
 			);
 		}
 

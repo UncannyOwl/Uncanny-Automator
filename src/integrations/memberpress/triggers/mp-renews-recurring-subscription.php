@@ -27,6 +27,7 @@ class MP_RENEWS_RECURRING_SUBSCRIPTION {
 		add_action(
 			'mepr-event-renewal-transaction-completed',
 			function( $args ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 				do_action( 'uap-event-renewal-transaction-completed', $args );
 			}
 		);

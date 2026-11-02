@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects;
 
@@ -9,119 +8,63 @@ use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item
 /**
  * Integration Items Value Object.
  *
- * Contains the general definitions of the functional units (triggers, actions, etc.)
- * provided by this integration. Each category is an object where keys are item codes
- * (e.g., "WCPURCHASESPRODUCT") and values are Integration_Item objects.
- *
- * @since 7.0.0
+ * Two-bucket collection of trigger / action items. Filter
+ * conditions and loop filters live in Integration_Block_Modifiers
+ * (sibling slot under integration.block_modifiers on the wire).
  */
 class Integration_Items {
 
 	/**
-	 * The triggers.
+	 * Trigger items, keyed by item code.
 	 *
-	 * @var array
+	 * @var array<string, Integration_Item>
 	 */
 	private array $trigger;
 
 	/**
-	 * The actions.
+	 * Action items, keyed by item code.
 	 *
-	 * @var array
+	 * @var array<string, Integration_Item>
 	 */
 	private array $action;
 
 	/**
-	 * The loop filters.
+	 * Sort the raw catalog payload into one bucket per item type.
 	 *
-	 * @var array
-	 */
-	private array $loop_filter;
-
-	/**
-	 * The filter conditions.
+	 * A type the integration does not register is simply absent from the
+	 * payload and lands as an empty bucket.
 	 *
-	 * @var array
-	 */
-	private array $filter_condition;
-
-	/**
-	 * The closures.
+	 * @param array<string, array> $items Raw items keyed by type, then by code.
 	 *
-	 * @var array
-	 */
-	private array $closure;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param array $items Items array with :
-	 *  @property array $trigger Array of Trigger objects.
-	 *  @property array $action Array of Action objects.
-	 *  @property array $loop_filter Array of Loop Filter objects.
-	 *  @property array $filter_condition Array of Filter Condition objects.
-	 *  @property array $closure Array of Closure objects.
-	 *
-	 * @return void
-	 * @throws InvalidArgumentException If invalid items.
+	 * @throws InvalidArgumentException When a present type is not an array.
 	 */
 	public function __construct( array $items ) {
 		$this->validate( $items );
 
-		$this->trigger          = $this->build_item_objects( $items['trigger'] ?? array() );
-		$this->action           = $this->build_item_objects( $items['action'] ?? array() );
-		$this->loop_filter      = $this->build_item_objects( $items['loop_filter'] ?? array() );
-		$this->filter_condition = $this->build_item_objects( $items['filter_condition'] ?? array() );
-		$this->closure          = $this->build_item_objects( $items['closure'] ?? array() );
+		$this->trigger = $this->build_item_objects( $items['trigger'] ?? array() );
+		$this->action  = $this->build_item_objects( $items['action'] ?? array() );
 	}
 
 	/**
-	 * Get triggers.
+	 * The triggers this integration contributes to the catalog.
 	 *
-	 * @return array<string, Integration_Item> Array of Integration_Item objects keyed by code.
+	 * @return array<string, Integration_Item> Keyed by item code.
 	 */
 	public function get_triggers(): array {
 		return $this->trigger;
 	}
 
 	/**
-	 * Get actions.
+	 * The actions this integration contributes to the catalog.
 	 *
-	 * @return array<string, Integration_Item> Array of Integration_Item objects keyed by code.
+	 * @return array<string, Integration_Item> Keyed by item code.
 	 */
 	public function get_actions(): array {
 		return $this->action;
 	}
 
 	/**
-	 * Get loop filters.
-	 *
-	 * @return array<string, Integration_Item> Array of Integration_Item objects keyed by code.
-	 */
-	public function get_loop_filters(): array {
-		return $this->loop_filter;
-	}
-
-	/**
-	 * Get conditions.
-	 *
-	 * @return array<string, Integration_Item> Array of Integration_Item objects keyed by code.
-	 */
-	public function get_filter_conditions(): array {
-		return $this->filter_condition;
-	}
-
-	/**
-	 * Get closures.
-	 *
-	 * @return array<string, Integration_Item> Array of Integration_Item objects keyed by code.
-	 */
-	public function get_closures(): array {
-		return $this->closure;
-	}
-
-	/**
-	 * Check if integration has triggers.
+	 * Whether this integration registers any triggers at all.
 	 *
 	 * @return bool
 	 */
@@ -130,7 +73,7 @@ class Integration_Items {
 	}
 
 	/**
-	 * Check if integration has actions.
+	 * Whether this integration registers any actions at all.
 	 *
 	 * @return bool
 	 */
@@ -139,88 +82,67 @@ class Integration_Items {
 	}
 
 	/**
-	 * Check if integration has loop filters.
+	 * Flatten to plain arrays for internal use and storage.
 	 *
-	 * @return bool
-	 */
-	public function has_loop_filters(): bool {
-		return ! empty( $this->loop_filter );
-	}
-
-	/**
-	 * Check if integration has conditions.
+	 * Unlike to_rest(), empty buckets stay as empty arrays — no stdClass
+	 * coercion, because nothing here is going through json_encode().
 	 *
-	 * @return bool
-	 */
-	public function has_filter_conditions(): bool {
-		return ! empty( $this->filter_condition );
-	}
-
-	/**
-	 * Convert to array.
-	 *
-	 * @return array
+	 * @return array<string, array> Two-key map of type => items.
 	 */
 	public function to_array(): array {
 		return array(
-			'trigger'          => $this->items_to_array( $this->trigger ),
-			'action'           => $this->items_to_array( $this->action ),
-			'loop_filter'      => $this->items_to_array( $this->loop_filter ),
-			'filter_condition' => $this->items_to_array( $this->filter_condition ),
-			'closure'          => $this->items_to_array( $this->closure ),
+			'trigger' => $this->items_to_array( $this->trigger ),
+			'action'  => $this->items_to_array( $this->action ),
 		);
 	}
 
 	/**
-	 * Convert to REST format.
+	 * Project to the two-key map the builder's integration schema expects.
 	 *
-	 * Uses Integration_Item::to_rest() to exclude backend-only properties.
-	 * Converts empty arrays to empty objects for JavaScript compatibility.
-	 *
-	 * @return array
+	 * @return array<string, array|object> Empty buckets become stdClass so they
+	 *                                     encode as `{}` rather than `[]`.
 	 */
 	public function to_rest(): array {
 		return array(
-			'trigger'          => $this->items_to_rest( $this->trigger ),
-			'action'           => $this->items_to_rest( $this->action ),
-			'loop_filter'      => $this->items_to_rest( $this->loop_filter ),
-			'filter_condition' => $this->items_to_rest( $this->filter_condition ),
-			'closure'          => $this->items_to_rest( $this->closure ),
+			'trigger' => $this->items_to_rest( $this->trigger ),
+			'action'  => $this->items_to_rest( $this->action ),
 		);
 	}
 
 	/**
-	 * Validate items.
+	 * Reject a payload where an item type is present but not a list.
 	 *
-	 * @param array $items Items to validate.
+	 * @param array<string, mixed> $items Raw items keyed by type.
+	 *
+	 * @throws InvalidArgumentException When a present type is not an array.
 	 *
 	 * @return void
-	 * @throws InvalidArgumentException If invalid.
 	 */
 	private function validate( array $items ): void {
-		// Each item type must be an array if provided
 		$item_types = Integration_Item_Types::get_all();
 		foreach ( $item_types as $type ) {
 			if ( isset( $items[ $type ] ) && ! is_array( $items[ $type ] ) ) {
 				throw new InvalidArgumentException(
-					"Integration items['{$type}'] must be an array"
+					sprintf( "Integration items['%s'] must be an array", esc_html( $type ) )
 				);
 			}
 		}
 	}
 
 	/**
-	 * Build Integration_Item objects from array data.
+	 * Hydrate one bucket's raw rows into item objects.
 	 *
-	 * @param array $items Array of item data keyed by code.
+	 * The array key is authoritative for the code: a row that omits its own
+	 * `code` inherits the key it was stored under.
 	 *
-	 * @return array<string, Integration_Item> Array of Integration_Item objects keyed by code.
+	 * @param array<string, array> $items Raw rows keyed by item code.
+	 *
+	 * @return array<string, Integration_Item> Keyed by item code.
 	 */
 	private function build_item_objects( array $items ): array {
 		$objects = array();
 
 		foreach ( $items as $code => $item_data ) {
-			// Ensure code is set in the item data
 			if ( ! isset( $item_data['code'] ) ) {
 				$item_data['code'] = $code;
 			}
@@ -232,11 +154,11 @@ class Integration_Items {
 	}
 
 	/**
-	 * Convert array of Integration_Item objects to arrays.
+	 * Flatten one bucket's item objects to plain arrays.
 	 *
-	 * @param array<string, Integration_Item> $items Array of Integration_Item objects.
+	 * @param array<string, Integration_Item> $items Keyed by item code.
 	 *
-	 * @return array Array of item data keyed by code.
+	 * @return array<string, array> Keyed by item code.
 	 */
 	private function items_to_array( array $items ): array {
 		$arrays = array();
@@ -249,14 +171,11 @@ class Integration_Items {
 	}
 
 	/**
-	 * Convert array of Integration_Item objects to REST format.
+	 * Project one bucket's item objects to their REST shape.
 	 *
-	 * Uses Integration_Item::to_rest() to exclude backend-only properties.
-	 * Returns empty object for JavaScript compatibility when no items exist.
+	 * @param array<string, Integration_Item> $items Keyed by item code.
 	 *
-	 * @param array<string, Integration_Item> $items Array of Integration_Item objects.
-	 *
-	 * @return array|object Array of item data keyed by code, or empty object.
+	 * @return array|object Empty stdClass for empty buckets, keyed array otherwise.
 	 */
 	private function items_to_rest( array $items ) {
 		if ( empty( $items ) ) {

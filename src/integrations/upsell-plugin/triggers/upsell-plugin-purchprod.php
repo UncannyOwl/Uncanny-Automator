@@ -150,6 +150,7 @@ class UPSELL_PLUGIN_PURCHPROD {
 				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
 				//Adding an action to save order id in trigger meta
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 				do_action( 'uap_wc_trigger_save_meta', $order->id, $matched_recipe_id['recipe_id'], $args, 'product' );
 
 				if ( $args ) {

@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Transports\Restful\Recipe\Traits;
 
-use Uncanny_Automator\App\Bridge\Automator_Recipe_Object_Bridge;
-use Uncanny_Automator\App\Bridge\Recipe_Object_Bridge;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Recipe_Violation_Annotator;
+use Uncanny_Automator\App\Transports\Restful\Recipe\Recipe_Response;
 use WP_REST_Request;
+use WP_REST_Response;
 
 /**
  * Trait for shared recipe entity REST properties and helper methods.
@@ -32,11 +33,11 @@ trait Recipe_Entity {
 	private WP_REST_Request $request;
 
 	/**
-	 * The parent ID - int or string, strings represent condition-group placeholders
+	 * The parent ID (recipe or parent block post ID).
 	 *
-	 * @var int|string|null
+	 * @var int|null
 	 */
-	private $parent_id;
+	private ?int $parent_id = null;
 
 	/**
 	 * The fields
@@ -44,43 +45,6 @@ trait Recipe_Entity {
 	 * @var array
 	 */
 	private array $fields;
-
-	/**
-	 * Bridge to the legacy recipe-object lookups.
-	 *
-	 * @var Recipe_Object_Bridge|null
-	 */
-	private ?Recipe_Object_Bridge $recipes_bridge = null;
-
-	/**
-	 * Inject a recipe-object bridge (test seam).
-	 *
-	 * Per review note C22, this trait keeps the lazy-resolver pattern
-	 * (not full constructor DI) because traits can't elegantly take
-	 * constructor parameters — `Recipe_Entity::__construct( int, WP_REST_Request )`
-	 * already has a fixed signature consumed by every using class. The
-	 * protected setter gives subclass tests a seam without forcing every
-	 * consumer of the trait to plumb a bridge through their constructor.
-	 *
-	 * @param Recipe_Object_Bridge $bridge Bridge implementation.
-	 * @return void
-	 */
-	protected function set_recipes_bridge( Recipe_Object_Bridge $bridge ): void {
-		$this->recipes_bridge = $bridge;
-	}
-
-	/**
-	 * Resolve the recipe-object bridge (lazy default).
-	 *
-	 * @return Recipe_Object_Bridge
-	 */
-	private function recipes_bridge(): Recipe_Object_Bridge {
-		if ( null === $this->recipes_bridge ) {
-			$this->recipes_bridge = new Automator_Recipe_Object_Bridge();
-		}
-
-		return $this->recipes_bridge;
-	}
 
 	/**
 	 * Constructor.
@@ -119,23 +83,29 @@ trait Recipe_Entity {
 	/**
 	 * Set the parent ID.
 	 *
-	 * @param int|string|null $parent_id The parent ID.
+	 * @param int|null $parent_id The parent post ID.
 	 *
 	 * @return void
 	 */
-	protected function set_parent_id( $parent_id ): void {
+	protected function set_parent_id( ?int $parent_id ): void {
 		$this->parent_id = $parent_id;
 	}
 
 	/**
 	 * Set the fields.
 	 *
-	 * @param array $fields The fields.
+	 * Accepts an array or a JSON string and normalizes to array.
+	 *
+	 * @param array|string $fields The fields as array or JSON string.
 	 *
 	 * @return void
 	 */
-	protected function set_fields( array $fields ): void {
-		$this->fields = $fields;
+	protected function set_fields( $fields ): void {
+		if ( is_string( $fields ) ) {
+			$fields = json_decode( $fields, true );
+		}
+
+		$this->fields = is_array( $fields ) ? $fields : array();
 	}
 
 	/**
@@ -161,9 +131,9 @@ trait Recipe_Entity {
 	/**
 	 * Get the parent ID.
 	 *
-	 * @return int|string|null
+	 * @return int|null
 	 */
-	protected function get_parent_id() {
+	protected function get_parent_id(): ?int {
 		return $this->parent_id;
 	}
 
@@ -177,6 +147,17 @@ trait Recipe_Entity {
 	}
 
 	/**
+	 * Get the requested path code, when the entity targets a specific path
+	 * of a path-aware parent block. Null when absent or empty.
+	 *
+	 * @return string|null
+	 */
+	protected function get_path_code(): ?string {
+		$path_code = $this->get_request()->get_param( 'path_code' );
+		return ( is_string( $path_code ) && '' !== $path_code ) ? $path_code : null;
+	}
+
+	/**
 	 * Get the request.
 	 *
 	 * @return WP_REST_Request
@@ -186,29 +167,51 @@ trait Recipe_Entity {
 	}
 
 	/**
-	 * Get the recipe object.
+	 * Get the recipe as a `ModelRecipe`-shaped wire array.
 	 *
-	 * Returns whatever the recipe-object bridge returns — typically a
-	 * Structure VO from `Services\Recipe\Structure::retrieve()`. May
-	 * return `null` for a missing recipe; consumers must handle that.
+	 * Delegates to `Recipe_Response::wire()` — the single wire-retrieval point
+	 * for the recipe REST surface. Returns null when the id doesn't resolve to
+	 * a `uo-recipe`.
 	 *
-	 * The pre-bridge implementation here returned `Automator()->get_recipe_object( $id, 'OBJECT' )`
-	 * directly, which has the same null-on-missing semantics — the trait
-	 * was previously typed `: object` (non-nullable), which silently lied.
-	 * Phase 1c of the api-layer refactor tightened this to `?object`.
+	 * Used by the new-transport mutation handlers (`Recipe_Block_Rest`,
+	 * `Recipe_Item_Rest`) for the `recipe` response key.
 	 *
-	 * @return object|null
+	 * @return array<string, mixed>|null
 	 */
-	protected function get_recipe_object(): ?object {
-		return $this->recipes_bridge()->get_recipe_as_object( $this->get_recipe_id() );
+	protected function get_recipe_wire(): ?array {
+		return Recipe_Response::wire( $this->get_recipe_id() );
 	}
 
 	/**
-	 * Legacy recipe object.
+	 * The 422 envelope builder, provided by `Rest_Responses`. Declared here
+	 * so a class that composes this trait without that one fails to compose
+	 * instead of failing on its first refusal.
 	 *
-	 * @return array
+	 * @param array  $violations Wire-shape violation list (non-empty).
+	 * @param array  $recipe     Full wire recipe, status unchanged.
+	 * @param string $message    Localized top-level summary.
+	 *
+	 * @return WP_REST_Response
 	 */
-	protected function get_recipe_object_legacy(): array {
-		return $this->recipes_bridge()->get_recipes_data( true, $this->get_recipe_id() );
+	abstract protected static function rejection( array $violations, array $recipe, string $message ): WP_REST_Response;
+
+	/**
+	 * Map a `Recipe_Violation_Service::REJECTION_CODE` WP_Error to the 422
+	 * rejection envelope, with the violations stamped onto the current wire
+	 * recipe. The envelope itself comes from `Rest_Responses::rejection()`.
+	 *
+	 * @param \WP_Error $error Rejection built by Recipe_Violation_Service::rejection_error().
+	 *
+	 * @return WP_REST_Response
+	 */
+	protected function rejection_from_error( \WP_Error $error ): WP_REST_Response {
+		$data       = (array) $error->get_error_data();
+		$violations = (array) ( $data['violations'] ?? array() );
+
+		return static::rejection(
+			$violations,
+			( new Recipe_Violation_Annotator() )->annotate( $this->get_recipe_wire() ?? array(), $violations ),
+			$error->get_error_message()
+		);
 	}
 }

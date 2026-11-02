@@ -221,6 +221,7 @@ class UOTC_MODULEINTERACTION extends \Uncanny_Automator\Recipe\Trigger {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 		$result = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT date_time, CURRENT_TIMESTAMP as current_mysql_time
@@ -264,17 +265,17 @@ class UOTC_MODULEINTERACTION extends \Uncanny_Automator\Recipe\Trigger {
 		$module_name = isset( $module_info['file_name'] ) ? $module_info['file_name'] : '';
 
 		$tokens = array(
-			'TCVERB'                      => $verb,
-			$this->get_trigger_meta()     => $module_name,
-			'TC_COURSE_TITLE'             => '',
-			'TC_COURSE_ID'                => '',
-			'TC_COURSE_URL'               => '',
-			'TC_LESSON_TITLE'             => '',
-			'TC_LESSON_ID'                => '',
-			'TC_LESSON_URL'               => '',
-			'TC_TOPIC_TITLE'              => '',
-			'TC_TOPIC_ID'                 => '',
-			'TC_TOPIC_URL'                => '',
+			'TCVERB'                  => $verb,
+			$this->get_trigger_meta() => $module_name,
+			'TC_COURSE_TITLE'         => '',
+			'TC_COURSE_ID'            => '',
+			'TC_COURSE_URL'           => '',
+			'TC_LESSON_TITLE'         => '',
+			'TC_LESSON_ID'            => '',
+			'TC_LESSON_URL'           => '',
+			'TC_TOPIC_TITLE'          => '',
+			'TC_TOPIC_ID'             => '',
+			'TC_TOPIC_URL'            => '',
 		);
 
 		if ( ! class_exists( '\TINCANNYSNC\Database' ) ) {
@@ -283,10 +284,11 @@ class UOTC_MODULEINTERACTION extends \Uncanny_Automator\Recipe\Trigger {
 
 		global $wpdb;
 
-		$table_name   = $wpdb->prefix . Database::TABLE_REPORTING;
+		$table_name = $wpdb->prefix . Database::TABLE_REPORTING;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Tin Canny's own table; the plugin offers no API for this query.
 		$tin_can_data = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT * FROM {$table_name} WHERE user_id = %d AND module LIKE %s ORDER BY xstored DESC LIMIT 0,1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'SELECT * FROM `' . esc_sql( $table_name ) . '` WHERE user_id = %d AND module LIKE %s ORDER BY xstored DESC LIMIT 0,1',
 				$user_id,
 				'%%/uncanny-snc/' . $module_id . '/%%'
 			)

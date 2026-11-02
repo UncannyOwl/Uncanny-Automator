@@ -148,6 +148,7 @@ class PMP_MEMBERSHIPEXPIRES {
 					if ( $result ) {
 						foreach ( $result as $r ) {
 							if ( true === $r['result'] ) {
+								// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 								do_action( 'uap_save_pmp_membership_level', $membership_id, $r['args'], $user_id, $this->trigger_meta );
 								Automator()->maybe_trigger_complete( $r['args'] );
 							}
@@ -171,6 +172,7 @@ class PMP_MEMBERSHIPEXPIRES {
 		if ( empty( $check_updated ) ) {
 			global $wpdb;
 			// Run query to update add_action post meta
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API rewrites a meta key or value across posts.
 			$wpdb->query(
 				$wpdb->prepare(
 					"UPDATE {$wpdb->postmeta} SET meta_value = %s WHERE meta_key = %s AND meta_value = %s",

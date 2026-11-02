@@ -448,6 +448,7 @@ class Fluent_Cart_Helpers extends Abstract_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- FluentCart's own table; the plugin offers no API for this query.
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->prefix}fct_customers WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -578,6 +579,7 @@ class Fluent_Cart_Helpers extends Abstract_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- FluentCart's own table; the plugin offers no API for this query.
 		$rows = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT post_id FROM {$wpdb->prefix}fct_order_items WHERE order_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared

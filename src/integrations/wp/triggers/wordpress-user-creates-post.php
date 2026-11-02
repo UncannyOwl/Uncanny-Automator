@@ -37,9 +37,9 @@ class WP_USERCREATESPOST extends \Uncanny_Automator\Recipe\Trigger {
 		// session (scheduled, cron, programmatic) and always attributed the
 		// post author explicitly. validate() owns attribution below.
 		$this->set_is_login_required( false );
-		// translators: %1$s is a post type, %2$s is a taxonomy term, %3$s is a taxonomy.
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Post type, %2$s: Taxonomy term, %3$s: Taxonomy */
 				esc_html_x( 'A user publishes a {{type of:%1$s}} post with {{a taxonomy term:%2$s}} in {{a taxonomy:%3$s}}', 'WordPress', 'uncanny-automator' ),
 				$this->get_trigger_meta(),
 				'WPTAXONOMYTERM:' . $this->get_trigger_meta(),

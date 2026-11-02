@@ -7,6 +7,10 @@
 
 namespace Uncanny_Automator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 
 <div class="uap-settings-panel-content-paragraph" style="margin-top:0;">

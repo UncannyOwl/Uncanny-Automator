@@ -6,7 +6,6 @@ use Uncanny_Automator\Automator_Functions;
 use Uncanny_Automator\Resolver\Conditions\Errors_Mapping;
 use Uncanny_Automator\Resolver\Conditions\Errors_Registry;
 use Uncanny_Automator\Resolver\Fields_Resolver;
-use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	return;
@@ -149,21 +148,12 @@ function action_fields_logger( $hook_args = array() ) {
  */
 function recipe_triggers_logger( $hook_args = array() ) {
 
-	// Get the data for the recipe being triggered.
-	$recipe_data = Automator()->get_recipes_data( false, absint( $hook_args['recipe_id'] ) );
-
 	$current_triggers = array();
 
-	// Retrieve the triggers for the recipe.
-	foreach ( $recipe_data as $recipe_id => $recipe ) {
-		if ( is_array( $recipe['triggers'] ) && ! empty( $recipe['triggers'] ) ) {
-			$triggers_live    = array_filter(
-				$recipe['triggers'],
-				function ( $trigger_item ) {
-					return 'publish' === $trigger_item['post_status'];
-				}
-			);
-			$current_triggers = array_column( $triggers_live, 'ID' );
+	// The recipe's live triggers.
+	foreach ( automator_get_recipe_trigger_store()->get_recipe_trigger_posts( absint( $hook_args['recipe_id'] ) ) as $trigger_post ) {
+		if ( 'publish' === $trigger_post->post_status ) {
+			$current_triggers[] = $trigger_post->ID;
 		}
 	}
 
@@ -232,55 +222,6 @@ function recipe_actions_flow_logger( $hook_args = array() ) {
 }
 
 /**
- * @param mixed[] $hook_args
- *
- * @return void
- */
-function closure_logger( $hook_args ) {
-
-	// Prepare arguments for logging
-	$args = array(
-		'user_id'       => absint( $hook_args['user_id'] ),
-		'recipe_id'     => absint( $hook_args['recipe_id'] ),
-		'recipe_log_id' => absint( $hook_args['recipe_log_id'] ),
-	);
-
-	$logger = new Recipe_Objects_Logger();
-
-	global $wpdb;
-
-	$result = $wpdb->get_row(
-		$wpdb->prepare(
-			"SELECT post.ID, meta.meta_value FROM {$wpdb->posts} as post
-			INNER JOIN {$wpdb->postmeta} as meta
-			ON post.ID = meta.post_id
-			WHERE meta.meta_key = 'REDIRECTURL'
-			AND post.post_parent = %d
-			AND post.post_type = %s
-			",
-			$args['recipe_id'],
-			AUTOMATOR_POST_TYPE_CLOSURE
-		),
-		ARRAY_A
-	);
-
-	if ( ! empty( $result ) ) {
-		$recorded = $logger->get_meta( $args, 'closures' );
-		if ( empty( $recorded ) ) {
-			$closure_meta = Formatters_Utils::flatten_post_meta( (array) get_post_meta( $result['ID'] ) );
-			$logger->add_meta(
-				$args,
-				'closures',
-				array(
-					'log'  => $result,
-					'meta' => $closure_meta,
-				)
-			);
-		}
-	}
-}
-
-/**
  * Logs the conditions for a recipe action that failed.
  *
  * @param mixed[] $action The action data.
@@ -325,6 +266,9 @@ function recipe_actions_conditions_logger( $action = array(), $code = '', $messa
 	$error_registry = Errors_Registry::get_instance();
 	$errors_mapping = new Errors_Mapping();
 
+	// The registry holds this run's failed conditions only; conditions_errors_logger() writes them under the same ID.
+	$error_registry->use_run( absint( $action['args']['recipe_log_id'] ?? 0 ) );
+
 	// Set errors mapping source and action id
 	$actions_conditions = get_post_meta( $recipe_id, 'actions_conditions', true );
 	if ( ! is_string( $actions_conditions ) ) {
@@ -358,8 +302,14 @@ function recipe_actions_conditions_logger( $action = array(), $code = '', $messa
  */
 function conditions_errors_logger( $recipe_id = 0, $user_id = 0, $recipe_log_id = 0 ) {
 
-	// Bail if there are no errors.
-	$error_registry = Errors_Registry::get_instance();
+	// Bail if there are no errors. This fires on every recipe run (via the
+	// automator_recipe_action_walk_completed flush hook and the condition_failed listener), so
+	// writing an empty '[]' row would litter uap_recipe_log_meta. Only this run's errors count:
+	// the registry lives for the whole PHP process, which can run several recipes.
+	$errors = Errors_Registry::get_instance()->get_run_errors( absint( $recipe_log_id ) );
+	if ( array() === $errors ) {
+		return;
+	}
 
 	// Initialize the recipe objects logger.
 	$recipe_objects_logger = new Recipe_Objects_Logger();
@@ -372,7 +322,7 @@ function conditions_errors_logger( $recipe_id = 0, $user_id = 0, $recipe_log_id 
 	);
 
 	// Add the errors to the recipe objects logger as meta data.
-	$recipe_objects_logger->add_meta( $args, 'conditions_failed', $error_registry->get_errors() );
+	$recipe_objects_logger->add_meta( $args, 'conditions_failed', $errors );
 }
 
 /**
@@ -549,7 +499,6 @@ function fields_logger_register_listeners() {
 	add_action( 'automator_recipe_process_user_trigger_num_times_insufficient', '\Uncanny_Automator\Logger\trigger_fields_logger', 10, 1 );
 	add_action( 'automator_recipe_process_user_trigger_num_times_insufficient', '\Uncanny_Automator\Logger\recipe_triggers_logger', 20, 1 );
 	add_action( 'automator_recipe_process_user_trigger_num_times_insufficient', '\Uncanny_Automator\Logger\recipe_actions_flow_logger', 30, 1 );
-	add_action( 'automator_recipe_process_user_trigger_num_times_insufficient', '\Uncanny_Automator\Logger\closure_logger', 40, 1 );
 	add_action( 'automator_recipe_process_user_trigger_num_times_insufficient', '\Uncanny_Automator\Logger\recipe_triggers_logic_logger', 50, 1 );
 
 	// Record trigger - recipe_triggers_logger().
@@ -558,13 +507,11 @@ function fields_logger_register_listeners() {
 	add_action( 'automator_trigger_completed', '\Uncanny_Automator\Logger\recipe_triggers_logger', 10, 1 );
 	add_action( 'automator_trigger_completed', '\Uncanny_Automator\Logger\trigger_fields_logger', 20, 1 );
 	add_action( 'automator_trigger_completed', '\Uncanny_Automator\Logger\recipe_actions_flow_logger', 30, 1 );
-	add_action( 'automator_trigger_completed', '\Uncanny_Automator\Logger\closure_logger', 40, 1 );
 	add_action( 'automator_trigger_completed', '\Uncanny_Automator\Logger\recipe_triggers_logic_logger', 50, 1 );
 
-	// Log all conditions error after the actions has been completed. Just before the closures begin executing.
-	// Log all gathered async actions.
-	add_action( 'automator_recipe_process_complete_complete_actions_before_closures', '\Uncanny_Automator\Logger\conditions_errors_logger', 10, 3 );
-	add_action( 'automator_recipe_process_complete_complete_actions_before_closures', '\Uncanny_Automator\Logger\log_async_actions', 20, 4 );
+	// Flush condition errors and delay entries once the action walk completed.
+	add_action( 'automator_recipe_action_walk_completed', '\Uncanny_Automator\Logger\conditions_errors_logger', 10, 3 );
+	add_action( 'automator_recipe_action_walk_completed', '\Uncanny_Automator\Logger\log_async_actions', 20, 4 );
 
 	// Record field at the start of the action process.
 	// Log tokens.
@@ -573,4 +520,4 @@ function fields_logger_register_listeners() {
 
 	// Collects the async actions.
 	add_action( 'automator_action_been_process_further', '\Uncanny_Automator\Logger\collect_async_actions' );
-};
+}

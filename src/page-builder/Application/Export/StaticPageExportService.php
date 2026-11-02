@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Application\Export;
 use UncannyPageBuilder\Application\DesignStandardsService;
 use UncannyPageBuilder\Application\Rendering\LucideRuntimeInitializer;
 use UncannyPageBuilder\Application\Rendering\PublicRuntimeAssetCatalog;
+use UncannyPageBuilder\Domain\ArrayShape;
 use UncannyPageBuilder\Domain\Binding\DynamicBindingRenderMode;
 use UncannyPageBuilder\Domain\Compiler\ShadowCompiler;
 use UncannyPageBuilder\Domain\Concurrency\SourceGenerationSnapshot;
@@ -94,15 +95,15 @@ final class StaticPageExportService implements StaticPageExportBuilderInterface
         ) {
             throw new StaleSourceGenerationException(
                 'page',
-                $lastSnapshot->pageGeneration(),
-                $currentPageGeneration,
+                (int) $lastSnapshot->pageGeneration(),
+                (int) $currentPageGeneration,
             );
         }
 
         throw new StaleSourceGenerationException(
             'global',
-            $lastSnapshot?->globalGeneration() ?? 0,
-            $this->sourceGenerations->globalGeneration(),
+            (int) ($lastSnapshot?->globalGeneration() ?? 0),
+            (int) $this->sourceGenerations->globalGeneration(),
         );
     }
 
@@ -114,7 +115,7 @@ final class StaticPageExportService implements StaticPageExportBuilderInterface
         StaticExportPurpose $purpose,
     ): StaticPageExport {
         if ($pageId <= 0 || !$this->sections->pageExists($pageId)) {
-            throw new PageNotFoundException($pageId);
+            throw new PageNotFoundException((int) $pageId);
         }
 
         $collection = $this->sections->findByPageId($pageId);
@@ -317,7 +318,7 @@ final class StaticPageExportService implements StaticPageExportBuilderInterface
             }
 
             if ($bindingMode === DynamicBindingRenderMode::RemoveAll) {
-                if (!is_array($omittedBindingIds) || !array_is_list($omittedBindingIds)) {
+                if (!is_array($omittedBindingIds) || !ArrayShape::isList($omittedBindingIds)) {
                     throw new DeactivationFallbackCompilationFailed('Deactivation fallback omission evidence is missing.');
                 }
                 foreach ($omittedBindingIds as $bindingId) {
@@ -414,14 +415,19 @@ final class StaticPageExportService implements StaticPageExportBuilderInterface
             . '<meta charset="utf-8">' . "\n"
             . '<meta name="viewport" content="width=device-width, initial-scale=1">' . "\n"
             . '<title>' . self::escapeText($title) . '</title>' . "\n"
+            // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- Standalone export document written to a file; WordPress never renders it.
             . '<link rel="stylesheet" href="assets/bootstrap.min.css">' . "\n"
+            // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- Standalone export document written to a file; WordPress never renders it.
             . '<link rel="stylesheet" href="assets/bootstrap-extended-spacing.css">' . "\n"
+            // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- Standalone export document written to a file; WordPress never renders it.
             . '<link rel="stylesheet" href="assets/page.css">' . "\n"
             . '</head>' . "\n"
             . '<body>' . "\n"
             . $this->renderCanvas($bodyHtml) . "\n"
+            // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- Standalone export document written to a file; WordPress never renders it.
             . '<script src="assets/lucide.min.js"></script>' . "\n"
             . '<script>' . LucideRuntimeInitializer::script() . '</script>' . "\n"
+            // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- Standalone export document written to a file; WordPress never renders it.
             . '<script defer src="assets/alpine.min.js"></script>' . "\n"
             . ($customJavaScript !== '' ? $customJavaScript . "\n" : '')
             . '</body>' . "\n"
@@ -562,12 +568,12 @@ final class StaticPageExportService implements StaticPageExportBuilderInterface
     {
         $runtime = $dependencies['public_runtime_manifest'] ?? null;
         $assets = is_array($runtime) ? ($runtime['assets'] ?? null) : null;
-        if (!is_array($assets) || $assets === [] || array_is_list($assets)) {
+        if (!is_array($assets) || $assets === [] || ArrayShape::isList($assets)) {
             throw new DeactivationFallbackCompilationFailed('Static export is missing its public runtime manifest.');
         }
 
         $fonts = $dependencies['font_assets'] ?? [];
-        if (!is_array($fonts) || ($fonts !== [] && array_is_list($fonts))) {
+        if (!is_array($fonts) || ($fonts !== [] && ArrayShape::isList($fonts))) {
             throw new DeactivationFallbackCompilationFailed('Static export contains an invalid font manifest.');
         }
 
@@ -655,7 +661,7 @@ final class StaticPageExportService implements StaticPageExportBuilderInterface
         }
         unset($child);
 
-        if (!array_is_list($value)) {
+        if (!ArrayShape::isList($value)) {
             ksort($value);
         }
     }

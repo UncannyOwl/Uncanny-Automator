@@ -2,8 +2,12 @@
 
 namespace Uncanny_Automator\App\Recipe_Builder\Block;
 
+use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Layout;
+use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Default_Modifier;
 use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Details;
+use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Modifier_Type;
 use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Path;
+use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Sentence;
 use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Unsupported_Entity;
 
 /**
@@ -74,11 +78,41 @@ class Block_Config {
 	private array $paths = array();
 
 	/**
+	 * How the block encloses the items placed inside it.
+	 *
+	 * One of {@see Block_Layout}. Declared by the block definition, never inferred from the shape of the rest of this config.
+	 *
+	 * @var string
+	 */
+	private string $layout = Block_Layout::DEFAULT_LAYOUT;
+
+	/**
+	 * Accepted modifier types as value objects. Each entry carries the wire `id` (`block_modifier_type` code) and a contextual display `name`.
+	 *
+	 * @var Block_Modifier_Type[]
+	 */
+	private array $modifier_types = array();
+
+	/**
+	 * Default modifiers auto-attached when the block is created.
+	 *
+	 * @var Block_Default_Modifier[]
+	 */
+	private array $default_modifiers = array();
+
+	/**
 	 * Dependency description.
 	 *
 	 * @var string
 	 */
 	private string $dependency_description = '';
+
+	/**
+	 * Block sentence (optional).
+	 *
+	 * @var Block_Sentence|null
+	 */
+	private ?Block_Sentence $sentence = null;
 
 	/**
 	 * Private constructor. Use create() or from_array() to instantiate.
@@ -112,6 +146,9 @@ class Block_Config {
 	 *   - unsupported_entities (array, optional): Unsupported entities
 	 *   - fields (array, optional): Block fields
 	 *   - paths (array, optional): Block paths
+	 *   - layout (string, optional): One of {@see Block_Layout}; defaults to {@see Block_Layout::DEFAULT_LAYOUT}
+	 *   - modifier_types (array, optional): Accepted modifier-type entries as `['id' => ..., 'name' => ...]` arrays or {@link Block_Modifier_Type} value objects
+	 *   - default_modifiers (array, optional): Default-modifier skeletons
 	 *   - dependency_description (string, optional): Dependency description
 	 *
 	 * @return self
@@ -128,7 +165,14 @@ class Block_Config {
 		$instance->unsupported_entities( $config['unsupported_entities'] ?? array() );
 		$instance->fields( $config['fields'] ?? array() );
 		$instance->paths( $config['paths'] ?? array() );
+		$instance->layout( $config['layout'] ?? Block_Layout::DEFAULT_LAYOUT );
+		$instance->modifier_types( $config['modifier_types'] ?? array() );
+		$instance->default_modifiers( $config['default_modifiers'] ?? array() );
 		$instance->dependency_description( $config['dependency_description'] ?? '' );
+
+		if ( array_key_exists( 'sentence', $config ) ) {
+			$instance->sentence( $config['sentence'] );
+		}
 
 		return $instance;
 	}
@@ -233,6 +277,59 @@ class Block_Config {
 	}
 
 	/**
+	 * Set how the block encloses the items placed inside it.
+	 *
+	 * @param string $layout One of {@see Block_Layout}.
+	 *
+	 * @return self
+	 */
+	public function layout( string $layout ): self {
+		$this->layout = $layout;
+		return $this;
+	}
+
+	/**
+	 * Set the modifier types the block accepts.
+	 *
+	 * Each entry can be a {@link Block_Modifier_Type} value object or a data array `['id' => ..., 'name' => ...]`; data arrays are converted via the value object's constructor (which validates the shape).
+	 *
+	 * @param array $types List of modifier-type data arrays or value objects.
+	 *
+	 * @return self
+	 */
+	public function modifier_types( array $types ): self {
+		$this->modifier_types = array_map(
+			function ( $entry ) {
+				return $entry instanceof Block_Modifier_Type
+					? $entry
+					: new Block_Modifier_Type( $entry );
+			},
+			$types
+		);
+		return $this;
+	}
+
+	/**
+	 * Set the default modifiers auto-attached on block creation.
+	 *
+	 * @param array $defaults List of `Block_Default_Modifier` instances or data arrays.
+	 *
+	 * @return self
+	 */
+	public function default_modifiers( array $defaults ): self {
+		$this->default_modifiers = array_map(
+			function ( $entry ) {
+				return $entry instanceof Block_Default_Modifier
+					? $entry
+					: new Block_Default_Modifier( $entry );
+			},
+			$defaults
+		);
+
+		return $this;
+	}
+
+	/**
 	 * Set dependency description.
 	 *
 	 * @param string $dependency_description Dependency description.
@@ -241,6 +338,27 @@ class Block_Config {
 	 */
 	public function dependency_description( string $dependency_description ): self {
 		$this->dependency_description = $dependency_description;
+		return $this;
+	}
+
+	/**
+	 * Set the block sentence (or clear it with `null`).
+	 *
+	 * @param Block_Sentence|array|null $sentence Sentence value object,
+	 *                                            data array, or null.
+	 *
+	 * @return self
+	 */
+	public function sentence( $sentence ): self {
+		if ( null === $sentence ) {
+			$this->sentence = null;
+			return $this;
+		}
+
+		$this->sentence = $sentence instanceof Block_Sentence
+			? $sentence
+			: new Block_Sentence( $sentence );
+
 		return $this;
 	}
 
@@ -317,12 +435,48 @@ class Block_Config {
 	}
 
 	/**
+	 * Get how the block encloses the items placed inside it.
+	 *
+	 * @return string One of {@see Block_Layout}.
+	 */
+	public function get_layout(): string {
+		return $this->layout;
+	}
+
+	/**
+	 * Get the accepted modifier types.
+	 *
+	 * @return string[]
+	 */
+	public function get_modifier_types(): array {
+		return $this->modifier_types;
+	}
+
+	/**
+	 * Get the default modifiers as value objects.
+	 *
+	 * @return Block_Default_Modifier[]
+	 */
+	public function get_default_modifiers(): array {
+		return $this->default_modifiers;
+	}
+
+	/**
 	 * Get dependency description.
 	 *
 	 * @return string
 	 */
 	public function get_dependency_description(): string {
 		return $this->dependency_description;
+	}
+
+	/**
+	 * Get the block sentence.
+	 *
+	 * @return Block_Sentence|null
+	 */
+	public function get_sentence(): ?Block_Sentence {
+		return $this->sentence;
 	}
 
 	/**

@@ -50,7 +50,9 @@ final class PageSourceArchiveDownloadAction
             );
         }
 
-        $token = is_string($_GET['artifact'] ?? null) ? (string) $_GET['artifact'] : '';
+        $token = isset($_GET['artifact']) && is_string($_GET['artifact'])
+            ? sanitize_text_field(wp_unslash($_GET['artifact']))
+            : '';
         $artifact = WordPressCallbackBoundary::valueOrDie(
             'page.export.artifact',
             fn () => $this->artifacts->take($pageId, $token),
@@ -84,7 +86,7 @@ final class PageSourceArchiveDownloadAction
                 throw new \RuntimeException('The page archive response already sent output.');
             }
 
-            // phpcs:ignore WordPress.PHP.IniSet.Risky -- ZIP downloads require identity encoding for Content-Length.
+            // phpcs:ignore WordPress.PHP.IniSet.Risky, Squiz.PHP.DiscouragedFunctions.Discouraged -- ZIP downloads require identity encoding for Content-Length.
             @ini_set('zlib.output_compression', '0');
             if (function_exists('apache_setenv')) {
                 @apache_setenv('no-gzip', '1');
@@ -102,7 +104,7 @@ final class PageSourceArchiveDownloadAction
                 throw new \RuntimeException('The page archive response ended before all bytes were sent.');
             }
         } catch (\Throwable $e) {
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Page archive download failed for page %d: %s: %s',
                 $pageId,
                 $e::class,
@@ -113,7 +115,7 @@ final class PageSourceArchiveDownloadAction
             try {
                 $this->artifacts->delete($artifact);
             } catch (\Throwable $cleanupFailure) {
-                error_log(sprintf(
+                DiagnosticLog::write(sprintf(
                     '[Uncanny Page Builder] Page archive cleanup failed for page %d (%s).',
                     $pageId,
                     $cleanupFailure::class,

@@ -1,7 +1,4 @@
 <?php
-
-namespace Uncanny_Automator;
-
 /**
  * General
  * Settings > General
@@ -17,23 +14,42 @@ namespace Uncanny_Automator;
  * $layout_version  The UI version, either "default" or "focus"
  */
 
+namespace Uncanny_Automator;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
+
+// In "Focus" mode the tab strip is hidden, so the tabs component has no tab to resolve the active panel from; pass the selected tab's key as the controlled value so its panel still shows.
+$focus_active_value = '';
+if ( 'focus' === $layout_version ) {
+	foreach ( $general_tabs as $focus_tab_key => $focus_tab ) {
+		if ( ! empty( $focus_tab->is_selected ) ) {
+			$focus_active_value = (string) $focus_tab_key;
+			break;
+		}
+	}
+}
+
 ?>
 
-<uo-tabs direction="column" parameter="general">
+<uas-tabs orientation="vertical"<?php echo '' !== $focus_active_value ? ' value="' . esc_attr( $focus_active_value ) . '"' : ''; ?>>
 
 	<?php
 
 	// Add navigation (tabs)
 	// But don't add them in the "Focus" mode
-	if ( $layout_version !== 'focus' ) {
+	if ( 'focus' !== $layout_version ) {
 
 		// Create tabs
 		foreach ( $general_tabs as $tab_key => $general_tab ) {
 
 			?>
 
-			<uo-tab
-				id="<?php echo esc_attr( $tab_key ); ?>"
+			<uas-tab
+				value="<?php echo esc_attr( $tab_key ); ?>"
 
 				<?php
 
@@ -51,18 +67,10 @@ namespace Uncanny_Automator;
 
 				<?php
 
-				// IF the current tab is NOT selected,
-				// and if the content DOESN'T have to be preloaded
-				// THEN add the href attribute, which will redirect the user to another page
-				if ( ! $general_tab->is_selected && ! $general_tab->preload ) {
-					?>
-
-					href="<?php echo esc_url( Admin_Settings_General::utility_get_general_page_link( $tab_key ) ); ?>"
-
-					<?php
-				}
-
+				// The href is the tab's canonical URL. It lets an in-place switch update the address bar, and lets a non-rendered tab navigate with a full page load.
 				?>
+
+				href="<?php echo esc_url( Admin_Settings_General::utility_get_general_page_link( $tab_key ) ); ?>"
 			>
 				<?php
 
@@ -71,9 +79,7 @@ namespace Uncanny_Automator;
 
 					?>
 
-					<uo-icon
-						id="<?php echo esc_attr( $general_tab->icon ); ?>"
-					></uo-icon>
+					<uas-icon code="<?php echo esc_attr( $general_tab->icon ); ?>"></uas-icon>
 
 					<?php
 				}
@@ -81,12 +87,11 @@ namespace Uncanny_Automator;
 				?>
 
 				<?php echo esc_html( $general_tab->name ); ?>
-			</uo-tab>
+			</uas-tab>
 
 			<?php
 
 		}
-
 	}
 
 	// Add tab panels
@@ -99,8 +104,9 @@ namespace Uncanny_Automator;
 
 			?>
 
-			<uo-tab-panel
-				id="<?php echo esc_attr( $tab_key ); ?>"
+			<uas-tab-panel
+				slot="panel"
+				name="<?php echo esc_attr( $tab_key ); ?>"
 
 				<?php
 
@@ -112,7 +118,7 @@ namespace Uncanny_Automator;
 
 				<?php do_action( 'automator_settings_general_' . $tab_key . '_tab' ); ?>
 
-			</uo-tab-panel>
+			</uas-tab-panel>
 
 			<?php
 
@@ -121,4 +127,4 @@ namespace Uncanny_Automator;
 
 	?>
 
-</uo-tabs>
+</uas-tabs>

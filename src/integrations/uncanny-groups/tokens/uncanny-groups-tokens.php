@@ -145,6 +145,7 @@ class Uncanny_Groups_Tokens {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads the stored meta value raw; get_post_meta() would unserialize it.
 		$value = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT meta_value FROM $wpdb->postmeta WHERE post_id = %d AND meta_key = %s LIMIT 1",

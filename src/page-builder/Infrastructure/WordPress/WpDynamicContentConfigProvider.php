@@ -31,6 +31,7 @@ final class WpDynamicContentConfigProvider
     private function applyArrayFilter(string $hook, array $default): array
     {
         try {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Callers pass this plugin's own uncanny_page_builder_* hook names.
             $filtered = apply_filters($hook, $default);
         } catch (\Throwable $failure) {
             $this->reportFilterFailure($hook, $failure);
@@ -44,7 +45,7 @@ final class WpDynamicContentConfigProvider
     private function reportFilterFailure(string $hook, \Throwable $failure): void
     {
         try {
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] WordPress filter "%s" failed (%s).',
                 $hook,
                 $failure::class,

@@ -59,7 +59,7 @@ class SENDY_ADD_UPDATE_LIST_CONTACT extends \Uncanny_Automator\Recipe\App_Action
 			// translators: %s: More info link
 			esc_html_x( 'Standard date format should follow date-month-year patterns or today, tomorrow, 5 days ago, 5 days etc. %s', 'Sendy', 'uncanny-automator' ),
 			sprintf(
-				'<a href="%s" target="_blank">%s <uo-icon id="external-link"></uo-icon></a>',
+				'<a href="%s" target="_blank">%s <uas-icon code="arrow-up-right-from-square"></uas-icon></a>',
 				'https://sendy.co/forum/discussion/1134/date-custom-field-format#gsc.tab=0',
 				esc_html_x( 'More info', 'Sendy', 'uncanny-automator' )
 			)

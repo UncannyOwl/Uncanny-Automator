@@ -46,8 +46,8 @@ final class GlobalSourceMutation
             if ($this->activeExpectedGeneration !== $expectedGeneration) {
                 throw new StaleSourceGenerationException(
                     'global',
-                    $expectedGeneration,
-                    $this->activeExpectedGeneration ?? -1,
+                    (int) $expectedGeneration,
+                    (int) ($this->activeExpectedGeneration ?? -1),
                 );
             }
 

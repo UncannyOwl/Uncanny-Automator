@@ -168,7 +168,7 @@ class Atom_To_Rss_Converter {
 
 		if ( ! $loaded || null === $src->documentElement ) {
 			$detail = ! empty( $errors ) ? trim( $errors[0]->message ) : 'unknown';
-			throw new RuntimeException( 'Could not parse ATOM feed as XML: ' . $detail );
+			throw new RuntimeException( 'Could not parse ATOM feed as XML: ' . esc_html( $detail ) );
 		}
 
 		$atom_root = $src->documentElement;

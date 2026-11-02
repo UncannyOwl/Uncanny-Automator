@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects;
 
@@ -87,7 +86,7 @@ class Integration_Type {
 
 		if ( ! in_array( $value, $valid_types, true ) ) {
 			throw new InvalidArgumentException(
-				'Integration type must be "plugin", "app", or "built-in", got: ' . $value
+				'Integration type must be "plugin", "app", or "built-in", got: ' . esc_html( $value )
 			);
 		}
 	}

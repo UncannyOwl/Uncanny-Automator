@@ -4,11 +4,20 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Kernel\Providers\Api;
 
+use UncannyPageBuilder\Api\AgentPreviewController;
+use UncannyPageBuilder\Application\Export\StaticPageExportBuilderInterface;
+use UncannyPageBuilder\Application\Preview\CreatePagePreview;
+use UncannyPageBuilder\Application\Preview\PreviewSnapshotStoreInterface;
+use UncannyPageBuilder\Infrastructure\Preview\WordPressPreviewSnapshotStore;
+use UncannyPageBuilder\Infrastructure\Preview\VisitorPreviewBuilder;
+use UncannyPageBuilder\Infrastructure\Preview\PreviewResponseServer;
 use UncannyPageBuilder\Api\AgentGuideController;
 use UncannyPageBuilder\Api\AgentIconController;
 use UncannyPageBuilder\Api\AgentMediaController;
 use UncannyPageBuilder\Api\AgentNavigationController;
 use UncannyPageBuilder\Api\AgentPageController;
+use UncannyPageBuilder\Api\AgentPagePartsController;
+use UncannyPageBuilder\Application\ManagePageParts;
 use UncannyPageBuilder\Api\AgentPageController\AgentWrite\AgentWriteErrorMapper;
 use UncannyPageBuilder\Api\AgentPageController\AgentWrite\AgentWriteGuard;
 use UncannyPageBuilder\Api\AgentPageController\AgentWrite\AgentWritePageOwnerResolver;
@@ -46,6 +55,7 @@ use UncannyPageBuilder\Api\AgentPageController\SectionSourcePatch\SectionSourceW
 use UncannyPageBuilder\Api\AgentPageController\SectionWriteRequestResolver;
 use UncannyPageBuilder\Api\AgentToolsController;
 use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Application\Agent\SharedRestOperationRegistryInterface;
 use UncannyPageBuilder\Application\Canvas\CreateCanvasUseCase;
 use UncannyPageBuilder\Application\Canvas\AttachReusableToCanvasUseCase;
 use UncannyPageBuilder\Application\Canvas\DeleteCanvasUseCase;
@@ -75,6 +85,7 @@ use UncannyPageBuilder\Domain\Editing\CompactSourceDiffer;
 use UncannyPageBuilder\Domain\Editing\ExactSourcePatcher;
 use UncannyPageBuilder\Domain\Section\HtmlCssProcessor;
 use UncannyPageBuilder\Infrastructure\Persistence\DatabaseSectionRepository;
+use UncannyPageBuilder\Infrastructure\Automator\SharedRestOperations;
 use UncannyPageBuilder\Infrastructure\Section\ComponentCategoryClassifier;
 use UncannyPageBuilder\Infrastructure\Section\CssRulePatcher;
 use UncannyPageBuilder\Infrastructure\Section\DomSectionBindingContractInspector;
@@ -90,8 +101,53 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
 {
     public function register(Container $container): void
     {
+        $container->factory(PreviewSnapshotStoreInterface::class, static fn() => new WordPressPreviewSnapshotStore());
+        $container->factory(CreatePagePreview::class, static fn(Container $c) => new CreatePagePreview(
+            new VisitorPreviewBuilder($c->typed(StaticPageExportBuilderInterface::class)),
+            $c->typed(PreviewSnapshotStoreInterface::class),
+        ));
+        $container->factory(AgentPreviewController::class, static fn(Container $c) => new AgentPreviewController(
+            $c->typed(PermissionChecker::class),
+            $c->typed(DatabaseSectionRepository::class),
+            $c->typed(PageDetailsPortInterface::class),
+            $c->typed(CreatePagePreview::class),
+            $c->typed(PreviewSnapshotStoreInterface::class),
+            $c->typed(SharedRestOperationRegistryInterface::class),
+        ));
+        $container->factory(ManagePageParts::class, static function (Container $c): ManagePageParts {
+            return new ManagePageParts(
+                $c->typed(\UncannyPageBuilder\Application\Canvas\CanvasPortInterface::class),
+                $c->typed(\UncannyPageBuilder\Application\PageGlobalPartSelectionService::class),
+                $c->typed(GlobalPartDefaultsService::class),
+                $c->typed(\UncannyPageBuilder\Infrastructure\Persistence\DatabaseGlobalPartRepository::class),
+                $c->typed(\UncannyPageBuilder\Domain\Concurrency\SourceGenerationStoreInterface::class),
+                $c->typed(\UncannyPageBuilder\Application\Concurrency\PageSourceMutation::class),
+                $c->typed(\UncannyPageBuilder\Application\Concurrency\GlobalSourceMutation::class),
+                $c->typed(\UncannyPageBuilder\Application\Publishing\WorkingCanvasRefresherInterface::class),
+            );
+        });
+        $container->factory(AgentPagePartsController::class, static function (Container $c): AgentPagePartsController {
+            return new AgentPagePartsController(
+                $c->typed(PermissionChecker::class),
+                $c->typed(ManagePageParts::class),
+                $c->typed(AgentWriteGuard::class),
+                $c->typed(SharedRestOperationRegistryInterface::class),
+            );
+        });
         $container->factory(AgentTextResponseServer::class, static function (): AgentTextResponseServer {
             return new AgentTextResponseServer();
+        });
+
+        $container->factory(SharedRestOperations::class, static function (Container $c): SharedRestOperations {
+            return new SharedRestOperations(
+                $c->typed(LocalFileReaderInterface::class),
+                $c->typed(ControlRegistry::class),
+                $c->typed(DatabaseSectionRepository::class),
+                $c->typed(\UncannyPageBuilder\Application\ContentType\SupportsPostTypeUseCase::class),
+            );
+        });
+        $container->factory(SharedRestOperationRegistryInterface::class, static function (Container $c): SharedRestOperationRegistryInterface {
+            return $c->typed(SharedRestOperations::class);
         });
 
         $container->factory(AgentGuideController::class, static function (Container $c): AgentGuideController {
@@ -100,6 +156,7 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
                 $c->typed(BindingRegistry::class),
                 $c->typed(DesignStandardsService::class),
                 $c->typed(LocalFilesystemPortInterface::class),
+                $c->typed(SharedRestOperationRegistryInterface::class),
             );
         });
 
@@ -116,6 +173,7 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
             return new AgentIconController(
                 $c->typed(PermissionChecker::class),
                 $c->typed(LucideIconFinder::class),
+                $c->typed(SharedRestOperationRegistryInterface::class),
             );
         });
 
@@ -123,6 +181,7 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
             return new AgentNavigationController(
                 $c->typed(PermissionChecker::class),
                 $c->typed(NavigationMenuService::class),
+                $c->typed(SharedRestOperationRegistryInterface::class),
             );
         });
 
@@ -130,6 +189,7 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
             return new AgentMediaController(
                 $c->typed(PermissionChecker::class),
                 $c->typed(MediaController::class),
+                $c->typed(SharedRestOperationRegistryInterface::class),
             );
         });
 
@@ -218,6 +278,7 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
                 $c->typed(\UncannyPageBuilder\Application\ShellModeService::class),
                 $c->typed(\UncannyPageBuilder\Infrastructure\WordPress\WpPageGlobalPartResolver::class),
                 $c->typed(PageDetailsPortInterface::class),
+                $c->typed(\UncannyPageBuilder\Infrastructure\WordPress\WpPageGlobalPartResolver::class),
             );
         });
 
@@ -428,6 +489,7 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
             return new AgentPageRouteRegistrar(
                 $c->typed(PermissionChecker::class),
                 $c->typed(AgentWriteGuard::class),
+                $c->typed(SharedRestOperationRegistryInterface::class),
             );
         });
 
@@ -450,13 +512,16 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
 
     public function boot(Container $container): void
     {
+        $container->typed(SharedRestOperations::class)->register();
         $controllers = [
+            $container->typed(AgentPreviewController::class),
             $container->typed(AgentGuideController::class),
             $container->typed(AgentToolsController::class),
             $container->typed(AgentIconController::class),
             $container->typed(AgentNavigationController::class),
             $container->typed(AgentMediaController::class),
             $container->typed(AgentPageController::class),
+            $container->typed(AgentPagePartsController::class),
         ];
 
         // Agent media upload proxies to the Presentation MediaController
@@ -477,5 +542,6 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
         });
 
         $container->typed(AgentTextResponseServer::class)->register();
+        (new PreviewResponseServer())->register();
     }
 }

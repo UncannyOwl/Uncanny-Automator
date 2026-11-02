@@ -4,6 +4,10 @@ namespace Uncanny_Automator\Integrations\Telegram;
 
 use Uncanny_Automator\App_Integrations\App_Helpers;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Telegram_App_Helpers
  *

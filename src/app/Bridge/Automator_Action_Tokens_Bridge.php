@@ -26,4 +26,13 @@ final class Automator_Action_Tokens_Bridge implements Action_Tokens_Bridge {
 
 		return $hydrator->hydrate( $value, $encode );
 	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function get_renderable_tokens( array $action_meta, int $action_id, int $recipe_id ): array {
+		$tokens = \Automator()->tokens->get_action_tokens_renderable( $action_meta, $action_id, $recipe_id );
+
+		return is_array( $tokens ) ? $tokens : array();
+	}
 }

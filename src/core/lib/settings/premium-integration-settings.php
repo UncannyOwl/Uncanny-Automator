@@ -12,6 +12,8 @@
 namespace Uncanny_Automator\Settings;
 
 use Uncanny_Automator\Automator_Options;
+use Uncanny_Automator\Integration;
+use Uncanny_Automator\Integration_Loader\Load_Error_Handler;
 
 use Exception;
 
@@ -32,8 +34,8 @@ abstract class Premium_Integration_Settings {
 
 	/**
 	 * The icon of the integration
-	 * This expects a valid <uo-icon> ID.
-	 * Check the Design Guidelines to see the list of valid IDs.
+	 * This expects a valid <uas-icon> code.
+	 * Check the Design Guidelines to see the list of valid codes.
 	 *
 	 * @var String
 	 */
@@ -62,7 +64,7 @@ abstract class Premium_Integration_Settings {
 
 	/**
 	 * The status of the integration
-	 * This expects a valid <uo-tab> status
+	 * This expects a valid <uas-tab> status
 	 * Check the Design Guidelines to see the list of valid statuses
 	 *
 	 * @var String
@@ -132,8 +134,12 @@ abstract class Premium_Integration_Settings {
 	/**
 	 * __construct
 	 *
+	 * A page that can't be set up, such as one whose set_properties() gives it no ID or no
+	 * name, is refused and never becomes a tab (see refuse_settings_page()).
+	 *
 	 * @param  mixed $dependencies
 	 * @return void
+	 * @throws Exception Inside an integration's load(), when the page is refused.
 	 */
 	final public function __construct( ...$dependencies ) {
 
@@ -142,17 +148,54 @@ abstract class Premium_Integration_Settings {
 			$this->helpers      = array_shift( $dependencies );
 		}
 
-		$this->register_hooks();
+		try {
+			$this->register_hooks();
+		} catch ( Exception $e ) {
+			$this->refuse_settings_page( $e );
+		}
+	}
+
+	/**
+	 * Refuse a settings page that could not be set up.
+	 *
+	 * Inside an integration's load(), the refusal goes on to that integration's own guard,
+	 * which records it under the integration and skips the rest of its load(). Anywhere
+	 * else (an Automator hook such as automator_add_integration, a WordPress hook), it is
+	 * recorded for the load-errors admin notice under this page's class, only this page is
+	 * skipped, and the site keeps running.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param Exception $refusal Why the page could not be set up.
+	 *
+	 * @return void
+	 * @throws Exception Inside an integration's load().
+	 */
+	private function refuse_settings_page( Exception $refusal ) {
+		if ( Integration::is_loading() ) {
+			throw $refusal;
+		}
+
+		( new Load_Error_Handler() )->handle( get_class( $this ), $refusal );
 	}
 
 	/**
 	 * register_hooks
 	 *
+	 * A page without an ID or a name is refused here, before it hooks anything, so it never
+	 * reaches the App integrations screen, where add_tab() would throw while the screen builds.
+	 *
 	 * @return void
+	 * @throws Exception When set_properties() gives the page no ID or no name.
 	 */
 	public function register_hooks() {
 
 		$this->set_properties();
+
+		// Check if the required data is defined
+		if ( empty( $this->get_id() ) || empty( $this->get_name() ) ) {
+			throw new Exception( 'Premium Integration: Define the ID and name of the integration' );
+		}
 
 		$this->maybe_set_third_party_integration( get_called_class() );
 
@@ -267,8 +310,8 @@ abstract class Premium_Integration_Settings {
 
 	/**
 	 * Sets the icon of the integration
-	 * This expects a valid <uo-icon> ID.
-	 * Check the Design Guidelines to see the list of valid IDs.
+	 * This expects a valid <uas-icon> code.
+	 * Check the Design Guidelines to see the list of valid codes.
 	 *
 	 * @param String $icon The icon
 	 */
@@ -473,6 +516,10 @@ abstract class Premium_Integration_Settings {
 				<div class="uap-settings-panel-top">
 					<?php $this->output_panel_top(); ?>
 					<?php $this->display_alerts(); ?>
+					<?php
+					/** This action is documented in src/core/lib/settings/trait-premium-integration-templating.php */
+					do_action( 'automator_settings_premium_integration_alerts', $this );
+					?>
 					<div class="uap-settings-panel-content">
 						<?php $this->output_panel_content(); ?>
 					</div>
@@ -506,11 +553,9 @@ abstract class Premium_Integration_Settings {
 	 */
 	public function output_panel_title() {
 		?>
-		<uo-icon integration="<?php echo esc_attr( $this->get_icon() ); ?>"></uo-icon> <?php echo esc_attr( $this->get_name() ); ?>
+		<uap-d-integrations-icon code="<?php echo esc_attr( $this->get_icon() ); ?>"></uap-d-integrations-icon> <?php echo esc_attr( $this->get_name() ); ?>
 		<?php if ( $this->get_is_third_party() ) : ?>
-			<uo-chip size="small" filled>
-				<?php echo esc_html_x( '3rd-party', 'Integration settings', 'uncanny-automator' ); ?>
-			</uo-chip>
+			<uas-chip size="sm" label="<?php echo esc_attr_x( '3rd-party', 'Integration settings', 'uncanny-automator' ); ?>" color="info" filled></uas-chip>
 		<?php endif; ?>
 		<?php
 	}
@@ -620,12 +665,7 @@ abstract class Premium_Integration_Settings {
 	 */
 	public function add_tab( $tabs ) {
 
-		// Check if the required data is defined
-		if ( empty( $this->get_id() || empty( $this->get_name() ) ) ) {
-			throw new Exception( 'Premium Integration: Define the ID and name of the integration' );
-		}
-
-		// Check if the ID is defined
+		// The ID and the name were checked when the page was set up (register_hooks()).
 		// Create the tab
 		$tabs[ $this->get_id() ] = array(
 			'name'             => $this->get_name(),
@@ -820,22 +860,23 @@ abstract class Premium_Integration_Settings {
 		$alert = wp_parse_args( $alert, $default );
 
 		$allowed_html = array(
-			'a'       => array(
+			'a'        => array(
 				'href'   => array(),
 				'target' => array(),
 			),
-			'uo-icon' => array(
-				'id' => array(),
+			'uas-icon' => array(
+				'code'  => array(),
+				'brand' => array(),
 			),
 		);
 
 		?>
 
-		<uo-alert
+		<uas-alert
 			type="<?php echo esc_attr( $alert['type'] ); ?>"
 			heading="<?php echo esc_attr( $alert['heading'] ); ?>"
 			class="uap-spacing-bottom uap-spacing-top"
-		><?php echo( wp_kses( $alert['content'], $allowed_html ) ); ?></uo-alert>
+		><?php echo( wp_kses( $alert['content'], $allowed_html ) ); ?></uas-alert>
 
 		<?php
 	}
@@ -916,9 +957,9 @@ abstract class Premium_Integration_Settings {
 	public function submit_button( $label ) {
 		?>
 
-			<uo-button type="submit">
+			<uas-button type="submit">
 				<?php echo esc_attr( $label ); ?>
-			</uo-button>
+			</uas-button>
 
 		<?php
 	}
@@ -932,14 +973,14 @@ abstract class Premium_Integration_Settings {
 	 */
 	public function redirect_button( $label, $url, $color = 'primary' ) {
 		?>
-		<uo-button 
+		<uas-button 
 			href="<?php echo esc_attr( $url ); ?>" 
 			color="<?php echo esc_attr( $color ); ?>"
 			target="_self"
 			unsafe-force-target
 		>
 			<?php echo esc_attr( $label ); ?>
-		</uo-button>
+		</uas-button>
 
 		<?php
 	}

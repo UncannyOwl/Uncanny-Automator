@@ -2,6 +2,10 @@
 
 namespace Uncanny_Automator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Admin_Settings_Uncanny_Agent_General
  *
@@ -36,12 +40,17 @@ class Admin_Settings_Uncanny_Agent_General {
 	/**
 	 * Returns the default settings array.
 	 *
+	 * Both launchers are off until the site turns them on: the setup wizard
+	 * does so when the customer chooses Uncanny Agent, and this tab does so
+	 * on save. Sites that upgraded from a release where the launchers were on
+	 * by default keep them on through the seed migration.
+	 *
 	 * @return array<string, mixed>
 	 */
 	public static function get_defaults(): array {
 		return array(
-			self::ENABLED_KEY                => true,
-			self::TOP_BAR_BUTTON_ENABLED_KEY => true,
+			self::ENABLED_KEY                => false,
+			self::TOP_BAR_BUTTON_ENABLED_KEY => false,
 		);
 	}
 

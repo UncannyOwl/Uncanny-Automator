@@ -80,7 +80,7 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 	protected function get_annotations(): array {
 		return array(
 			'readOnlyHint'    => false,
-			'destructiveHint' => false,
+			'destructiveHint' => true,
 			'idempotentHint'  => false,
 			'openWorldHint'   => true,
 		);
@@ -115,7 +115,7 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 				),
 				'status'       => array(
 					'type'        => 'string',
-					'description' => 'Trigger publication status. Update-only. "publish" = active, "draft" = disabled. Recipe/trigger/action statuses are independent.',
+					'description' => 'Trigger publication status. Update-only. "publish" = active, "draft" = disabled. Omit it and a valid save (an add with fields, or an update) switches the trigger on when it has no on / off switch, or while the recipe is a draft.',
 					'enum'        => array( 'draft', 'publish' ),
 				),
 			),
@@ -237,7 +237,7 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 		);
 
 		if ( is_wp_error( $result ) ) {
-			return Json_Rpc_Response::create_error_response( $result->get_error_message() );
+			return Json_Rpc_Response::create_error_response( $this->error_with_reasons( $result ) );
 		}
 
 		$trigger_payload = $this->shape_trigger_output(

@@ -64,6 +64,28 @@ class Action_Error {
 	}
 
 	/**
+	 * An error stored for the owner to read that never escalates to the recipe status, whatever its code does.
+	 *
+	 * For an outcome that is not a failure of the run: a block whose type has no processor registered (no 8.0 Pro
+	 * is active) does not run its actions, and the run keeps the status its steps give it, so it still counts
+	 * toward the recipe's run limits.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $code    Error code (Error_Code constant).
+	 * @param string $message Human-readable error message.
+	 * @param array  $context Optional context data.
+	 *
+	 * @return self
+	 */
+	public static function without_escalation( string $code, string $message, array $context = array() ): self {
+		$error                = new self( $code, $message, $context );
+		$error->is_actionable = false;
+
+		return $error;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function get_code(): string {

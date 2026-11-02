@@ -306,7 +306,7 @@ class Eventin_Helpers extends Abstract_Helpers {
 				'value' => (string) $order->ID,
 				'text'  => '' === $email
 					? sprintf( '#%d', $order->ID )
-					: sprintf( '#%1$d — %2$s', $order->ID, $email ),
+					: sprintf( '#%1$d, %2$s', $order->ID, $email ),
 			);
 		}
 

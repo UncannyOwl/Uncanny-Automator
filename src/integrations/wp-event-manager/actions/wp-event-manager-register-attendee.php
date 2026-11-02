@@ -147,6 +147,7 @@ class Wp_Event_Manager_Register_Attendee extends \Uncanny_Automator\Recipe\Actio
 		);
 
 		// Trigger the new_event_registration hook for compatibility
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WP Event Manager's own hook.
 		do_action( 'new_event_registration', $registration_id, $event_id );
 
 		return true;

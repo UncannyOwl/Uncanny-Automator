@@ -57,8 +57,10 @@ final class AdminSettingsPage
             )
             && $this->allowedCapabilities->currentUserHasAllowedCapability()
         ) {
-            $headerSelection = $this->parseSelection($_POST['default_page_header'] ?? null);
-            $footerSelection = $this->parseSelection($_POST['default_page_footer'] ?? null);
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- parseSelection() accepts only an empty string or digits and rejects the whole submission otherwise.
+            $headerSelection = $this->parseSelection(wp_unslash($_POST['default_page_header'] ?? null));
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- parseSelection() accepts only an empty string or digits and rejects the whole submission otherwise.
+            $footerSelection = $this->parseSelection(wp_unslash($_POST['default_page_footer'] ?? null));
 
             if (
                 $headerSelection !== null

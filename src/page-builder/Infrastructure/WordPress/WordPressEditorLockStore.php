@@ -71,6 +71,7 @@ final class WordPressEditorLockStore implements EditorLockStoreInterface
          * Match WordPress core's compatibility hooks. Suppressing the lock
          * dialog means the competing lock is advisory and may be replaced.
          */
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, applied as WordPress applies it.
         if (!(bool) apply_filters('show_post_locked_dialog', true, $post, $owner)) {
             return EditorOwnershipState::available();
         }
@@ -83,6 +84,7 @@ final class WordPressEditorLockStore implements EditorLockStoreInterface
                     : _x('Another user', 'Page Builder', 'uncanny-automator'),
                 $this->avatarUrl((int) $owner->ID),
             ),
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, applied as WordPress applies it.
             (bool) apply_filters('override_post_lock', true, $post, $owner),
             $token,
         );
@@ -235,6 +237,7 @@ final class WordPressEditorLockStore implements EditorLockStoreInterface
     private function lockWindowSeconds(): int
     {
         return max(0, (int) apply_filters(
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, applied as WordPress applies it.
             'wp_check_post_lock_window',
             self::DEFAULT_WINDOW_SECONDS,
         ));

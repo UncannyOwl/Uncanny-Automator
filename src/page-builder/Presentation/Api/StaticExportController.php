@@ -12,6 +12,7 @@ use UncannyPageBuilder\Application\Export\StaticPageExportService;
 use UncannyPageBuilder\Domain\ErrorMessage;
 use UncannyPageBuilder\Domain\Exception\PageNotFoundException;
 use UncannyPageBuilder\Domain\Section\SectionRepositoryInterface;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 
 final class StaticExportController
 {
@@ -37,7 +38,7 @@ final class StaticExportController
         try {
             return $this->readExport($request);
         } catch (\Throwable $failure) {
-            error_log('[Uncanny Page Builder] Static export request failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Static export request failed (' . $failure::class . ')');
             return ApiResponse::error(ErrorMessage::ControlInvokeFailed, ['retryable' => true]);
         }
     }

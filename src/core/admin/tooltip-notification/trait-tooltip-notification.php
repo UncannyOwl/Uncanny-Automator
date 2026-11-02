@@ -76,18 +76,55 @@ trait Automator_Tooltip_Trait {
 			$tooltips_visibility = array();
 		}
 
-		$show_tooltip = isset( $tooltips_visibility[ $this->tooltip_id ] ) ? $tooltips_visibility[ $this->tooltip_id ] : 0;
+		$dismissed_at = isset( $tooltips_visibility[ $this->tooltip_id ] ) ? (int) $tooltips_visibility[ $this->tooltip_id ] : 0;
 
-		$can_show_tooltip = ! $show_tooltip || ( time() >= $show_tooltip + $this->days_before_reshow * DAY_IN_SECONDS );
-
-		if ( ! $can_show_tooltip ) {
+		if ( $dismissed_at > 0 && ! $this->can_reshow( $dismissed_at, $tooltips_visibility ) ) {
 			return false;
 		}
 
 		// Check if the tooltip should be displayed based on additional logic
 		if ( $this->should_display_tooltip() ) {
+			$this->before_display( $user_id, $dismissed_at, $tooltips_visibility );
 			$this->display_tooltip();
 		}
+	}
+
+	/**
+	 * Whether a dismissed tooltip may show again. By default, after
+	 * `$days_before_reshow` days, every time.
+	 *
+	 * @param int   $dismissed_at        When the user last put the tooltip away.
+	 * @param array $tooltips_visibility The user's tooltip visibility meta.
+	 *
+	 * @return bool
+	 */
+	protected function can_reshow( $dismissed_at, $tooltips_visibility ) {
+		unset( $tooltips_visibility );
+
+		return time() >= $dismissed_at + $this->days_before_reshow * DAY_IN_SECONDS;
+	}
+
+	/**
+	 * Runs just before the tooltip is printed, for a tooltip that keeps count.
+	 *
+	 * @param int   $user_id             The user who sees it.
+	 * @param int   $dismissed_at        When the user last put the tooltip away; 0 when never.
+	 * @param array $tooltips_visibility The user's tooltip visibility meta.
+	 *
+	 * @return void
+	 */
+	protected function before_display( $user_id, $dismissed_at, $tooltips_visibility ) {
+		unset( $user_id, $dismissed_at, $tooltips_visibility );
+	}
+
+	/**
+	 * The tooltip's words and link: dashicon, title, description, cta_label,
+	 * cta_url and, for a link that opens in a new tab, cta_target.
+	 *
+	 * @return array<string,string>
+	 */
+	protected function get_tooltip_content() {
+		return array();
 	}
 
 	/**
@@ -116,15 +153,7 @@ trait Automator_Tooltip_Trait {
 			<?php
 
 			echo wp_kses(
-				$this->create_tooltip_template(
-					array(
-						'dashicon'    => 'megaphone',
-						'title'       => esc_html__( 'Get started with Automator!', 'uncanny-automator' ),
-						'description' => esc_html__( 'Create your first time-saving Automator recipe and put your site on autopilot!', 'uncanny-automator' ),
-						'cta_label'   => esc_html__( 'Start automating!', 'uncanny-automator' ),
-						'cta_url'     => esc_url( admin_url( 'post-new.php?post_type=uo-recipe' ) ),
-					)
-				),
+				$this->create_tooltip_template( $this->get_tooltip_content() ),
 				array(
 					'div'    => array(
 						'class' => array(),
@@ -136,8 +165,10 @@ trait Automator_Tooltip_Trait {
 						'class' => array(),
 					),
 					'a'      => array(
-						'class' => array(),
-						'href'  => array(),
+						'class'  => array(),
+						'href'   => array(),
+						'target' => array(),
+						'rel'    => array(),
 					),
 					'button' => array(
 						'class' => array(),
@@ -164,6 +195,7 @@ trait Automator_Tooltip_Trait {
 	 *     @type string $description  The main content of the tooltip. Default is an empty string.
 	 *     @type string $cta_label    The label for the call-to-action button. Default is an empty string.
 	 *     @type string $cta_url      The URL for the call-to-action button. Default is an empty string.
+	 *     @type string $cta_target   The link's target, such as "_blank". Default is an empty string, the same tab.
 	 * }
 	 *
 	 * @return string The HTML content for the tooltip notification.
@@ -174,6 +206,7 @@ trait Automator_Tooltip_Trait {
 		$description = isset( $content['description'] ) ? $content['description'] : '';
 		$cta_label   = isset( $content['cta_label'] ) ? $content['cta_label'] : '';
 		$cta_url     = isset( $content['cta_url'] ) ? $content['cta_url'] : '';
+		$cta_target  = isset( $content['cta_target'] ) ? $content['cta_target'] : '';
 
 		ob_start();
 
@@ -198,6 +231,9 @@ trait Automator_Tooltip_Trait {
 						<a 
 							class="uap-tooltip-notification__button button button-primary" 
 							href="<?php echo esc_url( $cta_url ); ?>"
+							<?php if ( '' !== $cta_target ) : ?>
+								target="<?php echo esc_attr( $cta_target ); ?>" rel="noopener"
+							<?php endif; ?>
 						>
 							<?php echo esc_html( $cta_label ); ?>
 						</a>

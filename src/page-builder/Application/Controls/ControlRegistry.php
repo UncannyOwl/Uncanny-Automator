@@ -40,7 +40,7 @@ final class ControlRegistry
     private function registerDefinition(ControlDefinition $definition, bool $core): void
     {
         if (isset($this->controls[$definition->id()])) {
-            throw new \InvalidArgumentException(sprintf('Control "%s" is already registered.', $definition->id()));
+            throw new \InvalidArgumentException(sprintf('Control "%s" is already registered.', esc_html($definition->id())));
         }
 
         $this->validateControlId($definition, $core);
@@ -101,17 +101,17 @@ final class ControlRegistry
 
         if ($core) {
             if (!$reserved) {
-                throw new \InvalidArgumentException(sprintf('Core control "%s" must use a reserved core prefix.', $definition->id()));
+                throw new \InvalidArgumentException(sprintf('Core control "%s" must use a reserved core prefix.', esc_html($definition->id())));
             }
             return;
         }
 
         if ($reserved) {
-            throw new \InvalidArgumentException(sprintf('External control "%s" uses reserved core prefix "%s".', $definition->id(), $prefix));
+            throw new \InvalidArgumentException(sprintf('External control "%s" uses reserved core prefix "%s".', esc_html($definition->id()), esc_html($prefix)));
         }
 
         if (preg_match('/^[a-z][a-z0-9_-]*\.[a-z][a-z0-9_-]*\.[a-z][a-z0-9_.-]*$/', $definition->id()) !== 1) {
-            throw new \InvalidArgumentException(sprintf('External control "%s" must be vendor-prefixed, for example vendor.feature.action.', $definition->id()));
+            throw new \InvalidArgumentException(sprintf('External control "%s" must be vendor-prefixed, for example vendor.feature.action.', esc_html($definition->id())));
         }
     }
 
@@ -119,7 +119,7 @@ final class ControlRegistry
     {
         $area = $definition->canvasArea();
         if (!in_array($area, CanvasArea::values(), true)) {
-            throw new \InvalidArgumentException(sprintf('Control "%s" uses unsupported canvas_area "%s".', $definition->id(), $area));
+            throw new \InvalidArgumentException(sprintf('Control "%s" uses unsupported canvas_area "%s".', esc_html($definition->id()), esc_html($area)));
         }
     }
 
@@ -131,7 +131,7 @@ final class ControlRegistry
         }
 
         if (!in_array($hint, ControlClientHint::values(), true)) {
-            throw new \InvalidArgumentException(sprintf('Control "%s" uses unsupported client_hint "%s".', $definition->id(), $hint));
+            throw new \InvalidArgumentException(sprintf('Control "%s" uses unsupported client_hint "%s".', esc_html($definition->id()), esc_html($hint)));
         }
     }
 
@@ -144,17 +144,17 @@ final class ControlRegistry
 
         $surface = $presentation['surface'] ?? null;
         if ($surface !== null && !in_array($surface, ['modal', 'panel', 'admin_header'], true)) {
-            throw new \InvalidArgumentException(sprintf('Control "%s" uses unsupported presentation surface.', $definition->id()));
+            throw new \InvalidArgumentException(sprintf('Control "%s" uses unsupported presentation surface.', esc_html($definition->id())));
         }
 
         $component = $presentation['component'] ?? null;
         if ($component !== null && (!is_string($component) || $component === '')) {
-            throw new \InvalidArgumentException(sprintf('Control "%s" uses an invalid presentation component.', $definition->id()));
+            throw new \InvalidArgumentException(sprintf('Control "%s" uses an invalid presentation component.', esc_html($definition->id())));
         }
 
         $hint = $definition->clientHint();
         if (is_string($surface) && is_string($hint) && str_starts_with($hint, 'open_') && $hint !== 'open_' . $surface) {
-            throw new \InvalidArgumentException(sprintf('Control "%s" has conflicting client_hint and presentation surface.', $definition->id()));
+            throw new \InvalidArgumentException(sprintf('Control "%s" has conflicting client_hint and presentation surface.', esc_html($definition->id())));
         }
     }
 
@@ -162,7 +162,7 @@ final class ControlRegistry
     {
         $exposure = $definition->agentExposure();
         if (!in_array($exposure, ['hidden', 'read', 'write'], true)) {
-            throw new \InvalidArgumentException(sprintf('Control "%s" uses unsupported agent_exposure "%s".', $definition->id(), $exposure));
+            throw new \InvalidArgumentException(sprintf('Control "%s" uses unsupported agent_exposure "%s".', esc_html($definition->id()), esc_html($exposure)));
         }
 
         if ($exposure === 'hidden') {
@@ -177,7 +177,7 @@ final class ControlRegistry
             || $definition->agentInputSchema() === null
             || $definition->agentOutputSchema() === null
         ) {
-            throw new \InvalidArgumentException(sprintf('Agent-exposed control "%s" must declare agent metadata and schemas.', $definition->id()));
+            throw new \InvalidArgumentException(sprintf('Agent-exposed control "%s" must declare agent metadata and schemas.', esc_html($definition->id())));
         }
     }
 
@@ -193,11 +193,11 @@ final class ControlRegistry
         }
 
         if (!is_string($handler) || !class_exists($handler)) {
-            throw new \InvalidArgumentException(sprintf('Handler for control "%s" does not exist.', $definition->id()));
+            throw new \InvalidArgumentException(sprintf('Handler for control "%s" does not exist.', esc_html($definition->id())));
         }
 
         if (!is_a($handler, ControlHandlerInterface::class, true)) {
-            throw new \InvalidArgumentException(sprintf('Handler for control "%s" must implement ControlHandlerInterface.', $definition->id()));
+            throw new \InvalidArgumentException(sprintf('Handler for control "%s" must implement ControlHandlerInterface.', esc_html($definition->id())));
         }
     }
 
@@ -213,11 +213,11 @@ final class ControlRegistry
         }
 
         if (!is_string($resolver) || !class_exists($resolver)) {
-            throw new \InvalidArgumentException(sprintf('State resolver for control "%s" does not exist.', $definition->id()));
+            throw new \InvalidArgumentException(sprintf('State resolver for control "%s" does not exist.', esc_html($definition->id())));
         }
 
         if (!is_a($resolver, ControlStateResolverInterface::class, true)) {
-            throw new \InvalidArgumentException(sprintf('State resolver for control "%s" must implement ControlStateResolverInterface.', $definition->id()));
+            throw new \InvalidArgumentException(sprintf('State resolver for control "%s" must implement ControlStateResolverInterface.', esc_html($definition->id())));
         }
     }
 }

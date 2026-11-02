@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	return;
 }
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
+
 // Set orderby.
 $_GET['orderby'] = 'automator_trigger_id';
 

@@ -204,6 +204,7 @@ class OpenAI_Chat_Generate extends App_Action {
 		$messages = $this->create_simple_message( $system_content, $prompt );
 
 		$payload_builder->model( $model )
+			// phpcs:ignore PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- The site owner connects their own OpenAI account; this integration calls the provider's API for them.
 			->endpoint( 'https://api.openai.com/v1/chat/completions' )
 			->messages( $messages )
 			->json_content();

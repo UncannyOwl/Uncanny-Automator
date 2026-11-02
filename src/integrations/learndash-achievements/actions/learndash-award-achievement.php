@@ -22,9 +22,9 @@ class LD_ACHIEVEMENTS_AWARD extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_code( 'LDACHIEVEMENTS' );
 		$this->set_action_meta( 'LDACHIEVEMENTS_META' );
 
-		/* translators: %1$s is the achievement select field */
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Achievement */
 				esc_html_x( 'Award {{an achievement:%1$s}} to a user', 'LearnDash', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)

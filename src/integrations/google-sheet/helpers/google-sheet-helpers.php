@@ -4,6 +4,10 @@ namespace Uncanny_Automator\Integrations\Google_Sheet;
 use Uncanny_Automator\App_Integrations\App_Helpers;
 use Exception;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Google_Sheet_Helpers
  *

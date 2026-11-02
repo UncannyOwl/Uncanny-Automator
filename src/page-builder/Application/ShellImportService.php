@@ -51,7 +51,7 @@ final class ShellImportService
 
         $size = strlen($html);
         if ($size > self::MAX_ANALYZE_HTML_BYTES) {
-            throw new ShellHtmlTooLargeException($field, $size, self::MAX_ANALYZE_HTML_BYTES);
+            throw new ShellHtmlTooLargeException(esc_html($field), (int) $size, (int) self::MAX_ANALYZE_HTML_BYTES);
         }
     }
 
@@ -179,22 +179,19 @@ final class ShellImportService
             }
         }
 
-        return <<<HTML
-<header class="upb-import-header">
+        return '<header class="upb-import-header">
   <div class="upb-import-header-inner">
-    <a href="/" class="upb-import-logo">{$logoContent}</a>
+    <a href="/" class="upb-import-logo">' . $logoContent . '</a>
     <nav class="upb-import-nav">
-{$navHtml}    </nav>
-{$ctaHtml}
+' . $navHtml . '    </nav>
+' . $ctaHtml . '
   </div>
-</header>
-HTML;
+</header>';
     }
 
     private function buildHeaderCss(): string
     {
-        return <<<CSS
-.upb-import-header {
+        return '.upb-import-header {
   background: var(--bs-body-bg, #ffffff);
   border-bottom: 1px solid var(--bs-border-color, #e0e0e0);
   padding: 0 24px;
@@ -248,8 +245,7 @@ HTML;
 }
 .upb-import-cta:hover {
   opacity: 0.9;
-}
-CSS;
+}';
     }
 
     /**
@@ -288,35 +284,32 @@ CSS;
         }
 
         $copyright = htmlspecialchars(
-            $analysis->copyrightText ?? '&copy; ' . date('Y') . ' ' . $brand . '. All rights reserved.',
+            $analysis->copyrightText ?? '&copy; ' . gmdate('Y') . ' ' . $brand . '. All rights reserved.',
             ENT_QUOTES,
             'UTF-8',
         );
 
-        return <<<HTML
-<footer class="upb-import-footer">
+        return '<footer class="upb-import-footer">
   <div class="upb-import-footer-inner">
     <div class="upb-import-footer-col">
-      <div class="upb-import-footer-brand">{$brand}</div>
+      <div class="upb-import-footer-brand">' . $brand . '</div>
     </div>
     <div class="upb-import-footer-col">
       <div class="upb-import-footer-heading">Links</div>
-{$linksHtml}    </div>
+' . $linksHtml . '    </div>
     <div class="upb-import-footer-col">
       <div class="upb-import-footer-heading">Connect</div>
-{$socialHtml}    </div>
+' . $socialHtml . '    </div>
   </div>
   <div class="upb-import-footer-bottom">
-    <p class="upb-import-footer-copyright">{$copyright}</p>
+    <p class="upb-import-footer-copyright">' . $copyright . '</p>
   </div>
-</footer>
-HTML;
+</footer>';
     }
 
     private function buildFooterCss(): string
     {
-        return <<<CSS
-.upb-import-footer {
+        return '.upb-import-footer {
   background: var(--bs-dark, #1a1a2e);
   color: var(--bs-light, #e0e0e0);
   padding: 48px 24px 24px;
@@ -367,8 +360,7 @@ HTML;
   font-size: 13px;
   opacity: 0.5;
   margin: 0;
-}
-CSS;
+}';
     }
 
     private function socialLabelFromUrl(string $url): string

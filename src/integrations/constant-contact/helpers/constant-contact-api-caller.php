@@ -246,7 +246,7 @@ class Constant_Contact_Api_Caller extends \Uncanny_Automator\App_Integrations\Ap
 
 			$error_message = sprintf(
 				// translators: 1: status code, 2: response data
-				esc_html_x( 'Constant Contant has responded with status code %d' . PHP_EOL . '%s', 'Constant Contact', 'uncanny-automator' ),
+				esc_html_x( "Constant Contact has responded with status code %1\$d\n%2\$s", 'Constant Contact', 'uncanny-automator' ),
 				$response['statusCode'],
 				wp_json_encode( $response['data'] )
 			);

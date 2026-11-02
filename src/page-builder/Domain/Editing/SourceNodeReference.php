@@ -59,6 +59,7 @@ final class SourceNodeReference
     private static function assertPositiveId(mixed $id, string $name): void
     {
         if (!is_int($id) || $id <= 0) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
             throw NodeEditRejectedException::targetChanged('The source ' . $name . ' ID is invalid.');
         }
     }

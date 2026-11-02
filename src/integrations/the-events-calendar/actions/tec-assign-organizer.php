@@ -103,6 +103,7 @@ class EC_ASSIGN_ORGANIZER extends \Uncanny_Automator\Recipe\Action {
 				->set( 'organizer', $organizer_id )
 				->save();
 		} catch ( \Throwable $e ) {
+			/* translators: %s: Error message */
 			$this->add_log_error( sprintf( esc_html_x( 'Failed to assign organizer: %s', 'The Events Calendar', 'uncanny-automator' ), $e->getMessage() ) );
 			return false;
 		}

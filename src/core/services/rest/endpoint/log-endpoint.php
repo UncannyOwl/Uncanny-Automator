@@ -146,24 +146,27 @@ class Log_Endpoint {
 
 		$recipe = $this->logs_factory->recipe()->get_log( $params );
 
-		// Pass the user id to the field resolver.
-		add_filter(
-			'automator_field_resolver_condition_result_user_id',
-			function () use ( $recipe ) {
-				return isset( $recipe['user_id'] ) ? absint( $recipe['user_id'] ) : 0;
-			}
-		);
-
 		if ( empty( $recipe ) ) {
 			return array();
 		}
 
-		// Fetch the triggers items.
-		$triggers_items = $this->logs_factory->trigger()->get_log( $params );
-		// Fetch the actions items.
-		$actions_items = $this->logs_factory->action()->get_log( $params );
+		// Pass the run's user ID to the field resolver while this log is built, and only then.
+		$run_user_id = static function () use ( $recipe ) {
+			return isset( $recipe['user_id'] ) ? absint( $recipe['user_id'] ) : 0;
+		};
 
-		return $this->serve_json( (array) $recipe, (array) $triggers_items, (array) $actions_items );
+		add_filter( 'automator_field_resolver_condition_result_user_id', $run_user_id );
+
+		try {
+			// Fetch the triggers items.
+			$triggers_items = $this->logs_factory->trigger()->get_log( $params );
+			// Fetch the actions items.
+			$actions_items = $this->logs_factory->action()->get_log( $params );
+
+			return $this->serve_json( (array) $recipe, (array) $triggers_items, (array) $actions_items );
+		} finally {
+			remove_filter( 'automator_field_resolver_condition_result_user_id', $run_user_id );
+		}
 	}
 
 	/**
@@ -197,12 +200,9 @@ class Log_Endpoint {
 		$title             = trim( $recipe['recipe_title'] );
 		$logic             = strtoupper( $this->logs_factory->trigger()->get_logic( $recipe ) );
 
-		$triggers_statuses = array_column( $triggers_items, 'status_id' );
-
-		$has_triggers_not_completed       = in_array( 'not-completed', $triggers_statuses, true );
-		$triggers_num_times_not_completed = in_array( 'in-progress', $triggers_statuses, true );
-
-		if ( $has_triggers_not_completed || $triggers_num_times_not_completed ) {
+		// A run that has not finished has no end yet, whatever its last action's date. An unfired
+		// trigger alone says nothing: an "any trigger" run lists the triggers that did not fire.
+		if ( ! \Uncanny_Automator\Automator_Status::finished( absint( $recipe['completed'] ) ) ) {
 			$end_date      = null;
 			$end_date_full = null;
 			$raw_end_date  = null;
@@ -355,6 +355,7 @@ class Log_Endpoint {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$source_log_id = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT meta_value FROM {$wpdb->prefix}uap_recipe_log_meta WHERE recipe_log_id = %d AND meta_key = 'replay_source'", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -366,6 +367,7 @@ class Log_Endpoint {
 			return null;
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$source_row = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT run_number, log_number FROM {$wpdb->prefix}uap_recipe_log WHERE ID = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -405,33 +407,5 @@ class Log_Endpoint {
 		);
 
 		return apply_filters( 'uncanny_automator_log_get_delete_url', $delete_url, $this->params );
-	}
-
-	/**
-	 * @return string The download url.
-	 */
-	public function get_download_url() {
-
-		if ( ! current_user_can( automator_get_capability() ) ) {
-			return '';
-		}
-
-		$curr_rest_url = strtr(
-			get_rest_url( null, 'automator/v1/log/recipe_id/<recipe_id>/run_number/<run_number>/recipe_log_id/<recipe_log_id>' ),
-			array(
-				'<recipe_id>'     => $this->params['recipe_id'],
-				'<run_number>'    => $this->params['run_number'],
-				'<recipe_log_id>' => $this->params['recipe_log_id'],
-			)
-		);
-
-		$download_url = add_query_arg(
-			array(
-				'as_attachment' => 'yes',
-			),
-			$curr_rest_url
-		);
-
-		return apply_filters( 'uncanny_automator_log_get_download_url', $download_url, $this->params );
 	}
 }

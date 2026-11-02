@@ -102,7 +102,7 @@ class URL_Tokens {
 
 					$tokens[] = array(
 						'tokenId'         => sprintf( 'URL_PARAMETERS|%d|KEY:%s', $k, $param_name ),
-						'tokenName'       => sprintf( '%s - %s', esc_html_x( 'URL Parameter', 'URL', 'uncanny-automator-pro' ), $param_name ),
+						'tokenName'       => sprintf( '%s - %s', esc_html_x( 'URL Parameter', 'URL', 'uncanny-automator' ), $param_name ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);

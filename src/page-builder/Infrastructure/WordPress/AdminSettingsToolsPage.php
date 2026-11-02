@@ -24,9 +24,8 @@ final class AdminSettingsToolsPage
 
     private function resultNotice(): ?array
     {
-        $result = is_string($_GET[WorkingCanvasAdminActions::RESULT_QUERY_ARG] ?? null)
-            ? (string) $_GET[WorkingCanvasAdminActions::RESULT_QUERY_ARG]
-            : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        $result = isset($_GET[WorkingCanvasAdminActions::RESULT_QUERY_ARG]) && is_string($_GET[WorkingCanvasAdminActions::RESULT_QUERY_ARG]) ? sanitize_text_field(wp_unslash($_GET[WorkingCanvasAdminActions::RESULT_QUERY_ARG])) : '';
 
         if ($result !== WorkingCanvasAdminActions::RESULT_REFRESHED_ALL) {
             return null;
@@ -94,6 +93,7 @@ final class AdminSettingsToolsPage
 
     private function queryCount(string $key): int
     {
-        return max(0, (int) ($_GET[$key] ?? 0));
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        return max(0, (int) sanitize_text_field(wp_unslash($_GET[$key] ?? '0')));
     }
 }

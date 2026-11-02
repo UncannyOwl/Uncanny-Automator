@@ -62,7 +62,7 @@ final class SectionCollection
                 return $section;
             }
         }
-        throw SectionNotFoundException::withId($id);
+        throw SectionNotFoundException::withId((int) $id);
     }
 
     /** @throws SectionNotFoundException */
@@ -75,7 +75,7 @@ final class SectionCollection
                 return;
             }
         }
-        throw SectionNotFoundException::withId($id);
+        throw SectionNotFoundException::withId((int) $id);
     }
 
     /** @throws SectionNotFoundException */
@@ -88,7 +88,7 @@ final class SectionCollection
                 return;
             }
         }
-        throw SectionNotFoundException::withId($id);
+        throw SectionNotFoundException::withId((int) $id);
     }
 
     /**
@@ -123,7 +123,7 @@ final class SectionCollection
 
         foreach ($normalizedIds as $id) {
             if (!isset($indexed[$id])) {
-                throw SectionNotFoundException::withId($id);
+                throw SectionNotFoundException::withId((int) $id);
             }
         }
 

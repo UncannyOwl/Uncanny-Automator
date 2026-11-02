@@ -13,6 +13,7 @@ class MC_EVERYONE_USER_ADD_NOTE extends \Uncanny_Automator\Recipe\App_Action {
 	use Mailchimp_Audience_Fields;
 	use Mailchimp_Email_Fields;
 	use Mailchimp_Note_Fields;
+	use \Uncanny_Automator\Recipe\Background_Job_Without_Tokens;
 
 	/**
 	 * Setup action.
@@ -72,8 +73,12 @@ class MC_EVERYONE_USER_ADD_NOTE extends \Uncanny_Automator\Recipe\App_Action {
 		$list_id = $this->get_audience_from_parsed();
 		$note    = $this->get_note_from_parsed();
 
-		$this->api->add_note_to_contact( $list_id, $email, $note );
+		$response = $this->api->add_note_to_contact( $list_id, $email, $note, $action_data );
 
-		return true;
+		if ( $this->deferred( $response ) ) {
+			return true;
+		}
+
+		return $this->process_job( $response, $parsed, $action_data );
 	}
 }

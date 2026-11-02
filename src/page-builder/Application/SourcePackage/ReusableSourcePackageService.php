@@ -76,8 +76,12 @@ final class ReusableSourcePackageService
             $this->creationCleanup->removeCreatedGlobalPart($globalPartId);
         } catch (\Throwable $cleanupFailure) {
             throw new \RuntimeException(
-                "Reusable import failed, and its incomplete global part could not be removed: {$cleanupFailure->getMessage()}",
+                sprintf(
+                    'Reusable import failed, and its incomplete global part could not be removed: %s',
+                    esc_html($cleanupFailure->getMessage()),
+                ),
                 0,
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- $failure is the previous exception, not message text.
                 $failure,
             );
         }

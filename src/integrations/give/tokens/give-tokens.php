@@ -66,6 +66,7 @@ class Give_Tokens {
 								break;
 							default:
 								global $wpdb;
+								// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 								$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d ORDER BY ID DESC LIMIT 0,1", $meta_field, $trigger['ID'], $replace_args['trigger_log_id'] ) );
 								if ( ! empty( $meta_value ) ) {
 									$value = automator_safe_unserialize( $meta_value );
@@ -83,7 +84,8 @@ class Give_Tokens {
 							$field_keys = explode( '|', $pieces[2] );
 							$field_key  = isset( $field_keys[1] ) ? $field_keys[1] : '';
 							if ( ! empty( $field_key ) && ! in_array( $field_key, $billing_fields, true ) ) {
-								$meta_key   = 'payment_data';
+								$meta_key = 'payment_data';
+								// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 								$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d  ORDER BY ID DESC LIMIT 0,1", $meta_key, $trigger['ID'], $replace_args['trigger_log_id'] ) );
 								if ( ! empty( $meta_value ) ) {
 									$meta_value  = automator_safe_unserialize( $meta_value );
@@ -100,7 +102,8 @@ class Give_Tokens {
 									}
 								}
 							} elseif ( ! empty( $field_key ) && in_array( $field_key, $billing_fields, true ) ) {
-								$meta_key   = 'payment_id';
+								$meta_key = 'payment_id';
+								// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 								$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d  ORDER BY ID DESC LIMIT 0,1", $meta_key, $trigger['ID'], $replace_args['trigger_log_id'] ) );
 								if ( ! empty( $meta_value ) && function_exists( 'give_get_meta' ) ) {
 									$inner_meta_key = '_give_donor_billing_' . $field_key;

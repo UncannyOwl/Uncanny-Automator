@@ -53,9 +53,10 @@ class Xml_To_Json_Converter {
 	public function load_from_url( $url ) {
 
 		// Overwrite the default WordPress HTTP agent because some feed doesnt like the syntax and its breaking due to multiple backslashes, or special characters';
-		$this->http_request_user_agent = 'WordPress/' . wp_get_wp_version() . ';' . urlencode( get_bloginfo( 'url' ) );
+		$this->http_request_user_agent = 'WordPress/' . get_bloginfo( 'version' ) . ';' . urlencode( get_bloginfo( 'url' ) );
 
 		$args = array(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, applied as WordPress applies it.
 			'timeout'    => apply_filters( 'http_request_timeout', $this->http_request_timeout, $url ),
 			'user-agent' => $this->http_request_user_agent,
 		);
@@ -171,7 +172,29 @@ class Xml_To_Json_Converter {
 	public function convert_xml_to_json( $xml_content, $xpath = '/' ) {
 
 		// Convert XML content to a SimpleXMLElement object, handling namespaces.
-		$xml = simplexml_load_string( $xml_content, 'SimpleXMLElement', LIBXML_NOCDATA );
+		// Internal error handling matches Atom_To_Rss_Converter::convert(): libxml
+		// otherwise emits a PHP warning per malformed line, which for an HTML page
+		// is dozens of them.
+		$previous = libxml_use_internal_errors( true );
+		$xml      = simplexml_load_string( $xml_content, 'SimpleXMLElement', LIBXML_NOCDATA );
+		$errors   = false === $xml ? libxml_get_errors() : array();
+		libxml_clear_errors();
+		libxml_use_internal_errors( $previous );
+
+		// simplexml_load_string() returns false for anything that is not XML — a
+		// web page at a URL the user believed was a feed being the common case.
+		// Dereferencing it raises Error, which every catch ( Exception ) around
+		// this converter would miss, so the whole request fatals.
+		if ( false === $xml ) {
+			$detail = ! empty( $errors ) ? trim( $errors[0]->message ) : 'unknown';
+			throw new RuntimeException(
+				sprintf(
+					/* translators: %s: the underlying XML parser error */
+					esc_html_x( 'The URL did not return valid XML. Check that it points at a feed rather than a web page. (%s)', 'Loopable XML', 'uncanny-automator' ),
+					esc_html( $detail )
+				)
+			);
+		}
 
 		// Get namespaces.
 		$namespaces = $xml->getNamespaces( true );

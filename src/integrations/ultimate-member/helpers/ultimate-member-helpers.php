@@ -116,6 +116,7 @@ class Ultimate_Member_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_um_forms', $option );
 	}
 }

@@ -15,6 +15,7 @@ namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Catalog;
 
 use Uncanny_Automator\App\Recipe_Builder\Shared\User\Value_Objects\User_Context;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Recipe_Service;
+use Uncanny_Automator\App\Recipe_Logs\Services\Recipe_Log_Query_Service;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Json_Rpc_Response;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abstract_MCP_Tool;
 use Uncanny_Automator\Automator_Status;
@@ -42,6 +43,7 @@ class Get_Logs_Tool extends Abstract_MCP_Tool {
 	public function get_description(): string {
 		return 'Retrieve recipe execution logs. '
 			. 'For a single detailed log: provide recipe_id, run_number, and recipe_log_id. '
+			. 'Detail returns the run as the recipe log shows it: each trigger, action, filter, delay and loop with its status, filter paths taken or skipped, and loop progress by status. '
 			. 'For a filtered list: provide optional filters (recipe_id, user_id, date_from, date_to). '
 			. 'Use the list to find log identifiers, then retrieve details with all three identity fields.';
 	}
@@ -53,54 +55,49 @@ class Get_Logs_Tool extends Abstract_MCP_Tool {
 		return array(
 			'type'       => 'object',
 			'properties' => array(
-				'recipe_id'        => array(
+				'recipe_id'     => array(
 					'type'        => 'integer',
 					'description' => 'Filter by recipe ID, or identify a specific log (with run_number + recipe_log_id).',
 					'minimum'     => 1,
 				),
-				'run_number'       => array(
+				'run_number'    => array(
 					'type'        => 'integer',
 					'description' => 'Run number for single log detail. Required with recipe_id + recipe_log_id.',
 					'minimum'     => 1,
 				),
-				'recipe_log_id'    => array(
+				'recipe_log_id' => array(
 					'type'        => 'integer',
 					'description' => 'Recipe log ID for single log detail. Required with recipe_id + run_number.',
 					'minimum'     => 1,
 				),
-				'enable_profiling' => array(
-					'type'        => 'boolean',
-					'description' => 'Include performance profiling data in single log detail.',
-					'default'     => false,
-				),
-				'user_id'          => array(
+				'user_id'       => array(
 					'type'        => 'integer',
 					'description' => 'Filter logs by user ID.',
 					'minimum'     => 1,
 				),
-				'include_meta'     => array(
+				'include_meta'  => array(
 					'type'        => 'boolean',
 					'description' => 'Include detailed execution metadata in list results.',
 					'default'     => false,
 				),
-				'date_from'        => array(
+				'date_from'     => array(
 					'type'        => 'string',
 					'description' => 'Filter logs from this date (YYYY-MM-DD).',
 					'pattern'     => '^\d{4}-\d{2}-\d{2}$',
 				),
-				'date_to'          => array(
+				'date_to'       => array(
 					'type'        => 'string',
 					'description' => 'Filter logs up to this date (YYYY-MM-DD).',
 					'pattern'     => '^\d{4}-\d{2}-\d{2}$',
 				),
-				'limit'            => array(
+				'limit'         => array(
 					'type'        => 'integer',
 					'description' => 'Max logs to return in list mode.',
 					'minimum'     => 1,
 					'maximum'     => 100,
 					'default'     => 20,
 				),
-				'offset'           => array(
+				'offset'        => array(
 					'type'        => 'integer',
 					'description' => 'Logs to skip (pagination).',
 					'minimum'     => 0,
@@ -153,7 +150,7 @@ class Get_Logs_Tool extends Abstract_MCP_Tool {
 
 		// Single log detail: all three identity fields provided.
 		if ( $recipe_id > 0 && $run_number > 0 && $recipe_log_id > 0 ) {
-			return $this->get_single_log( $recipe_id, $run_number, $recipe_log_id, $params );
+			return $this->get_single_log( $recipe_id, $run_number, $recipe_log_id );
 		}
 
 		if ( $run_number > 0 || $recipe_log_id > 0 ) {
@@ -167,42 +164,28 @@ class Get_Logs_Tool extends Abstract_MCP_Tool {
 	}
 
 	// ──────────────────────────────────────────────────────────────────
-	// SINGLE LOG — port of Get_Log_Tool::execute_tool()
+	// SINGLE LOG
 	// ──────────────────────────────────────────────────────────────────
 
 	/**
-	 * Retrieve a single detailed log entry.
+	 * Retrieve a single detailed log entry: the run tree the recipe log
+	 * dialog shows, so blocks and loops read the way 8.0 stores them.
 	 *
-	 * @param int   $recipe_id     Recipe ID.
-	 * @param int   $run_number    Run number.
-	 * @param int   $recipe_log_id Recipe log ID.
-	 * @param array $params        Full params for profiling flag.
+	 * @param int $recipe_id     Recipe ID.
+	 * @param int $run_number    Run number.
+	 * @param int $recipe_log_id Recipe log ID.
 	 * @return array JSON-RPC response.
 	 */
-	private function get_single_log( int $recipe_id, int $run_number, int $recipe_log_id, array $params ): array {
+	private function get_single_log( int $recipe_id, int $run_number, int $recipe_log_id ): array {
 
-		$service = Recipe_Service::instance();
+		$payload = Recipe_Log_Query_Service::instance()->get_log_payload( $recipe_id, $run_number, $recipe_log_id );
 
-		$result = $service->get_log(
-			$recipe_id,
-			$run_number,
-			$recipe_log_id,
-			! empty( $params['enable_profiling'] )
-		);
-
-		if ( is_wp_error( $result ) ) {
-			return Json_Rpc_Response::create_error_response( $result->get_error_message() );
+		if ( is_wp_error( $payload ) ) {
+			return Json_Rpc_Response::create_error_response( $payload->get_error_message() );
 		}
 
 		// Strip sensitive HTTP headers (cookies, auth tokens) from log detail.
-		$result = $this->redact_sensitive_log_data( $result );
-
-		$response_data = array_merge(
-			$result,
-			array( 'log' => $result )
-		);
-
-		return Json_Rpc_Response::create_success_response( 'Recipe log retrieved successfully', $response_data );
+		return Json_Rpc_Response::create_success_response( 'Recipe log retrieved successfully', array( 'log' => $this->redact_sensitive_log_data( $payload ) ) );
 	}
 
 	// ──────────────────────────────────────────────────────────────────
@@ -296,6 +279,10 @@ class Get_Logs_Tool extends Abstract_MCP_Tool {
 	/**
 	 * Normalize a log list row to match the generated MCP output schema.
 	 *
+	 * The schema declares these fields as integers, and SDK clients reject a
+	 * null (for example a NULL user_id on an anonymous run), so a missing or
+	 * non-numeric value becomes 0 rather than being passed through.
+	 *
 	 * @param array $fields Fields that must be integers.
 	 * @param array $entry Log list row.
 	 * @return array Schema-compatible log list row.
@@ -303,9 +290,11 @@ class Get_Logs_Tool extends Abstract_MCP_Tool {
 	private function to_int( array $fields, array $entry ): array {
 
 		foreach ( $fields as $field ) {
-			if ( isset( $entry[ $field ] ) && is_numeric( $entry[ $field ] ) ) {
-				$entry[ $field ] = (int) $entry[ $field ];
+			if ( ! array_key_exists( $field, $entry ) ) {
+				continue;
 			}
+
+			$entry[ $field ] = is_numeric( $entry[ $field ] ) ? (int) $entry[ $field ] : 0;
 		}
 
 		return $entry;

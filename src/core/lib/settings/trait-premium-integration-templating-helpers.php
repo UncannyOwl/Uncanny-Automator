@@ -60,7 +60,8 @@ trait Premium_Integration_Templating_Helpers {
 	 * @param string $label  The button label
 	 * @param array  $args   Optional. Additional button arguments {
 	 *     @type string $color       Optional. Button color (primary, secondary, danger)
-	 *     @type string $icon        Optional. Icon ID to show before label
+	 *     @type string $icon        Optional. Icon glyph code to show before label
+	 *     @type string $brand       Optional. Brand logo to show before label (takes precedence over icon)
 	 *     @type string $class       Optional. Additional CSS classes
 	 *     @type bool   $disabled    Optional. Whether the button is disabled
 	 *     @type bool   $loading     Optional. Whether to show loading state
@@ -84,6 +85,7 @@ trait Premium_Integration_Templating_Helpers {
 		$defaults = array(
 			'color'    => 'primary',
 			'icon'     => '',
+			'brand'    => '',
 			'class'    => '',
 			'disabled' => false,
 			'loading'  => false,
@@ -155,8 +157,10 @@ trait Premium_Integration_Templating_Helpers {
 		);
 		?>
 		>
-			<?php if ( ! empty( $args['icon'] ) ) : ?>
-				<uo-icon id="<?php echo esc_attr( $args['icon'] ); ?>"></uo-icon>
+			<?php if ( ! empty( $args['brand'] ) ) : ?>
+				<uas-icon brand="<?php echo esc_attr( $args['brand'] ); ?>"></uas-icon>
+			<?php elseif ( ! empty( $args['icon'] ) ) : ?>
+				<uas-icon code="<?php echo esc_attr( $args['icon'] ); ?>"></uas-icon>
 			<?php endif; ?>
 			<?php echo esc_html( $label ); ?>
 		</uap-app-integration-settings-button>
@@ -173,14 +177,14 @@ trait Premium_Integration_Templating_Helpers {
 	 */
 	public function redirect_button( $label, $url, $color = 'primary' ) {
 		?>
-		<uo-button 
+		<uas-button 
 			href="<?php echo esc_attr( $url ); ?>" 
 			color="<?php echo esc_attr( $color ); ?>"
 			target="_self"
 			unsafe-force-target
 		>
 			<?php echo esc_attr( $label ); ?>
-		</uo-button>
+		</uas-button>
 		<?php
 	}
 
@@ -340,7 +344,7 @@ trait Premium_Integration_Templating_Helpers {
 		);
 
 		// Add external link icon if external
-		$icon = $args['external'] ? ' <uo-icon id="external-link"></uo-icon>' : '';
+		$icon = $args['external'] ? ' <uas-icon code="arrow-up-right-from-square"></uas-icon>' : '';
 
 		return sprintf(
 			'<a href="%1$s" title="%2$s" target="%3$s"%4$s>%5$s</a>',
@@ -385,6 +389,7 @@ trait Premium_Integration_Templating_Helpers {
 			$this->get_disconnect_button_label(),
 			array(
 				'color' => 'danger',
+				'icon'  => 'right-from-bracket',
 			)
 		);
 	}
@@ -421,10 +426,10 @@ trait Premium_Integration_Templating_Helpers {
 
 		$kses_args = $this->filter_content_kses_args();
 		?>
-		<uo-alert heading="<?php echo esc_attr( $heading ); ?>">
+		<uas-alert heading="<?php echo esc_attr( $heading ); ?>">
 			<?php echo wp_kses( $initial_text, $kses_args ); ?>
 			<?php echo wp_kses( $this->generate_steps_list( $steps ), $kses_args ); ?>
-		</uo-alert>
+		</uas-alert>
 		<?php
 	}
 
@@ -509,7 +514,7 @@ trait Premium_Integration_Templating_Helpers {
 				'class' => array(),
 			),
 			'li'            => array(),
-			'uo-button'     => array(
+			'uas-button'     => array(
 				'type'                      => array(),
 				'name'                      => array(),
 				'value'                     => array(),
@@ -524,14 +529,13 @@ trait Premium_Integration_Templating_Helpers {
 				'confirmation-content'      => array(),
 				'confirmation-button-label' => array(),
 			),
-			'uo-icon'       => array(
-				'id'           => array(),
-				'integration'  => array(),
-				'size'         => array(),
-				'animation'    => array(),
-				'icon-style'   => array(),
-				'is-duotone'   => array(),
-				'show-tooltip' => array(),
+			'uas-icon'       => array(
+				'code'       => array(),
+				'brand'      => array(),
+				'size'       => array(),
+				'animation'  => array(),
+				'icon-style' => array(),
+				'icon-pack'  => array(),
 			),
 			'uo-text-field' => array(
 				'id'                => array(),
@@ -549,7 +553,7 @@ trait Premium_Integration_Templating_Helpers {
 		);
 
 		// Custom button args
-		$kses_args['uap-app-integration-settings-button'] = $kses_args['uo-button'];
+		$kses_args['uap-app-integration-settings-button'] = $kses_args['uas-button'];
 
 		return apply_filters( 'automator_content_kses_args', $kses_args );
 	}

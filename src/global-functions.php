@@ -25,6 +25,8 @@
 
 defined( 'ABSPATH' ) || exit;
 //phpcs:disable Universal.Operators.DisallowStandalonePostIncrementDecrement.PostIncrementFound
+use Uncanny_Automator\App\Infrastructure\Http\Non_Public_Ranges;
+use Uncanny_Automator\App\Infrastructure\Http\Redirect_Hop_Check;
 use Uncanny_Automator\Automator_Exception;
 use Uncanny_Automator\Automator_Options;
 use Uncanny_Automator\Automator_WP_Error;
@@ -63,17 +65,82 @@ function automator_get_recipe_post_types() {
 			AUTOMATOR_POST_TYPE_RECIPE,
 			AUTOMATOR_POST_TYPE_TRIGGER,
 			AUTOMATOR_POST_TYPE_ACTION,
-			AUTOMATOR_POST_TYPE_CLOSURE,
 			AUTOMATOR_POST_TYPE_LOOP,
 			AUTOMATOR_POST_TYPE_LOOP_FILTER,
-			// AUTOMATOR_POST_TYPE_BLOCK,
-			// AUTOMATOR_POST_TYPE_FILTER_CONDITION,
+			AUTOMATOR_POST_TYPE_BLOCK,
+			AUTOMATOR_POST_TYPE_BLOCK_MODIFIER,
 		)
 	);
 }
 
 /**
+ * Post types that must never be offered as a recipe target.
+ *
+ * Single source of truth for every post-type picker in the recipe builder —
+ * `Wp_Helpers::is_post_type_valid()` and its copies across integrations all
+ * resolve their exclusions here, so the list cannot drift per integration.
+ *
+ * Two groups: Automator's own recipe-tree post types, pulled from
+ * automator_get_recipe_post_types() so a new internal type is excluded the
+ * moment it is registered there, and WordPress's internal bookkeeping types.
+ *
+ * Applied by automator_is_disabled_post_type(), which is what pickers call.
+ *
+ * @return string[]
+ */
+function automator_get_disabled_post_types() {
+
+	$wp_internal = array(
+		'attachment',
+		'custom_css',
+		'customize_changeset',
+		'nav_menu_item',
+		'oembed_cache',
+		'revision',
+		'user_request',
+		'wp_block',
+		'wp_font_face',
+		'wp_font_family',
+		'wp_global_styles',
+		'wp_navigation',
+		'wp_template',
+		'wp_template_part',
+	);
+
+	return apply_filters(
+		'automator_wp_get_disabled_post_types',
+		array_merge( $wp_internal, automator_get_recipe_post_types() )
+	);
+}
+
+/**
+ * Whether a post type must be kept out of the recipe builder's pickers.
+ *
+ * The companion to automator_get_disabled_post_types(): that names the
+ * exclusions, this applies them. A post type is disabled when it is on that
+ * list, or when it lacks the name and labels a dropdown needs to render it.
+ *
+ * @param \WP_Post_Type|object $post_type The post type object.
+ *
+ * @return bool True when the post type must not be offered. Otherwise, false.
+ */
+function automator_is_disabled_post_type( $post_type ) {
+
+	if ( in_array( $post_type->name, automator_get_disabled_post_types(), true ) ) {
+		return true;
+	}
+
+	return empty( $post_type->name ) || empty( $post_type->labels->name ) || empty( $post_type->labels->singular_name );
+}
+
+/**
  * Direct children of a recipe that carry a 'code' + 'integration' postmeta.
+ *
+ * `uo-block` is deliberately absent: a block carries `block_type` instead of
+ * `code` + `integration`, so it does not satisfy this list's defining property.
+ * Both callers depend on that meaning — `Automator_Functions::…:1564` and
+ * `Recipe_Manifest:801` use membership here to decide whether an item's code
+ * and integration can be read.
  *
  * @since 7.2.0
  *
@@ -86,29 +153,6 @@ function automator_get_direct_recipe_child_types() {
 		array(
 			AUTOMATOR_POST_TYPE_TRIGGER,
 			AUTOMATOR_POST_TYPE_ACTION,
-			AUTOMATOR_POST_TYPE_CLOSURE,
-			// AUTOMATOR_POST_TYPE_BLOCK,
-		)
-	);
-}
-
-/**
- * Post types that are children of a loop (uo-loop → child).
- *
- * @since 7.2.0
- *
- * @return string[]
- */
-function automator_get_loop_child_types() {
-
-	return apply_filters(
-		'automator_loop_child_types',
-		array(
-			AUTOMATOR_POST_TYPE_ACTION,
-			AUTOMATOR_POST_TYPE_CLOSURE,
-			AUTOMATOR_POST_TYPE_LOOP_FILTER,
-			// AUTOMATOR_POST_TYPE_BLOCK,
-			// AUTOMATOR_POST_TYPE_FILTER_CONDITION,
 		)
 	);
 }
@@ -132,7 +176,6 @@ function automator_get_default_directories() {
 			'helpers',
 			'tokens',
 			'triggers',
-			'closures',
 			'conditions',
 			'loop-filters',
 		)
@@ -156,7 +199,6 @@ function automator_get_gated_directory_types() {
 		array(
 			'triggers',
 			'actions',
-			'closures',
 			'conditions',
 			'loop-filters',
 		)
@@ -299,16 +341,20 @@ function automator_add_action( $path, $integration ) {
  * Add integration directory — LEGACY PATH for third-party add-ons.
  *
  * This is Discovery Path 3 (see Initialize_Automator::load_framework_integrations() docblock).
- * Call this from your plugin on or before plugins_loaded so the directory is in
- * $auto_loaded_directories before Set_Up_Automator::initialize_add_integrations() runs on init.
+ * Call it from your plugin on plugins_loaded or on the `automator_add_integration` action;
+ * either way the integration registers on Automator's `init` pass.
  *
- * @param string $integration_code Unique integration code (e.g. 'MYINTEGRATION').
+ * The directory is keyed by its folder name, the name the loader looks it up by, whether
+ * the first argument is the integration code or the folder name.
+ *
+ * @param string $integration_code The integration code (e.g. 'MYINTEGRATION') or the directory's folder name.
  * @param string $directory        Absolute path to the integration directory.
  * @param string $plugin_namespace Optional PHP namespace for the integration.
  *
  * @return bool
  *
  * @since 3.0
+ * @since 8.0.0 Keyed by the folder name, and kept when added before `init`.
  * @version 3.0
  * @throws Automator_Exception
  * @package Uncanny_Automator
@@ -318,9 +364,7 @@ function automator_add_integration_directory( $integration_code, $directory, $pl
 	if ( ! isset( $int_directory['main'] ) ) {
 		return false;
 	}
-	Set_Up_Automator::$auto_loaded_directories[]                            = dirname( $int_directory['main'] );
-	Set_Up_Automator::$all_integrations[ $integration_code ]                = $int_directory;
-	Set_Up_Automator::$external_integrations_namespace[ $integration_code ] = $plugin_namespace;
+	Set_Up_Automator::register_addon_directory( $int_directory, $plugin_namespace );
 
 	return true;
 }
@@ -564,6 +608,7 @@ function automator_wp_error_get_message( $error_code = 'something_wrong' ) {
  * @version 3.0
  * @package Uncanny_Automator
  */
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Public function, kept for compatibility.
 function is_automator_error( $thing ) {
 	return $thing instanceof Automator_WP_Error;
 }
@@ -594,6 +639,22 @@ function automator_db_view_exists( $type = 'recipe' ) {
  */
 function automator_log( $message = '', $subject = '', $force_log = false, $log_file = 'debug', $backtrace = false ) {
 	Utilities::log( $message, $subject, $force_log, $log_file, $backtrace );
+}
+
+/**
+ * Global function to write a log file that holds only the latest message.
+ *
+ * Same gate as automator_log(); the file's previous contents are discarded first.
+ *
+ * @param mixed  $message
+ * @param mixed  $subject
+ * @param bool   $force_log
+ * @param string $log_file
+ *
+ * @package Uncanny_Automator
+ */
+function automator_log_snapshot( $message = '', $subject = '', $force_log = false, $log_file = 'debug' ) {
+	Utilities::log_snapshot( $message, $subject, $force_log, $log_file );
 }
 
 /**
@@ -637,13 +698,19 @@ function automator_purge_api_logs( $recipe_id, $automator_recipe_log_id ) {
 }
 
 /**
- * Purge closure logs
+ * Closures were retired in 8.0.0 and their log tables are gone. Kept as a no-op with the standard deprecation
+ * notice because Pro's activity-log purge calls it until its own 8.0.0 release, and a site may update Free first.
+ * Removed in 8.1.
  *
- * @param $recipe_id
- * @param $automator_recipe_log_id
+ * @deprecated 8.0.0 Nothing to purge.
+ *
+ * @param int $recipe_id               Recipe id.
+ * @param int $automator_recipe_log_id Recipe log id.
+ *
+ * @return void
  */
 function automator_purge_closure_logs( $recipe_id, $automator_recipe_log_id ) {
-	Automator()->db->closure->delete_logs( $recipe_id, $automator_recipe_log_id );
+	_deprecated_function( __FUNCTION__, '8.0.0' );
 }
 
 /**
@@ -716,6 +783,7 @@ function automator_utm_parameters( $url, $medium = '', $content = '' ) {
  *
  * @return boolean True if automator pro is active. Otherwise false.
  */
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Public function, kept for compatibility.
 function is_automator_pro_active() {
 
 	// Check if automator pro is in list of active plugins.
@@ -732,6 +800,7 @@ function is_automator_pro_active() {
  *
  * @return bool
  */
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Public function, kept for compatibility.
 function is_automator_admin_page() {
 
 	// Nonce verification is intentionally skipped throughout this function.
@@ -769,13 +838,21 @@ function is_automator_admin_page() {
 }
 
 /**
- * Check if the current request URI or REST route contains a given path segment.
+ * Check if the current request PATH (never the query string) contains a given
+ * path segment.
  *
- * Checks $_SERVER['REQUEST_URI'] first (covers pretty permalinks and most plain
- * permalink setups), then falls back to $_GET['rest_route'] for servers where
- * REQUEST_URI does not include the query string (e.g. some Nginx/FastCGI configs).
+ * Matches the path of $_SERVER['REQUEST_URI'] first (covers pretty permalinks
+ * and most plain permalink setups), then falls back to $_GET['rest_route'] for
+ * servers where REQUEST_URI omits the query string (e.g. some Nginx/FastCGI
+ * configs), where the REST route arrives as `?rest_route=/uap/v2/…`.
+ *
+ * The match is deliberately anchored to the request path: a free substring
+ * match over the whole URI would let any request whose *query string* merely
+ * contained a segment (`/?x=uap/v2`) trip the caller's expensive
+ * full-integration load path — unauthenticated resource amplification.
  *
  * @since 7.2
+ * @since 8.0.0 Anchored to the request path (was a whole-URI substring match).
  *
  * @param string $segment The path segment to search for (e.g. 'uap/v2').
  *
@@ -783,19 +860,26 @@ function is_automator_admin_page() {
  */
 function automator_request_contains( $segment ) {
 
-	$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
-	$request_uri = sanitize_text_field( urldecode( $request_uri ) );
+	// urldecode BEFORE parsing so an encoded `?` (`%3F`) becomes a real query
+	// delimiter and is dropped with the rest of the query string, closing the
+	// `/%3Fx=uap%2Fv2` encoded-injection variant.
+	$request_uri  = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( urldecode( $_SERVER['REQUEST_URI'] ) ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Decoded first on purpose; the decoded value is unslashed and sanitized by the wrapping calls.
+	$request_path = '' !== $request_uri ? (string) wp_parse_url( $request_uri, PHP_URL_PATH ) : '';
 
-	if ( '' !== $request_uri && false !== strpos( $request_uri, $segment ) ) {
+	// Segments are mid-path (`/wp-json/uap/v2/…`), so match WITHIN the path —
+	// a prefix match on the full path would miss every real request.
+	if ( '' !== $request_path && false !== strpos( $request_path, $segment ) ) {
 		return true;
 	}
 
-	// Plain permalink fallback — REQUEST_URI may omit the query string on some servers.
-	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-	$rest_route = isset( $_GET['rest_route'] ) ? sanitize_text_field( wp_unslash( $_GET['rest_route'] ) ) : '';
-	$rest_route = sanitize_text_field( urldecode( $rest_route ) );
+	// Plain permalink fallback — the REST route rides as `?rest_route=/uap/v2/…`.
+	// Anchor the segment to the START of the route (after a leading `/`) so a
+	// crafted `?rest_route=/foo?x=uap/v2` can't sneak through a free substring.
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Decoded first on purpose; the decoded value is unslashed and sanitized by the wrapping calls.
+	$rest_route = isset( $_GET['rest_route'] ) ? sanitize_text_field( wp_unslash( urldecode( $_GET['rest_route'] ) ) ) : '';
+	$rest_route = ltrim( $rest_route, '/' );
 
-	return '' !== $rest_route && false !== strpos( $rest_route, $segment );
+	return '' !== $rest_route && 0 === strpos( $rest_route, $segment );
 }
 
 /**
@@ -809,6 +893,7 @@ function automator_request_contains( $segment ) {
  *
  * @return bool
  */
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Public function, kept for compatibility.
 function is_automator_rest_request() {
 	return automator_request_contains( AUTOMATOR_REST_API_END_POINT );
 }
@@ -818,6 +903,7 @@ function is_automator_rest_request() {
  *
  * @return bool
  */
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Public function, kept for compatibility.
 function is_mcp_rest_request() {
 	return automator_request_contains( 'automator/v1/mcp' );
 }
@@ -827,6 +913,7 @@ function is_mcp_rest_request() {
  *
  * @return bool
  */
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Public function, kept for compatibility.
 function is_automator_pro_license_valid() {
 	if ( 'pro' === automator_license_manager()->get_type() ) {
 		return true;
@@ -861,6 +948,7 @@ function automator_pro_older_than( $version ) {
  *
  * @return void
  */
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Public function, kept for compatibility.
 function clear_recipe_logs( $recipe_id ) {
 
 	/**
@@ -909,28 +997,6 @@ function automator_do_identify_tokens() {
 }
 
 /**
- * Duplicate a trigger or an action
- *
- * @param $part_id
- * @param $recipe_id
- * @param $status
- *
- * @return false|int|WP_Error
- */
-function automator_duplicate_recipe_part( $part_id, $recipe_id, $status = 'draft' ) {
-	if ( ! class_exists( '\Uncanny_Automator\Automator_Load' ) ) {
-		return false;
-	}
-	/** @var \Uncanny_Automator\Copy_Recipe_Parts $copy_recipe_part */
-	$copy_recipe_part = \Uncanny_Automator\Automator_Load::$core_class_inits['Copy_Recipe_Parts'];
-	if ( ! $copy_recipe_part instanceof \Uncanny_Automator\Copy_Recipe_Parts ) {
-		return false;
-	}
-
-	return $copy_recipe_part->copy( $part_id, $recipe_id, $status );
-}
-
-/**
  * Method automator_sort_options
  *
  * @param array $a
@@ -972,6 +1038,7 @@ if ( ! function_exists( 'str_starts_with' ) ) {
 	 *
 	 * @return bool
 	 */
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- PHP 8.0 polyfill for PHP 7.4.
 	function str_starts_with( $haystack, $needle ) {
 		return '' !== (string) $needle && strncmp( $haystack, $needle, strlen( $needle ) ) === 0;
 	}
@@ -984,6 +1051,7 @@ if ( ! function_exists( 'str_ends_with' ) ) {
 	 *
 	 * @return bool
 	 */
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- PHP 8.0 polyfill for PHP 7.4.
 	function str_ends_with( $haystack, $needle ) {
 		return '' !== $needle && substr( $haystack, - strlen( $needle ) ) === (string) $needle;
 	}
@@ -996,6 +1064,7 @@ if ( ! function_exists( 'str_contains' ) ) {
 	 *
 	 * @return bool
 	 */
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- PHP 8.0 polyfill for PHP 7.4.
 	function str_contains( $haystack, $needle ) {
 		return '' !== $needle && strpos( $haystack, $needle ) !== false;
 	}
@@ -1196,16 +1265,16 @@ function automator_cache_delete_group( $group = 'automator' ) {
 	}
 
 	// Clear Cloudflare Cache
-	clear_cloudflare_cache();
+	automator_clear_cloudflare_cache();
 
 	// Clear Fastly Cache
-	clear_fastly_cache();
+	automator_clear_fastly_cache();
 }
 
 /**
  * @return bool
  */
-function clear_cloudflare_cache() {
+function automator_clear_cloudflare_cache() {
 
 	// Check if the Cloudflare plugin is active and the purge_cache method exists
 	if ( defined( 'CLOUDFLARE_PLUGIN_DIR' ) && class_exists( 'CF\WordPress\Hooks' ) ) {
@@ -1249,7 +1318,7 @@ function clear_cloudflare_cache() {
 /**
  * @return bool
  */
-function clear_fastly_cache() {
+function automator_clear_fastly_cache() {
 	$api_key    = AUTOMATOR_FASTLY_API_KEY;
 	$service_id = AUTOMATOR_FASTLY_SERVICE_ID;
 
@@ -1290,8 +1359,10 @@ function automator_get_allowed_attachment_ext() {
 /**
  * Checks whether a URL resolves to a private or reserved IP address.
  *
- * Blocks RFC1918 private ranges, loopback, link-local (e.g. 169.254.169.254),
- * and reserved ranges to prevent SSRF attacks.
+ * Blocks every IPv4 and IPv6 range that is not public (Non_Public_Ranges):
+ * private, loopback, link-local (e.g. 169.254.169.254), carrier-grade NAT
+ * (e.g. 100.100.100.200), multicast, documentation, benchmarking and reserved,
+ * to prevent SSRF attacks.
  *
  * Known limitation — DNS rebinding / TOCTOU race:
  * The hostname is resolved once here via gethostbyname(). The actual HTTP
@@ -1299,9 +1370,10 @@ function automator_get_allowed_attachment_ext() {
  * record could change between check and request (DNS rebinding). This is a
  * fundamental limitation of PHP-level SSRF protection without a custom DNS
  * resolver. Mitigations already in place that reduce the practical window:
- *  - Every request paired with this check must set 'redirection' => 0 so a
- *    public host cannot redirect to a private address after passing the check.
- *    Use automator_remote_get_ssrf_safe() for GET requests — it enforces both.
+ *  - Every request paired with this check must follow no redirect, or check
+ *    each hop with Redirect_Hop_Check, so a public host cannot redirect to a
+ *    private address after passing the check. Use automator_remote_get_ssrf_safe()
+ *    for GET requests — it enforces both.
  *  - The REST endpoint requires manage_options (Administrator), narrowing who
  *    can trigger the race.
  * Full protection would require resolving the IP once and connecting by IP,
@@ -1313,28 +1385,9 @@ function automator_get_allowed_attachment_ext() {
  */
 function automator_resolves_to_private_ip( $url ) {
 
-	$host = wp_parse_url( $url, PHP_URL_HOST );
-
-	if ( empty( $host ) ) {
-		return true;
-	}
-
-	// Strip brackets from IPv6 literals e.g. [::1].
-	$host = trim( $host, '[]' );
-
-	if ( filter_var( $host, FILTER_VALIDATE_IP ) ) {
-		// Host is already a bare IP address — validate it directly.
-		$ip = $host;
-	} else {
-		$ip = gethostbyname( $host );
-		// gethostbyname() returns the original string when resolution fails.
-		if ( $ip === $host ) {
-			return true;
-		}
-	}
-
-	// Block private (RFC1918) and reserved ranges (loopback, link-local, etc.).
-	return false === filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
+	// The one list of ranges that are not public, IPv4 and IPv6: PHP's private and reserved
+	// flags let carrier-grade NAT, multicast, benchmarking and the documentation ranges through.
+	return Non_Public_Ranges::url_resolves_into( (string) $url );
 }
 
 /**
@@ -1345,8 +1398,9 @@ function automator_resolves_to_private_ip( $url ) {
  * to a private or reserved IP address (see automator_resolves_to_private_ip()).
  *
  * Redirects ARE followed — feeds commonly sit behind a CDN/http->https/shortlink
- * rewrite — but every hop is re-validated with the same private-IP guard before
- * it is fetched. Redirects are followed manually (with 'redirection' => 0 on each
+ * rewrite — but every hop is checked before it is fetched, with
+ * Redirect_Hop_Check::refuses(), the check every redirect Automator follows gets.
+ * Redirects are followed manually (with 'redirection' => 0 on each
  * request) rather than delegated to the HTTP transport because WordPress's own
  * reject_unsafe_urls / wp_http_validate_url() does NOT block link-local
  * (169.254.169.254 cloud metadata) or other reserved ranges, so a redirect chain
@@ -1376,7 +1430,12 @@ function automator_remote_get_ssrf_safe( $url, $args = array() ) {
 
 	for ( $hop = 0; $hop <= $max_redirects; $hop++ ) {
 
-		if ( automator_resolves_to_private_ip( $current_url ) ) {
+		// The URL given, then each redirect hop with the check every redirect gets.
+		$refused = 0 === $hop
+			? automator_resolves_to_private_ip( $current_url )
+			: Redirect_Hop_Check::refuses( $current_url );
+
+		if ( $refused ) {
 			return new WP_Error(
 				'automator_ssrf_blocked',
 				esc_html__( 'The URL resolves to a private or reserved IP address and cannot be used.', 'uncanny-automator' )
@@ -1476,6 +1535,7 @@ if ( ! function_exists( 'is_iterable' ) ) {
  *
  * @return bool
  */
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Public function, kept for compatibility.
 function is_automator_running_unit_tests() {
 
 	// Primary check - explicit environment variable (set in CI and local)
@@ -1540,6 +1600,7 @@ function is_automator_running_unit_tests() {
  *
  * @return array
  */
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Public function, kept for compatibility.
 function get_automator_tables() {
 	return DB_Tables::get_automator_tables();
 }

@@ -55,6 +55,7 @@ class Bdb_Tokens {
 		// Get BDB xprofile fields from DB.
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- BuddyBoss's own table; the plugin offers no API for this query.
 		$xprofile_fields = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->base_prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY group_id ASC",
@@ -67,6 +68,7 @@ class Bdb_Tokens {
 			foreach ( $xprofile_fields as $field ) {
 
 				if ( 'socialnetworks' === $field->type ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- BuddyBoss's own table; the plugin offers no API for this query.
 					$child_fields = $wpdb->get_results(
 						$wpdb->prepare(
 							"SELECT * FROM {$wpdb->base_prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY group_id ASC",
@@ -279,7 +281,8 @@ class Bdb_Tokens {
 							$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 							if ( ! empty( $meta_value ) ) {
 								$content = get_post_field( 'post_content', $meta_value );
-								$value   = apply_filters( 'bbp_get_reply_content', $content, $meta_value );
+								// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- BuddyBoss's own hook.
+								$value = apply_filters( 'bbp_get_reply_content', $content, $meta_value );
 							}
 						}
 					}
@@ -307,13 +310,16 @@ class Bdb_Tokens {
 									$value = $meta_value;
 								} elseif ( 'BDBTOPICTITLE' === $pieces[2] ) {
 									$title = get_the_title( $meta_value );
+									// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- BuddyBoss's own hook.
 									$value = apply_filters( 'bbp_get_topic_title', $title, $meta_value );
 								} elseif ( 'BDBTOPICURL' === $pieces[2] ) {
 									$topic_permalink = get_permalink( $meta_value );
-									$value           = apply_filters( 'bbp_get_topic_permalink', $topic_permalink, $meta_value );
+									// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- BuddyBoss's own hook.
+									$value = apply_filters( 'bbp_get_topic_permalink', $topic_permalink, $meta_value );
 								} elseif ( 'BDBTOPICCONTENT' === $pieces[2] ) {
 									$content = get_post_field( 'post_content', $meta_value );
-									$value   = apply_filters( 'bbp_get_topic_content', $content, $meta_value );
+									// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- BuddyBoss's own hook.
+									$value = apply_filters( 'bbp_get_topic_content', $content, $meta_value );
 								}
 							}
 						}
@@ -468,6 +474,7 @@ class Bdb_Tokens {
 		 * that does this for us. If you found one, replace this with BB built-in function.
 		 * @since 4.15
 		 **/
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- BuddyBoss's own table; the plugin offers no API for this query.
 		$social_media_value_serialized = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT value 

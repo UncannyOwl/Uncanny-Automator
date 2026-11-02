@@ -521,7 +521,8 @@ class Saveto_Wishlist_Helpers extends Abstract_Helpers {
 		$table = \SaveToWishlist\Helpers\Helper_Database::get_collection_items_table_name();
 
 		// $table is sourced from the plugin's own helper — not user input.
-		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE collection_id = %d", $collection_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- SaveTo Wishlist's own table; the plugin offers no API for this query. Table name comes from the SaveTo helper; the value is prepared.
+		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE collection_id = %d", $collection_id ) );
 	}
 
 	/**

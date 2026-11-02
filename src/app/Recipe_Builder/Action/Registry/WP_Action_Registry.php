@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Action\Registry;
 
@@ -238,16 +237,20 @@ class WP_Action_Registry implements Action_Registry {
 	/**
 	 * Normalize action definition to domain format.
 	 *
+	 * The legacy `requires_user` flag is the single source of truth for the
+	 * user requirement; `action_type` is derived from it, never read.
+	 *
 	 * @param array $definition Raw action definition.
 	 * @return array Normalized definition with domain keys.
 	 */
 	private function normalize_action_definition( array $definition ): array {
+		$requires_user = (bool) ( $definition['requires_user'] ?? true );
 
 		return array(
 			'action_code'             => $definition['code'] ?? '',
 			'action_meta_code'        => $definition['meta_code'] ?? '',
 			'action_integration_code' => $definition['integration'] ?? '',
-			'action_type'             => $definition['action_type'] ?? 'user',
+			'action_type'             => $requires_user ? 'user' : 'anonymous',
 			'integration'             => $definition['integration'] ?? '', // Legacy key
 			'integration_type'        => $this->determine_integration_type( $definition ),
 			'sentence'                => $definition['sentence'] ?? '',
@@ -257,7 +260,7 @@ class WP_Action_Registry implements Action_Registry {
 			'select_option_name'      => $definition['select_option_name'] ?? '',
 			'priority'                => $definition['priority'] ?? 10,
 			'accepted_args'           => $definition['accepted_args'] ?? 1,
-			'requires_user'           => ( $definition['action_type'] ?? 'user' ) === 'user',
+			'requires_user'           => $requires_user,
 			'uses_api'                => isset( $definition['uses_api'] ) ? $definition['uses_api'] : false,
 			'is_pro'                  => ! empty( $definition['is_pro'] ),
 			'is_elite'                => ! empty( $definition['is_elite'] ),
@@ -290,15 +293,7 @@ class WP_Action_Registry implements Action_Registry {
 	 * @return array Meta structure for the action.
 	 */
 	private function extract_meta_structure( array $definition ): array {
-		if ( isset( $definition['meta'] ) && is_array( $definition['meta'] ) && ! empty( $definition['meta'] ) ) {
-			return $definition['meta'];
-		}
-
-		if ( isset( $definition['options'] ) && is_array( $definition['options'] ) && ! empty( $definition['options'] ) ) {
-			return $this->meta_converter->convert( $definition['options'] );
-		}
-
-		return array();
+		return $this->meta_converter->from_definition( $definition );
 	}
 
 	/**

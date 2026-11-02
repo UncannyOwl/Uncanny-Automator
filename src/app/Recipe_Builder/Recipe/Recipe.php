@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Recipe;
 
@@ -11,9 +10,9 @@ use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Notes;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Throttle;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Times_Per_User;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Total_Times;
-use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Action_Conditions;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Triggers;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Trigger_Logic;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Content;
 use Uncanny_Automator\App\Recipe_Builder\Shared\Enums\User_Type;
 /**
  * Root Aggregate: Recipe
@@ -106,8 +105,8 @@ class Recipe {
 	/**
 	 * Recipe description/notes - optional domain value.
 	 *
-	 * Free-form text with length limits (max 10,000 chars).
-	 * Sanitization handled at service layer, validation at domain level.
+	 * Free-form text, not length-limited.
+	 * Sanitization handled at service layer.
 	 *
 	 * @var Recipe_Notes|null
 	 */
@@ -125,36 +124,20 @@ class Recipe {
 	private ?Recipe_Throttle $recipe_throttle = null;
 
 	/**
-	 * Per-user execution limits - only for 'user' type recipes.
-	 *
-	 * Defines how many times each individual user can trigger this recipe.
-	 * Mutually exclusive with total_times (anonymous recipes).
+	 * Per-user execution limit - only for 'user' type recipes.
 	 *
 	 * @var Recipe_Times_Per_User|null
 	 */
 	private ?Recipe_Times_Per_User $recipe_times_per_user = null;
 
 	/**
-	 * Global execution limits - only for 'anonymous' type recipes.
-	 *
-	 * Defines total executions across all users/visitors.
-	 * Mutually exclusive with times_per_user (user recipes).
+	 * Global (recipe-wide) execution limit. Present for both recipe types.
 	 *
 	 * @var Recipe_Total_Times|null
 	 */
 	private ?Recipe_Total_Times $recipe_total_times = null;
 
 
-	/**
-	 * Recipe action conditions collection - optional domain aggregate.
-	 *
-	 * Contains condition groups that control when actions execute.
-	 * Each condition group applies to specific actions and uses
-	 * AND/OR logic to evaluate multiple conditions.
-	 *
-	 * @var Recipe_Action_Conditions|null
-	 */
-	private ?Recipe_Action_Conditions $recipe_action_conditions = null;
 
 	/**
 	 * Recipe trigger collection - optional domain aggregate.
@@ -172,6 +155,19 @@ class Recipe {
 	 * @var Recipe_Config|null
 	 */
 	private ?Recipe_Config $config = null;
+
+	/**
+	 * Recipe content tree — heterogeneous list of items + blocks composing
+	 * `flow.content` in the wire shape.
+	 *
+	 * Null at construction; set once by `Recipe_Content_Hydrator` via
+	 * `set_recipe_content`. Frozen-after-set: subsequent set attempts throw
+	 * so Rule 8's "frozen after construction" invariant holds even though
+	 * the field is hydrated post-constructor.
+	 *
+	 * @var Recipe_Content|null
+	 */
+	private ?Recipe_Content $recipe_content = null;
 
 	/**
 	 * Construct a validated Recipe domain aggregate.
@@ -239,7 +235,7 @@ class Recipe {
 	 */
 	private function validate_recipe_type( string $recipe_type ): void {
 		if ( ! in_array( $recipe_type, array( 'user', 'anonymous' ), true ) ) {
-			throw new \InvalidArgumentException( 'Invalid recipe type: ' . $recipe_type );
+			throw new \InvalidArgumentException( 'Invalid recipe type: ' . esc_html( $recipe_type ) );
 		}
 	}
 
@@ -287,7 +283,6 @@ class Recipe {
 		$this->recipe_triggers = Recipe_Triggers::from_array( $config->get_triggers(), $config->get_user_type() );
 
 		// Let domain objects handle validation and default values
-		$this->recipe_action_conditions = Recipe_Action_Conditions::from_array( $config->get_action_conditions() );
 	}
 
 	/**
@@ -299,10 +294,10 @@ class Recipe {
 	private function initialize_execution_limits( Recipe_Config $config ): void {
 		$recipe_type = $config->get_user_type();
 
-		// Both types need total_times
+		// Both types track a recipe-wide total.
 		$this->recipe_total_times = new Recipe_Total_Times( $config->get_total_times() );
 
-		// Only user type needs times_per_user
+		// Only user-type recipes track a per-user limit.
 		if ( 'user' === $recipe_type ) {
 			$this->recipe_times_per_user = new Recipe_Times_Per_User( $config->get_times_per_user() );
 		}
@@ -401,7 +396,6 @@ class Recipe {
 	 * Get recipe description/notes.
 	 *
 	 * Returns optional free-form description text. May be null if no notes provided.
-	 * When present, enforces max 10,000 character limit.
 	 *
 	 * @since 7.0.0
 	 * @return Recipe_Notes|null Recipe notes value object or null if not set.
@@ -446,7 +440,8 @@ class Recipe {
 	 * managed by the domain aggregate.
 	 *
 	 * @since 7.0.0
-	 * @return Recipe_Total_Times|null Global limits or null for user recipes.
+	 * @return Recipe_Total_Times|null Recipe-wide execution limit. Set for both
+	 *                                 recipe types; null only on an uninitialized aggregate.
 	 */
 	public function get_recipe_total_times(): ?Recipe_Total_Times {
 		return $this->recipe_total_times;
@@ -465,19 +460,6 @@ class Recipe {
 		return $this->recipe_triggers;
 	}
 
-	/**
-	 * Get action conditions collection.
-	 *
-	 * Returns condition groups that control when actions execute.
-	 * Domain aggregate ensures collection integrity while delegating
-	 * individual condition validation to the value object.
-	 *
-	 * @since 7.0.0
-	 * @return Recipe_Action_Conditions|null Action conditions collection or null if not set.
-	 */
-	public function get_recipe_action_conditions(): ?Recipe_Action_Conditions {
-		return $this->recipe_action_conditions;
-	}
 
 	/**
 	 * Convert recipe to complete array representation.
@@ -503,8 +485,8 @@ class Recipe {
 			'throttle'      => $this->recipe_throttle->to_array(),
 		);
 
-		// Add type-specific execution limit fields
-		if ( User_Type::USER === $this->recipe_type->get_value() && $this->recipe_times_per_user ) {
+		// Add type-specific execution limit fields.
+		if ( User_Type::USER === $this->recipe_type->get_value() && $this->recipe_times_per_user && $this->recipe_total_times ) {
 			$data['times_per_user'] = $this->recipe_times_per_user->get_value();
 			$data['total_times']    = $this->recipe_total_times->get_value();
 		}
@@ -536,5 +518,40 @@ class Recipe {
 			'title'  => $this->recipe_title->get_value(),
 			'status' => $this->recipe_status->get_value(),
 		);
+	}
+
+	/**
+	 * Get the recipe content tree.
+	 *
+	 * Returns null when the hydrator has not set it yet (e.g. on a
+	 * freshly-constructed Recipe before Recipe_Content_Hydrator runs).
+	 * Domain rule: callers that need the tree must check for null and
+	 * either hydrate or fall back gracefully — Recipe doesn't auto-hydrate.
+	 *
+	 * @return Recipe_Content|null
+	 */
+	public function get_recipe_content(): ?Recipe_Content {
+		return $this->recipe_content;
+	}
+
+	/**
+	 * Set the recipe content tree. Throws if already set.
+	 *
+	 * Frozen-after-set invariant (Rule 8 extended to a hydrated field):
+	 * the hydrator sets this exactly once during `Recipe_Query_Service::get_recipe`.
+	 * A second call indicates either accidental rehydration or test
+	 * cross-talk and is treated as a programming error.
+	 *
+	 * @param Recipe_Content $content Hydrated content tree.
+	 * @return void
+	 * @throws \LogicException When recipe_content has already been set.
+	 */
+	public function set_recipe_content( Recipe_Content $content ): void {
+		if ( null !== $this->recipe_content ) {
+			throw new \LogicException(
+				'Recipe::set_recipe_content called twice — Recipe_Content is frozen after first set'
+			);
+		}
+		$this->recipe_content = $content;
 	}
 }

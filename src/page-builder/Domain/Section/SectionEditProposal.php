@@ -54,11 +54,13 @@ final class SectionEditProposal
     {
         $schemaVersion = $data['schema_version'] ?? '';
         if ($schemaVersion !== self::SCHEMA_VERSION) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
             throw new \InvalidArgumentException("Unsupported schema_version: '{$schemaVersion}'. Expected '1.0'.");
         }
 
         $operation = $data['operation'] ?? '';
         if (!in_array($operation, self::VALID_OPERATIONS, true)) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
             throw new \InvalidArgumentException("Unknown operation: '{$operation}'.");
         }
 
@@ -108,6 +110,7 @@ final class SectionEditProposal
 
             foreach ($rawHtmlPatches as $i => $patch) {
                 if (!is_array($patch) || !isset($patch['old'], $patch['new']) || !is_string($patch['old']) || !is_string($patch['new'])) {
+                    // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
                     throw new \InvalidArgumentException("html_patches[{$i}] must have 'old' and 'new' string fields.");
                 }
                 $htmlPatches[] = ['old' => $patch['old'], 'new' => $patch['new']];
@@ -115,6 +118,7 @@ final class SectionEditProposal
 
             foreach ($rawCssPatches as $i => $patch) {
                 if (!is_array($patch) || !isset($patch['old'], $patch['new']) || !is_string($patch['old']) || !is_string($patch['new'])) {
+                    // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
                     throw new \InvalidArgumentException("css_patches[{$i}] must have 'old' and 'new' string fields.");
                 }
                 $cssPatches[] = ['old' => $patch['old'], 'new' => $patch['new']];

@@ -85,6 +85,23 @@ final class Token_Credential_Repository {
 	}
 
 	/**
+	 * Whether any aggregate row exists, read from the database without a lock.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int    $user_id WordPress user ID.
+	 * @param string $meta_key Site-scoped credential meta key.
+	 * @return bool|null Null when the rows could not be read.
+	 */
+	public function has_aggregate( $user_id, $meta_key ): ?bool {
+
+		$records = $this->get_records( $user_id, $meta_key );
+
+		return null === $records ? null : array() !== $records;
+
+	}
+
+	/**
 	 * Mutate the current aggregate while holding its shared write lock.
 	 *
 	 * The callback always receives a fresh value read after lock acquisition.
@@ -93,12 +110,13 @@ final class Token_Credential_Repository {
 	 * @param int      $user_id WordPress user ID.
 	 * @param string   $meta_key Site-scoped credential meta key.
 	 * @param callable $mutation Aggregate mutation callback.
+	 * @param int|float $wait_seconds Maximum time to wait for the write lock.
 	 * @return bool Whether the requested state was persisted.
 	 */
-	public function mutate( $user_id, $meta_key, callable $mutation ) {
+	public function mutate( $user_id, $meta_key, callable $mutation, $wait_seconds = self::LOCK_WAIT ) {
 
 		$lock_name  = $this->get_lock_name( $user_id, $meta_key );
-		$lock_owner = $this->lock->acquire( $lock_name, self::LOCK_TTL, self::LOCK_WAIT );
+		$lock_owner = $this->lock->acquire( $lock_name, self::LOCK_TTL, $wait_seconds );
 
 		if ( false === $lock_owner ) {
 			return false;
@@ -106,6 +124,9 @@ final class Token_Credential_Repository {
 
 		try {
 			$records = $this->get_records( $user_id, $meta_key );
+			if ( null === $records ) {
+				return false;
+			}
 			$current = array();
 
 			if ( ! empty( $records ) ) {
@@ -172,7 +193,8 @@ final class Token_Credential_Repository {
 				}
 			}
 
-			return empty( $this->get_records( $user_id, $meta_key ) );
+			$remaining = $this->get_records( $user_id, $meta_key );
+			return null !== $remaining && empty( $remaining );
 		}
 
 		if ( empty( $records ) ) {
@@ -220,13 +242,15 @@ final class Token_Credential_Repository {
 	 *
 	 * @param int    $user_id WordPress user ID.
 	 * @param string $meta_key Site-scoped credential meta key.
-	 * @return object[] Matching rows ordered by metadata ID.
+	 * @return object[]|null Matching rows ordered by metadata ID, or null on a read failure.
 	 */
 	private function get_records( $user_id, $meta_key ) {
 
+		$wpdb = $this->wpdb;
+
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$query = $this->wpdb->prepare(
-			"SELECT umeta_id, meta_value FROM {$this->wpdb->usermeta} WHERE user_id = %d AND meta_key = %s ORDER BY umeta_id ASC",
+		$query = $wpdb->prepare(
+			"SELECT umeta_id, meta_value FROM `{$wpdb->usermeta}` WHERE user_id = %d AND meta_key = %s ORDER BY umeta_id ASC",
 			$user_id,
 			$meta_key
 		);
@@ -235,7 +259,7 @@ final class Token_Credential_Repository {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$records = $this->wpdb->get_results( $query );
 
-		return is_array( $records ) ? $records : array();
+		return is_array( $records ) && '' === $this->wpdb->last_error ? $records : null;
 
 	}
 

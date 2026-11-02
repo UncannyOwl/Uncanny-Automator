@@ -47,7 +47,9 @@ class Google_Sheet_Settings extends App_Integration_Settings {
 	}
 
 	/**
-	 * Clear Google Sheets specific data before the framework clears the connection.
+	 * Clear Google Sheets specific data once the platform confirmed the
+	 * disconnect (handoff R8), before the framework clears the connection.
+	 * Deleting an option twice is harmless, so it is safe to run twice.
 	 *
 	 * Removes the saved spreadsheet list so a freshly connected account does not
 	 * inherit the previous account's selected sheets. Credentials and cached
@@ -62,7 +64,7 @@ class Google_Sheet_Settings extends App_Integration_Settings {
 	 *
 	 * @return array
 	 */
-	protected function before_disconnect( $response = array(), $data = array() ) {
+	protected function after_platform_disconnect( $response = array(), $data = array() ) {
 		automator_delete_option( $this->helpers->get_const( 'SPREADSHEETS_OPTIONS_KEY' ) );
 		return $response;
 	}
@@ -146,7 +148,7 @@ class Google_Sheet_Settings extends App_Integration_Settings {
 
 		// Prepare main info with Google icon
 		$main_info  = ! empty( $account['name'] ) ? $account['name'] : $account['email'];
-		$main_info .= ' <uo-icon id="google"></uo-icon>';
+		$main_info .= ' <uas-icon brand="google"></uas-icon>';
 
 		return array(
 			'avatar_type'  => ! empty( $account['avatar_uri'] ) ? 'image' : 'icon',
@@ -261,7 +263,7 @@ class Google_Sheet_Settings extends App_Integration_Settings {
 			esc_html_x( 'Sign in with Google', 'Google Sheets', 'uncanny-automator' ),
 			array(
 				'class' => 'uap-settings-button-google',
-				'icon'  => 'google',
+				'brand' => 'google',
 			)
 		);
 	}
@@ -278,13 +280,18 @@ class Google_Sheet_Settings extends App_Integration_Settings {
 	private function output_file_picker_button() {
 		?>
 		<div class="uap-spacing-top" id="filePickerBtn">
-			<uo-button
-				uap-tooltip="Hold down the Shift key to select multiple sheets, or use Ctrl (Cmd on Mac) to select specific sheets."
-				id="filePickerBtnComponent"
-				onclick="createFilePickerButton();"
-				color="secondary">
-				<?php echo esc_html_x( 'Select new sheet(s)', 'Google Sheets', 'uncanny-automator' ); ?>
-			</uo-button>
+			<uas-tooltip>
+				<?php echo esc_html( __( 'Hold down the Shift key to select multiple sheets, or use Ctrl (Cmd on Mac) to select specific sheets.', 'uncanny-automator' ) ); ?>
+
+				<uas-button
+					id="filePickerBtnComponent"
+					onclick="createFilePickerButton();"
+					color="secondary"
+					slot="target"
+				>
+					<?php echo esc_html_x( 'Select new sheet(s)', 'Google Sheets', 'uncanny-automator' ); ?>
+				</uas-button>
+			</uas-tooltip>
 		</div>
 
 		<div id="filePickerErrorContainer" class="uap-spacing-top" style="display: none">

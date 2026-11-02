@@ -258,6 +258,7 @@ class Linkedin_Scheduled_Posts_Manager {
 		global $wpdb;
 
 		// Find the action log entry for the schedule action in this recipe run.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table joined to Automator's action posts; no WordPress API for this query. Live run state read; must not be cached.
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT al.ID, al.automator_action_id
@@ -331,6 +332,7 @@ class Linkedin_Scheduled_Posts_Manager {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table joined to Automator's action posts; no WordPress API for this query. Live run state read; must not be cached.
 		$log_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT DISTINCT al.automator_recipe_log_id

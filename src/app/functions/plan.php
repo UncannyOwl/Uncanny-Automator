@@ -12,7 +12,7 @@
 declare(strict_types=1);
 
 // Prevent direct access
-if ( ! defined( 'ABSPATH' ) && ! defined( 'PHPUNIT_COMPOSER_INSTALL' ) && ! defined( 'WP_TESTS_DIR' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
@@ -162,6 +162,10 @@ function automator_has_plan_at_least( string $plan_id ) {
 	try {
 		$current_plan = automator_get_current_plan();
 		$compare_plan = automator_create_plan( $plan_id );
+		if ( is_wp_error( $compare_plan ) ) {
+			// An unknown plan ID is not a level any site has.
+			return false;
+		}
 		return $current_plan->is_at_least( $compare_plan );
 	} catch ( \Exception $e ) {
 		return false;
@@ -179,6 +183,10 @@ function automator_compare_plans( string $plan_a, string $plan_b ) {
 	try {
 		$plan_a_obj = automator_create_plan( $plan_a );
 		$plan_b_obj = automator_create_plan( $plan_b );
+		if ( is_wp_error( $plan_a_obj ) || is_wp_error( $plan_b_obj ) ) {
+			// Unknown plan IDs cannot be ordered; answer as the error path below does.
+			return 0;
+		}
 		return $plan_a_obj->get_level() <=> $plan_b_obj->get_level();
 	} catch ( \Exception $e ) {
 		return 0;

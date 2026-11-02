@@ -53,7 +53,7 @@ final class AgentToolResponse
             return self::$contract[$toolName];
         }
 
-        throw new \InvalidArgumentException("Unknown agent tool: {$toolName}");
+        throw new \InvalidArgumentException(sprintf('Unknown agent tool: %s', esc_html($toolName)));
     }
 
     /**
@@ -68,7 +68,7 @@ final class AgentToolResponse
         foreach ($required as $field) {
             if (!array_key_exists($field, $data)) {
                 throw new \UnexpectedValueException(
-                    "{$context}: missing required field '{$field}'"
+                    sprintf("%s: missing required field '%s'", esc_html($context), esc_html((string) $field))
                 );
             }
         }
@@ -111,7 +111,7 @@ final class AgentToolResponse
         if (!$valid) {
             $actual = get_debug_type($value);
             throw new \UnexpectedValueException(
-                "{$context}: expected {$expectedType}, got {$actual}"
+                sprintf('%s: expected %s, got %s', esc_html($context), esc_html($expectedType), esc_html($actual))
             );
         }
     }

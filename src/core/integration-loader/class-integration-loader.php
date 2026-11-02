@@ -184,7 +184,7 @@ class Integration_Loader {
 	}
 
 	/**
-	 * Phase 4: Load recipe parts (triggers, actions, closures, conditions, loop-filters, tokens).
+	 * Phase 4: Load recipe parts (triggers, actions, conditions, loop-filters, tokens).
 	 *
 	 * Uses the registrar's active_directories and directories_to_include,
 	 * or accepts overrides (for when Pro modifies these maps via hooks).
@@ -202,21 +202,14 @@ class Integration_Loader {
 	}
 
 	/**
-	 * Register the admin notice hook for load errors.
+	 * Register the clean-load clearing of the load-errors list. The notice
+	 * itself is Load_Errors_Notice, shown by the notice center.
 	 *
 	 * Should be called once during plugin bootstrap.
 	 *
 	 * @return void
 	 */
 	public function register_error_notice_hook() {
-		add_action( 'admin_notices', array( Load_Error_Handler::class, 'display_notice' ) );
-
-		// Automator pages nuke all admin_notices via remove_all_actions() in admin_head,
-		// then fire this internal hook. Without it, load errors are invisible on recipe
-		// editor and other Automator screens — the one place admins most need to see them.
-		add_action( 'automator_show_internal_admin_notice', array( Load_Error_Handler::class, 'display_notice' ) );
-
-		Load_Error_Handler::register_dismiss_handler();
 
 		// Auto-clear the load-errors transient at the end of every clean
 		// bootstrap. Fires after all helpers, triggers, and actions have been

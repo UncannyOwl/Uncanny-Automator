@@ -97,6 +97,7 @@ class Masterstudy_Helpers {
 		if ( '-1' === $mslms_course_id ) {
 			global $wpdb;
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Option list: reads only the ID and title columns; get_posts() would load every full post.
 			$lessons = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT ID, post_title FROM $wpdb->posts WHERE post_type = %s ORDER BY post_title ASC",
@@ -150,6 +151,7 @@ class Masterstudy_Helpers {
 		if ( '-1' === $mslms_course_id ) {
 
 			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Option list: reads only the ID and title columns; get_posts() would load every full post.
 			$quizzes = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT ID, post_title
@@ -195,13 +197,14 @@ class Masterstudy_Helpers {
 		// Legacy get lessons from meta_key curriculum.
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Selects the posts listed in the course curriculum meta with FIND_IN_SET; no core API takes an ID list stored in one meta value.
 		$lessons = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, post_title
 				FROM $wpdb->posts
 				WHERE FIND_IN_SET(
 					ID,
-					(SELECT meta_value FROM wp_postmeta WHERE post_id = %d AND meta_key = 'curriculum')
+					(SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = 'curriculum')
 				)
 				AND post_type = 'stm-lessons'
 				ORDER BY post_title ASC",
@@ -231,13 +234,14 @@ class Masterstudy_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Selects the posts listed in the course curriculum meta with FIND_IN_SET; no core API takes an ID list stored in one meta value.
 		$quizzes = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, post_title
 				FROM $wpdb->posts
 				WHERE FIND_IN_SET(
 					ID,
-					(SELECT meta_value FROM wp_postmeta WHERE post_id = %d AND meta_key = 'curriculum')
+					(SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = 'curriculum')
 				)
 				AND post_type = 'stm-quizzes'
 				ORDER BY post_title ASC

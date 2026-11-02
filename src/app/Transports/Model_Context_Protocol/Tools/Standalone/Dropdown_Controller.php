@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Standalone;
 
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Field_Registry_Service;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Authenticated_Token_Context;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Token_Manager;
 use Uncanny_Automator\App\Transports\Restful\Remote_Data\Remote_Data_Handler_Resolver;
 use Uncanny_Automator\App\Transports\Restful\Remote_Data\Remote_Data_Request;
-use Uncanny_Automator\Services\Integrations\Fields;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Response;
@@ -109,21 +109,19 @@ class Dropdown_Controller extends WP_REST_Controller {
 			);
 		}
 
-		try {
-			// Get fields for this entity.
-			$fields = new Fields();
-			$fields->set_config(
-				array(
-					'object_type' => $entity_type . 's', // e.g., actions, triggers, but only accept without 's' suffix.
-					'code'        => $entity_code,
-				)
-			);
+		// Materialize the grouped field shape via the central service.
+		// entity_type is already singular ('action'/'trigger') per the
+		// validation above.
+		$entity_fields = Field_Registry_Service::instance()->get_item_fields_grouped(
+			'',
+			$entity_type,
+			$entity_code
+		);
 
-			$entity_fields = $fields->get();
-		} catch ( \Exception $e ) {
+		if ( is_wp_error( $entity_fields ) ) {
 			return new WP_Error(
 				'fields_error',
-				'One or more parameters are invalid. ' . $e->getMessage(),
+				'One or more parameters are invalid. ' . $entity_fields->get_error_message(),
 				array( 'status' => 400 )
 			);
 		}
@@ -382,7 +380,7 @@ class Dropdown_Controller extends WP_REST_Controller {
 
 			if ( ! empty( $parent_field_info['endpoint'] ) && ! empty( $parent_field_info['populates'] ) ) {
 				// Verify the parent populates this field.
-				if ( strtoupper( $parent_field_info['populates'] ) === strtoupper( $field_option_code ) ) {
+				if ( 0 === strcasecmp( (string) $parent_field_info['populates'], (string) $field_option_code ) ) {
 					$options = $this->call_ajax_handler( $parent_field_info['endpoint'], $field_parent_option_code, $field_parent_option_value );
 
 					if ( is_wp_error( $options ) ) {
@@ -568,7 +566,7 @@ class Dropdown_Controller extends WP_REST_Controller {
 		if ( $user_id <= 0 ) {
 			return new WP_Error(
 				'no_authenticated_user',
-				'No authenticated administrator user found to execute AJAX request.',
+				'An authenticated WordPress administrator is needed to load these field options. Sign in with an administrator account and try again.',
 				array( 'status' => 500 )
 			);
 		}
@@ -627,21 +625,21 @@ class Dropdown_Controller extends WP_REST_Controller {
 			$response = wp_remote_post(
 				$ajax_url,
 				array(
-					'timeout'    => 30,
+					'timeout'     => 30,
 					'redirection' => 0,
-					'cookies'    => $auth['cookies'],
-					'body'       => $body,
+					'cookies'     => $auth['cookies'],
+					'body'        => $body,
 					// Certificate verification is secure by default. Sites whose
 					// servers cannot validate their own certificate may explicitly
 					// opt out in wp-config.php. The exact destination check and
 					// redirect ban remain enforced when they do.
-					'sslverify'  => $this->should_verify_ajax_ssl(),
+					'sslverify'   => $this->should_verify_ajax_ssl(),
 				)
 			);
 		} catch ( \Throwable $throwable ) {
 			return new WP_Error(
 				'ajax_request_failed',
-				'AJAX request failed before WordPress returned a response.',
+				'WordPress could not load these field options. Try again; if the problem continues, ask your hosting provider to check the WordPress logs.',
 				array( 'status' => 500 )
 			);
 		} finally {
@@ -654,32 +652,25 @@ class Dropdown_Controller extends WP_REST_Controller {
 			if ( $this->is_ajax_ssl_verification_error( $response ) ) {
 				return new WP_Error(
 					'ajax_ssl_verification_failed',
-					'Advisory: The user\'s WordPress website has an invalid SSL certificate or cannot complete a verified HTTPS loopback request. Automator cannot load these field options until WordPress can securely call its own admin-ajax.php endpoint. Ensure the website has a valid SSL certificate that its own server can verify. It is advisable to contact the hosting provider to correct the certificate chain or server trust configuration, then review Tools > Site Health in WordPress for HTTPS or loopback errors. This is a website or hosting configuration issue, not an Automator service failure. Do not retry until the site\'s SSL or loopback configuration has been corrected. For legacy hosting compatibility, the site administrator can instead add define( \'AUTOMATOR_MCP_ALLOW_INSECURE_ADMIN_AJAX_TLS\', true ); to wp-config.php to disable certificate verification for this same-site request.',
+					'Advisory: The user\'s WordPress website has an invalid SSL certificate or cannot complete a verified HTTPS loopback request. Automator cannot load these field options until WordPress can securely call its own admin-ajax.php endpoint. Ask the hosting provider to correct the certificate chain or server trust configuration, and check Tools > Site Health in WordPress for HTTPS or loopback errors. This is a website or hosting configuration issue, not an Automator service failure. Do not retry until the site\'s SSL or loopback configuration has been corrected. As a last resort, a site administrator can add define( \'AUTOMATOR_MCP_ALLOW_INSECURE_ADMIN_AJAX_TLS\', true ); to wp-config.php, but this disables certificate verification for requests carrying temporary administrator cookies. Those cookies could be intercepted by an attacker. Ask the hosting provider about the risk first and remove the setting when the certificate is fixed. (UA-MCP-705)',
 					array(
 						'status'                 => 500,
 						'reason'                 => 'site_tls_verification_failed',
+						'ref'                    => 'UA-MCP-705',
 						'configuration_constant' => 'AUTOMATOR_MCP_ALLOW_INSECURE_ADMIN_AJAX_TLS',
 						'retryable'              => false,
 					)
 				);
 			}
 
-			return new WP_Error(
-				'ajax_request_failed',
-				'AJAX request failed: ' . $response->get_error_message(),
-				array( 'status' => 500 )
-			);
+			return $this->describe_loopback_transport_error( $response );
 		}
 
 		$response_code = wp_remote_retrieve_response_code( $response );
 		$response_body = wp_remote_retrieve_body( $response );
 
 		if ( 200 !== $response_code ) {
-			return new WP_Error(
-				'ajax_http_error',
-				sprintf( 'AJAX request returned HTTP %d', $response_code ),
-				array( 'status' => 500 )
-			);
+			return $this->describe_loopback_http_error( (int) $response_code );
 		}
 
 		// Parse JSON response.
@@ -688,7 +679,7 @@ class Dropdown_Controller extends WP_REST_Controller {
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
 			return new WP_Error(
 				'ajax_parse_error',
-				'Failed to parse AJAX response: ' . json_last_error_msg(),
+				'WordPress returned an unreadable response while loading these field options. Try again; if the problem continues, ask your hosting or security provider to check admin-ajax.php.',
 				array( 'status' => 500 )
 			);
 		}
@@ -765,7 +756,7 @@ class Dropdown_Controller extends WP_REST_Controller {
 				$input_type = $field['input_type'] ?? 'select';
 				if ( 'repeater' === $input_type ) {
 					// If asking for the repeater itself:
-					if ( strtoupper( $field_code ) === strtoupper( $option_code ) ) {
+					if ( 0 === strcasecmp( (string) $field_code, (string) $option_code ) ) {
 						// Newest framework: remote_data block — dispatched in-process
 						// via Remote_Data_Handler_Resolver. Repeaters opt in the same
 						// way as scalar fields, except they typically return the
@@ -824,7 +815,7 @@ class Dropdown_Controller extends WP_REST_Controller {
 					continue;
 				}
 
-				if ( strtoupper( $field_code ) !== strtoupper( $option_code ) ) {
+				if ( 0 !== strcasecmp( (string) $field_code, (string) $option_code ) ) {
 					continue;
 				}
 
@@ -924,10 +915,14 @@ class Dropdown_Controller extends WP_REST_Controller {
 			return null;
 		}
 
-		// Check if the repeater has AJAX config with mapping_column.
+		// The repeater exposes its sub-field options source via a mapping_column. Newest
+		// framework: a remote_data block (remote_data_with_mapping_column()) dispatched
+		// in-process. Legacy framework: an ajax block with an endpoint. Read both so the
+		// mapping-column sub-field resolves under either.
+		$remote_data    = $repeater_field['remote_data'] ?? array();
 		$ajax_config    = $repeater_field['ajax'] ?? array();
-		$mapping_column = $ajax_config['mapping_column'] ?? '';
-		$listen_fields  = $ajax_config['listen_fields'] ?? array();
+		$mapping_column = $remote_data['mapping_column'] ?? ( $ajax_config['mapping_column'] ?? '' );
+		$listen_fields  = $remote_data['listen_fields'] ?? ( $ajax_config['listen_fields'] ?? array() );
 		$endpoint       = $ajax_config['endpoint'] ?? '';
 
 		foreach ( $sub_fields as $sub_field ) {
@@ -936,15 +931,16 @@ class Dropdown_Controller extends WP_REST_Controller {
 			}
 
 			$sub_code = $sub_field['option_code'] ?? '';
-			if ( strtoupper( $sub_code ) !== strtoupper( $option_code ) ) {
+			if ( 0 !== strcasecmp( (string) $sub_code, (string) $option_code ) ) {
 				continue;
 			}
 
-			// Found the sub-field. Check if it's the mapping column for AJAX.
+			// Found the sub-field.
 			$info = array(
 				'label'                => $sub_field['label'] ?? $sub_code,
 				'options'              => $sub_field['options'] ?? array(),
 				'endpoint'             => null,
+				'remote_data'          => null,
 				'is_parent'            => false,
 				'parent_codes'         => array(),
 				'populates'            => null,
@@ -952,10 +948,20 @@ class Dropdown_Controller extends WP_REST_Controller {
 				'repeater_field'       => $repeater_field,
 			);
 
-			// If this sub-field is the mapping column, use the repeater's AJAX endpoint.
-			if ( $sub_code === $mapping_column && ! empty( $endpoint ) ) {
-				$info['endpoint']     = $endpoint;
-				$info['parent_codes'] = $listen_fields;
+			// If this sub-field is the mapping column, its options come from the repeater's
+			// options source. Prefer the newest-framework remote_data block (dispatched
+			// in-process); fall back to the legacy AJAX endpoint.
+			if ( $sub_code === $mapping_column ) {
+				if ( ! empty( $remote_data['id'] ) && ! empty( $remote_data['data'] ) ) {
+					$info['remote_data']  = array(
+						'id'   => sanitize_key( (string) $remote_data['id'] ),
+						'data' => sanitize_key( (string) $remote_data['data'] ),
+					);
+					$info['parent_codes'] = $listen_fields;
+				} elseif ( ! empty( $endpoint ) ) {
+					$info['endpoint']     = $endpoint;
+					$info['parent_codes'] = $listen_fields;
+				}
 			}
 
 			return $info;
@@ -1058,7 +1064,7 @@ class Dropdown_Controller extends WP_REST_Controller {
 				}
 
 				$field_code = $field['option_code'] ?? '';
-				if ( strtoupper( $field_code ) === strtoupper( $option_code ) ) {
+				if ( 0 === strcasecmp( (string) $field_code, (string) $option_code ) ) {
 					return $field['label'] ?? null;
 				}
 			}
@@ -1284,8 +1290,110 @@ class Dropdown_Controller extends WP_REST_Controller {
 	private function unsafe_ajax_destination_error(): WP_Error {
 		return new WP_Error(
 			'unsafe_ajax_destination',
-			'Automator refused to send administrator credentials because the WordPress AJAX address does not match this site.',
+			'Automator refused to send administrator credentials because the WordPress AJAX address does not match this site. Ask your hosting provider to check the WordPress Address and domain mapping.',
 			array( 'status' => 500 )
+		);
+	}
+
+	/**
+	 * Explain a loopback request that never produced an HTTP response.
+	 *
+	 * The site calls its own admin-ajax.php for legacy option data. When the
+	 * server cannot reach its own hostname (Docker, hairpin NAT, split DNS)
+	 * WordPress reports a cURL failure that means nothing to the AI app, so
+	 * the common resolver and connection codes are named here.
+	 *
+	 * @param WP_Error $response Transport error from wp_remote_post().
+	 * @return WP_Error
+	 */
+	private function describe_loopback_transport_error( WP_Error $response ): WP_Error {
+		$message = strtolower( implode( ' ', $response->get_error_messages() ) );
+
+		// cURL 6 (resolve), 7 (connect) and 28 (timeout) are the loopback
+		// connectivity failures; the number needs a boundary so 7 never matches 77.
+		$unreachable = 1 === preg_match( '/curl error (?:6|7|28)\b/', $message );
+		foreach ( array( 'could not resolve host', 'failed to connect', 'operation timed out', 'connection timed out' ) as $marker ) {
+			if ( false !== strpos( $message, $marker ) ) {
+				$unreachable = true;
+			}
+		}
+
+		if ( $unreachable ) {
+			return new WP_Error(
+				'ajax_loopback_unreachable',
+				'Advisory: The WordPress server cannot reach its own hostname, so it could not load these field options through admin-ajax.php (' . $response->get_error_message() . '). This is a hosting or network configuration issue, not an Automator service failure. Check Tools > Site Health > Loopback request in WordPress and ask the hosting provider to let the server resolve and connect to the site\'s own domain. (UA-MCP-703)',
+				array(
+					'status'    => 500,
+					'reason'    => 'site_loopback_unreachable',
+					'ref'       => 'UA-MCP-703',
+					'retryable' => false,
+				)
+			);
+		}
+
+		return new WP_Error(
+			'ajax_request_failed',
+			'AJAX request failed: ' . $response->get_error_message() . '. Check Tools > Site Health and ask your hosting provider to check the site\'s HTTPS and loopback access, then try again. (UA-MCP-704)',
+			array(
+				'status' => 500,
+				'ref'    => 'UA-MCP-704',
+			)
+		);
+	}
+
+	/**
+	 * Explain a non-200 answer to the site's own admin-ajax request.
+	 * The caller reached this endpoint; the upstream failure is not a caller-auth denial.
+	 *
+	 * @param int $response_code HTTP status returned by admin-ajax.php.
+	 * @return WP_Error
+	 */
+	private function describe_loopback_http_error( int $response_code ): WP_Error {
+		if ( 401 === $response_code ) {
+			return new WP_Error(
+				'ajax_loopback_password_protected',
+				'Advisory: The site\'s own request to admin-ajax.php was refused with HTTP 401, so these field options could not be loaded. Ask your hosting or security provider whether password protection or a security rule is blocking the site\'s own request, then try again. (UA-MCP-701)',
+				array(
+					'status'          => 502,
+					'upstream_status' => $response_code,
+					'reason'          => 'site_loopback_password_protected',
+					'ref'             => 'UA-MCP-701',
+					'retryable'       => false,
+				)
+			);
+		}
+
+		if ( in_array( $response_code, array( 403, 503 ), true ) ) {
+			$message = 403 === $response_code
+				? 'Advisory: The site\'s own request to admin-ajax.php returned HTTP 403, so these field options could not be loaded. A security plugin, firewall or CDN may be blocking the request. Ask your hosting or security provider to check that the site can reach its own admin-ajax.php, then try again. (UA-MCP-702)'
+				: 'Advisory: The site\'s own request to admin-ajax.php returned HTTP 503, so these field options could not be loaded. The site may be temporarily unavailable, or a security plugin, firewall or CDN may be blocking the request. Try again; if it continues, ask your hosting or security provider to check that the site can reach its own admin-ajax.php. (UA-MCP-702)';
+			return new WP_Error(
+				'ajax_loopback_challenged',
+				$message,
+				array(
+					'status'          => 502,
+					'upstream_status' => $response_code,
+					'reason'          => 'site_loopback_challenged',
+					'ref'             => 'UA-MCP-702',
+					'retryable'       => 503 === $response_code,
+				)
+			);
+		}
+
+		if ( $response_code >= 300 && $response_code < 400 ) {
+			$message = sprintf( 'The site\'s request to admin-ajax.php was redirected (HTTP %d). Automator did not follow the redirect to protect administrator sign-in details. Ask your hosting provider to check the WordPress Address, HTTPS and redirect rules, then try again. (UA-MCP-704)', $response_code );
+		} else {
+			$message = sprintf( 'The site returned HTTP %d while loading these field options. Try again; if the problem continues, ask your hosting or security provider to check admin-ajax.php. (UA-MCP-704)', $response_code );
+		}
+
+		return new WP_Error(
+			'ajax_http_error',
+			$message,
+			array(
+				'status'          => 502,
+				'upstream_status' => $response_code,
+				'ref'             => 'UA-MCP-704',
+			)
 		);
 	}
 
@@ -1312,7 +1420,7 @@ class Dropdown_Controller extends WP_REST_Controller {
 	 * @return bool
 	 */
 	private function is_ajax_ssl_verification_error( WP_Error $error ): bool {
-		// phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Match WordPress core's localized HTTP transport error.
+		// phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.LowLevelTranslationFunction -- Match WordPress core's localized HTTP transport error without changing its text or domain.
 		$localized_verification_message = translate( 'The SSL certificate for the host could not be verified.', 'default' );
 		if ( in_array( $localized_verification_message, $error->get_error_messages(), true ) ) {
 			return true;
@@ -1401,12 +1509,12 @@ class Dropdown_Controller extends WP_REST_Controller {
 			);
 
 			return array(
-				'cookies'                  => $cookies,
-				'nonce'                    => $nonce,
-				'user_id'                  => $user_id,
-				'session_token'            => $token,
-				'previous_user_id'         => $previous_user_id,
-				'had_logged_in_cookie'     => $had_logged_in_cookie,
+				'cookies'                   => $cookies,
+				'nonce'                     => $nonce,
+				'user_id'                   => $user_id,
+				'session_token'             => $token,
+				'previous_user_id'          => $previous_user_id,
+				'had_logged_in_cookie'      => $had_logged_in_cookie,
 				'previous_logged_in_cookie' => $previous_logged_in_cookie,
 			);
 		} catch ( \Throwable $throwable ) {
@@ -1485,7 +1593,8 @@ class Dropdown_Controller extends WP_REST_Controller {
 
 			if (
 				$context instanceof Authenticated_Token_Context
-				&& $context->has_scope( Authenticated_Token_Context::SCOPE_TOOLS )
+				&& $context->is_first_party_agent()
+				&& $context->has_scope( Authenticated_Token_Context::SCOPE_AGENT_READ )
 				&& user_can( $context->get_user(), 'manage_options' )
 			) {
 				$user = $context->get_user();
@@ -1497,14 +1606,17 @@ class Dropdown_Controller extends WP_REST_Controller {
 
 			if (
 				$context instanceof Authenticated_Token_Context
-				&& ! $context->has_scope( Authenticated_Token_Context::SCOPE_TOOLS )
+				&& (
+					! $context->is_first_party_agent()
+					|| ! $context->has_scope( Authenticated_Token_Context::SCOPE_AGENT_READ )
+				)
 			) {
 				return new WP_Error(
 					'rest_forbidden',
 					'Bearer token does not grant MCP tool access.',
 					array(
 						'status'         => 403,
-						'required_scope' => Authenticated_Token_Context::SCOPE_TOOLS,
+						'required_scope' => Authenticated_Token_Context::SCOPE_AGENT_READ,
 					)
 				);
 			}

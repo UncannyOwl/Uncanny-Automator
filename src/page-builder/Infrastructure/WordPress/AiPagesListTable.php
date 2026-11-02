@@ -60,9 +60,12 @@ final class AiPagesListTable extends \WP_List_Table
     {
         $perPage     = 20;
         $currentPage = $this->get_pagenum();
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
         $orderby     = sanitize_text_field(wp_unslash($_GET['orderby'] ?? 'date')) ?: 'date';
-        $order       = (strtolower($_GET['order'] ?? 'desc') === 'asc') ? 'ASC' : 'DESC';
-        $status      = sanitize_text_field($_GET['post_status'] ?? '');
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        $order       = (strtolower(sanitize_text_field(wp_unslash($_GET['order'] ?? 'desc'))) === 'asc') ? 'ASC' : 'DESC';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        $status      = sanitize_text_field(wp_unslash($_GET['post_status'] ?? ''));
 
         $queryArgs = [
             'post_type'      => 'page',
@@ -106,11 +109,13 @@ final class AiPagesListTable extends \WP_List_Table
     protected function get_views(): array
     {
         $baseUrl = admin_url('admin.php?page=uncanny-page-builder');
-        $currentStatus = sanitize_text_field($_GET['post_status'] ?? '');
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        $currentStatus = sanitize_text_field(wp_unslash($_GET['post_status'] ?? ''));
 
         global $wpdb;
 
         // Single query to count all statuses at once.
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One grouped count over posts and postmeta; no WordPress API returns it.
         $rows = $wpdb->get_results(
             $wpdb->prepare(
                 "SELECT p.post_status, COUNT(*) AS cnt
@@ -287,13 +292,13 @@ final class AiPagesListTable extends \WP_List_Table
         }
 
         global $wpdb;
-        $table       = \UncannyPageBuilder\Infrastructure\Persistence\SchemaManager::tableName();
-        $placeholders = implode(',', array_fill(0, count($pageIds), '%d'));
+        $table = \UncannyPageBuilder\Infrastructure\Persistence\SchemaManager::tableName();
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
         $rows = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT page_id, COUNT(*) AS cnt FROM {$table} WHERE page_id IN ({$placeholders}) GROUP BY page_id",
-                ...$pageIds
+                'SELECT page_id, COUNT(*) AS cnt FROM %i WHERE page_id IN (' . implode(',', array_fill(0, count($pageIds), '%d')) . ') GROUP BY page_id',
+                ...array_merge([$table], $pageIds)
             )
         );
 
@@ -320,7 +325,8 @@ final class AiPagesListTable extends \WP_List_Table
 
     protected function get_bulk_actions(): array
     {
-        $currentStatus = sanitize_text_field($_GET['post_status'] ?? '');
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        $currentStatus = sanitize_text_field(wp_unslash($_GET['post_status'] ?? ''));
 
         if ($currentStatus === 'trash') {
             return [

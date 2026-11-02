@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Integration_Catalog\Dependency\Value_Objects;
 
@@ -146,7 +145,7 @@ class Dependency_Cta {
 	private function validate( array $data ): void {
 
 		if ( ! isset( $data['type'] ) || ! isset( $this->valid_types[ $data['type'] ] ) ) {
-			throw new InvalidArgumentException( 'CTA type must be one of: ' . implode( ', ', array_keys( $this->valid_types ) ) );
+			throw new InvalidArgumentException( 'CTA type must be one of: ' . esc_html( implode( ', ', array_keys( $this->valid_types ) ) ) );
 		}
 
 		$required_properties = $this->valid_types[ $data['type'] ];
@@ -154,7 +153,7 @@ class Dependency_Cta {
 		// Validate required properties based on type.
 		foreach ( $required_properties as $property ) {
 			if ( ! isset( $data[ $property ] ) || ! is_string( $data[ $property ] ) || empty( $data[ $property ] ) ) {
-				throw new InvalidArgumentException( sprintf( 'CTA %s is required and must be a non-empty string', $property ) );
+				throw new InvalidArgumentException( sprintf( 'CTA %s is required and must be a non-empty string', esc_html( $property ) ) );
 			}
 		}
 

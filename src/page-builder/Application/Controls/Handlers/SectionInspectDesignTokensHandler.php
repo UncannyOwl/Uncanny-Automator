@@ -25,7 +25,7 @@ final class SectionInspectDesignTokensHandler implements ControlHandlerInterface
 
         $section = $this->sections->findSection($request->pageId(), $sectionId);
         if ($section === null) {
-            throw SectionNotFoundException::withId($sectionId);
+            throw SectionNotFoundException::withId((int) $sectionId);
         }
 
         $result = $this->designStandards->getConsumedTokens(
@@ -53,11 +53,11 @@ final class SectionInspectDesignTokensHandler implements ControlHandlerInterface
         } elseif (is_string($value) && preg_match('/^[1-9][0-9]*$/', $value) === 1) {
             $int = (int) $value;
         } else {
-            throw new \InvalidArgumentException($message);
+            throw new \InvalidArgumentException(esc_html($message));
         }
 
         if ($int <= 0) {
-            throw new \InvalidArgumentException($message);
+            throw new \InvalidArgumentException(esc_html($message));
         }
 
         return $int;

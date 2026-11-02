@@ -1,21 +1,13 @@
 <?php
-/**
- * Class Name
- *
- * Short description
- *
- * @class   Recipe_Metaboxes
- * @since   3.0
- * @version 3.0
- * @package Uncanny_Automator
- * @author  Saad S.
- */
-
 
 namespace Uncanny_Automator;
 
 /**
  * Class Recipe_Post_Metabox
+ *
+ * Takes over the uo-recipe edit screen: renders <uap-f-recipe-builder> pinned between the admin bar and the admin menu and strips all WordPress chrome (metaboxes, page heading, Screen Options, Help, admin notices).
+ *
+ * The class name is fixed by its classmap key in src/class-automator-load.php.
  *
  * @package Uncanny_Automator
  */
@@ -25,247 +17,169 @@ class Recipe_Post_Metabox {
 	 * Recipe_Post_Metabox constructor.
 	 */
 	public function __construct() {
+		add_action( 'add_meta_boxes', array( $this, 'remove_default_metaboxes' ), PHP_INT_MAX, 2 );
+		add_action( 'edit_form_after_title', array( $this, 'render_builder' ) );
 
-		// Adding entry point for JS based triggers and actions UI into Meta Boxes
-		add_action( 'add_meta_boxes', array( $this, 'recipe_add_meta_box_ui' ), PHP_INT_MAX, 2 );
-
-		// Clear any custom ordering of the sidebar metaboxes.
-		add_filter( 'get_user_option_meta-box-order_uo-recipe', array( $this, 'maybe_clear_user_sidebar_sort' ), PHP_INT_MAX, 1 );
+		add_filter( 'screen_options_show_screen', array( $this, 'maybe_hide_screen_options' ) );
+		add_action( 'current_screen', array( $this, 'maybe_remove_help_tabs' ) );
+		add_action( 'in_admin_header', array( $this, 'maybe_suppress_notices' ), PHP_INT_MAX );
+		add_filter( 'admin_body_class', array( $this, 'maybe_add_body_class' ) );
+		add_action( 'admin_head', array( $this, 'maybe_print_screen_css' ) );
 	}
 
 	/**
-	 * Creates an entry point with in a metabox to add JS / Rest-Api based UI
+	 * Determine whether the current request is the classic uo-recipe edit screen.
+	 *
+	 * True only on post.php for a uo-recipe.
+	 * post-new.php redirects to post.php via Recipe_Post_Utilities::redirect_to_recipe(), so the WP_Screen base of 'post' covers both entry points.
+	 *
+	 * @return bool
 	 */
-	public function recipe_add_meta_box_ui( $post_type, $post ) {
-		// Get global $post
+	private function is_recipe_edit_screen() {
+		$screen = get_current_screen();
+
+		return $screen instanceof \WP_Screen
+			&& 'post' === $screen->base
+			&& AUTOMATOR_POST_TYPE_RECIPE === $screen->post_type;
+	}
+
+	/**
+	 * Render the recipe builder into the edit form, below the (hidden) title field.
+	 *
+	 * Mounts <uap-f-recipe-builder> and its type selector inside <uap-d-site-auth>, passing the REST endpoint and a wp_rest nonce.
+	 *
+	 * @return void
+	 */
+	public function render_builder() {
 		global $post;
-		if ( ! $post instanceof \WP_Post ) {
+
+		if ( ! $post instanceof \WP_Post || AUTOMATOR_POST_TYPE_RECIPE !== $post->post_type ) {
 			return;
 		}
-		// Get recipe type
-		$recipe_type = get_post_meta( $post->ID, 'uap_recipe_type', true );
 
-		// Create variable to save the title of the triggers metabox,
-		// and add the default value (on load value)
-		/* translators: Trigger type. Logged-in triggers are triggered only by logged-in users */
+		$recipe_id = absint( $post->ID );
 
-		// Check if the user didn't select a recipe type yet
-		if ( empty( $recipe_type ) ) {
-			$triggers_metabox_title = apply_filters( 'uap_meta_box_title', esc_attr__( 'Triggers', 'uncanny-automator' ), $recipe_type );
-		} else {
-			if ( 'anonymous' === (string) $recipe_type ) {
-				$triggers_metabox_title = apply_filters( 'uap_meta_box_title', esc_attr__( 'Trigger', 'uncanny-automator' ), $recipe_type );
-			} else {
-				$triggers_metabox_title = apply_filters( 'uap_meta_box_title', esc_attr__( 'Triggers', 'uncanny-automator' ), $recipe_type );
-			}
+		if ( $recipe_id <= 0 ) {
+			return;
 		}
 
-		add_meta_box(
-			'uo-recipe-triggers-meta-box-ui',
-			$triggers_metabox_title,
-			function () {
-				ob_start();
-				?>
-				<div class="uap">
-					<div id="recipe-triggers-ui" class="metabox__content uap-clear">
-
-						<!-- Placeholder content -->
-						<div class="uap-placeholder">
-							<div class="uap-item item item--trigger">
-								<div>
-									<div class="item-actions">
-										<div class="item-actions__btn">
-											<i class="uo-icon uo-icon--ellipsis"></i>
-										</div>
-									</div>
-									<div class="item-icon"></div>
-									<div class="item-title"></div>
-								</div>
-								<div class="item__content">
-									<div class="item-integrations">
-										<div class="item-integration">
-											<div class="item-integration__logo"></div>
-											<div class="item-integration__name"></div>
-										</div>
-										<div class="item-integration">
-											<div class="item-integration__logo"></div>
-											<div class="item-integration__name"></div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- End of placeholder content -->
-
-					</div>
-				</div>
-				<?php
-				// HTML is included. Ignoring
-				echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			},
-			AUTOMATOR_POST_TYPE_RECIPE,
-			'uap_items',
-			'high'
+		printf(
+			'<uap-d-site-auth site-api-url="%1$s" site-api-nonce="%2$s">
+				<uap-f-recipe-builder class="uap-wp-admin-pinned-app" recipe-id="%3$d"></uap-f-recipe-builder>
+				<uap-f-recipe-builder-edit-node-dialog recipe-id="%3$d"></uap-f-recipe-builder-edit-node-dialog>
+				<uap-f-recipe-builder-type-selector recipe-id="%3$d"></uap-f-recipe-builder-type-selector>
+			</uap-d-site-auth>',
+			esc_attr( rest_url() . AUTOMATOR_REST_API_END_POINT ),
+			esc_attr( wp_create_nonce( 'wp_rest' ) ),
+			esc_attr( $recipe_id )
 		);
+	}
 
-		add_meta_box(
-			'uo-recipe-actions-meta-box-ui',
-			esc_attr__( 'Actions', 'uncanny-automator' ),
-			function () {
-				ob_start();
-				?>
-				<div class="uap">
-					<div id="recipe-actions-ui" class="metabox__content uap-clear">
+	/**
+	 * Remove the default WordPress metaboxes from the uo-recipe edit screen.
+	 *
+	 * The $post parameter is unused but kept to match the add_meta_boxes callback signature.
+	 *
+	 * @param string   $post_type The current post type.
+	 * @param \WP_Post $post      The current post object.
+	 *
+	 * @return void
+	 */
+	public function remove_default_metaboxes( $post_type, $post ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE !== $post_type ) {
+			return;
+		}
 
-						<!-- Placeholder content -->
-						<div class="uap-placeholder">
-							<div class="uap-item item item--action">
-								<div>
-									<div class="item-actions">
-										<div class="item-actions__btn">
-											<i class="uo-icon uo-icon--ellipsis"></i>
-										</div>
-									</div>
-									<div class="item-icon"></div>
-									<div class="item-title"></div>
-								</div>
-							</div>
-							<div class="metabox__footer">
-								<div class="uap-placeholder-checkbox">
-									<div class="uap-placeholder-checkbox__field"></div>
-									<div class="uap-placeholder-checkbox__label"></div>
-								</div>
-							</div>
-						</div>
-						<!-- End of placeholder content -->
+		remove_meta_box( 'submitdiv', $post_type, 'side' );
+		remove_meta_box( 'authordiv', $post_type, 'normal' );
+		remove_meta_box( 'slugdiv', $post_type, 'normal' );
+		remove_meta_box( 'recipe_categorydiv', $post_type, 'side' );
+		remove_meta_box( 'tagsdiv-recipe_tag', $post_type, 'side' );
+	}
 
-					</div>
-				</div>
-				<?php
-				// HTML is included. Ignoring
-				echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			},
-			AUTOMATOR_POST_TYPE_RECIPE,
-			'uap_items',
-			'high'
-		);
+	/**
+	 * Hide the Screen Options tab on the recipe edit screen.
+	 *
+	 * @param bool $show Whether to show the Screen Options tab.
+	 *
+	 * @return bool
+	 */
+	public function maybe_hide_screen_options( $show ) {
+		return $this->is_recipe_edit_screen() ? false : $show;
+	}
 
-		add_action(
-			'edit_form_after_title',
-			function () {
-				global $post, $wp_meta_boxes;
-				do_meta_boxes( get_current_screen(), 'uap_items', $post );
-				unset( $wp_meta_boxes[ get_post_type( $post ) ]['uap_items'] );
-			}
-		);
-
-		add_meta_box(
-			'uo-automator-publish',
-			esc_attr__( 'Recipe', 'uncanny-automator' ),
-			function () {
-				ob_start();
-				?>
-				<div id="uo-automator-publish-metabox" class="uap">
-
-					<!-- Placeholder content -->
-					<div class="uap-placeholder">
-						<div id="uap-publish-metabox">
-							<div class="metabox__content">
-								<div class="publish-row">
-									<div class="publish-row__visible">
-										<span class="publish-row__icon"></span>
-										<span class="publish-row__name"></span>
-										<span class="publish-row__value"></span>
-										<span class="publish-row__edit"></span>
-									</div>
-								</div>
-								<div class="publish-row">
-									<div class="publish-row__visible">
-										<span class="publish-row__icon"></span>
-										<span class="publish-row__name"></span>
-										<span class="publish-row__value"></span>
-										<span class="publish-row__edit"></span>
-									</div>
-								</div>
-								<div class="publish-row">
-									<div class="publish-row__visible">
-										<span class="publish-row__icon"></span>
-										<span class="publish-row__name"></span>
-										<span class="publish-row__value"></span>
-										<span class="publish-row__edit"></span>
-									</div>
-								</div>
-							</div>
-							<div class="metabox__footer">
-								<div class="publish-footer">
-									<div class="publish-footer__row uap-clear">
-										<div class="publish-footer__left">
-											<a class="publish-footer__move-to-draft"></a>
-										</div>
-										<div class="publish-footer__right"></div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<!-- End of placeholder content -->
-
-				</div>
-				<?php
-				// HTML is included. Ignoring
-				echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			},
-			AUTOMATOR_POST_TYPE_RECIPE,
-			'side',
-			'high'
-		);
-
-		add_meta_box(
-			'uo-automator-notes',
-			esc_attr__( 'Recipe notes', 'uncanny-automator' ),
-			function ( $post ) {
-				// Get existing notes.
-				$recipe_notes = get_post_meta( $post->ID, 'uap_recipe_notes', true );
-				$recipe_notes = ! empty( $recipe_notes ) ? $recipe_notes : '';
-				// Output the notes metabox.
-				?>
-				<div id="uo-automator-notes-metabox" class="uap">
-					<div id="uap-notes-metabox">
-						<div class="metabox__content">
-							<div class="uap-notes-metabox__textarea__wrap">
-								<textarea id="uap-notes-metabox__textarea"><?php echo esc_textarea( $recipe_notes ); ?></textarea>
-							</div>
-						</div>
-					</div>
-				</div>
-				<?php
-			},
-			AUTOMATOR_POST_TYPE_RECIPE,
-			'side',
-			'high'
-		);
-
-		if ( AUTOMATOR_POST_TYPE_RECIPE === $post_type ) {
-			// Remove the Author meta box
-			remove_meta_box( 'authordiv', $post_type, 'normal' );
+	/**
+	 * Remove the Help tabs on the recipe edit screen.
+	 *
+	 * @param \WP_Screen $screen The current screen.
+	 *
+	 * @return void
+	 */
+	public function maybe_remove_help_tabs( $screen ) {
+		if ( $screen instanceof \WP_Screen && 'post' === $screen->base && AUTOMATOR_POST_TYPE_RECIPE === $screen->post_type ) {
+			$screen->remove_help_tabs();
 		}
 	}
 
 	/**
-	 * Clear any custom ordering of the sidebar metaboxes.
+	 * Suppress admin notices on the recipe edit screen.
 	 *
-	 * @param mixed $sorted   The user's meta box ordering
-	 *
-	 * @return mixed
+	 * @return void
 	 */
-	public function maybe_clear_user_sidebar_sort( $sorted ) {
-
-		if ( empty( $sorted ) || ! is_array( $sorted ) ) {
-			return $sorted;
+	public function maybe_suppress_notices() {
+		if ( ! $this->is_recipe_edit_screen() ) {
+			return;
 		}
 
-		$sorted['side'] = '';
+		remove_all_actions( 'admin_notices' );
+		remove_all_actions( 'all_admin_notices' );
+		remove_all_actions( 'user_admin_notices' );
+		remove_all_actions( 'network_admin_notices' );
+	}
 
-		return $sorted;
+	/**
+	 * Add the recipe-builder body class on the recipe edit screen, and collapse the admin menu there.
+	 *
+	 * The core `folded` class collapses the menu for this render only. The user's saved preference (the `mfold` user setting) is untouched, so every other admin screen keeps rendering from it.
+	 *
+	 * @param string $classes Space-separated list of body classes.
+	 *
+	 * @return string
+	 */
+	public function maybe_add_body_class( $classes ) {
+		return $this->is_recipe_edit_screen() ? $classes . ' uap-recipe-builder-screen folded' : $classes;
+	}
+
+	/**
+	 * Print the scoped CSS that strips the WordPress chrome on the recipe edit screen.
+	 *
+	 * This is global WordPress-admin chrome CSS (light DOM, outside the component ?inline SCSS pipeline), so it ships as plain CSS in admin_head rather than a component stylesheet. The builder fills the screen through the `uap-wp-admin-pinned-app` class it is rendered with, which pins it between the admin bar and the admin menu.
+	 *
+	 * @return void
+	 */
+	public function maybe_print_screen_css() {
+		if ( ! $this->is_recipe_edit_screen() ) {
+			return;
+		}
+
+		echo '<style id="uap-recipe-builder-screen-css">
+			body.uap-recipe-builder-screen #wpbody-content > .wrap > h1.wp-heading-inline,
+			body.uap-recipe-builder-screen #wpbody-content > .wrap > .page-title-action,
+			body.uap-recipe-builder-screen #wpbody-content > .wrap > hr.wp-header-end,
+			body.uap-recipe-builder-screen #screen-meta,
+			body.uap-recipe-builder-screen #screen-meta-links,
+			body.uap-recipe-builder-screen #titlediv,
+			body.uap-recipe-builder-screen #postdivrich,
+			body.uap-recipe-builder-screen #postbox-container-1,
+			body.uap-recipe-builder-screen #postbox-container-2,
+			body.uap-recipe-builder-screen #wpfooter { display: none !important; }
+
+			body.uap-recipe-builder-screen #wpbody-content { padding: 0 !important; margin: 0 !important; }
+			body.uap-recipe-builder-screen #post-body-content, .edit-form-section { padding: 0 !important; margin: 0 !important; }
+			body.uap-recipe-builder-screen #wpcontent { padding-left: 0 !important }
+			body.uap-recipe-builder-screen .wrap { padding: 0 !important; margin: 0 !important; }
+			body.uap-recipe-builder-screen #poststuff { padding: 0 !important; }
+			body.uap-recipe-builder-screen #post-body { margin: 0 !important; }
+		</style>';
 	}
 }

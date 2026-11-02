@@ -2,7 +2,7 @@
 /**
  * Dependency Tag Resolver
  *
- * Resolves dependency-related scope tags (Not connected, Not installed).
+ * Resolves dependency-related scope tags (Not connected, Not installed, Not active).
  *
  * @package Uncanny_Automator\App\Integration_Catalog\Scope_Tag\Resolvers\Integration\Dependency
  * @since 7.0.0
@@ -13,6 +13,7 @@ namespace Uncanny_Automator\App\Integration_Catalog\Scope_Tag\Resolvers\Integrat
 use Uncanny_Automator\App\Integration_Catalog\Integration\Integration;
 use Uncanny_Automator\App\Integration_Catalog\Scope_Tag\Scope_Tag_Evaluatable;
 use Uncanny_Automator\App\Integration_Catalog\Scope_Tag\Resolvers\Abstract_Scope_Tag_Resolver;
+use Uncanny_Automator\App\Recipe_Builder\Services\Availability\Integration_Plugin_Presence;
 
 /**
  * Resolves dependency scope tags.
@@ -22,6 +23,20 @@ use Uncanny_Automator\App\Integration_Catalog\Scope_Tag\Resolvers\Abstract_Scope
  * @since 7.0.0
  */
 class Dependency_Tag_Resolver extends Abstract_Scope_Tag_Resolver {
+
+	/**
+	 * Whether an integration's plugin is on disk, active or not.
+	 *
+	 * @var Integration_Plugin_Presence
+	 */
+	private Integration_Plugin_Presence $presence;
+
+	/**
+	 * @param Integration_Plugin_Presence|null $presence Plugin lookups; defaults to the site's.
+	 */
+	public function __construct( ?Integration_Plugin_Presence $presence = null ) {
+		$this->presence = $presence ?? new Integration_Plugin_Presence();
+	}
 
 	/**
 	 * Check if should be evaluated.
@@ -77,9 +92,9 @@ class Dependency_Tag_Resolver extends Abstract_Scope_Tag_Resolver {
 		// Identify all unmet dependency types (excluding license).
 		$unmet_types = $this->get_unmet_dependency_types();
 
-		// Priority 1: Not installed (highest priority).
+		// Priority 1: a plugin to install, or else one installed that only needs activating.
 		if ( in_array( 'installable', $unmet_types, true ) ) {
-			return array( $this->get_not_installed_tag() );
+			return array( $this->has_unmet_plugin_not_on_disk() ? $this->get_not_installed_tag() : $this->get_not_active_tag() );
 		}
 
 		// Priority 2: Not connected (only if integration requires connection).
@@ -110,6 +125,39 @@ class Dependency_Tag_Resolver extends Abstract_Scope_Tag_Resolver {
 		}
 
 		return $unmet_types;
+	}
+
+	/**
+	 * Whether any unmet plugin row names a plugin that is not on disk. The rows are the ones the
+	 * plugin dependency resolver builds, one per plugin, with the id "installable-{integration code}".
+	 *
+	 * @return bool
+	 */
+	private function has_unmet_plugin_not_on_disk(): bool {
+		foreach ( $this->entity_dependencies['items'] as $dep ) {
+			if ( 'installable' !== $dep->get_type() || $dep->is_met() ) {
+				continue;
+			}
+			if ( ! $this->presence->is_installed( substr( $dep->get_id(), strlen( 'installable-' ) ) ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get the not active tag, for a plugin that is installed but not active.
+	 *
+	 * @return array
+	 */
+	private function get_not_active_tag(): array {
+		return array(
+			'type'        => 'dependency',
+			'scenario_id' => 'dependency-not-active',
+			'label'       => esc_html__( 'Not active', 'uncanny-automator' ),
+			'icon'        => 'link-simple-slash',
+		);
 	}
 
 	/**

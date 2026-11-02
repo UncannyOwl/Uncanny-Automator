@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Kernel\Providers\Integrations\Automator;
 use UncannyPageBuilder\Application\Access\GetPageBuilderAllowedCapabilities;
 use UncannyPageBuilder\Application\ContentType\SupportsPostTypeUseCase;
 use UncannyPageBuilder\Application\Personalization\SitePersonalizationService;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 use UncannyPageBuilder\Kernel\Contracts\ServiceProviderInterface;
 use UncannyPageBuilder\Kernel\Container;
 use UncannyPageBuilder\Application\Settings\ToolSettingsAccess;
@@ -118,7 +119,7 @@ final class McpAgentProvider implements ServiceProviderInterface
 
     private static function reportLauncherFailure(\Throwable $error): void
     {
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] Automator launcher unavailable (%s).',
             $error::class,
         ));

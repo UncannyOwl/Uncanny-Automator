@@ -27,9 +27,9 @@ class FACEBOOK_PAGE_PUBLISH_POST extends \Uncanny_Automator\Recipe\App_Action {
 		// Disables wpautop.
 		$this->set_wpautop( false );
 
-		// translators: %1$s is the Facebook page title.
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Facebook page */
 				esc_attr_x( 'Publish a post to {{a Facebook page:%1$s}}', 'Facebook', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)

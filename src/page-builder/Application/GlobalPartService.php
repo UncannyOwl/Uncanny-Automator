@@ -515,12 +515,12 @@ final class GlobalPartService
     ): BindingTargetUpdateResult {
         $part = $this->repository->findById($globalPartId);
         if ($part === null) {
-            throw new BindingTargetNotFoundException(BindingTargetReference::forGlobalPart($globalPartId)->token());
+            throw new BindingTargetNotFoundException(esc_html(BindingTargetReference::forGlobalPart((int) $globalPartId)->token()));
         }
 
         $section = $this->hydrateSource($globalPartId, $part);
         if (!$section instanceof Section) {
-            throw new BindingTargetNotFoundException(BindingTargetReference::forGlobalPart($globalPartId)->token());
+            throw new BindingTargetNotFoundException(esc_html(BindingTargetReference::forGlobalPart((int) $globalPartId)->token()));
         }
 
         $patchedHtml = $this->bindingContractReplacementService->replace(
@@ -669,7 +669,8 @@ final class GlobalPartService
         try {
             $this->repository->removeCreatedGlobalPart($globalPartId);
         } catch (\Throwable $cleanupFailure) {
-            throw new GlobalPartCreationUncertainException($globalPartId, $failure, $cleanupFailure);
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- $failure and $cleanupFailure are exceptions carried by the exception, not message text.
+            throw new GlobalPartCreationUncertainException((int) $globalPartId, $failure, $cleanupFailure);
         }
 
         throw $failure;

@@ -7,6 +7,8 @@ use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
 
+use function Uncanny_Automator\App\Infrastructure\automator_connection_registry;
+
 /**
  * Facebook Lead Ads Webhooks
  *
@@ -17,6 +19,18 @@ use WP_REST_Server;
  * @package Uncanny_Automator\Integrations\Facebook_Lead_Ads
  */
 class Facebook_Lead_Ads_Webhooks extends App_Webhooks {
+
+	/**
+	 * Lead Ads' leads reach a 7.8.0 site through the Automator platform's
+	 * signed delivery (and, for a site the signed leg does not serve, the
+	 * platform's forward) — never from Meta directly.
+	 *
+	 * @return bool
+	 */
+	public function is_platform_delivered() {
+		return true;
+	}
+
 
 	/**
 	 * Legacy REST namespace.
@@ -38,6 +52,20 @@ class Facebook_Lead_Ads_Webhooks extends App_Webhooks {
 	 * @var string
 	 */
 	const TRIGGER_ACTION_NAME = 'automator_facebook_lead_ads_rest_api_handle_request_after';
+
+	/**
+	 * The pages' platform connections.
+	 *
+	 * @var Facebook_Lead_Ads_Page_Connections|null
+	 */
+	private $page_connections;
+
+	/**
+	 * The claim the signed path shares.
+	 *
+	 * @var Facebook_Lead_Ads_Lead_Dedup|null
+	 */
+	private $lead_dedup;
 
 	/**
 	 * Set additional properties.
@@ -150,7 +178,54 @@ class Facebook_Lead_Ads_Webhooks extends App_Webhooks {
 			);
 		}
 
+		// The page's leads arrive signed, fields included: this forward is a
+		// duplicate. Not claimed, so the signed delivery runs the lead.
+		if ( $this->page_connections()->covers_lead( (string) $lead['page_id'], absint( $lead['created_time'] ?? 0 ) ) ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'rest_signed_delivery',
+					'message' => esc_html_x( 'Webhook received but not processed. Leads from this page arrive through signed delivery.', 'Facebook Lead Ads', 'uncanny-automator' ),
+				),
+				200
+			);
+		}
+
+		// One run per lead: the signed delivery may have run it already.
+		if ( ! $this->lead_dedup()->claim( (string) $lead['leadgen_id'] ) ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'rest_duplicate_lead',
+					'message' => esc_html_x( 'Webhook received but not processed. This lead was already received.', 'Facebook Lead Ads', 'uncanny-automator' ),
+				),
+				200
+			);
+		}
+
 		return true;
+	}
+
+	/**
+	 * @return Facebook_Lead_Ads_Page_Connections
+	 */
+	private function page_connections() {
+
+		if ( null === $this->page_connections ) {
+			$this->page_connections = new Facebook_Lead_Ads_Page_Connections( automator_connection_registry() );
+		}
+
+		return $this->page_connections;
+	}
+
+	/**
+	 * @return Facebook_Lead_Ads_Lead_Dedup
+	 */
+	private function lead_dedup() {
+
+		if ( null === $this->lead_dedup ) {
+			$this->lead_dedup = new Facebook_Lead_Ads_Lead_Dedup();
+		}
+
+		return $this->lead_dedup;
 	}
 
 	/**
@@ -159,16 +234,18 @@ class Facebook_Lead_Ads_Webhooks extends App_Webhooks {
 	 * NOT authentication -- Facebook and the Automator API server
 	 * authenticate the origin upstream and the site holds no shared secret.
 	 *
+	 * The page, form and lead ids must be Graph ids, digits only: the lead id
+	 * reaches get_lead( int, int ), which a forged non-numeric id would fail
+	 * with a TypeError at shutdown.
+	 *
 	 * @param array $lead The lead data ( params['data'] ).
 	 *
 	 * @return bool
 	 */
 	private function is_valid_leadgen_payload( $lead ) {
-		$page_id    = absint( $lead['page_id'] ?? 0 );
-		$form_id    = absint( $lead['form_id'] ?? 0 );
-		$leadgen_id = $lead['leadgen_id'] ?? '';
-
-		return $page_id > 0 && $form_id > 0 && '' !== trim( (string) $leadgen_id );
+		return Facebook_Lead_Ads_App_Helpers::is_graph_id( $lead['page_id'] ?? null )
+			&& Facebook_Lead_Ads_App_Helpers::is_graph_id( $lead['form_id'] ?? null )
+			&& Facebook_Lead_Ads_App_Helpers::is_graph_id( $lead['leadgen_id'] ?? null );
 	}
 
 	/**

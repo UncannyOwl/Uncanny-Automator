@@ -137,8 +137,8 @@ final class PageSourceMutation
             if ($this->activeExpectedGeneration !== $expectedGeneration) {
                 throw new StaleSourceGenerationException(
                     'page',
-                    $expectedGeneration,
-                    $this->activeExpectedGeneration ?? -1,
+                    (int) $expectedGeneration,
+                    (int) ($this->activeExpectedGeneration ?? -1),
                 );
             }
 
@@ -199,7 +199,7 @@ final class PageSourceMutation
         string $label,
     ): mixed {
         if ($pageId <= 0) {
-            throw new \InvalidArgumentException($label . ' requires a positive page ID.');
+            throw new \InvalidArgumentException(esc_html($label) . ' requires a positive page ID.');
         }
         if ($this->draftWritePageId !== null) {
             throw new \LogicException('A draft write context cannot be nested.');

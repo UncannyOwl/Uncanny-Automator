@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Infrastructure\Persistence;
 
+use UncannyPageBuilder\Domain\ArrayShape;
 use UncannyPageBuilder\Domain\Publishing\PageSourceSnapshot;
 use UncannyPageBuilder\Domain\Publishing\PageSourceSnapshotRepositoryInterface;
 
@@ -22,6 +23,7 @@ final class DatabasePageSourceSnapshotRepository implements PageSourceSnapshotRe
         $createdAt = $snapshot->createdAt()?->format('Y-m-d H:i:s') ?? $this->now();
 
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table write.
         $inserted = $wpdb->insert(
             SchemaManager::pageSourceSnapshotsTableName(),
             [
@@ -65,10 +67,12 @@ final class DatabasePageSourceSnapshotRepository implements PageSourceSnapshotRe
         $this->ensureSchema();
 
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
         $row = $wpdb->get_row($wpdb->prepare(
-            'SELECT * FROM ' . SchemaManager::pageSourceSnapshotsTableName() . '
+            'SELECT * FROM %i
              WHERE page_id = %d AND id = %d
              LIMIT 1',
+            SchemaManager::pageSourceSnapshotsTableName(),
             $pageId,
             $snapshotId,
         ));
@@ -85,17 +89,21 @@ final class DatabasePageSourceSnapshotRepository implements PageSourceSnapshotRe
         $this->ensureSchema();
 
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $deleted = $wpdb->query($wpdb->prepare(
-            'DELETE snapshots FROM ' . SchemaManager::pageSourceSnapshotsTableName() . ' AS snapshots
-             LEFT JOIN ' . SchemaManager::pageStateTableName() . ' AS state
+            'DELETE snapshots FROM %i AS snapshots
+             LEFT JOIN %i AS state
                ON state.page_id = snapshots.page_id
               AND state.published_source_snapshot_id = snapshots.id
-             LEFT JOIN ' . SchemaManager::pageArtifactsTableName() . ' AS artifacts
+             LEFT JOIN %i AS artifacts
                ON artifacts.page_id = snapshots.page_id
               AND artifacts.source_snapshot_id = snapshots.id
              WHERE snapshots.page_id = %d
                AND state.page_id IS NULL
                AND artifacts.id IS NULL',
+            SchemaManager::pageSourceSnapshotsTableName(),
+            SchemaManager::pageStateTableName(),
+            SchemaManager::pageArtifactsTableName(),
             $pageId,
         ));
         if ($deleted === false) {
@@ -114,6 +122,7 @@ final class DatabasePageSourceSnapshotRepository implements PageSourceSnapshotRe
         $this->ensureSchema();
 
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $deleted = $wpdb->delete(
             SchemaManager::pageSourceSnapshotsTableName(),
             ['page_id' => $pageId],
@@ -131,9 +140,10 @@ final class DatabasePageSourceSnapshotRepository implements PageSourceSnapshotRe
         try {
             $source = json_decode((string) $row->source_json, true, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException $exception) {
-            throw new \RuntimeException('Stored page source snapshot JSON is invalid.', 0, $exception);
+            $invalidSnapshot = new \RuntimeException('Stored page source snapshot JSON is invalid.', 0, $exception);
+            throw $invalidSnapshot;
         }
-        if (!is_array($source) || array_is_list($source)) {
+        if (!is_array($source) || ArrayShape::isList($source)) {
             throw new \RuntimeException('Stored page source snapshot must be an object.');
         }
 

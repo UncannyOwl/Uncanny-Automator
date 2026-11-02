@@ -200,6 +200,7 @@ final class GlobalPartDeletionCleanup
         global $wpdb;
         $table = SchemaManager::globalSectionsTableName();
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $deleted = $wpdb->delete($table, ['global_part_id' => $postId], ['%d']);
         if ($deleted === false) {
             throw new \RuntimeException('Failed to delete reusable source rows.');
@@ -213,14 +214,17 @@ final class GlobalPartDeletionCleanup
         $sourcesTable = SchemaManager::globalSectionsTableName();
         $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
         $wpdb->last_error = '';
-        $postIds = $wpdb->get_col(
-            "SELECT DISTINCT sources.global_part_id
-             FROM {$sourcesTable} AS sources
-             LEFT JOIN {$postsTable} AS posts ON posts.ID = sources.global_part_id
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+        $postIds = $wpdb->get_col($wpdb->prepare(
+            'SELECT DISTINCT sources.global_part_id
+             FROM %i AS sources
+             LEFT JOIN %i AS posts ON posts.ID = sources.global_part_id
              WHERE posts.ID IS NULL
              ORDER BY sources.global_part_id ASC
-             LIMIT 20",
-        );
+             LIMIT 20',
+            $sourcesTable,
+            $postsTable,
+        ));
         if (!is_array($postIds) || (string) ($wpdb->last_error ?? '') !== '') {
             throw new \RuntimeException('Failed to find orphaned reusable source rows.');
         }
@@ -360,10 +364,12 @@ final class GlobalPartDeletionCleanup
 
         $postmetaTable = isset($wpdb->postmeta) ? (string) $wpdb->postmeta : (string) $wpdb->prefix . 'postmeta';
         $wpdb->last_error = '';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Live state read; must not be cached.
         $found = $wpdb->get_var($wpdb->prepare(
-            "SELECT meta_id FROM {$postmetaTable}
+            "SELECT meta_id FROM %i
              WHERE meta_key = %s AND meta_value = %s
              LIMIT 1",
+            $postmetaTable,
             $metaKey,
             (string) $postId,
         ));
@@ -394,7 +400,7 @@ final class GlobalPartDeletionCleanup
             // A reporting failure cannot escape this WordPress hook boundary.
         }
 
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] Reusable cleanup %s failed for post %d (%s).',
             $operation,
             $postId,

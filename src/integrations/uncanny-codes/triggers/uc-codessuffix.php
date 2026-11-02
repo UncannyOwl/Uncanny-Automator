@@ -157,6 +157,7 @@ class UC_CODESSUFFIX extends \Uncanny_Automator\Recipe\Trigger {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uncanny Codes' own table; the plugin offers no API for this query.
 		return (string) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT g.suffix FROM `{$wpdb->prefix}uncanny_codes_groups` g LEFT JOIN `{$wpdb->prefix}uncanny_codes_codes` c ON g.ID = c.code_group WHERE c.ID = %d",
@@ -176,6 +177,7 @@ class UC_CODESSUFFIX extends \Uncanny_Automator\Recipe\Trigger {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uncanny Codes' own table; the plugin offers no API for this query.
 		return (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT g.id

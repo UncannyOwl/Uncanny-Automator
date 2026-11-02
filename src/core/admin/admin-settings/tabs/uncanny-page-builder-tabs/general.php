@@ -4,6 +4,10 @@ namespace Uncanny_Automator;
 
 use Uncanny_Automator\App\Infrastructure\Page_Builder\Page_Builder_Settings;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Admin_Settings_Uncanny_Page_Builder_General
  *
@@ -75,6 +79,7 @@ class Admin_Settings_Uncanny_Page_Builder_General {
 				'icon'     => 'cog',
 			);
 		} catch ( \Throwable $throwable ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Diagnostic for a caught error; it logs the exception class only, no site data.
 			error_log( sprintf( '[Uncanny Page Builder] General settings tab registration failed (%s).', get_class( $throwable ) ) );
 		}
 
@@ -99,6 +104,7 @@ class Admin_Settings_Uncanny_Page_Builder_General {
 
 			include Utilities::automator_get_view( 'admin-settings/tab/uncanny-page-builder/general.php' );
 		} catch ( \Throwable $throwable ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Diagnostic for a caught error; it logs the exception class only, no site data.
 			error_log( sprintf( '[Uncanny Page Builder] General settings output failed (%s).', get_class( $throwable ) ) );
 		}
 	}
@@ -119,6 +125,7 @@ class Admin_Settings_Uncanny_Page_Builder_General {
 			wp_safe_redirect( Admin_Settings::utility_get_settings_page_link( 'uncanny-page-builder' ) );
 			exit;
 		} catch ( \Throwable $throwable ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Diagnostic for a caught error; it logs the exception class only, no site data.
 			error_log( sprintf( '[Uncanny Page Builder] General settings save failed (%s).', get_class( $throwable ) ) );
 			return;
 		}

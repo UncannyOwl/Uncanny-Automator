@@ -92,7 +92,7 @@ class Recipe_Throttle_Settings_Meta_DTO {
 			: 'recipe';
 
 		// Get values with proper type casting
-		$enabled  = (bool) $meta['ENABLED']['value'];
+		$enabled  = automator_normalize_bool( $meta['ENABLED']['value'] );
 		$duration = (int) $meta['NUMBER']['value'];
 		$unit     = (string) $meta['UNIT']['value'];
 

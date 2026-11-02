@@ -15,8 +15,8 @@
 	grid-template-areas: 
 	  "Avatar Details"
 	  "Avatar Body";
-	border: 1px solid var(--uap-border-color-gray);
-	border-radius: var(--uap-border-radius);
+	border: 1px solid var(--uas--color--border);
+	border-radius: var(--uas--base--border-radius-md);
 	padding: 20px;
 }
 

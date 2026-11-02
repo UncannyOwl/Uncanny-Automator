@@ -14,6 +14,7 @@ namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Utilities;
 
 use WP_Error;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Status;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Throttle;
 use Uncanny_Automator\App\Recipe_Builder\Shared\Traits\Empty_Array_To_Object;
 
 /**
@@ -42,12 +43,7 @@ class Recipe_Formatter {
 			'meta'           => $this->ensure_object( $recipe_data['meta'] ?? array() ),
 			'times_per_user' => $recipe_data['times_per_user'] ?? null,
 			'total_times'    => $recipe_data['total_times'] ?? null,
-			'throttle'       => $recipe_data['throttle'] ?? array(
-				'enabled'  => false,
-				'duration' => 1,
-				'unit'     => 'hours',
-				'scope'    => 'recipe',
-			),
+			'throttle'       => $recipe_data['throttle'] ?? Recipe_Throttle::disabled_shape(),
 		);
 	}
 

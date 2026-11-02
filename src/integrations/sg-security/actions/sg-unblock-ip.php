@@ -77,6 +77,7 @@ class Sg_Unblock_Ip extends \Uncanny_Automator\Recipe\Action {
 		$visitor = $this->get_item_helpers()->get_visitor_by_ip( $ip );
 
 		if ( null === $visitor ) {
+			/* translators: %s: IP address */
 			$this->add_log_error( sprintf( esc_html_x( 'No visitor record found for IP address: %s', 'Security Optimizer', 'uncanny-automator' ), $ip ) );
 			return false;
 		}

@@ -85,6 +85,7 @@ class Sg_Unblock_User extends \Uncanny_Automator\Recipe\Action {
 		$user = get_userdata( $target_user_id );
 
 		if ( false === $user ) {
+			/* translators: %d: User ID */
 			$this->add_log_error( sprintf( esc_html_x( 'User with ID %d does not exist.', 'Security Optimizer', 'uncanny-automator' ), $target_user_id ) );
 			return false;
 		}
@@ -92,6 +93,7 @@ class Sg_Unblock_User extends \Uncanny_Automator\Recipe\Action {
 		$visitor = $this->get_item_helpers()->get_visitor_by_user_id( $target_user_id );
 
 		if ( null === $visitor ) {
+			/* translators: %d: User ID */
 			$this->add_log_error( sprintf( esc_html_x( 'No visitor record found for user ID: %d', 'Security Optimizer', 'uncanny-automator' ), $target_user_id ) );
 			return false;
 		}

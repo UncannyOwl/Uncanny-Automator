@@ -17,6 +17,7 @@ use UncannyPageBuilder\Domain\Publishing\PageStateRepositoryInterface;
 use UncannyPageBuilder\Domain\Concurrency\SourceGenerationStoreInterface;
 use UncannyPageBuilder\Infrastructure\Persistence\DatabaseSectionRepository;
 use UncannyPageBuilder\Infrastructure\WordPress\DesignStandardsMetaBox;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 use UncannyPageBuilder\Infrastructure\WordPress\GlobalPartSelectorMetaBox;
 use UncannyPageBuilder\Infrastructure\WordPress\NativePageSave;
 use UncannyPageBuilder\Infrastructure\WordPress\SectionOrderMetaBox;
@@ -113,7 +114,7 @@ final class PageEditorEnhancementProvider implements ServiceProviderInterface
             } catch (\Throwable $failure) {
                 // WordPress completed its own save before this observer ran.
                 // Contain the failure so the shared save request stays intact.
-                error_log('[Uncanny Page Builder] Page style overrides save observer failed (' . $failure::class . ')');
+                DiagnosticLog::write('[Uncanny Page Builder] Page style overrides save observer failed (' . $failure::class . ')');
             }
         }, 10, 2);
 
@@ -141,7 +142,7 @@ final class PageEditorEnhancementProvider implements ServiceProviderInterface
             } catch (\Throwable $failure) {
                 // WordPress completed its own save before this observer ran.
                 // Contain the failure so the shared save request stays intact.
-                error_log('[Uncanny Page Builder] Header and footer save observer failed (' . $failure::class . ')');
+                DiagnosticLog::write('[Uncanny Page Builder] Header and footer save observer failed (' . $failure::class . ')');
             }
         }, 10, 2);
 
@@ -159,7 +160,7 @@ final class PageEditorEnhancementProvider implements ServiceProviderInterface
             } catch (\Throwable $failure) {
                 // WordPress has already saved its post. Keep this observer
                 // failure inside Page Builder and leave the native request usable.
-                error_log('[Uncanny Page Builder] Section order save observer failed (' . $failure::class . ')');
+                DiagnosticLog::write('[Uncanny Page Builder] Section order save observer failed (' . $failure::class . ')');
             }
         }, 5, 2);
         add_action('admin_notices', [$sectionOrderMetaBox, 'renderSaveNotice']);
@@ -168,6 +169,7 @@ final class PageEditorEnhancementProvider implements ServiceProviderInterface
             if (!is_string($hook) || ($hook !== 'post.php' && $hook !== 'post-new.php')) {
                 return;
             }
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
             $postId = absint($_GET['post'] ?? 0);
             $post = $postId > 0 ? get_post($postId) : null;
             if (

@@ -6,6 +6,7 @@ use Uncanny_Automator\Automator_Status;
 use Uncanny_Automator\Resolver\Fields_Resolver;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Factory\Automator_Factory;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Queries\Loop_Logs_Queries;
+use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Loop_Logs_Helpers\Loop_Block_Flow;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils;
 
 /**
@@ -118,22 +119,33 @@ class Loop_Logs_Resources {
 	}
 
 	/**
-	 * Undocumented function
+	 * The loop as a loop entry's flow describes it, in the shape this log reads.
 	 *
-	 * @param [type] $flow
-	 * @return void
+	 * Pro 7.x stored the recipe's legacy actions object there (`{ items: [...] }`); Pro 8.0 stores the recipe's 8.0
+	 * tree, which Loop_Block_Flow reads the loop out of.
+	 *
+	 * @param mixed[] $flow    The loop entry's flow.
+	 * @param int     $loop_id Loop id.
+	 *
+	 * @return mixed[] The loop, or an empty array when the flow does not hold it.
 	 */
 	private function find_loop_by_id( $flow, $loop_id ) {
+
+		if ( Loop_Block_Flow::is_recipe_tree( $flow ) ) {
+			return Loop_Block_Flow::find_loop( $flow, absint( $loop_id ) ) ?? array();
+		}
+
+		if ( ! isset( $flow['items'] ) || ! is_array( $flow['items'] ) ) {
+			return array();
+		}
 
 		$loop_index = array_search( absint( $loop_id ), array_column( $flow['items'], 'id' ), true );
 
 		if ( false === $loop_index ) {
-			return false;
+			return array();
 		}
 
-		$loop = $flow['items'][ $loop_index ];
-
-		return $loop;
+		return (array) $flow['items'][ $loop_index ];
 	}
 
 	/**
@@ -294,7 +306,7 @@ class Loop_Logs_Resources {
 
 		$flow_items = array();
 
-		foreach ( (array) $loop['items'] as $item ) {
+		foreach ( (array) ( $loop['items'] ?? array() ) as $item ) {
 
 			// Normal actions inside the loop.
 			if ( 'action' === $item['type'] ) {
@@ -453,7 +465,7 @@ class Loop_Logs_Resources {
 				}
 
 				$structure = array(
-					'id'             => (int) ( $entry['id'] ?? 0 ),
+					'id'             => (int) ( $entry['ID'] ?? 0 ),
 					'run_identifier' => $identifier,
 					'date'           => Formatters_Utils::date_time_format_relative( $entry['date_added'] ?? '' ),
 					'date_full'      => Formatters_Utils::date_time_format( $entry['date_added'] ?? '' ),
@@ -529,11 +541,11 @@ class Loop_Logs_Resources {
 
 		$action_data = $this->get_action_data( $entry );
 
-		// Use the entry status instead of action data.
-		$action_status = $entry['status'] ?? Automator_Status::SKIPPED;
+		// Use the entry status instead of action data. Pro stores the status class name ('skipped').
+		$action_status = (string) ( $entry['status'] ?? Automator_Status::SKIPPED );
 
 		// Do not add properties for skipped actions.
-		if ( Automator_Status::SKIPPED === absint( $action_status ) ) {
+		if ( in_array( $action_status, array( (string) Automator_Status::SKIPPED, Automator_Status::get_class_name( Automator_Status::SKIPPED ) ), true ) ) {
 			return array();
 		}
 

@@ -5,6 +5,10 @@ namespace Uncanny_Automator;
 use Uncanny_Automator_Pro\Pro_Filters;
 use WP_List_Table;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	include_once ABSPATH . '/wp-admin/includes/class-wp-list-table.php';
 }
@@ -39,9 +43,11 @@ class Logs_List_Table extends WP_List_Table {
 	 */
 	private $sortable_columns;
 	/**
-	 * @var array
+	 * Integration codes per recipe id, read once per page.
+	 *
+	 * @var array<int, string[]>
 	 */
-	private $trigger_action_integrations = array();
+	private $recipe_integration_codes = array();
 
 	/**
 	 * Class constructor.
@@ -160,7 +166,8 @@ class Logs_List_Table extends WP_List_Table {
 		}
 
 		/* -- Pagination parameters -- */
-		$total_items = $wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Custom log views; live state read. The query is built in get_query() from escaped values, a whitelisted ORDER BY and an int-cast LIMIT.
+		$total_items = $wpdb->query( $query );
 
 		$perpage = 100;
 
@@ -189,22 +196,27 @@ class Logs_List_Table extends WP_List_Table {
 		/* -- Register the Columns -- */
 		$columns = $this->get_columns();
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Core's list-table column headers global, set as WP_List_Table does.
 		$_wp_column_headers[ $screen->id ] = $columns;
 
 		/* -- Fetch the items -- */
 		if ( 'recipe-log' === $this->tab ) {
-			$recipes = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$this->fetch_triggers_actions_integrations( $recipes );
+			// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Custom log views; live state read. The query is built in get_query() from escaped values, a whitelisted ORDER BY and an int-cast LIMIT.
+			$recipes = $wpdb->get_results( $query );
+			_prime_post_caches( wp_parse_id_list( array_column( $recipes, 'automator_recipe_id' ) ), false, true );
 			$this->items = $this->format_recipe_data( $recipes );
 		} elseif ( 'recipe-activity' === $this->tab ) {
-			$this->items = $this->format_recipe_activity_data( $wpdb->get_results( $query ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Custom log views; live state read. The query is built in get_query() from escaped values, a whitelisted ORDER BY and an int-cast LIMIT.
+			$this->items = $this->format_recipe_activity_data( $wpdb->get_results( $query ) );
 		} elseif ( 'trigger-log' === $this->tab ) {
-			$triggers = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$this->fetch_triggers_actions_integrations( $triggers );
+			// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Custom log views; live state read. The query is built in get_query() from escaped values, a whitelisted ORDER BY and an int-cast LIMIT.
+			$triggers = $wpdb->get_results( $query );
+			_prime_post_caches( wp_parse_id_list( array_merge( array_column( $triggers, 'automator_recipe_id' ), array_column( $triggers, 'automator_trigger_id' ) ) ), false, true );
 			$this->items = $this->format_trigger_data( $triggers );
 		} elseif ( 'action-log' === $this->tab ) {
-			$actions = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			$this->fetch_triggers_actions_integrations( $actions );
+			// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Custom log views; live state read. The query is built in get_query() from escaped values, a whitelisted ORDER BY and an int-cast LIMIT.
+			$actions = $wpdb->get_results( $query );
+			_prime_post_caches( wp_parse_id_list( array_merge( array_column( $actions, 'automator_recipe_id' ), array_column( $actions, 'automator_action_id' ) ) ), false, true );
 			$this->items = $this->format_action_data( $actions );
 		}
 	}
@@ -251,11 +263,11 @@ class Logs_List_Table extends WP_List_Table {
 			$search_conditions = ' 1=1 AND completed != -1 ';
 		}
 		if ( automator_filter_has_var( 'search_key' ) && '' !== automator_filter_input( 'search_key' ) ) {
-			$search_key = esc_sql( sanitize_text_field( automator_filter_input( 'search_key' ) ) );
+			$search_like = '%' . $wpdb->esc_like( sanitize_text_field( automator_filter_input( 'search_key' ) ) ) . '%';
 			if ( ! $view_exists ) {
-				$search_conditions .= " AND ( (p.recipe_title LIKE '%$search_key%') OR (u.display_name  LIKE '%$search_key%' ) OR (u.user_email  LIKE '%$search_key%' ) ) ";
+				$search_conditions .= $wpdb->prepare( ' AND ( (p.recipe_title LIKE %s) OR (u.display_name  LIKE %s ) OR (u.user_email  LIKE %s ) ) ', $search_like, $search_like, $search_like );
 			} else {
-				$search_conditions .= " AND ( (recipe_title LIKE '%$search_key%') OR (display_name  LIKE '%$search_key%' ) OR (user_email  LIKE '%$search_key%' ) ) ";
+				$search_conditions .= $wpdb->prepare( ' AND ( (recipe_title LIKE %s) OR (display_name  LIKE %s ) OR (user_email  LIKE %s ) ) ', $search_like, $search_like, $search_like );
 			}
 		}
 
@@ -294,11 +306,11 @@ class Logs_List_Table extends WP_List_Table {
 		$view_exists       = Automator_DB::is_view_exists( 'trigger' );
 		$search_conditions = ' 1=1 ';
 		if ( automator_filter_has_var( 'search_key' ) && '' !== automator_filter_input( 'search_key' ) ) {
-			$search_key = sanitize_text_field( automator_filter_input( 'search_key' ) );
+			$search_like = '%' . $wpdb->esc_like( sanitize_text_field( automator_filter_input( 'search_key' ) ) ) . '%';
 			if ( $view_exists ) {
-				$search_conditions .= " AND ( (recipe_title LIKE '%$search_key%') OR (trigger_title LIKE '%$search_key%') OR (display_name  LIKE '%$search_key%' ) OR (user_email  LIKE '%$search_key%' ) ) ";
+				$search_conditions .= $wpdb->prepare( ' AND ( (recipe_title LIKE %s) OR (trigger_title LIKE %s) OR (display_name  LIKE %s ) OR (user_email  LIKE %s ) ) ', $search_like, $search_like, $search_like, $search_like );
 			} else {
-				$search_conditions .= " AND ( (p.post_title LIKE '%$search_key%') OR (pt.post_title LIKE '%$search_key%') OR (u.display_name  LIKE '%$search_key%' ) OR (u.user_email  LIKE '%$search_key%' ) ) ";
+				$search_conditions .= $wpdb->prepare( ' AND ( (p.post_title LIKE %s) OR (pt.post_title LIKE %s) OR (u.display_name  LIKE %s ) OR (u.user_email  LIKE %s ) ) ', $search_like, $search_like, $search_like, $search_like );
 
 			}
 		}
@@ -353,11 +365,11 @@ class Logs_List_Table extends WP_List_Table {
 		$view_exists       = Automator_DB::is_view_exists( 'action' );
 		$search_conditions = ' 1=1 ';
 		if ( automator_filter_has_var( 'search_key' ) && '' !== automator_filter_input( 'search_key' ) ) {
-			$search_key = sanitize_text_field( automator_filter_input( 'search_key' ) );
+			$search_like = '%' . $wpdb->esc_like( sanitize_text_field( automator_filter_input( 'search_key' ) ) ) . '%';
 			if ( $view_exists ) {
-				$search_conditions .= " AND ( (recipe_title LIKE '%$search_key%') OR (action_title LIKE '%$search_key%') OR (display_name LIKE '%$search_key%' ) OR (user_email LIKE '%$search_key%' ) OR (error_message LIKE '%$search_key%' ) ) ";
+				$search_conditions .= $wpdb->prepare( ' AND ( (recipe_title LIKE %s) OR (action_title LIKE %s) OR (display_name LIKE %s ) OR (user_email LIKE %s ) OR (error_message LIKE %s ) ) ', $search_like, $search_like, $search_like, $search_like, $search_like );
 			} else {
-				$search_conditions .= " AND ( (p.post_title LIKE '%$search_key%') OR (pa.post_title LIKE '%$search_key%') OR (u.display_name LIKE '%$search_key%' ) OR (u.user_email LIKE '%$search_key%' ) OR (a.error_message LIKE '%$search_key%' ) ) ";
+				$search_conditions .= $wpdb->prepare( ' AND ( (p.post_title LIKE %s) OR (pa.post_title LIKE %s) OR (u.display_name LIKE %s ) OR (u.user_email LIKE %s ) OR (a.error_message LIKE %s ) ) ', $search_like, $search_like, $search_like, $search_like, $search_like );
 			}
 		}
 
@@ -519,46 +531,25 @@ class Logs_List_Table extends WP_List_Table {
 				absint( $recipe_log_id )
 			);
 
+			// Per-row "Details" link. Just an anchor that writes the hash route; the page-level <uap-f-recipe-log> picks it up and opens its dialog.
 			$actions = array(
-				'view' => '<uap-log-dialog-button log-id="' . $recipe_log_id . '" recipe-id="' . $recipe_id . '" run-number="' . $run_number_log . '"></uap-log-dialog-button>',
+				'view' => sprintf(
+					'<uas-button color="secondary" size="xs" href="%1$s">%2$s</uas-button>',
+					esc_attr( '#/recipe-log/recipe/' . absint( $recipe_id ) . '/run/' . absint( $run_number_log ) . '/log/' . absint( $recipe_log_id ) ),
+					esc_html__( 'Details', 'uncanny-automator' )
+				),
 			);
 
-			// Delete button
+			// Delete button. The custom element owns the tooltip, icon, and confirmation copy; PHP only passes the nonced URL.
 			if ( true === apply_filters( 'automator_allow_users_to_delete_in_progress_recipe_runs', true, $recipe_id ) ) {
-
-				$delete_btn = '<uo-button
-					class="uap-logs-action-button uap-logs-action-button--delete"
-					size="small"
-					color="transparent"
-					href="%1$s"
-					uap-tooltip="' . esc_attr__( 'Delete row', 'uncanny-automator' ) . '"
-					needs-confirmation
-					confirmation-heading="%2$s"
-					confirmation-content="%3$s"
-					confirmation-button-label="%4$s">
-						<uo-icon id="trash"></uo-icon>
-					</uo-button>';
-
-				// Show different message for in-progress recipes with scheduled actions.
-				$confirmation_content = esc_attr__( 'Are you sure you want to delete this run?', 'uncanny-automator' );
-				if ( Automator_Status::IN_PROGRESS === absint( $recipe->recipe_completed ) ) {
-					$confirmation_content .= ' ' . esc_attr__( 'Any scheduled actions will be cancelled.', 'uncanny-automator' );
-				}
-
 				$actions['delete'] = sprintf(
-					$delete_btn,
-					esc_url( $delete_url ),
-					esc_attr__( 'This action is irreversible', 'uncanny-automator' ),
-					$confirmation_content,
-					esc_attr__( 'Confirm', 'uncanny-automator' )
+					'<uap-f-recipe-log-btn-delete log-delete-url="%s"></uap-f-recipe-log-btn-delete>',
+					esc_attr( esc_url( $delete_url ) )
 				);
-
 			}
 
-			// $actions = join( ' ', $actions );
-
 			// Layout
-			$actions = '<div class="uap-logs-action-buttons">' . $actions['delete'] . $actions['view'] . '</div>';
+			$actions = '<div class="uap-logs-action-buttons">' . ( isset( $actions['delete'] ) ? $actions['delete'] : '' ) . $actions['view'] . '</div>';
 
 			$data[] = array(
 				'recipe_type'            => $recipe_type_name,
@@ -600,7 +591,7 @@ class Logs_List_Table extends WP_List_Table {
 			'<div style="%1$s" class="uap-logs-run-number">
 				<div class="uap-logs-run-number--log-number">%2$s</div>
 				<div class="uap-logs-run-number--user">
-					<uo-icon id="%3$s" icon-style="solid" style="margin-top:2.5px;opacity: 0.75;"></uo-icon>
+					<uas-icon code="%3$s" icon-style="solid" style="margin-top:2.5px;opacity: 0.75;"></uas-icon>
 					%4$s
 				</div>
 			</div>',
@@ -643,7 +634,7 @@ class Logs_List_Table extends WP_List_Table {
 			return '';
 		}
 
-		return ' <span class="uap-logs-replay-badge" title="' . esc_attr__( 'Replayed', 'uncanny-automator' ) . '"><uo-icon id="repeat" style="font-size: 11px; opacity: 0.6;"></uo-icon></span>';
+		return ' <span class="uap-logs-replay-badge" title="' . esc_attr__( 'Replayed', 'uncanny-automator' ) . '"><uas-icon code="repeat" style="font-size: 11px; opacity: 0.6;"></uas-icon></span>';
 	}
 
 	/**
@@ -657,11 +648,9 @@ class Logs_List_Table extends WP_List_Table {
 
 		$data = array();
 
-		$recipes_data = Automator()->get_recipes_data( false );
-
 		foreach ( $triggers as $trigger ) {
 
-			$trigger_code = $this->item_code( $recipes_data, absint( $trigger->automator_trigger_id ) );
+			$trigger_code = $this->item_code( absint( $trigger->automator_trigger_id ) );
 
 			$trigger_date_completed = $trigger->trigger_date;
 
@@ -676,7 +665,11 @@ class Logs_List_Table extends WP_List_Table {
 
 			$run_number_log = 'anonymous' === $current_type ? 0 === absint( $trigger->recipe_run_number ) ? 1 : $trigger->recipe_run_number : $trigger->recipe_run_number;
 
-			$actions = '<uap-log-dialog-button log-id="' . esc_attr( $trigger->recipe_log_id ) . '" recipe-id="' . esc_attr( $trigger->automator_recipe_id ) . '" run-number="' . esc_attr( $run_number_log ) . '"></uap-log-dialog-button>';
+			$actions = sprintf(
+				'<uas-button color="secondary" size="xs" href="%1$s">%2$s</uas-button>',
+				esc_attr( '#/recipe-log/recipe/' . absint( $trigger->automator_recipe_id ) . '/run/' . absint( $run_number_log ) . '/log/' . absint( $trigger->recipe_log_id ) ),
+				esc_html__( 'Details', 'uncanny-automator' )
+			);
 
 			$recipe_link = $this->get_edit_link( absint( $trigger->automator_recipe_id ) );
 
@@ -764,7 +757,7 @@ class Logs_List_Table extends WP_List_Table {
 					$recipe_run_number = '
 						<div class="uap-logs-run-number">
 							<div class="uap-logs-run-number--user">
-								<uo-icon id="user-slash" icon-style="solid"></uo-icon>
+								<uas-icon code="user-slash" icon-style="solid"></uas-icon>
 							</div>
 						</div>';
 				}
@@ -791,38 +784,17 @@ class Logs_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Format single item
+	 * The item's code, or '' when the item no longer exists.
 	 *
-	 * @param array $recipes_data
-	 * @param string $item_id
+	 * Read off the item's own post, so an action nested in a filter, delay or
+	 * loop block is found like one at the recipe root.
 	 *
-	 * @return array
+	 * @param int $item_id Trigger or action post id.
+	 *
+	 * @return string
 	 */
-	private function item_code( $recipes_data, $item_id ) {
-
-		$item_code  = null;
-		$item_codes = array();
-
-		foreach ( $recipes_data as $recipe_data ) {
-
-			foreach ( $recipe_data['triggers'] as $trigger ) {
-				$item_codes[ $trigger['ID'] ] = $trigger['meta']['code'];
-			}
-
-			foreach ( $recipe_data['actions'] as $action ) {
-				$item_codes[ $action['ID'] ] = $action['meta']['code'];
-			}
-
-			foreach ( $recipe_data['closures'] as $closure ) {
-				$item_codes[ $closure['ID'] ] = $closure['meta']['code'];
-			}
-		}
-
-		if ( isset( $item_codes[ $item_id ] ) ) {
-			$item_code = $item_codes[ $item_id ];
-		}
-
-		return $item_code;
+	private function item_code( $item_id ) {
+		return (string) get_post_meta( absint( $item_id ), 'code', true );
 	}
 
 	/**
@@ -871,8 +843,7 @@ class Logs_List_Table extends WP_List_Table {
 	 */
 	private function format_action_data( $actions ) {
 
-		$data         = array();
-		$recipes_data = Automator()->get_recipes_data( false );
+		$data = array();
 
 		foreach ( $actions as $action ) {
 
@@ -880,7 +851,11 @@ class Logs_List_Table extends WP_List_Table {
 
 			$run_number_log = 'anonymous' === $current_type ? 0 === absint( $action->recipe_run_number ) ? 1 : $action->recipe_run_number : $action->recipe_run_number;
 
-			$action_column = '<uap-log-dialog-button log-id="' . esc_attr( $action->recipe_log_id ) . '" recipe-id="' . esc_attr( $action->automator_recipe_id ) . '" run-number="' . esc_attr( $run_number_log ) . '"></uap-log-dialog-button>';
+			$action_column = sprintf(
+				'<uas-button color="secondary" size="xs" href="%1$s">%2$s</uas-button>',
+				esc_attr( '#/recipe-log/recipe/' . absint( $action->automator_recipe_id ) . '/run/' . absint( $run_number_log ) . '/log/' . absint( $action->recipe_log_id ) ),
+				esc_html__( 'Details', 'uncanny-automator' )
+			);
 
 			// Action status
 			$action_status_html = '
@@ -888,7 +863,7 @@ class Logs_List_Table extends WP_List_Table {
 					esc_html( $this->get_status_name( $action->action_completed ) ) . '
 				</div>';
 
-			$action_code = $this->item_code( $recipes_data, absint( $action->automator_action_id ) );
+			$action_code = $this->item_code( absint( $action->automator_action_id ) );
 			/* translators: 1. Action ID */
 			$action_name = sprintf( esc_attr__( 'Action deleted: %1$s', 'uncanny-automator' ), $action->automator_action_id );
 
@@ -995,7 +970,7 @@ class Logs_List_Table extends WP_List_Table {
 					$recipe_run_number = '
 						<div class="uap-logs-run-number">
 							<div class="uap-logs-run-number--user">
-								<uo-icon id="user-slash" icon-style="solid"></uo-icon>
+								<uas-icon code="user-slash" icon-style="solid"></uas-icon>
 							</div>
 						</div>';
 
@@ -1376,17 +1351,16 @@ class Logs_List_Table extends WP_List_Table {
 	 */
 	private function build_recipe_title_with_icons( $recipe_id, $recipe_link, $recipe_name, $css_class, $recipe ) {
 
-		$integration_icons = array_merge(
-			$this->get_integration_triggers( $recipe_id ),
-			$this->get_integration_actions( $recipe_id )
-		);
+		$recipe_id = (int) $recipe_id;
 
-		$unique_integrations = array_unique( $integration_icons );
+		if ( ! isset( $this->recipe_integration_codes[ $recipe_id ] ) ) {
+			$this->recipe_integration_codes[ $recipe_id ] = automator_get_recipe_integration_codes( $recipe_id );
+		}
 
 		$icons = '';
 
-		foreach ( $unique_integrations as $unique_integration ) {
-			$icons .= '<uo-icon integration="' . esc_attr( $unique_integration ) . '" hide-missing show-tooltip></uo-icon>';
+		foreach ( $this->recipe_integration_codes[ $recipe_id ] as $unique_integration ) {
+			$icons .= '<uap-d-integrations-icon code="' . esc_attr( $unique_integration ) . '" size="xs" hide-missing show-tooltip></uap-d-integrations-icon>';
 		}
 
 		$recipe_name = sprintf(
@@ -1405,96 +1379,5 @@ class Logs_List_Table extends WP_List_Table {
 		);
 
 		return $recipe_name;
-	}
-
-	/**
-	 * @param $recipes
-	 *
-	 * @return void
-	 */
-	private function fetch_triggers_actions_integrations( $recipes ) {
-		if ( empty( $recipes ) ) {
-			return;
-		}
-		$recipe_ids = array_column( $recipes, 'automator_recipe_id' );
-		global $wpdb;
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$sql     = $wpdb->prepare(
-			"SELECT p.post_parent, p.post_type, pm.meta_value AS integration
-FROM $wpdb->postmeta pm
-JOIN $wpdb->posts p
-ON p.ID = pm.post_id
-WHERE pm.meta_key = %s
-AND p.post_parent IN (" . join( ',', $recipe_ids ) . ')', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			'integration'
-		);
-		$results = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		if ( empty( $results ) ) {
-			return;
-		}
-		$triggers = array();
-		$actions  = array();
-		foreach ( $results as $r ) {
-			if ( AUTOMATOR_POST_TYPE_ACTION === $r->post_type ) {
-				$actions[ $r->post_parent ][] = $r->integration;
-			}
-			if ( AUTOMATOR_POST_TYPE_TRIGGER === $r->post_type ) {
-				$triggers[ $r->post_parent ][] = $r->integration;
-			}
-		}
-		$this->trigger_action_integrations = array(
-			'triggers' => $triggers,
-			'actions'  => $actions,
-		);
-	}
-
-	/**
-	 * Get all integrations from triggers.
-	 *
-	 * @param $recipe_id
-	 *
-	 * @return string[]
-	 */
-	private function get_integration_triggers( $recipe_id ) {
-
-		$triggers = isset( $this->trigger_action_integrations['triggers'][ $recipe_id ] )
-			? $this->trigger_action_integrations['triggers'][ $recipe_id ] :
-			array();
-
-		if ( empty( $triggers ) ) {
-			return array();
-		}
-
-		$integration_triggers = array();
-
-		foreach ( $triggers as $integration ) {
-			$integration_triggers[] = $integration;
-		}
-
-		return $integration_triggers;
-	}
-
-	/**
-	 * @param $recipe_id
-	 *
-	 * @return string[]
-	 */
-	private function get_integration_actions( $recipe_id ) {
-
-		$actions = isset( $this->trigger_action_integrations['actions'][ $recipe_id ] )
-			? $this->trigger_action_integrations['actions'][ $recipe_id ] :
-			array();
-
-		if ( empty( $actions ) ) {
-			return array();
-		}
-
-		$integration_actions = array();
-
-		foreach ( $actions as $integration ) {
-			$integration_actions[] = $integration;
-		}
-
-		return $integration_actions;
 	}
 }

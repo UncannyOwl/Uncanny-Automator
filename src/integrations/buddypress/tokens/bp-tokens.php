@@ -71,6 +71,7 @@ class Bp_Tokens {
 		global $wpdb;
 		$fields_table = $wpdb->base_prefix . 'bp_xprofile_fields';
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- BuddyPress's own table; the plugin offers no API for this query.
 		$xprofile_fields = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->base_prefix}bp_xprofile_fields WHERE parent_id = %d  ORDER BY group_id ASC",
@@ -81,6 +82,7 @@ class Bp_Tokens {
 		if ( ! empty( $xprofile_fields ) ) {
 			foreach ( $xprofile_fields as $field ) {
 				if ( 'socialnetworks' === $field->type ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- BuddyPress's own table; the plugin offers no API for this query.
 					$child_fields = $wpdb->get_results(
 						$wpdb->prepare(
 							"SELECT * FROM {$wpdb->base_prefix}bp_xprofile_fields WHERE parent_id = %d ORDER BY group_id ASC",
@@ -266,6 +268,7 @@ class Bp_Tokens {
 			$field_id = $field_token[0];
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- BuddyPress's own table; the plugin offers no API for this query.
 		$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT value FROM {$wpdb->prefix}bp_xprofile_data WHERE user_id = %d AND field_id = %s LIMIT 0,1", $user_id, $field_id ) );
 		if ( ! empty( $meta_value ) ) {
 

@@ -22,13 +22,14 @@ class Core_Transient_Keys {
 	 */
 	private static array $keys = array(
 		'automator_actionified_triggers',
-		'automator_all_integration_items',
 		License_Transient_Keys::LICENSE,
 		'automator_dashboard_recent_articles_posts',
+		'automator_dashboard_recent_articles_failed',
+		Hosted_Read_Transient_Keys::GENERATION,
 		'automator_get_all_integrations',
-		'automator_integration_collection_items',
 		'automator_integration_directories_loaded',
 		License_Transient_Keys::LICENSE_CHECK_FAILED,
+		License_Transient_Keys::LICENSE_FAILURE_STREAK,
 		'automator_load_errors',
 		'automator_pro_integrations_list',
 		'automator_pro_integrations_list_items',

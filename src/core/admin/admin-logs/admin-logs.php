@@ -70,6 +70,8 @@ class Admin_Logs {
 
 		$this->load_tab( 'action' );
 
+		$this->load_tab( 'ai-activity' );
+
 		// $this->load_tab( 'api' );
 	}
 

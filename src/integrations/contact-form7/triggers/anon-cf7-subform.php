@@ -81,7 +81,7 @@ class ANON_CF7_SUBFORM {
 	 * @param $result
 	 */
 	public function wpcf7_submit( $form, $result ) {
-		if ( 'validation_failed' === (string) $result['status'] ) {
+		if ( ! Contact_Form7_Helpers::is_submission_accepted( $form, $result ) ) {
 			return;
 		}
 		$args = array(

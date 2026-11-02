@@ -65,7 +65,7 @@ final class MultisiteSchemaProvisioner
             // A provisioning failure must not break WordPress site creation.
             // The schema installs on the site's first Page Builder use or the
             // next network upgrade instead.
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Multisite schema provisioning failed (%s).',
                 $failure::class,
             ));

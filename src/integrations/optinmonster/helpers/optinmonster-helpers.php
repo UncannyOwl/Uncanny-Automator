@@ -12,18 +12,24 @@ use OMAPI;
 class Optinmonster_Helpers {
 
 	/**
+	 * Set by setOptions().
+	 *
+	 * @var Optinmonster_Helpers|null
+	 */
+	public $options;
+
+	/**
 	 * __construct
 	 *
 	 * @return void
 	 */
 	public function __construct() {
-
 	}
 
 	/**
 	 * @param Optinmonster_Helpers $options
 	 */
-	public function setOptions( Optinmonster_Helpers $options ) {
+	public function setOptions( Optinmonster_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- public API; a rename would break callers.
 		$this->options = $options;
 	}
 
@@ -69,7 +75,7 @@ class Optinmonster_Helpers {
 	 *
 	 * @return void
 	 */
-	public function sortByName( $a, $b ) {
+	public function sortByName( $a, $b ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- public API; a rename would break callers.
 		return strcmp( $a['text'], $b['text'] );
 	}
 

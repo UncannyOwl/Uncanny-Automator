@@ -383,6 +383,7 @@ class Wp_Helpers extends Abstract_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_posts', $option );
 	}
 
@@ -436,6 +437,7 @@ class Wp_Helpers extends Abstract_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_pages', $option );
 	}
 
@@ -479,6 +481,7 @@ class Wp_Helpers extends Abstract_Helpers {
 			'custom_value_description' => esc_attr_x( 'Role slug', 'WordPress', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_wp_user_roles', $option );
 	}
 
@@ -497,6 +500,7 @@ class Wp_Helpers extends Abstract_Helpers {
 
 		$post_types = $this->get_post_types_options( $label, $option_code, $args, $apply_relevant_tokens );
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_post_types', $post_types, $option_code, $args, $this );
 	}
 
@@ -515,6 +519,7 @@ class Wp_Helpers extends Abstract_Helpers {
 
 		$post_types = $this->get_post_types_options( $label, $option_code, $args, $apply_relevant_tokens );
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_wp_post_types', $post_types, $option_code, $args, $this );
 	}
 
@@ -568,11 +573,13 @@ class Wp_Helpers extends Abstract_Helpers {
 
 		if ( ! empty( $post_types ) ) {
 			foreach ( $post_types as $post_type ) {
-				if ( $this->is_post_type_valid( $post_type ) ) {
-					$options[ $post_type->name ] = ( true === $args['plural_label'] )
-						? esc_html( $post_type->labels->name )
-						: esc_html( $post_type->labels->singular_name );
+				if ( \automator_is_disabled_post_type( $post_type ) ) {
+					continue;
 				}
+
+				$options[ $post_type->name ] = ( true === $args['plural_label'] )
+					? esc_html( $post_type->labels->name )
+					: esc_html( $post_type->labels->singular_name );
 			}
 		}
 
@@ -600,25 +607,8 @@ class Wp_Helpers extends Abstract_Helpers {
 			'default_value'   => $args['default_value'],
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_wp_post_types', $option );
-	}
-
-	/**
-	 * Method is_post_type_valid.
-	 *
-	 * @param object $post_type The post type object.
-	 *
-	 * @return bool True if post type meets the criteria. Otherwise, false.
-	 */
-	public function is_post_type_valid( $post_type ) {
-
-		$invalid_post_types = $this->get_disabled_post_types();
-
-		if ( in_array( $post_type->name, $invalid_post_types, true ) ) {
-			return false;
-		}
-
-		return ! empty( $post_type->name ) && ! empty( $post_type->labels->name ) && ! empty( $post_type->labels->singular_name );
 	}
 
 	/**
@@ -631,35 +621,6 @@ class Wp_Helpers extends Abstract_Helpers {
 	public function get_taxonomies( $post_type = 'post' ) {
 
 		return get_object_taxonomies( $post_type, 'objects' );
-	}
-
-	/**
-	 * Method get_disabled_post_types.
-	 *
-	 * @return array A list of post types that should be disabled in dropdown.
-	 */
-	public function get_disabled_post_types() {
-
-		$post_types = array(
-			'attachment',
-			'uo-action',
-			'uo-closure',
-			'uo-trigger',
-			'uo-recipe',
-			'customize_changeset',
-			'custom_css',
-			'wp_global_styles',
-			'wp_template',
-			'wp_template_part',
-			'wp_block',
-			'user_request',
-			'oembed_cache',
-			'revision',
-			'wp_navigation',
-			'nav_menu_item',
-		);
-
-		return apply_filters( 'automator_wp_get_disabled_post_types', $post_types );
 	}
 
 	/**
@@ -869,12 +830,14 @@ class Wp_Helpers extends Abstract_Helpers {
 		);
 
 		foreach ( get_post_types( array(), 'objects' ) as $post_type ) {
-			if ( $this->is_post_type_valid( $post_type ) ) {
-				$options[] = array(
-					'value' => $post_type->name,
-					'text'  => esc_html( $post_type->labels->singular_name ),
-				);
+			if ( \automator_is_disabled_post_type( $post_type ) ) {
+				continue;
 			}
+
+			$options[] = array(
+				'value' => $post_type->name,
+				'text'  => esc_html( $post_type->labels->singular_name ),
+			);
 		}
 
 		return $this->remote_data_success( $options );
@@ -896,12 +859,14 @@ class Wp_Helpers extends Abstract_Helpers {
 		$options = array();
 
 		foreach ( get_post_types( array(), 'objects' ) as $post_type ) {
-			if ( $this->is_post_type_valid( $post_type ) ) {
-				$options[] = array(
-					'value' => $post_type->name,
-					'text'  => esc_html( $post_type->labels->singular_name ),
-				);
+			if ( \automator_is_disabled_post_type( $post_type ) ) {
+				continue;
 			}
+
+			$options[] = array(
+				'value' => $post_type->name,
+				'text'  => esc_html( $post_type->labels->singular_name ),
+			);
 		}
 
 		return $this->remote_data_success( $options );
@@ -933,7 +898,7 @@ class Wp_Helpers extends Abstract_Helpers {
 
 		foreach ( get_post_types( array(), 'objects' ) as $post_type ) {
 
-			if ( ! $this->is_post_type_valid( $post_type ) ) {
+			if ( \automator_is_disabled_post_type( $post_type ) ) {
 				continue;
 			}
 
@@ -1540,6 +1505,7 @@ class Wp_Helpers extends Abstract_Helpers {
 		$site_transient = $wpdb->esc_like( '_site_transient_' ) . '%';
 
 		if ( '' === $q ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- No core API searches option names.
 			$results = $wpdb->get_col(
 				$wpdb->prepare(
 					"SELECT option_name FROM {$wpdb->options}
@@ -1551,6 +1517,7 @@ class Wp_Helpers extends Abstract_Helpers {
 				)
 			);
 		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- No core API searches option names.
 			$results = $wpdb->get_col(
 				$wpdb->prepare(
 					"SELECT option_name FROM {$wpdb->options}
@@ -1581,9 +1548,10 @@ class Wp_Helpers extends Abstract_Helpers {
 		global $wpdb;
 
 		if ( '' === $query ) {
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- No core API lists distinct meta keys; $table is $wpdb->postmeta or $wpdb->usermeta.
 			$results = $wpdb->get_col( "SELECT DISTINCT meta_key FROM {$table} ORDER BY meta_key ASC LIMIT 100" );
 		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- No core API lists distinct meta keys; $table is $wpdb->postmeta or $wpdb->usermeta.
 			$results = $wpdb->get_col(
 				$wpdb->prepare(
 					// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -2083,6 +2051,7 @@ class Wp_Helpers extends Abstract_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads only the distinct meta keys of one post, without loading its meta values.
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT DISTINCT meta_key FROM {$wpdb->postmeta} WHERE post_id = %d",

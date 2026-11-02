@@ -2,9 +2,6 @@
 
 namespace Uncanny_Automator;
 
-use Uncanny_Automator\Services\Recipe\Builder\Settings\Fields\Field;
-use Uncanny_Automator\Services\Recipe\Builder\Settings\Fields\Field_Manager;
-use Uncanny_Automator\Services\Recipe\Builder\Settings\Repository\Settings_Repository;
 use Uncanny_Automator\Services\Recipe\Process\Universal_Run_Number_Threshold;
 use Uncanny_Automator\Services\Recipe\Process\User_Run_Limiter;
 use Uncanny_Automator\Services\Recipe\Process\User_Run_Number_Threshold;
@@ -198,7 +195,7 @@ class Automator_Utilities {
 		}
 
 		// Legacy fallback during early init.
-		$user_threshold = new User_Run_Number_Threshold( new Field_Manager( new Settings_Repository() ) );
+		$user_threshold = new User_Run_Number_Threshold();
 
 		$user_threshold->set_recipe_id( intval( $recipe_id ) );
 		$user_threshold->set_completed_times( intval( $completed_times ) );
@@ -214,9 +211,7 @@ class Automator_Utilities {
 	 */
 	public function recipe_max_times_completed( $recipe_id = null, $completed_times = 0 ) {
 
-		$user_threshold = new Universal_Run_Number_Threshold(
-			new Field_Manager( new Settings_Repository() )
-		);
+		$user_threshold = new Universal_Run_Number_Threshold();
 
 		$user_threshold->set_recipe_id( intval( $recipe_id ) );
 		$user_threshold->set_completed_times( intval( $completed_times ) );
@@ -240,12 +235,17 @@ class Automator_Utilities {
 		// Scope query to only the requested recipe IDs — avoids fetching up to 99,999 rows site-wide.
 		$ids_sanitized = array_map( 'intval', $recipe_ids );
 		$placeholders  = implode( ',', array_fill( 0, count( $ids_sanitized ), '%d' ) );
-		$post_metas    = $wpdb->get_results(
+		// $placeholders is a run of %d sized from the int-cast id list; the ids
+		// are passed to prepare() alongside the meta key.
+		// phpcs:disable WordPress.DB.PreparedSQL
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Batch read of one meta key for many recipes in one query, instead of one query per recipe.
+		$post_metas = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT meta_value, post_id FROM $wpdb->postmeta WHERE meta_key = %s AND post_id IN ($placeholders)",
 				array_merge( array( 'recipe_completions_allowed' ), $ids_sanitized )
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL
 
 		// Build a hash map for O(1) lookup; replaces the previous O(n × m) nested loop.
 		$meta_map = array();
@@ -406,6 +406,7 @@ class Automator_Utilities {
 
 		if ( empty( $this->recipe_types ) ) {
 			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table joined to core posts; no WordPress API returns this, and the read must be live.
 			$this->recipe_types = $wpdb->get_results( $wpdb->prepare( "SELECT pm.meta_value, pm.post_id FROM $wpdb->postmeta pm JOIN $wpdb->posts p ON p.ID = pm.post_id WHERE p.post_type = %s AND pm.meta_key = %s", AUTOMATOR_POST_TYPE_RECIPE, 'uap_recipe_type' ) );
 		}
 
@@ -460,21 +461,6 @@ class Automator_Utilities {
 		return $walkthrough_class[ $user_id ];
 	}
 	/**
-	 * Get user walkthroughs for a user.
-	 *
-	 * @param int $user_id
-	 *
-	 * @return array
-	 */
-	public function get_user_walkthroughs( $user_id ) {
-		try {
-			return $this->get_user_walkthrough_class( $user_id )->get_user_walkthroughs();
-		} catch ( Exception $e ) {
-			return array();
-		}
-	}
-
-	/**
 	 * Set user walkthrough progress for a user.
 	 *
 	 * @param int $user_id
@@ -487,24 +473,6 @@ class Automator_Utilities {
 		try {
 			$walkthrough_obj = $this->get_user_walkthrough_class( $user_id );
 			$walkthrough_obj->set_progress_by_id( $walkthrough_id, $progress );
-			return $walkthrough_obj->get_progress_by_id( $walkthrough_id );
-		} catch ( Exception $e ) {
-			return false;
-		}
-	}
-
-	/**
-	 * Restart a user walkthough.
-	 *
-	 * @param int $user_id
-	 * @param string $walkthrough_id
-	 *
-	 * @return mixed false on failure, progress on success
-	 */
-	public function restart_user_walkthrough( $user_id, $walkthrough_id ) {
-		try {
-			$walkthrough_obj = $this->get_user_walkthrough_class( $user_id );
-			$walkthrough_obj->restart_user_walkthrough( $walkthrough_id );
 			return $walkthrough_obj->get_progress_by_id( $walkthrough_id );
 		} catch ( Exception $e ) {
 			return false;
@@ -881,6 +849,7 @@ class Automator_Utilities {
 			return array();
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Joins core posts and postmeta; no WordPress API returns this.
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, post_status FROM $wpdb->posts as post
@@ -917,6 +886,7 @@ class Automator_Utilities {
 			return array();
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Joins core posts and postmeta; no WordPress API returns this.
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT post_parent, post_title, ID, post_status FROM $wpdb->posts as post
@@ -945,6 +915,7 @@ class Automator_Utilities {
 	public function get_recipe_total_runs( $recipe_id ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$count = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT `runs` as record_count
@@ -956,6 +927,7 @@ class Automator_Utilities {
 
 		if ( empty( $count ) || 0 === $count ) {
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 			$count = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT count(*) as record_count

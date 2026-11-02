@@ -121,6 +121,7 @@ class SLICEWP_CREATE_AFFILIATE extends Action {
 		slicewp_add_affiliate_meta( $affiliate_id, 'promotional_methods', $promotional_methods );
 
 		if ( true === $welcome_email ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- SliceWP's own hook.
 			do_action( 'slicewp_register_affiliate', $affiliate_id );
 		}
 

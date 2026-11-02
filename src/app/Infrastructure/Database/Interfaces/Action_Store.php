@@ -56,6 +56,22 @@ interface Action_Store {
 	public function get_recipe_actions( int $recipe_id ): array;
 
 	/**
+	 * Get only the actions whose post_parent is the recipe itself (i.e.
+	 * not nested inside a loop or a uo-block container), ordered by
+	 * menu_order ASC.
+	 *
+	 * Intended for callers that need the recipe's top-level action list
+	 * in display order — notably `Recipe_Tree_Builder` building the
+	 * declarative content stream. The wider {@see get_recipe_actions()}
+	 * spans loop descendants and orders by ID; it is unsuitable for
+	 * tree-shape work.
+	 *
+	 * @param int $recipe_id Recipe ID.
+	 * @return Action[] Top-level Actions in menu_order.
+	 */
+	public function get_top_level_recipe_actions( int $recipe_id ): array;
+
+	/**
 	 * Get Actions by integration.
 	 *
 	 * @param string $integration Integration code (e.g., 'WP', 'WC').
@@ -92,9 +108,70 @@ interface Action_Store {
 	public function build_action_from_post( \WP_Post $post ): ?Action;
 
 	/**
-	 * Get the registered post type for actions.
+	 * Container-aware action ids for a recipe, filtered by post status.
 	 *
-	 * @return string
+	 * Covers direct recipe children AND actions inside any container
+	 * (blocks nest arbitrarily).
+	 *
+	 * @param int      $recipe_id Recipe post ID.
+	 * @param string[] $statuses  Post statuses to include.
+	 * @return array<int> Action post IDs.
+	 */
+	public function get_recipe_action_ids( int $recipe_id, array $statuses ): array;
+
+	/**
+	 * Container-aware id => code map for a recipe's actions, read raw.
+	 *
+	 * Deliberately NO aggregate hydration: safety scans (the user-selector
+	 * publish gate) must see a row's code even when the row would fail
+	 * domain validation.
+	 *
+	 * @param int      $recipe_id Recipe post ID.
+	 * @param string[] $statuses  Post statuses to include.
+	 * @return array<int, string> Action ID => action code (may be empty string).
+	 */
+	public function get_recipe_action_codes( int $recipe_id, array $statuses ): array;
+
+	/**
+	 * Raw field values for one action: every non-internal meta value.
+	 *
+	 * Deliberately NO aggregate hydration — token safety scans want raw
+	 * visibility, not domain validity. Internal (underscore-prefixed)
+	 * keys are skipped; the first meta value per key is returned.
+	 *
+	 * @param int $action_id Action post ID.
+	 * @return array<string, mixed> Meta key => first value.
+	 */
+	public function get_action_field_values( int $action_id ): array;
+
+	/**
+	 * Usage per "INTEGRATION:CODE" for actions in published and draft recipes, at any nesting depth: `all` (live and switched off, published and draft recipes), `published` (live in published recipes) and `last_used` (newest `post_date`, GMT unix).
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return array<string, array{published: int, all: int, last_used: int}>
+	 *
+	 * @throws \Uncanny_Automator\App\Infrastructure\Exceptions\Store_Exception When the query fails.
+	 */
+	public function usage_census_by_code(): array;
+
+	/**
+	 * One row per published item in a published recipe, at any nesting depth: recipe id, post id, parent id, integration code, item code.
+	 *
+	 * `parent_id` is the item's post_parent. Exactly one row per post; a duplicated meta row yields the first value by meta_id.
+	 *
+	 * @return list<array{recipe_id: int, post_id: int, parent_id: int, integration_code: string, code: string}>
+	 */
+	public function usage_rows(): array;
+
+	/**
+	 * Deprecated one-line accessor retained for 8.0.0.
+	 *
+	 * Its callers (the recipe-item REST classes) move off it in a later PR;
+	 * deleting it here would break them in the interim. Removed in the
+	 * post-8.0.0 cleanup pass together with those callers.
+	 *
+	 * @deprecated 8.0.0
 	 */
 	public function get_post_type(): string;
 }

@@ -4,6 +4,7 @@ namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Client;
 
 use Uncanny_Automator\App\Plan\Services\License\License_Service;
 use Uncanny_Automator\App\Plan\Services\Plan_Service;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Mcp_Resource_Identifier;
 
 /**
  * Data object supplying payload defaults.
@@ -203,7 +204,9 @@ class Client_Payload_Context {
 			return $this->mcp_rest_url;
 		}
 
-		return (string) \rest_url( 'automator/v1/mcp' );
+		// Pinned to the site-configured scheme so the advertised URL matches the
+		// audience the handshake registered, whatever is_ssl() says behind a proxy.
+		return ( new Mcp_Resource_Identifier() )->get();
 	}
 
 	/**

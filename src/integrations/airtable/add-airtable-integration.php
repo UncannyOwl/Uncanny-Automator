@@ -22,17 +22,13 @@ class Add_Airtable_Integration {
 	 * Integration Set-up.
 	 */
 	protected function setup() {
-
 		$this->set_integration( 'AIRTABLE' );
-
 		$this->set_name( 'Airtable' );
-
 		$this->set_icon( __DIR__ . '/img/airtable-icon.svg' );
 
 		$this->set_developer_name( 'Airtable' );
-		$this->set_integration_type( 'app' );
+		$this->set_integration_type( 'built-in' );
 		$this->set_distribution_type( 'saas' );
-
 	}
 
 	/**
@@ -41,8 +37,6 @@ class Add_Airtable_Integration {
 	 * @return bool
 	 */
 	public function plugin_active() {
-
 		return true;
-
 	}
 }

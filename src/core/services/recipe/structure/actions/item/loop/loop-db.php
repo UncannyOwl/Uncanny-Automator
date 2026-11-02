@@ -15,6 +15,10 @@ class Loop_Db {
 
 	protected $db;
 
+	/**
+	 * Bind the shared WordPress database handle this reader queries through.
+	 *
+	 */
 	public function __construct() {
 		global $wpdb;
 		$this->db = $wpdb;
@@ -29,11 +33,18 @@ class Loop_Db {
 	 */
 	public function find_recipe_loops( $recipe_id ) {
 
+		// Unified storage: `uo-block` (block_type='loop'). `SELECT p.*`
+		// preserves the raw post-row shape every consumer expects.
 		$loops = $this->db->get_results(
 			$this->db->prepare(
-				"SELECT * FROM {$this->db->posts} WHERE post_parent = %d AND post_type = %s",
+				"SELECT p.* FROM {$this->db->posts} p
+					INNER JOIN {$this->db->postmeta} bt
+						ON bt.post_id = p.ID AND bt.meta_key = 'block_type'
+				WHERE p.post_parent = %d
+					AND p.post_type = %s
+					AND bt.meta_value = 'loop'",
 				absint( $recipe_id ),
-				AUTOMATOR_POST_TYPE_LOOP
+				AUTOMATOR_POST_TYPE_BLOCK
 			),
 			ARRAY_A
 		);
@@ -56,16 +67,20 @@ class Loop_Db {
 			return (array) $cached_recipes_loops;
 		}
 
+		// Unified storage: `uo-block` (block_type='loop') under recipe roots.
 		$recipes_loops = (array) $this->db->get_results(
 			$this->db->prepare(
-				"SELECT * FROM {$this->db->posts}
-					WHERE post_parent IN (
-						SELECT ID FROM {$this->db->posts} WHERE post_type = '%s'
+				"SELECT p.* FROM {$this->db->posts} p
+					INNER JOIN {$this->db->postmeta} bt
+						ON bt.post_id = p.ID AND bt.meta_key = 'block_type'
+					WHERE p.post_parent IN (
+						SELECT ID FROM {$this->db->posts} WHERE post_type = %s
 					)
-					AND post_type = %s
+					AND p.post_type = %s
+					AND bt.meta_value = 'loop'
 				",
 				AUTOMATOR_POST_TYPE_RECIPE,
-				AUTOMATOR_POST_TYPE_LOOP
+				AUTOMATOR_POST_TYPE_BLOCK
 			),
 			ARRAY_A
 		);
@@ -168,11 +183,22 @@ class Loop_Db {
 	 */
 	public function find_loop_filters( $loop_id ) {
 
+		// Unified storage: `uo-block-modifier` (block_modifier_type=
+		// 'loop_filter'). NOTE for F-H.1: unified rows store the integration
+		// under `integration_code` only (no legacy `integration` mirror) —
+		// consumers reading filter integration off these rows must use
+		// `integration_code`.
 		$filters = $this->db->get_results(
 			$this->db->prepare(
-				"SELECT * FROM {$this->db->posts} WHERE post_parent = %d AND post_type = %s ORDER BY menu_order ASC",
+				"SELECT p.* FROM {$this->db->posts} p
+					INNER JOIN {$this->db->postmeta} mt
+						ON mt.post_id = p.ID AND mt.meta_key = 'block_modifier_type'
+				WHERE p.post_parent = %d
+					AND p.post_type = %s
+					AND mt.meta_value = 'loop_filter'
+				ORDER BY p.menu_order ASC",
 				absint( $loop_id ),
-				AUTOMATOR_POST_TYPE_LOOP_FILTER
+				AUTOMATOR_POST_TYPE_BLOCK_MODIFIER
 			),
 			ARRAY_A
 		);

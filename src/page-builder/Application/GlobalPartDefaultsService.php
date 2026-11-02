@@ -120,6 +120,17 @@ final class GlobalPartDefaultsService implements GlobalPartDefaultsResolverInter
 
     public function resolveForType(GlobalPartType $type): ?array
     {
+        return $this->resolve($type, true);
+    }
+
+    /** Reads fallback source without repairing an invalid saved default. */
+    public function resolveForTypeReadOnly(GlobalPartType $type): ?array
+    {
+        return $this->resolve($type, false);
+    }
+
+    private function resolve(GlobalPartType $type, bool $repairInvalidDefault): ?array
+    {
         $defaultId = $this->getDefaultId($type);
         if ($defaultId !== null) {
             $part = $this->repository->findById($defaultId);
@@ -127,7 +138,9 @@ final class GlobalPartDefaultsService implements GlobalPartDefaultsResolverInter
                 return $part;
             }
 
-            $this->setDefaultId($type, null);
+            if ($repairInvalidDefault) {
+                $this->setDefaultId($type, null);
+            }
         }
 
         return $this->repository->findByType($type);

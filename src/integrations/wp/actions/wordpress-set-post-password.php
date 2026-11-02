@@ -19,6 +19,7 @@ class WP_SET_POST_PASSWORD extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Post, %2$s: Password */
 				esc_html_x( 'Set the password of {{a post:%1$s}} to {{a password:%2$s}}', 'WordPress', 'uncanny-automator' ),
 				$this->get_action_meta(),
 				'WP_POST_PASSWORD:' . $this->get_action_meta()
@@ -93,6 +94,7 @@ class WP_SET_POST_PASSWORD extends \Uncanny_Automator\Recipe\Action {
 		if ( null === $post ) {
 			$this->add_log_error(
 				sprintf(
+					/* translators: %d: Post ID */
 					esc_html_x( 'Post with ID %d not found.', 'WordPress', 'uncanny-automator' ),
 					$post_id
 				)

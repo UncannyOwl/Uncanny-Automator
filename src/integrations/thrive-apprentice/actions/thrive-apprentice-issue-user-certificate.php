@@ -108,7 +108,7 @@ class THRIVE_APPRENTICE_ISSUE_USER_CERTIFICATE extends Action {
 			$result = $this->helper->issue_certificate( $course_id, $user_id );
 
 			if ( is_wp_error( $result ) ) {
-				throw new \Exception( esc_html_x( $result->get_error_message(), 'Thrive Apprentice', 'uncanny-automator' ) );
+				throw new \Exception( esc_html( $result->get_error_message() ) );
 			}
 
 			$this->hydrate_tokens(
@@ -125,7 +125,7 @@ class THRIVE_APPRENTICE_ISSUE_USER_CERTIFICATE extends Action {
 			return true;
 
 		} catch ( \Exception $e ) {
-			$this->add_log_error( esc_html_x( $e->getMessage(), 'Thrive Apprentice', 'uncanny-automator' ) );
+			$this->add_log_error( esc_html( $e->getMessage() ) );
 			return false;
 		}
 	}

@@ -16,6 +16,7 @@
  */
 
 defined('ABSPATH') || exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
 
 $containerId = 'uncanny-page-builder-colors-components-form';
 

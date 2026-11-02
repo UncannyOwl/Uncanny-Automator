@@ -13,8 +13,13 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Recipe_Builder\Token\Services\Validation;
 
-use Uncanny_Automator\App\Bridge\Automator_Recipe_Object_Bridge;
-use Uncanny_Automator\App\Bridge\Recipe_Object_Bridge;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
+use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Type;
+use Uncanny_Automator\App\Recipe_Builder\Block\Migration\Legacy_Storage_Migration_Exception;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Wire_Key;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Wire_Node_Type;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Flow_Walker;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Recipe_Wire_Service;
 use Uncanny_Automator\App\Recipe_Builder\Token\Integration\Registry\WP_Integration_Token_Registry;
 
 /**
@@ -23,12 +28,7 @@ use Uncanny_Automator\App\Recipe_Builder\Token\Integration\Registry\WP_Integrati
  * Extracts tokens from field values and validates them against
  * the recipe's available tokens (source of truth).
  *
- * Phase 1c of the api-layer refactor (Review note C19) converted this
- * from an all-static class to an instance class with constructor
- * lazy-default DI. The static-bridge-property pattern that previously
- * lived here introduced process-wide mutable state and a third DI
- * pattern in a refactor whose whole point is to converge on one — see
- * `docs/api-layer-refactor-review-notes.md` C19 for the full discussion.
+ * Reads the recipe through `Recipe_Wire_Service`; the valid-token set is every token a node on the wire publishes.
  *
  * @since 7.0.0
  */
@@ -41,22 +41,19 @@ class Token_Validator {
 	private const TOKEN_PATTERN = '/\{\{(?:[^{}]|\{\{[^}]*\}\})*\}\}/';
 
 	/**
-	 * Bridge to the legacy recipe-object lookups.
+	 * Cache-first wire read of the recipe tree.
 	 *
-	 * @var Recipe_Object_Bridge
+	 * @var Recipe_Wire_Service
 	 */
-	private Recipe_Object_Bridge $recipes;
+	private Recipe_Wire_Service $wire;
 
 	/**
-	 * Constructor.
+	 * Lazy-default DI: production reads the shared wire service; tests inject one over a fixture tree.
 	 *
-	 * Uses the canonical lazy-default DI pattern from the api-layer skill
-	 * (Rule 6 #3) — no setter, no static state, no singleton.
-	 *
-	 * @param Recipe_Object_Bridge|null $recipes Optional bridge override (tests).
+	 * @param Recipe_Wire_Service|null $wire Wire read seam.
 	 */
-	public function __construct( ?Recipe_Object_Bridge $recipes = null ) {
-		$this->recipes = $recipes ?? new Automator_Recipe_Object_Bridge();
+	public function __construct( ?Recipe_Wire_Service $wire = null ) {
+		$this->wire = $wire ?? Recipe_Wire_Service::instance();
 	}
 
 	/**
@@ -80,7 +77,8 @@ class Token_Validator {
 		}
 
 		// Get valid tokens for this recipe
-		$valid_tokens = $this->get_valid_tokens( $recipe_id );
+		$recipe       = $this->collect_recipe_tokens( $recipe_id );
+		$valid_tokens = $this->get_valid_tokens( $recipe );
 
 		// Find invalid tokens
 		$invalid_tokens = $this->find_invalid_tokens( $used_tokens, $valid_tokens );
@@ -93,8 +91,11 @@ class Token_Validator {
 			);
 		}
 
-		// Build error message
-		$message = $this->build_error_message( $invalid_tokens, $valid_tokens );
+		// A token the static sets cannot vouch for, on a recipe that could not be
+		// read, is unproven rather than nonexistent: report the read failure.
+		$message = '' !== $recipe['read_error']
+			? $recipe['read_error']
+			: $this->build_error_message( $invalid_tokens, $valid_tokens );
 
 		return array(
 			'valid'          => false,
@@ -126,57 +127,12 @@ class Token_Validator {
 	public function get_token_diagnostics( int $recipe_id ): array {
 		$common_tokens   = $this->get_common_tokens();
 		$registry_tokens = $this->get_registry_tokens();
-		$trigger_tokens  = array();
-		$action_tokens   = array();
-		$loop_tokens     = array();
-		$has_recipe      = false;
+		$recipe          = $this->collect_recipe_tokens( $recipe_id );
 
-		try {
-			$recipe_object = $this->recipes->get_recipe_as_array( $recipe_id );
-
-			if ( null !== $recipe_object ) {
-				$has_recipe = true;
-
-				// Extract trigger tokens.
-				$triggers = $recipe_object['triggers']['items'] ?? array();
-				if ( is_array( $triggers ) ) {
-					foreach ( $triggers as $trigger ) {
-						if ( is_array( $trigger ) ) {
-							$trigger_tokens = array_merge( $trigger_tokens, $this->extract_tokens_from_item( $trigger ) );
-						}
-					}
-				}
-
-				// Extract action/loop tokens.
-				$actions = $recipe_object['actions']['items'] ?? array();
-				if ( is_array( $actions ) ) {
-					foreach ( $actions as $item ) {
-						if ( ! is_array( $item ) ) {
-							continue;
-						}
-
-						$item_type = $item['type'] ?? '';
-
-						if ( 'loop' === $item_type ) {
-							// Loop tokens (LOOP_TOKEN, DATA_TOKEN_CHILDREN).
-							$loop_tokens = array_merge( $loop_tokens, $this->extract_tokens_from_item( $item ) );
-							// Also get tokens from items inside the loop.
-							if ( ! empty( $item['items'] ) && is_array( $item['items'] ) ) {
-								$action_tokens = array_merge( $action_tokens, $this->extract_tokens_from_items_recursive( $item['items'] ) );
-							}
-						} else {
-							$action_tokens = array_merge( $action_tokens, $this->extract_tokens_from_item( $item ) );
-						}
-					}
-				}
-			}
-		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-			// Diagnostics should not throw.
-		}
-
-		$loop_tokens    = array_unique( $loop_tokens );
-		$trigger_tokens = array_unique( $trigger_tokens );
-		$action_tokens  = array_unique( $action_tokens );
+		$trigger_tokens = array_values( array_unique( $recipe['trigger'] ) );
+		$action_tokens  = array_values( array_unique( $recipe['action'] ) );
+		$loop_tokens    = array_values( array_unique( $recipe['loop'] ) );
+		$has_recipe     = $recipe['has_recipe'];
 
 		return array(
 			'recipe_id'             => $recipe_id,
@@ -254,49 +210,78 @@ class Token_Validator {
 	 * - Common/static tokens (user_email, site_name, etc.)
 	 * - Universal Tokens from integration registry
 	 * - Trigger tokens from recipe triggers
-	 * - Action tokens from recipe actions (including loops)
+	 * - Trigger, action and loop-block tokens from the wire flow at any depth
 	 *
-	 * @param int $recipe_id Recipe ID.
+	 * @param array{has_recipe: bool, read_error: string, trigger: string[], action: string[], loop: string[]} $recipe What collect_recipe_tokens() returned.
 	 *
 	 * @return array List of valid token patterns.
 	 */
-	private function get_valid_tokens( int $recipe_id ): array {
+	private function get_valid_tokens( array $recipe ): array {
 		// Common tokens are always available.
 		$valid_tokens = $this->get_common_tokens();
 
 		// Add Universal Tokens and Loopable Tokens from registry.
 		$valid_tokens = array_merge( $valid_tokens, $this->get_registry_tokens() );
 
-		// Add trigger and action tokens from recipe.
+		return array_unique( array_merge( $valid_tokens, $recipe['trigger'], $recipe['action'], $recipe['loop'] ) );
+	}
+
+	/**
+	 * Every token the recipe's nodes publish, split by node kind.
+	 *
+	 * Triggers, items at any depth and loop blocks each publish `tokens[]` on
+	 * the wire; filter and delay blocks never do. A failed read (missing
+	 * recipe, failed legacy migration) yields no recipe tokens and the caller
+	 * validates against the common and registry sets alone.
+	 *
+	 * @param int $recipe_id Recipe ID.
+	 *
+	 * @return array{has_recipe: bool, read_error: string, trigger: string[], action: string[], loop: string[]} read_error is the agent-facing sentence when the tree could not be read, else ''.
+	 */
+	private function collect_recipe_tokens( int $recipe_id ): array {
+		$out = array(
+			'has_recipe' => false,
+			'read_error' => '',
+			'trigger'    => array(),
+			'action'     => array(),
+			'loop'       => array(),
+		);
+
 		try {
-			$recipe_object = $this->recipes->get_recipe_as_array( $recipe_id );
-
-			if ( null !== $recipe_object ) {
-				// Extract trigger tokens.
-				$triggers = $recipe_object['triggers']['items'] ?? array();
-				if ( is_array( $triggers ) ) {
-					foreach ( $triggers as $trigger ) {
-						if ( is_array( $trigger ) ) {
-							$valid_tokens = array_merge( $valid_tokens, $this->extract_tokens_from_item( $trigger ) );
-						}
-					}
-				}
-
-				// Extract action/loop tokens recursively.
-				$actions = $recipe_object['actions']['items'] ?? array();
-				if ( is_array( $actions ) ) {
-					$valid_tokens = array_merge( $valid_tokens, $this->extract_tokens_from_items_recursive( $actions ) );
-				}
-			}
-		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-			// Log error if WP_DEBUG is enabled, but continue with already collected tokens.
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				error_log( sprintf( '[Token_Validator] Failed to fetch recipe object for recipe %d', $recipe_id ) );
-			}
+			$wire = $this->wire->get_wire_array( $recipe_id );
+		} catch ( Legacy_Storage_Migration_Exception $e ) {
+			automator_log( sprintf( 'Failed to read recipe %d; validating against common and registry tokens only: %s', $recipe_id, $e->getMessage() ), 'Token_Validator' );
+			$out['read_error'] = $e->user_message( $recipe_id );
+			return $out;
+		} catch ( \Exception $e ) {
+			automator_log( sprintf( 'Failed to read recipe %d; validating against common and registry tokens only: %s', $recipe_id, $e->getMessage() ), 'Token_Validator' );
+			$out['read_error'] = sprintf( 'Recipe %d could not be read (%s).', $recipe_id, $e->getMessage() );
+			return $out;
 		}
 
-		return array_unique( $valid_tokens );
+		if ( null === $wire ) {
+			return $out;
+		}
+
+		$out['has_recipe'] = true;
+		$flow              = is_array( $wire[ Wire_Key::FLOW ] ?? null ) ? $wire[ Wire_Key::FLOW ] : array();
+
+		foreach ( Flow_Walker::nodes( $flow ) as $entry ) {
+			$node = $entry['node'];
+			$type = $node[ Wire_Key::TYPE ] ?? '';
+
+			if ( Wire_Node_Type::ITEM === $type ) {
+				$bucket = Integration_Item_Types::TRIGGER === ( $node[ Wire_Key::ITEM_TYPE ] ?? '' ) ? 'trigger' : 'action';
+			} elseif ( Wire_Node_Type::BLOCK === $type && Block_Type::LOOP === ( $node[ Wire_Key::BLOCK_TYPE ] ?? '' ) ) {
+				$bucket = 'loop';
+			} else {
+				continue;
+			}
+
+			$out[ $bucket ] = array_merge( $out[ $bucket ], $this->extract_tokens_from_item( $node ) );
+		}
+
+		return $out;
 	}
 
 	/**
@@ -308,100 +293,12 @@ class Token_Validator {
 	 */
 	private function extract_tokens_from_item( array $item ): array {
 		$tokens      = array();
-		$item_tokens = $item['tokens'] ?? array();
+		$item_tokens = is_array( $item[ Wire_Key::TOKENS ] ?? null ) ? $item[ Wire_Key::TOKENS ] : array();
 
 		foreach ( $item_tokens as $token ) {
-			if ( isset( $token['id'] ) ) {
-				$tokens[] = '{{' . $token['id'] . '}}';
+			if ( is_array( $token ) && isset( $token[ Wire_Key::ID ] ) && '' !== (string) $token[ Wire_Key::ID ] ) {
+				$tokens[] = '{{' . $token[ Wire_Key::ID ] . '}}';
 			}
-		}
-
-		return $tokens;
-	}
-
-	/**
-	 * Recursively extract tokens from nested items.
-	 *
-	 * Handles the recursive structure:
-	 * - actions.items[].tokens (actions, loops)
-	 * - actions.items[].iterable_expression.fields (loopable token for token-type loops)
-	 * - actions.items[].items[].tokens (items inside loops)
-	 * - actions.items[].items[].conditions[].tokens (filter conditions)
-	 * - actions.items[].items[].items[].tokens (items inside filters)
-	 *
-	 * @param array $items Array of items to extract tokens from.
-	 *
-	 * @return array List of token usage patterns.
-	 */
-	private function extract_tokens_from_items_recursive( array $items ): array {
-		$tokens = array();
-
-		foreach ( $items as $item ) {
-			// Extract tokens from this item's tokens array.
-			$tokens = array_merge( $tokens, $this->extract_tokens_from_item( $item ) );
-
-			// For loops, also extract the loopable token from iterable_expression.
-			if ( ( $item['type'] ?? '' ) === 'loop' ) {
-				$tokens = array_merge( $tokens, $this->extract_loopable_token_from_loop( $item ) );
-			}
-
-			// Recursively extract from nested 'items' (loops, filters).
-			if ( ! empty( $item['items'] ) && is_array( $item['items'] ) ) {
-				$tokens = array_merge( $tokens, $this->extract_tokens_from_items_recursive( $item['items'] ) );
-			}
-
-			// Recursively extract from 'conditions' in filters.
-			if ( ! empty( $item['conditions'] ) && is_array( $item['conditions'] ) ) {
-				$tokens = array_merge( $tokens, $this->extract_tokens_from_items_recursive( $item['conditions'] ) );
-			}
-		}
-
-		return $tokens;
-	}
-
-	/**
-	 * Extract loopable token from a loop's iterable_expression.
-	 *
-	 * For token-type loops, the loopable token (e.g., TOKEN_EXTENDED:DATA_TOKEN_ALL_ORDERS_YEARLY:...)
-	 * is stored in iterable_expression.fields.TOKEN.value. This token is valid for use in actions.
-	 *
-	 * @param array $loop Loop item data.
-	 *
-	 * @return array List of loopable token patterns found.
-	 */
-	private function extract_loopable_token_from_loop( array $loop ): array {
-		$tokens = array();
-
-		$iterable_expression = $loop['iterable_expression'] ?? array();
-
-		// Only token-type loops have a loopable token.
-		if ( ( $iterable_expression['type'] ?? '' ) !== 'token' ) {
-			return $tokens;
-		}
-
-		// Fields can be a JSON string or array.
-		$fields = $iterable_expression['fields'] ?? '';
-
-		if ( is_string( $fields ) ) {
-			$fields = json_decode( $fields, true );
-			if ( ! is_array( $fields ) ) {
-				return $tokens;
-			}
-		}
-
-		// Extract the TOKEN field value which contains the loopable token.
-		$token_field = $fields['TOKEN'] ?? array();
-		$token_value = '';
-
-		if ( is_array( $token_field ) && isset( $token_field['value'] ) ) {
-			$token_value = $token_field['value'];
-		} elseif ( is_string( $token_field ) ) {
-			$token_value = $token_field;
-		}
-
-		// Extract the token pattern from the value (e.g., {{TOKEN_EXTENDED:...}}).
-		if ( ! empty( $token_value ) && preg_match( self::TOKEN_PATTERN, $token_value, $matches ) ) {
-			$tokens[] = $matches[0];
 		}
 
 		return $tokens;

@@ -44,7 +44,6 @@ class Automator_Tokens {
 	 * Get value of the token
 	 */
 	public function get() {
-
 	}
 
 	/**
@@ -56,28 +55,24 @@ class Automator_Tokens {
 	 * @param $args
 	 */
 	public function parse( $trigger_id, $trigger_code, $token, $args ) {
-
 	}
 
 	/**
 	 * Store token in to the trigger meta table
 	 */
 	public function store() {
-
 	}
 
 	/**
 	 * Human readable string of the token
 	 */
 	public function human_readable() {
-
 	}
 
 	/**
 	 *
 	 */
 	protected function possible_tokens() {
-
 	}
 
 	/**
@@ -114,10 +109,20 @@ class Automator_Tokens {
 			return $tokens;
 		}
 		//Add custom tokens regardless of integration / trigger code
-		$filters                 = array();
-		$trigger_integration     = '';
-		$trigger_meta            = '';
-		$trigger_value           = '';
+		$filters             = array();
+		$trigger_integration = '';
+		$trigger_meta        = '';
+		$trigger_value       = '';
+
+		// Seed the integration up front so code-specific filter names build
+		// regardless of meta write-order: the loop below only adds
+		// {integration}_{code} filter entries AFTER it has iterated the
+		// `integration` key, and the REST add flow persists `code` before
+		// `integration` — which silently dropped the code-based filter that
+		// modern-framework triggers register their define_tokens() under.
+		if ( isset( $triggers_meta['integration'] ) && is_string( $triggers_meta['integration'] ) && '' !== $triggers_meta['integration'] ) {
+			$trigger_integration = strtolower( $triggers_meta['integration'] );
+		}
 		$ignore_metas_for_tokens = apply_filters(
 			'automator_ignore_tokenify_meta',
 			array(
@@ -210,6 +215,7 @@ class Automator_Tokens {
 		if ( $filters ) {
 			foreach ( $filters as $filter => $args ) {
 				try {
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- The hook name is built from the automator_maybe_trigger_ prefix above, or added through automator_trigger_token_filters.
 					$tokens = apply_filters( $filter, $tokens, $args );
 				} catch ( \Error $e ) {
 					automator_log( $e->getMessage(), '$e->getMessage()', AUTOMATOR_DEBUG_MODE, 'trigger_tokens_errors', true );
@@ -253,6 +259,5 @@ class Automator_Tokens {
 		$default_action_tokens[] = $status->toArray();
 
 		return apply_filters( "automator_action_{$action['code']}_tokens_renderable", $default_action_tokens, $action_id, $recipe_id );
-
 	}
 }

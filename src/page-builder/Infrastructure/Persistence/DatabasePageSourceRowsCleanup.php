@@ -21,8 +21,10 @@ final class DatabasePageSourceRowsCleanup implements PageSourceRowsCleanupInterf
         $operations = SchemaManager::operationsTableName();
         $sections = SchemaManager::tableName();
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $deletedOperations = $wpdb->query($wpdb->prepare(
-            "DELETE FROM {$operations} WHERE scope_type = %s AND scope_id = %d",
+            'DELETE FROM %i WHERE scope_type = %s AND scope_id = %d',
+            $operations,
             'page',
             $pageId,
         ));
@@ -30,8 +32,10 @@ final class DatabasePageSourceRowsCleanup implements PageSourceRowsCleanupInterf
             throw new \RuntimeException('Could not delete Page Builder operation history.');
         }
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $deletedSections = $wpdb->query($wpdb->prepare(
-            "DELETE FROM {$sections} WHERE page_id = %d",
+            'DELETE FROM %i WHERE page_id = %d',
+            $sections,
             $pageId,
         ));
         if ($deletedSections === false) {

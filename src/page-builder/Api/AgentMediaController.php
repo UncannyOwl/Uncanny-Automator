@@ -4,18 +4,35 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Api;
 
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 use UncannyPageBuilder\Presentation\Api\MediaController;
+use UncannyPageBuilder\Application\Agent\SharedRestOperationRegistryInterface;
 
 final class AgentMediaController
 {
     public function __construct(
         private readonly PermissionChecker $permissions,
         private readonly MediaController $uploads,
+        private readonly ?SharedRestOperationRegistryInterface $sharedRest = null,
     ) {}
 
     public function registerRoutes(): void
     {
-        register_rest_route('uncanny-page-builder/v1', '/agent/media', [
+        $register = function (array $handler): void {
+            register_rest_route('uncanny-page-builder/v1', '/agent/media', $handler);
+            try {
+                $this->sharedRest?->remember(
+                    '/uncanny-page-builder/v1/agent/media',
+                    $handler['methods'],
+                    $handler['callback'],
+                    $handler['permission_callback'],
+                    'manage_media'
+                );
+            } catch (\Throwable $failure) {
+                DiagnosticLog::write(sprintf('[Uncanny Page Builder] Shared REST media registration failed (%s).', $failure::class));
+            }
+        };
+        $register([
             'methods' => 'GET',
             'callback' => [$this, 'readMedia'],
             'permission_callback' => [$this->permissions, 'canEdit'],
@@ -43,7 +60,7 @@ final class AgentMediaController
             ],
         ]);
 
-        register_rest_route('uncanny-page-builder/v1', '/agent/media', [
+        $register([
             'methods' => 'POST',
             'callback' => [$this, 'manageMedia'],
             'permission_callback' => [$this->permissions, 'canEdit'],
@@ -71,7 +88,7 @@ final class AgentMediaController
         try {
             return $this->manageMediaOperation($request, $operation);
         } catch (\Throwable $failure) {
-            error_log(sprintf('[Uncanny Page Builder] manage_media "%s" failed (%s).', $operation, $failure::class));
+            DiagnosticLog::write(sprintf('[Uncanny Page Builder] manage_media "%s" failed (%s).', $operation, $failure::class));
 
             return $this->textError(500, 'media_operation_failed', [
                 'OPERATION: ' . $operation,

@@ -134,6 +134,7 @@ class MPC_MARKLESSONDONE {
 		$user_progress->completed_at = lib\Utils::ts_to_mysql_date( time() );
 		$user_progress->store();
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- MemberPress Courses' own hooks; the prefix is the plugin's SLUG_KEY constant.
 		do_action( base\SLUG_KEY . '_completed_lesson', $user_progress );
 	}
 

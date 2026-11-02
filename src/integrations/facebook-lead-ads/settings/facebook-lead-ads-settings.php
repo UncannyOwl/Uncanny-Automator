@@ -165,6 +165,10 @@ class Facebook_Lead_Ads_Settings extends App_Integration_Settings {
 			);
 		}
 
+		// Move the pages to signed lead delivery; pages the platform refused
+		// before are asked again with their new tokens.
+		$this->dependencies->page_adoption->reconnected();
+
 		return $response;
 	}
 
@@ -206,6 +210,8 @@ class Facebook_Lead_Ads_Settings extends App_Integration_Settings {
 		);
 
 		$this->output_pages_info();
+		// L247 — on a local site, no lead can arrive: say so where the pages are.
+		$this->output_platform_triggers_unavailable_notice();
 		$this->output_pages_table();
 
 		// Webhook test section.
@@ -351,7 +357,10 @@ class Facebook_Lead_Ads_Settings extends App_Integration_Settings {
 		if ( ! empty( $status_info['icon'] ) ) {
 			$page_components[] = array(
 				'type'  => 'icon',
-				'data'  => array( 'id' => $status_info['icon']['id'] ),
+				'data'  => array(
+					'code' => $status_info['icon']['code'],
+					'size' => 'sm',
+				),
 				'style' => $status_info['icon']['style'] ?? '',
 			);
 		}
@@ -370,7 +379,7 @@ class Facebook_Lead_Ads_Settings extends App_Integration_Settings {
 							'type' => 'button',
 							'data' => array(
 								'label'          => esc_html_x( 'Reverify', 'Facebook Lead Ads', 'uncanny-automator' ),
-								'icon'           => array( 'id' => 'rotate' ),
+								'icon'           => array( 'code' => 'rotate' ),
 								'color'          => 'secondary',
 								'size'           => 'extra-small',
 								'type'           => 'button',
@@ -383,11 +392,42 @@ class Facebook_Lead_Ads_Settings extends App_Integration_Settings {
 				),
 			),
 			'description' => sprintf(
-				'%s: %s',
+				'%1$s: %2$s · %3$s: %4$s',
 				esc_html_x( 'Page ID', 'Facebook Lead Ads', 'uncanny-automator' ),
-				esc_html( $page_id )
+				esc_html( $page_id ),
+				esc_html_x( 'Lead delivery', 'Facebook Lead Ads', 'uncanny-automator' ),
+				$this->get_delivery_mode_text( (string) $page_id )
 			),
 		);
+	}
+
+	/**
+	 * How the page's leads reach the site, in words.
+	 *
+	 * @param string $page_id The page ID.
+	 *
+	 * @return string
+	 */
+	private function get_delivery_mode_text( $page_id ) {
+
+		$adoption = $this->dependencies->page_adoption;
+
+		switch ( $adoption->delivery_mode( $page_id ) ) {
+			case Facebook_Lead_Ads_Page_Adoption::MODE_SIGNED:
+				return esc_html_x( 'Signed delivery', 'Facebook Lead Ads', 'uncanny-automator' );
+			case Facebook_Lead_Ads_Page_Adoption::MODE_SETTING_UP:
+				return esc_html_x( 'Setting up…', 'Facebook Lead Ads', 'uncanny-automator' );
+			case Facebook_Lead_Ads_Page_Adoption::MODE_RECONNECT:
+				return sprintf(
+					/* translators: %s: Why Facebook must be connected again. */
+					esc_html_x( 'Reconnect Facebook: %s', 'Facebook Lead Ads', 'uncanny-automator' ),
+					Facebook_Lead_Ads_Page_Adoption::REASON_NOT_PERMITTED === $adoption->refusal_reason( $page_id )
+						? esc_html_x( 'allow access to leads (leads_retrieval) for this page', 'Facebook Lead Ads', 'uncanny-automator' )
+						: esc_html_x( 'this page’s access is no longer valid', 'Facebook Lead Ads', 'uncanny-automator' )
+				);
+			default:
+				return esc_html_x( 'Legacy delivery', 'Facebook Lead Ads', 'uncanny-automator' );
+		}
 	}
 
 	/**
@@ -412,7 +452,7 @@ class Facebook_Lead_Ads_Settings extends App_Integration_Settings {
 			return array(
 				'message' => '*' . esc_html( $status ) . '*',
 				'icon'    => array(
-					'id'    => 'check',
+					'code'  => 'check',
 					'style' => 'color: var(--uap-success-color, #2ecc40);',
 				),
 			);
@@ -422,7 +462,7 @@ class Facebook_Lead_Ads_Settings extends App_Integration_Settings {
 		return array(
 			'message' => '*' . esc_html( $status ) . '*',
 			'icon'    => array(
-				'id'    => 'xmark',
+				'code'  => 'xmark',
 				'style' => 'color: var(--uap-error-color, #ff4136);',
 			),
 		);
@@ -457,7 +497,7 @@ class Facebook_Lead_Ads_Settings extends App_Integration_Settings {
 							'icon'    => 'rotate',
 							'class'   => 'uap-spacing-top',
 							'tooltip' => esc_html_x(
-								'Sends a test payload from our server to your site to confirm it can receive webhooks for Facebook Lead Ads.',
+								'Sends a test payload from the Automator App Platform to your site to confirm it can receive webhooks for Facebook Lead Ads.',
 								'Facebook Lead Ads',
 								'uncanny-automator'
 							),
@@ -536,6 +576,9 @@ class Facebook_Lead_Ads_Settings extends App_Integration_Settings {
 		// Verify the page connection (force fresh check) - this also caches the status.
 		$status = $this->helpers->verify_page_connection( $page_id, true );
 
+		// A page not on signed delivery yet is set up on the next run.
+		$this->dependencies->page_adoption->page_refreshed( $page_id );
+
 		// Get status string for the verified page.
 		$verified_status = is_wp_error( $status )
 			? $status->get_error_message()
@@ -584,6 +627,23 @@ class Facebook_Lead_Ads_Settings extends App_Integration_Settings {
 				);
 			}
 		}
+
+		return $response;
+	}
+
+	/**
+	 * End every page's platform connection before the credentials go, and
+	 * owe no adoption. Safe to run twice: a disconnect the platform refuses
+	 * is retried by the user.
+	 *
+	 * @param array $response The current response array.
+	 * @param array $data     The posted data.
+	 *
+	 * @return array
+	 */
+	protected function before_disconnect( $response = array(), $data = array() ) {
+
+		$this->dependencies->page_adoption->disconnected();
 
 		return $response;
 	}

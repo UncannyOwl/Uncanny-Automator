@@ -17,7 +17,7 @@ final class WordPressSectionPostCommitFailureReporter implements SectionPostComm
     {
         $message = str_replace(["\r", "\n"], ' ', $failure->getMessage());
 
-        \error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] Section source for page %d was saved, but post-commit step "%s" failed (%s): %s',
             $pageId,
             $step,

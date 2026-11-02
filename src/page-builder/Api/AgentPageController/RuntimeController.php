@@ -603,6 +603,10 @@ final class RuntimeController
             'RESULT: success',
             'RUNTIME SCOPE: ' . $scope,
             strtoupper($scope) . '_ID: ' . $ownerId,
+            'RUNTIME_ENABLED: ' . ($this->runtimeScopeEnabled($scope) ? 'yes' : 'no'),
+            'JAVASCRIPT_EDIT_CAPABILITY: ' . ($this->permissions->canCapability('unfiltered_html') ? 'yes' : 'no'),
+            'APPROVED_LIBRARIES: ' . ($this->settings === null ? 'unknown' : (implode(', ', $this->settings->approvedLibrarySlugs()) ?: 'none')),
+            'MAX_SOURCE_BYTES: ' . PageJavaScriptRuntimeService::MAX_SOURCE_BYTES,
             'HAS_JAVASCRIPT: ' . (trim($javascript) !== '' ? 'yes' : 'no'),
             '',
         ];
@@ -618,7 +622,9 @@ final class RuntimeController
         }
 
         $lines[] = 'NEXT STEP';
-        $lines[] = 'For micro or local repairs, preview_runtime_change then edit_runtime operation=source_patch. Use operation=replace for broad rewrites, or operation=clear to remove it.';
+        $lines[] = !$this->runtimeScopeEnabled($scope) || !$this->permissions->canCapability('unfiltered_html')
+            ? 'Runtime writes are blocked for this scope or account. Ask a site administrator to review the reported settings and capability; do not bypass them.'
+            : 'For micro or local repairs, preview_runtime_change then edit_runtime operation=source_patch. Use operation=replace for broad rewrites, or operation=clear to remove it.';
 
         return $lines;
     }
@@ -667,6 +673,7 @@ final class RuntimeController
             'RUNTIME SCOPE: ' . $scope,
             strtoupper($scope) . '_ID: ' . $ownerId,
             'HAS_JAVASCRIPT: ' . (trim($after) !== '' ? 'yes' : 'no'),
+            'JAVASCRIPT_SHA256: ' . hash('sha256', $after),
             '',
             'APPLIED',
             'JAVASCRIPT_PATCHES: ' . count($patches),

@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Loop\Filter\Registry;
 
@@ -258,7 +257,7 @@ class WP_Registry implements Registry {
 				// Filters from Pro hook are always pro features.
 				$filter['is_pro'] = true;
 
-				$this->filters[ strtoupper( $filter['code'] ) ] = $this->normalize_filter_definition( $filter );
+				$this->load_filter( 'automator_integration_loop_filters', $meta, $filter['code'], $filter );
 			}
 		}
 
@@ -270,8 +269,71 @@ class WP_Registry implements Registry {
 		$additional_filters = Dispatcher::filter( 'automator_api_register_loop_filters', array() );
 
 		foreach ( $additional_filters as $code => $filter ) {
-			$this->register_filter( $code, $filter );
+			$this->load_filter( 'automator_api_register_loop_filters', $code, $code, $filter );
 		}
+	}
+
+	/**
+	 * Register one filter a hook handed over, under its code.
+	 *
+	 * A registration that cannot be read is skipped and reported to the developer
+	 * who made it through _doing_it_wrong(), so one broken filter never stops the
+	 * others from loading.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string     $hook       The hook the filter was registered on.
+	 * @param int|string $key        The key the hook's array holds it under, which names it in the report.
+	 * @param mixed      $code       The code it is registered under.
+	 * @param mixed      $definition Its definition.
+	 *
+	 * @return void
+	 */
+	private function load_filter( string $hook, $key, $code, $definition ): void {
+		$problem = $this->registration_problem( $code, $definition );
+
+		if ( '' === $problem ) {
+			try {
+				$this->register_filter( $code, $definition );
+				return;
+			} catch ( \Throwable $e ) {
+				$problem = $e->getMessage();
+			}
+		}
+
+		$name = (string) $key;
+		if ( is_array( $definition ) && is_string( $definition['integration'] ?? null ) && '' !== $definition['integration'] ) {
+			$name .= ' (' . $definition['integration'] . ')';
+		}
+
+		_doing_it_wrong(
+			esc_html( $hook ),
+			esc_html( sprintf( 'Loop filter %1$s was not registered: %2$s', $name, $problem ) ),
+			'8.0.0'
+		);
+	}
+
+	/**
+	 * Why a hook's registration cannot be registered, or '' when it can.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param mixed $code       The code it is registered under.
+	 * @param mixed $definition Its definition.
+	 *
+	 * @return string
+	 */
+	private function registration_problem( $code, $definition ): string {
+		if ( ! is_array( $definition ) ) {
+			return 'its definition is not an array.';
+		}
+
+		// The definition's code is its `code`, else its `meta` when that is a code and not the field structure.
+		if ( ! is_string( $code ) || ! is_string( $definition['code'] ?? $definition['meta'] ?? '' ) ) {
+			return 'it has no code.';
+		}
+
+		return '';
 	}
 
 	/**
@@ -303,10 +365,36 @@ class WP_Registry implements Registry {
 			'sentence'          => $definition['sentence'] ?? '',
 			'sentence_readable' => $definition['sentence_readable'] ?? $definition['sentence_human_readable'] ?? $definition['sentence'] ?? '',
 			'meta_structure'    => $this->extract_meta_structure( $definition ),
+			'raw_fields'        => $this->extract_raw_fields( $definition ),
 			'callback'          => $definition['callback'] ?? null,
 			'is_pro'            => ! empty( $definition['is_pro'] ),
 			'is_deprecated'     => ! empty( $definition['is_deprecated'] ),
 		);
+	}
+
+	/**
+	 * Extract the raw legacy field-config array from a registered filter
+	 * definition. Pro registers fields under one of: `fields`, `options`,
+	 * or `meta`. The first two are flat lists of legacy option-config
+	 * shapes (what the FE rendering layer consumes); `meta` is the
+	 * already-shaped meta_structure used internally and is NOT a raw
+	 * field array, so we don't fall through to it.
+	 *
+	 * @param array $definition Raw filter definition (from the Pro filter).
+	 * @return array Flat list of legacy field configs; empty when none present.
+	 */
+	private function extract_raw_fields( array $definition ): array {
+		// Looser than extract_meta_structure() on purpose: declaring `fields` at
+		// all opts into the block-era shape, so no fallback to legacy `options`.
+		if ( isset( $definition['fields'] ) && is_array( $definition['fields'] ) ) {
+			return $definition['fields'];
+		}
+
+		if ( isset( $definition['options'] ) && is_array( $definition['options'] ) ) {
+			return $definition['options'];
+		}
+
+		return array();
 	}
 
 	/**

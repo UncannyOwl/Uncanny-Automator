@@ -16,7 +16,14 @@ final class Trigger implements \JsonSerializable {
 
 	use Common\Trait_JSON_Serializer;
 
-	protected $type             = 'trigger';
+	protected $type = 'trigger';
+
+	/**
+	 * Marks this as an item rather than a block, so consumers walking the recipe can tell the two apart.
+	 *
+	 * @var string
+	 */
+	protected $entity_type      = 'item';
 	protected $is_item_on       = false;
 	protected $id               = null;
 	protected $integration_code = null;
@@ -65,7 +72,7 @@ final class Trigger implements \JsonSerializable {
 		$misc->uses_credit = isset( $trigger_arr_from_object['uses_api'] );
 
 		// Add custom name field
-		$misc->custom_name = $trigger['meta'][ \Uncanny_Automator\Global_Custom_Name_Field::FIELD_CODE ] ?? '';
+		$misc->custom_name = $trigger['meta'][ AUTOMATOR_META_KEY_ITEM_CUSTOM_NAME ] ?? '';
 
 		return $misc;
 	}

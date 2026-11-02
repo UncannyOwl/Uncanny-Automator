@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\User_Selector;
 
@@ -22,7 +21,9 @@ use Uncanny_Automator\App\Recipe_Builder\User_Selector\Value_Objects\User_Select
  *   domain rules about source type, fallback behavior, and user data requirements.
  *
  * Domain rules:
- * - Source must be 'existingUser' or 'newUser'.
+ * - Source must be 'existing-user' or 'new-user'. `User_Selector_Source` also
+ *   accepts the legacy camelCase aliases ('existingUser' / 'newUser') and
+ *   normalises them to these canonical kebab values.
  * - Existing user source:
  *   • Requires unique_field and unique_field_value.
  *   • Fallback must be 'create-new-user' or 'do-nothing'.
@@ -59,7 +60,8 @@ class User_Selector {
 	/**
 	 * User selector source type - required domain value.
 	 *
-	 * Enforces valid sources: 'existingUser' or 'newUser'.
+	 * Enforces valid sources: 'existing-user' or 'new-user' (legacy camelCase
+	 * aliases are normalised to these by the value object).
 	 * This drives validation of required fields and fallback options.
 	 *
 	 * @var User_Selector_Source
@@ -215,8 +217,12 @@ class User_Selector {
 			);
 		}
 
-		// Unique field value is required.
-		if ( empty( $this->unique_field_value ) ) {
+		// Unique field value must be PRESENT, but may be empty: the recipe
+		// builder seeds an empty value and the user fills it before publish.
+		// Non-empty content is a publish-time concern, enforced by
+		// Recipe_Violation_Service::RECIPE_RUN_AS_INCOMPLETE — not a
+		// save-time invariant.
+		if ( null === $this->unique_field_value ) {
 			throw new \InvalidArgumentException(
 				'Existing user source requires a unique field value'
 			);
@@ -229,7 +235,7 @@ class User_Selector {
 				throw new \InvalidArgumentException(
 					sprintf(
 						'Existing user source fallback must be one of: %s',
-						implode( ', ', $valid_fallbacks )
+						esc_html( implode( ', ', $valid_fallbacks ) )
 					)
 				);
 			}
@@ -263,7 +269,7 @@ class User_Selector {
 				throw new \InvalidArgumentException(
 					sprintf(
 						'New user source fallback must be one of: %s',
-						implode( ', ', $valid_fallbacks )
+						esc_html( implode( ', ', $valid_fallbacks ) )
 					)
 				);
 			}
@@ -347,6 +353,26 @@ class User_Selector {
 	 */
 	public function get_user_data(): ?User_Selector_User_Data {
 		return $this->user_data;
+	}
+
+	/**
+	 * Whether a run of this selector can log the user in.
+	 *
+	 * Only a created user is ever logged in, so the flag counts for the
+	 * new-user source and for the existing-user create-new-user fallback,
+	 * never for a matched user.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool
+	 */
+	public function can_log_user_in(): bool {
+		if ( null === $this->user_data || ! $this->user_data->should_log_user_in() ) {
+			return false;
+		}
+
+		return $this->source->is_new_user()
+			|| ( null !== $this->fallback && $this->fallback->creates_new_user() );
 	}
 
 	/**

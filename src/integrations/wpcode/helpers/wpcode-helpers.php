@@ -59,6 +59,7 @@ class Wpcode_Helpers {
 			'supports_custom_value' => $args['supports_custom_value'],
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_get_wpcode_snippets', $option );
 	}
 

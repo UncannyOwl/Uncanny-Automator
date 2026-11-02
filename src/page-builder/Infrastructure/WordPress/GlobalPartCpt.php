@@ -13,7 +13,7 @@ final class GlobalPartCpt
         } catch (\Throwable $failure) {
             // init is a shared WordPress surface. A request without the CPT
             // registered is acceptable degradation.
-            error_log('[Uncanny Page Builder] Reusable part post type registration failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Reusable part post type registration failed (' . $failure::class . ')');
         }
     }
 

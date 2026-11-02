@@ -181,6 +181,7 @@ class Divi_Helpers extends Abstract_Helpers {
 	 */
 	public static function extract_forms( $update_form_id = false ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Searches post_content for Divi form markers across every post type; no core API searches content without also searching titles and excerpts.
 		$form_posts = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT `ID`, `post_content`, `post_title` FROM $wpdb->posts

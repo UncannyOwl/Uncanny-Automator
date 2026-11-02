@@ -222,7 +222,7 @@ final class PageDetailsService implements PageDetailsPortInterface, PageDetailsH
             }
         }
 
-        throw new StaleSourceGenerationException('page', $before, $after);
+        throw new StaleSourceGenerationException('page', (int) $before, (int) $after);
     }
 
     private function project(PagePublicationState $state): ?PageDetails

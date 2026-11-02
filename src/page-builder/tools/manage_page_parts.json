@@ -1,0 +1,73 @@
+{
+  "name": "manage_page_parts",
+  "description": "Read and assign existing header or footer parts with explicit scope. GET reads selections, effective fallback parts, page mode, site defaults, and fresh source generation. POST assigns one slot using expected_generation from that read. Use scope=page for an owned page's override or scope=site_defaults for site defaults. selection=part requires an active part of the matching type; inherit clears the explicit selection and can still render a fallback part. selection=none suppresses a slot only for a page and is not supported for site defaults. Inspect effective parts before creating page-local header or footer sections. Uncanny native mode renders these parts; theme composition uses theme chrome. Assignments save working source only. A human must publish each affected page to change its visitor artifact.",
+  "http": {
+    "method": "MIXED",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/page-parts"
+  },
+  "parameters": [
+    {
+      "name": "scope",
+      "type": "string",
+      "enum": ["page", "site_defaults"],
+      "required": true,
+      "in": "query|body",
+      "description": "Read or assignment scope. GET uses query parameters. POST uses a body."
+    },
+    {
+      "name": "page_id",
+      "type": "integer",
+      "minimum": 1,
+      "required": false,
+      "in": "query|body",
+      "description": "Explicit existing owned page ID, required only for scope=page. Omit for site_defaults."
+    },
+    {
+      "name": "operation",
+      "type": "string",
+      "enum": ["assign"],
+      "required": false,
+      "in": "body",
+      "description": "Required for POST; omit for GET."
+    },
+    {
+      "name": "slot",
+      "type": "string",
+      "enum": ["header", "footer"],
+      "required": false,
+      "in": "body",
+      "description": "Required for POST. The other slot remains unchanged."
+    },
+    {
+      "name": "selection",
+      "type": "string",
+      "enum": ["part", "inherit", "none"],
+      "required": false,
+      "in": "body",
+      "description": "Required for POST. part selects a matching existing part, inherit clears an explicit selection, and none suppresses a page slot only."
+    },
+    {
+      "name": "global_part_id",
+      "type": "integer",
+      "minimum": 1,
+      "required": false,
+      "in": "body",
+      "description": "Required only for selection=part. Omit for inherit and none."
+    },
+    {
+      "name": "expected_generation",
+      "type": "integer",
+      "minimum": 0,
+      "required": false,
+      "in": "body",
+      "description": "Required for POST. Copy EXPECTED_GENERATION from a fresh manage_page_parts read of the same scope and page. A stale value refuses the write."
+    }
+  ],
+  "output": {
+    "content_type": "text/plain",
+    "description": "Selections and effective typed active parts, explicit site defaults, page mode, slot rendering scope, EXPECTED_GENERATION for the selected scope, and GLOBAL_SOURCE_GENERATION. Assignment returns fresh state. Internal reusable publish status does not mean the source is public on visitor pages. A refresh warning means source was saved; reload the Manual editor or Preview rather than repeat the write."
+  },
+  "auto_approve": false,
+  "group": "write",
+  "requires_read_before_write": true
+}

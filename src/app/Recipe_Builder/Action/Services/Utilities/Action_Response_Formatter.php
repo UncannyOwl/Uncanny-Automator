@@ -36,7 +36,6 @@ class Action_Response_Formatter {
 			'sentence_human_readable'      => $action_data['sentence_human_readable'] ?? '',
 			'sentence_human_readable_html' => $action_data['sentence_human_readable_html'] ?? '',
 			'config'                       => $action_data['config'] ?? array(),
-			'async'                        => $action_data['async'] ?? array(),
 		);
 	}
 }

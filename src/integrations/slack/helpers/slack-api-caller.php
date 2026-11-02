@@ -26,6 +26,7 @@ class Slack_Api_Caller extends Api_Caller {
 			'message' => $this->maybe_customize_bot( $message ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		$body = apply_filters( 'uap_slack_chat_post_message', $body );
 
 		return $this->slack_request( $body, $action_data );
@@ -49,6 +50,7 @@ class Slack_Api_Caller extends Api_Caller {
 			$message['icon_url'] = $bot_icon;
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_slack_maybe_customize_bot', $message );
 	}
 
@@ -66,6 +68,7 @@ class Slack_Api_Caller extends Api_Caller {
 			'name'   => substr( sanitize_title( $channel_name ), 0, 79 ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		$body = apply_filters( 'uap_slack_conversations_create', $body );
 
 		return $this->slack_request( $body, $action_data );
@@ -127,6 +130,7 @@ class Slack_Api_Caller extends Api_Caller {
 			'channel' => $channel_id,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		$body = apply_filters( 'uap_slack_conversations_join', $body );
 
 		return $this->slack_request( $body, $action_data );
@@ -148,6 +152,7 @@ class Slack_Api_Caller extends Api_Caller {
 			'users' => $user_id,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		$body = apply_filters( 'uap_slack_conversations_invite', $body );
 
 		return $this->slack_request( $body, $action_data );

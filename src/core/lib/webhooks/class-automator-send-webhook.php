@@ -4,6 +4,8 @@ namespace Uncanny_Automator;
 
 use DOMDocument;
 use SimpleXMLElement;
+use Uncanny_Automator\App\Infrastructure\Http\Non_Public_Ranges;
+use Uncanny_Automator\App\Infrastructure\Http\Redirect_Hop_Check;
 
 /**
  * Automator_Send_Webhook Main Class
@@ -58,65 +60,99 @@ class Automator_Send_Webhook {
 		$this->fields = Automator_Send_Webhook_Fields::get_instance();
 
 		// Register hooks.
-		add_filter( 'automator_field_values_before_save', array( $this, 'encrypt_authorization_values' ), 10, 2 );
+		add_action( 'automator_event_recipe_changed', array( $this, 'mask_saved_authorization' ) );
+		add_filter( 'automator_item_structural_meta_keys', array( $this, 'add_structural_keys' ) );
+		add_filter( 'automator_item_copy_meta_keys', array( $this, 'add_copy_meta_keys' ) );
 	}
 
 	/**
-	 * Encrypt authorization vallues.
+	 * Keep the webhook action's item metadata off every read of its fields: the
+	 * response-token cache test sends write, and the stored Authorization secret,
+	 * which only the run reads.
 	 *
-	 * @param mixed $meta_value
-	 * @param mixed $item
-	 *
-	 * @return string
+	 * @param mixed $keys Structural meta keys collected so far.
+	 * @return array
 	 */
-	public function encrypt_authorization_values( $meta_value, $item ) {
-
-		if ( ! isset( $meta_value['WEBHOOK_AUTHORIZATIONS'] ) ) {
-			return $meta_value;
-		}
-
-		$authorization = $meta_value['WEBHOOK_AUTHORIZATIONS'];
-		$item_id       = $_POST['itemId'] ?? null; //phpcs:ignore
-
-		if ( empty( $authorization ) ) {
-			$this->delete_original_auth_value( $item_id );
-			return $meta_value;
-		}
-
-		// Check if the string contains tokens.
-		if ( preg_match( '/\{\{.*?\}\}/', $authorization ) ) {
-			$this->delete_original_auth_value( $item_id );
-			return $meta_value;
-		}
-
-		// Trim all * and see if a new string is entered
-		$authorization = trim( $authorization, '*' );
-
-		if ( strlen( $authorization ) > 3 ) { // check if trimmed string is over 3 chars
-			$authorization = addslashes( $authorization );
-			update_post_meta( $item_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL', $authorization );
-			$meta_value['WEBHOOK_AUTHORIZATIONS'] = $this->hide_string( $authorization );
-		}
-
-		return $meta_value;
+	public function add_structural_keys( $keys ) {
+		$keys[] = 'webhook_response_tokens';
+		$keys[] = 'WEBHOOK_AUTHORIZATIONS_ORIGINAL';
+		return $keys;
 	}
 
 	/**
-	 * Delete original authorization value.
+	 * Keep the stored Authorization secret on a same-site copy of a webhook action:
+	 * the copy's field holds the same masked value, and the run sends the secret
+	 * behind it. An export never carries it.
 	 *
-	 * @param mixed $item_id
+	 * @since 8.0.0
+	 *
+	 * @param mixed $keys Copy meta keys collected so far.
+	 * @return array
+	 */
+	public function add_copy_meta_keys( $keys ) {
+		$keys   = (array) $keys;
+		$keys[] = 'WEBHOOK_AUTHORIZATIONS_ORIGINAL';
+		return $keys;
+	}
+
+	/**
+	 * Store a webhook action's new Authorization masked, keeping the secret in
+	 * `WEBHOOK_AUTHORIZATIONS_ORIGINAL`, which the run sends.
+	 *
+	 * Listens to `automator_event_recipe_changed`, so it runs for builder, MCP and
+	 * automator_*() saves alike, and a refused save, which fires no event, writes
+	 * nothing. An emptied or tokenised field drops the stored secret so the field's
+	 * own value is sent; the masked value the builder echoes back is left alone.
+	 *
+	 * @param object $event The recipe_changed event.
 	 *
 	 * @return void
 	 */
-	protected function delete_original_auth_value( $item_id ) {
-
-		// Validate item ID.
-		if ( empty( $item_id ) ) {
+	public function mask_saved_authorization( $event ) {
+		if ( 'action' !== $event->item_type() || ! in_array( $event->operation(), array( 'created', 'updated' ), true ) ) {
 			return;
 		}
 
-		// Delete the original value if exists.
-		delete_post_meta( $item_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL' );
+		$action_id = (int) $event->item_id();
+		if ( ! metadata_exists( 'post', $action_id, 'WEBHOOK_AUTHORIZATIONS' ) ) {
+			return;
+		}
+
+		$authorization = (string) get_post_meta( $action_id, 'WEBHOOK_AUTHORIZATIONS', true );
+		if ( '' === $authorization || preg_match( '/\{\{.*?\}\}/', $authorization ) ) {
+			delete_post_meta( $action_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL' );
+			return;
+		}
+
+		// The builder echoes the masked value back, and an import carries it without its secret.
+		if ( $this->is_masked_authorization( $authorization, (string) get_post_meta( $action_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL', true ) ) ) {
+			return;
+		}
+
+		$secret = trim( $authorization, '*' );
+		update_post_meta( $action_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL', addslashes( $secret ) );
+		update_post_meta( $action_id, 'WEBHOOK_AUTHORIZATIONS', addslashes( $this->hide_string( $secret ) ) );
+	}
+
+	/**
+	 * Whether a stored Authorization is a masked value rather than one typed in.
+	 *
+	 * With a stored secret, only that secret's exact masked form counts. Without one,
+	 * asterisks followed by at most three characters is a mask whose secret stayed behind.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $authorization The field's stored value.
+	 * @param string $original      The stored secret, or '' when there is none.
+	 *
+	 * @return bool
+	 */
+	private function is_masked_authorization( string $authorization, string $original ): bool {
+		if ( '' !== $original ) {
+			return $this->hide_string( $original ) === $authorization;
+		}
+
+		return 1 === preg_match( '/^\*+.{0,3}$/s', $authorization );
 	}
 
 	/**
@@ -140,172 +176,6 @@ class Automator_Send_Webhook {
 		$visible_part = substr( $string, - 3 );
 
 		return $hidden_part . $visible_part;
-	}
-
-	/**
-	 * Anonymous JS function invoked as callback when clicking
-	 * the custom button "Send test". The JS function requires
-	 * the JS module "markdown". Make sure it's included in
-	 * the "modules" array
-	 *
-	 * @return string The JS code
-	 */
-	public function send_test_js() {
-		// Start output
-		ob_start();
-
-		// It's optional to add the <script> tags
-		// This must have only one anonymous function
-		?>
-
-		<script>
-
-			// Do when the user clicks on send test
-			function ($button, data, modules) {
-				// Add loading animation to the button
-				$button.addClass('uap-btn--loading uap-btn--disabled');
-
-				// Get the data we're going to send to the AJAX request
-				let dataToBeSent = {
-					action: 'automator_webhook_send_test_data',
-					nonce: UncannyAutomator._site.rest.nonce,
-					integration_id: data.item.integrationCode,
-					item_id: data.item.id,
-					values: data.values
-				}
-
-				// Do AJAX
-				jQuery.ajax({
-					method: 'POST',
-					dataType: 'json',
-					url: ajaxurl,
-					data: dataToBeSent,
-					success: function (response) {
-						// Remove loading animation from the button
-						$button.removeClass('uap-btn--loading uap-btn--disabled');
-
-						// Create notice
-						// But first check if the message is defined
-						if (typeof response.message !== 'undefined') {
-							// Get notice type
-							let noticeType = typeof response.type !== 'undefined' ? response.type : 'gray';
-							let $message = response.message;
-							// Create notice
-							let $notice = jQuery('<div/>', {
-								'class': 'item-options__notice item-options__notice--' + noticeType
-							});
-
-							// Add message to the notice container
-							$notice.html($message);
-
-							// Get the notices container
-							let $noticesContainer = jQuery('.item[data-id="' + data.item.id + '"] .item-options__notices');
-
-							// Add notice
-							$noticesContainer.html($notice);
-						}
-					},
-
-					statusCode: {
-						403: function () {
-							location.reload();
-						}
-					},
-
-					fail: function (response) {
-					}
-				});
-			}
-
-		</script>
-
-		<?php
-
-		// Get output
-		// Return output
-		return ob_get_clean();
-	}
-
-	/**
-	 * Output Sample data on Recipe page
-	 *
-	 * @return false|string
-	 */
-	public function build_sample_data() {
-		// Start output
-		ob_start();
-
-		// It's optional to add the <script> tags
-		// This must have only one anonymous function
-		?>
-
-		<script>
-			// Do when the user clicks on send test
-			function ($button, data, modules) {
-				// Add loading animation to the button
-				$button.addClass('uap-btn--loading uap-btn--disabled');
-
-				// Get the data we're going to send to the AJAX request
-				let dataToBeSent = {
-					action: 'automator_webhook_build_test_data',
-					nonce: UncannyAutomator._site.rest.nonce,
-					integration_id: data.item.integrationCode,
-					item_id: data.item.id,
-					values: data.values
-				}
-
-				// Do AJAX
-				jQuery.ajax({
-					method: 'POST',
-					dataType: 'json',
-					url: ajaxurl,
-					data: dataToBeSent,
-					success: function (response) {
-						// Remove loading animation from the button
-						$button.removeClass('uap-btn--loading uap-btn--disabled');
-						// Create notice
-						// But first check if the message is defined
-						if (typeof response.message !== 'undefined') {
-							// Get notice type
-							let noticeType = typeof response.type !== 'undefined' ? response.type : 'gray';
-
-							// Create notice
-							let $notice = jQuery('<div/>', {
-								'class': 'item-options__notice item-options__notice--' + noticeType
-							});
-
-							// Get markdown HTML
-							let $message = response.message;
-
-							// Add message to the notice container
-							$notice.html("<pre>" + $message + "<pre>");
-
-							// Get the notices container
-							let $noticesContainer = jQuery('.item[data-id="' + data.item.id + '"] .item-options__notices');
-
-							// Add notice
-							$noticesContainer.html($notice);
-						}
-					},
-
-					statusCode: {
-						403: function () {
-							location.reload();
-						}
-					},
-
-					fail: function (response) {
-					}
-				});
-			}
-
-		</script>
-
-		<?php
-
-		// Get output
-		// Return output
-		return ob_get_clean();
 	}
 
 	/**
@@ -585,9 +455,16 @@ class Automator_Send_Webhook {
 	 */
 	public function get_authorization( $action_id, $headers, $data, $parsing_args = array() ) {
 
-		$authorization         = isset( $data['WEBHOOK_AUTHORIZATIONS'] ) ? $data['WEBHOOK_AUTHORIZATIONS'] : null;
-		$authorization_originl = get_post_meta( $action_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL', true );
-		$authorization         = ! empty( $authorization_originl ) && is_scalar( $authorization_originl ) ? $authorization_originl : $authorization;
+		$authorization = isset( $data['WEBHOOK_AUTHORIZATIONS'] ) ? $data['WEBHOOK_AUTHORIZATIONS'] : null;
+		$original      = get_post_meta( $action_id, 'WEBHOOK_AUTHORIZATIONS_ORIGINAL', true );
+		$original      = is_scalar( $original ) ? (string) $original : '';
+
+		// The stored secret stands in for the field only while the field holds its masked form: a save that
+		// failed before the masker ran leaves the new value in the field. A mask with no secret behind it
+		// (an imported action) sends nothing until the owner enters one.
+		if ( is_string( $authorization ) && '' !== $authorization && $this->is_masked_authorization( $authorization, $original ) ) {
+			$authorization = $original;
+		}
 
 		if ( empty( $authorization ) ) {
 			return $headers;
@@ -881,6 +758,28 @@ class Automator_Send_Webhook {
 
 		$request_type = sanitize_text_field( wp_unslash( $request_type ) );
 
+		// Redirects are followed, each one checked: a public URL must not hand the webhook on to an
+		// address validate_webhook_url() would refuse.
+		return Redirect_Hop_Check::around(
+			static function () use ( $webhook_url, $args, $request_type ) {
+				return self::send_webhook_request( $webhook_url, $args, $request_type );
+			}
+		);
+	}
+
+	/**
+	 * Send the webhook request with the method the action chose.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $webhook_url  The checked webhook URL.
+	 * @param array  $args         Request args.
+	 * @param string $request_type HTTP method.
+	 *
+	 * @return array|mixed|\WP_Error
+	 */
+	private static function send_webhook_request( $webhook_url, $args, $request_type ) {
+
 		switch ( $request_type ) {
 			case 'POST':
 				$response = wp_safe_remote_post( $webhook_url, $args );
@@ -961,24 +860,22 @@ class Automator_Send_Webhook {
 			return false;
 		}
 
-		// Resolve hostname to IP
-		$ip = gethostbyname( $host );
-		// returns the hostname on failure.
-		if ( $ip === $host ) {
-			return false;
+		// An IP address needs no lookup: gethostbyname() returns it unchanged, which reads as a failed
+		// lookup. It goes straight to the range checks below.
+		if ( false !== filter_var( $host, FILTER_VALIDATE_IP ) ) {
+			$ip = $host;
+		} else {
+			// Resolve hostname to IP
+			$ip = gethostbyname( $host );
+			// returns the hostname on failure.
+			if ( $ip === $host ) {
+				return false;
+			}
 		}
 
-		// Block AWS metadata endpoint and link-local addresses
-		if ( '169.254.169.254' === $ip || 0 === strpos( $ip, '169.254.' ) ) {
-			return false;
-		}
-
-		// Block private and reserved IP ranges
-		if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) === false ) {
-			return false;
-		}
-
-		return true;
+		// Refuse every range that is not public: private, loopback, link-local (the cloud metadata address
+		// included), carrier-grade NAT, multicast, documentation, benchmarking and reserved, IPv4 and IPv6.
+		return ! Non_Public_Ranges::includes( $ip );
 	}
 
 	/**

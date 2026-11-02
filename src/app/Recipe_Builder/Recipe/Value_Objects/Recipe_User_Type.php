@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects;
 
@@ -29,8 +28,8 @@ class Recipe_User_Type {
 			throw new \InvalidArgumentException(
 				sprintf(
 					'Recipe user type must be one of: %s. Given: %s',
-					implode( ', ', User_Type::get_all() ),
-					$value
+					esc_html( implode( ', ', User_Type::get_all() ) ),
+					esc_html( $value )
 				)
 			);
 		}

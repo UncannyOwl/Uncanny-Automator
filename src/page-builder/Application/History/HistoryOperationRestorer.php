@@ -53,7 +53,7 @@ final class HistoryOperationRestorer
 
         throw new \LogicException(sprintf(
             'History operation "%s" has no working-source restore path.',
-            $entry->operation(),
+            esc_html($entry->operation()),
         ));
     }
 
@@ -100,7 +100,7 @@ final class HistoryOperationRestorer
 
         throw new \LogicException(sprintf(
             'History operation "%s" has no preview path.',
-            $entry->operation(),
+            esc_html($entry->operation()),
         ));
     }
 

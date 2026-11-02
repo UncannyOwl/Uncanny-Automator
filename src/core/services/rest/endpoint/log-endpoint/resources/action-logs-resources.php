@@ -8,6 +8,7 @@ use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Queries\Action_Logs_Queries;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Queries\Loop_Logs_Queries;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Action_Logs_Helpers\Conditions_Helper;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils;
+use Uncanny_Automator\Services\Action_Scheduler;
 
 /**
  * Class Action_Logs_Resources
@@ -47,6 +48,20 @@ class Action_Logs_Resources {
 	 * @var Conditions_Helper
 	 */
 	protected $conditions = null;
+
+	/**
+	 * Whether each action log has an API log row, read once per log request.
+	 *
+	 * @var array<int,bool>
+	 */
+	private $api_logs = array();
+
+	/**
+	 * The run's raw action log rows, read once per log request, keyed by the query params.
+	 *
+	 * @var array<string,mixed[]>
+	 */
+	private $raw_action_logs = array();
 
 	/**
 	 * @param Action_Logs_Queries $action_logs_queries
@@ -105,18 +120,14 @@ class Action_Logs_Resources {
 	 */
 	protected function has_api_log( $action_log_id = 0 ) {
 
-		$key = 'automator_action_log_resources_has_api_log_' . $action_log_id;
-		$log = Automator()->cache->get( $key, 'automator_logs' );
+		$action_log_id = absint( $action_log_id );
 
-		if ( ! empty( $log ) ) {
-			return ! is_null( $log );
+		// Remember what the lookup found, for this request only: a resend adds an API row later.
+		if ( ! isset( $this->api_logs[ $action_log_id ] ) ) {
+			$this->api_logs[ $action_log_id ] = null !== $this->automator_factory->db_api()->get_by_log_id( 'action', $action_log_id );
 		}
 
-		$log = $this->automator_factory->db_api()->get_by_log_id( 'action', $action_log_id );
-
-		Automator()->cache->set( $key, true, 'automator_logs' );
-
-		return ! is_null( $log );
+		return $this->api_logs[ $action_log_id ];
 	}
 
 	/**
@@ -125,15 +136,15 @@ class Action_Logs_Resources {
 	 * @return mixed[]
 	 */
 	protected function get_recipe_actions_logs_raw( $params ) {
-		$key           = 'get_recipe_action_logs_raw_' . maybe_serialize( $params );
-		$cached_result = Automator()->cache->get( $key, 'automator_log' );
-		if ( ! empty( $cached_result ) ) {
-			return (array) $cached_result;
-		}
-		$result = $this->action_logs_queries->get_recipe_actions_logs_raw( $params );
-		Automator()->cache->set( $key, $result, 'automator_log' );
 
-		return $result;
+		// Read once per request: the rows change while the run is in progress.
+		$key = (string) wp_json_encode( $params );
+
+		if ( ! isset( $this->raw_action_logs[ $key ] ) ) {
+			$this->raw_action_logs[ $key ] = $this->action_logs_queries->get_recipe_actions_logs_raw( $params );
+		}
+
+		return $this->raw_action_logs[ $key ];
 	}
 
 	/**
@@ -364,14 +375,7 @@ class Action_Logs_Resources {
 		$action_meta = $utils::flatten_post_meta( (array) get_post_meta( $action_id ) );
 
 		// Default values for action meta.
-		$action_meta = wp_parse_args(
-			$action_meta,
-			array(
-				'integration'                  => 'INTEGRATION_CODE_NOT_FOUND',
-				'code'                         => 'ACTION_CODE_NOT_FOUND',
-				'sentence_human_readable_html' => 'SENTENCE_NOT_FOUND',
-			)
-		);
+		$action_meta = wp_parse_args( $action_meta, $this->action_meta_defaults() );
 
 		// Retrieve the user ID from recipe log.
 		$user_id = apply_filters( 'automator_field_resolver_condition_result_user_id', null );
@@ -434,7 +438,7 @@ class Action_Logs_Resources {
 
 		// Fallback to postmeta if the sentence HTML is not saved.
 		if ( empty( $action_sentence_html ) ) {
-			$action_sentence_html = $this->utils::format_sentence_with_placeholders( $action_meta['sentence_human_readable'] );
+			$action_sentence_html = $this->utils::format_sentence_with_placeholders( $action_meta['sentence_human_readable'] ?? '' );
 		}
 
 		// Check if the action is scheduled and can be cancelled.
@@ -448,7 +452,7 @@ class Action_Logs_Resources {
 			'status_id'         => $status_id,
 			'is_deleted'        => isset( $action_meta['is_deleted'] ),
 			'title_html'        => htmlspecialchars( $action_sentence_html, ENT_QUOTES ),
-			'title_custom_name' => sanitize_text_field( $action_meta[ \Uncanny_Automator\Global_Custom_Name_Field::FIELD_CODE ] ?? '' ),
+			'title_custom_name' => sanitize_text_field( $action_meta[ AUTOMATOR_META_KEY_ITEM_CUSTOM_NAME ] ?? '' ),
 			'can_rerun'         => $can_rerun,
 			'can_run_now'       => $is_schedule,
 			'can_cancel'        => $is_schedule,
@@ -510,11 +514,14 @@ class Action_Logs_Resources {
 		$fabricated_item = $this->fabricate_item_with_delay( $action_id, $params, $action_runs, $action_meta );
 
 		if ( false !== $fabricated_item ) {
+			// A held-back action starts when it is due and has not ended: every date field says so.
 			$item['status_id']             = $fabricated_item['status_id'];
 			$item['start_date']            = $fabricated_item['start_date'];
+			$item['start_date_full']       = $fabricated_item['start_date_full'] ?? $fabricated_item['start_date'];
 			$item['_timestamp']            = $fabricated_item['_timestamp'];
 			$item['runs'][0]['_timestamp'] = $fabricated_item['_timestamp'];
 			$item['end_date']              = $fabricated_item['end_date'];
+			$item['end_date_full']         = $fabricated_item['end_date'];
 		}
 
 		return $item;
@@ -540,7 +547,7 @@ class Action_Logs_Resources {
 
 		$async_job_id = (int) Automator()->db->action->get_meta( $action_log_id, 'async_job_id' );
 
-		if ( is_numeric( $async_job_id ) && class_exists( 'ActionScheduler' ) ) {
+		if ( is_numeric( $async_job_id ) && Action_Scheduler::is_available() ) {
 			return true;
 		}
 
@@ -733,8 +740,8 @@ class Action_Logs_Resources {
 			$result_message = $runs[ count( $runs ) - 1 ]['result_message'];
 		}
 
-		// Check if the action is scheduled and can be cancelled.
-		$is_schedule = $this->maybe_action_is_scheduled( $status_id, $action_log['action_log_id'] );
+		// Check if the action is scheduled and can be cancelled (by its status code, not its class name).
+		$is_schedule = $this->maybe_action_is_scheduled( $action_log['action_completed'], $action_log['action_log_id'] );
 
 		return array(
 			'from_legacy_log'  => true,
@@ -755,121 +762,6 @@ class Action_Logs_Resources {
 			'result_message'   => $result_message,
 			'runs'             => $runs,
 		);
-	}
-
-	/**
-	 * Append closures results to the reference of $results_formatted
-	 *
-	 * @param mixed[] $results_formatted
-	 * @param int[] $params
-	 *
-	 * @return mixed[]
-	 */
-	private function append_closures_results( &$results_formatted, $params ) {
-
-		$closure_log = $this->action_logs_queries->get_closures_as_action_query( $params['recipe_id'], $params['recipe_log_id'] );
-
-		if ( isset( $closure_log['log_entry_value'] ) ) {
-
-			$closure_log = wp_parse_args(
-				$closure_log,
-				array(
-					'mock'            => false,
-					'user_id'         => null,
-					'closure_id'      => 0,
-					'log_id'          => 0,
-					'date_time'       => false,
-					'log_entry_value' => '',
-				)
-			);
-
-			$log_entry = wp_parse_args(
-				(array) json_decode( $closure_log['log_entry_value'], true ),
-				array(
-					'meta' => array(
-						'code'                         => 'CLOSURE_CODE_NOT_FOUND',
-						'integration'                  => 'INTEGRATION_CODE_NOT_FOUND',
-						'sentence_human_readable_html' => 'SENTENCE_NOT_FOUND',
-						'REDIRECTURL'                  => 'REDIRECTURL_NOT_FOUND',
-					),
-				)
-			);
-
-			$date_time      = $this->utils->date_time_format_relative( $closure_log['date_time'] );
-			$date_time_full = $this->utils->date_time_format( $closure_log['date_time'] );
-			$timestamp      = $this->utils->strtotime( $closure_log['date_time'] );
-			$status_id      = 'completed';
-			$root_status_id = 'completed';
-
-			if ( true === $closure_log['mock'] ) {
-				$date_time      = 'When triggers are completed';
-				$date_time_full = null;
-				$timestamp      = time();
-				$status_id      = 'not-completed';
-				$root_status_id = 'not-completed';
-			}
-
-			$field_values = $this->automator_factory->db()->closure->get_entry_meta(
-				array(
-					'user_id'                  => $closure_log['user_id'],
-					'automator_closure_id'     => $closure_log['closure_id'],
-					'automator_closure_log_id' => $closure_log['log_id'],
-				),
-				'field_values'
-			);
-
-			if ( false === $field_values ) {
-				$field_values = '';
-			}
-
-			$field_values = $this->automator_factory->root()->json_decode_parse_args(
-				$field_values,
-				array(
-					'raw'    => '',
-					'parsed' => '',
-				)
-			);
-
-			$results_formatted[] = array(
-				'type'             => 'action',
-				'id'               => $closure_log['closure_id'],
-				'integration_code' => $log_entry['meta']['integration'],
-				'code'             => $log_entry['meta']['code'],
-				'status_id'        => $root_status_id,
-				'start_date'       => $date_time,
-				'start_date_full'  => $date_time_full,
-				'_timestamp'       => $timestamp,
-				'end_date'         => $date_time,
-				'end_date_full'    => $date_time_full,
-				'title_html'       => htmlentities( $log_entry['meta']['sentence_human_readable_html'], ENT_QUOTES ),
-				'can_rerun'        => false,
-				'can_run_now'      => false,
-				'can_cancel'       => false,
-				'fields'           => array(
-					array(
-						'field_code' => 'REDIRECTURL',
-						'type'       => 'url',
-						'label'      => esc_html__( 'Redirect URL', 'uncanny-automator' ),
-						'value'      => array(
-							'readable' => null,
-							'raw'      => $field_values['raw'],
-							'parsed'   => $field_values['parsed'],
-						),
-					),
-				),
-				'runs'             => array(
-					array(
-						'date'           => $date_time,
-						'_timestamp'     => $this->utils->strtotime( $closure_log['date_time'] ),
-						'status_id'      => $status_id,
-						'result_message' => '',
-						'used_credit'    => false,
-						'properties'     => array(),
-					),
-				),
-			);
-		}
-		return $results_formatted;
 	}
 
 	/**
@@ -1027,9 +919,6 @@ class Action_Logs_Resources {
 			$this->append_legacy_results( $results_formatted, $recipe_log_actions, $params, $actions_flattened );
 		}
 
-		// Append closures if there are any.
-		$this->append_closures_results( $results_formatted, $params );
-
 		// Fetch the loops. Loops are appended at the tail of the actions_items array.
 		$loops = $this->loop_log_resources->get_log( $params );
 		if ( ! empty( $loops ) ) {
@@ -1077,10 +966,24 @@ class Action_Logs_Resources {
 			if ( is_array( $action_meta_record ) && ! empty( $action_meta_record ) ) {
 				// Flag as deleted.
 				$action_meta_record['is_deleted'] = true;
-				$action_meta                      = $action_meta_record;
+				$action_meta                      = wp_parse_args( $action_meta_record, $this->action_meta_defaults() );
 			}
 		}
 
 		return $action_meta;
+	}
+
+	/**
+	 * The action meta every item reads, for an action that lacks some of it.
+	 *
+	 * @return array<string,string>
+	 */
+	private function action_meta_defaults() {
+		return array(
+			'integration'                  => 'INTEGRATION_CODE_NOT_FOUND',
+			'code'                         => 'ACTION_CODE_NOT_FOUND',
+			'sentence_human_readable'      => '',
+			'sentence_human_readable_html' => 'SENTENCE_NOT_FOUND',
+		);
 	}
 }

@@ -204,6 +204,39 @@ abstract class App_Integration extends Integration {
 	}
 
 	/**
+	 * Whether this integration's api_endpoint targets the `/v3/*` surface.
+	 *
+	 * Plugin-platform coexistence: integrations with an `api_endpoint` like
+	 * `v3/slack` route through Connection_Registry (v3 connections), while
+	 * `v2/slack` integrations keep reading credentials from `uap_options`
+	 * unchanged. The flip is per-integration, driven by the plugin release
+	 * that promotes that integration — not a global toggle.
+	 *
+	 * Default implementation inspects the endpoint string. Integrations can
+	 * override if they need a richer check (e.g. staged rollout behind a
+	 * feature flag).
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool True when api_endpoint starts with `v3/`.
+	 */
+	public function supports_v3() {
+		return 0 === strpos( (string) $this->get_api_endpoint(), 'v3/' );
+	}
+
+	/**
+	 * An app integration on `/v3` keeps its connections on the Automator App
+	 * Platform.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool
+	 */
+	public function uses_app_platform() {
+		return $this->supports_v3();
+	}
+
+	/**
 	 * Set the settings ID
 	 *
 	 * @param string $id

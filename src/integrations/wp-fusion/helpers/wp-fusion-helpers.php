@@ -81,6 +81,7 @@ class Wp_Fusion_Helpers {
 			'options'     => $options,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_wp_fusion_tags', $option );
 	}
 

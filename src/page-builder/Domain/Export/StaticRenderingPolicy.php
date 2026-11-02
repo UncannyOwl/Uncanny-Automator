@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Domain\Export;
 
+use UncannyPageBuilder\Domain\ArrayShape;
 use UncannyPageBuilder\Domain\Binding\BindingRegistry;
 use UncannyPageBuilder\Domain\Binding\BindingStaticSafety;
 
@@ -304,7 +305,7 @@ final class StaticRenderingPolicy
         }
         unset($child);
 
-        if (!array_is_list($value)) {
+        if (!ArrayShape::isList($value)) {
             ksort($value);
         }
     }

@@ -23,17 +23,9 @@
  */
 
 defined('ABSPATH') || exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
 
 $sectionOrderEnabled = $sectionOrderEnabled ?? false;
-
-$upbInlineJson = static function (mixed $value): string {
-    $json = wp_json_encode($value);
-    if (!is_string($json)) {
-        return 'null';
-    }
-
-    return str_replace('</script', '<\/script', $json);
-};
 
 ?>
 <p class="description">
@@ -138,18 +130,18 @@ $upbInlineJson = static function (mixed $value): string {
 </div>
 
 <script>
-var upbSectionCodeData=<?php echo $upbInlineJson($sectionCodeData); ?>;
+var upbSectionCodeData=<?php echo wp_json_encode($sectionCodeData, JSON_HEX_TAG) ?: 'null'; ?>;
 var upbPreviewMeta={
-    bootstrapUrl:<?php echo $upbInlineJson($bootstrapUrl); ?>,
-    lucideUrl:<?php echo $upbInlineJson(esc_url(UNCANNY_PB_URL . 'assets/js/lucide.min.js')); ?>,
-    alpineUrl:<?php echo $upbInlineJson(esc_url(UNCANNY_PB_URL . 'assets/js/alpine.min.js')); ?>,
-    tokenCss:<?php echo $upbInlineJson($tokenCss); ?>,
-    pluginUrl:<?php echo $upbInlineJson(esc_url(UNCANNY_PB_URL)); ?>
+    bootstrapUrl:<?php echo wp_json_encode($bootstrapUrl, JSON_HEX_TAG) ?: 'null'; ?>,
+    lucideUrl:<?php echo wp_json_encode(esc_url(UNCANNY_PB_URL . 'assets/js/lucide.min.js'), JSON_HEX_TAG) ?: 'null'; ?>,
+    alpineUrl:<?php echo wp_json_encode(esc_url(UNCANNY_PB_URL . 'assets/js/alpine.min.js'), JSON_HEX_TAG) ?: 'null'; ?>,
+    tokenCss:<?php echo wp_json_encode($tokenCss, JSON_HEX_TAG) ?: 'null'; ?>,
+    pluginUrl:<?php echo wp_json_encode(esc_url(UNCANNY_PB_URL), JSON_HEX_TAG) ?: 'null'; ?>
 };
-var upbPageRuntimeData=<?php echo $upbInlineJson($pageRuntimeData); ?>;
+var upbPageRuntimeData=<?php echo wp_json_encode($pageRuntimeData, JSON_HEX_TAG) ?: 'null'; ?>;
 var upbPageRuntimeMeta={
-    commitUrl:<?php echo $upbInlineJson(esc_url_raw(rest_url('uncanny-page-builder/v1/editor/controls/page.manual_changes.commit/invoke'))); ?>,
-    restNonce:<?php echo $upbInlineJson(wp_create_nonce('wp_rest')); ?>
+    commitUrl:<?php echo wp_json_encode(esc_url_raw(rest_url('uncanny-page-builder/v1/editor/controls/page.manual_changes.commit/invoke')), JSON_HEX_TAG) ?: 'null'; ?>,
+    restNonce:<?php echo wp_json_encode(wp_create_nonce('wp_rest'), JSON_HEX_TAG) ?: 'null'; ?>
 };
 </script>
 

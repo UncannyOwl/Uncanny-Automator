@@ -118,14 +118,14 @@ final class ControlStateService
         if (is_callable($resolver)) {
             $state = $resolver($context, $definition);
             if (!$state instanceof ControlState) {
-                throw new \RuntimeException(sprintf('State resolver for "%s" must return ControlState.', $definition->id()));
+                throw new \RuntimeException(sprintf('State resolver for "%s" must return ControlState.', esc_html($definition->id())));
             }
 
             return $state;
         }
 
         if (!is_string($resolver)) {
-            throw new \RuntimeException(sprintf('State resolver for "%s" is invalid.', $definition->id()));
+            throw new \RuntimeException(sprintf('State resolver for "%s" is invalid.', esc_html($definition->id())));
         }
 
         $instance = $this->container->has($resolver)
@@ -133,7 +133,7 @@ final class ControlStateService
             : new $resolver();
 
         if (!$instance instanceof ControlStateResolverInterface) {
-            throw new \RuntimeException(sprintf('State resolver for "%s" must implement ControlStateResolverInterface.', $definition->id()));
+            throw new \RuntimeException(sprintf('State resolver for "%s" must implement ControlStateResolverInterface.', esc_html($definition->id())));
         }
 
         return $instance->resolve($context, $definition);

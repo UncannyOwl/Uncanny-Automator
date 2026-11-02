@@ -182,6 +182,7 @@ final class HtmlCssProcessor
                 }
 
                 if (is_array($allowedQueryAttributes) && !in_array($attrName, $allowedQueryAttributes, true)) {
+                    // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
                     throw new \InvalidArgumentException(sprintf('Binding query attribute "%s" is not declared for this binding.', $attrName));
                 }
 

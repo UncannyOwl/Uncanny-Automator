@@ -114,6 +114,7 @@ class Wp_Shared_Tokens {
 		}
 
 		$content_beautified = get_the_content( null, false, $post->ID );
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, applied as WordPress applies it.
 		$content_beautified = apply_filters( 'the_content', $content_beautified );
 		$content_beautified = str_replace( ']]>', ']]&gt;', $content_beautified );
 

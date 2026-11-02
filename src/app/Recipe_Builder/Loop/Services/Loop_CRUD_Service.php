@@ -14,17 +14,21 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Recipe_Builder\Loop\Services;
 
-use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Loop\Loop_Store;
-use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Loop\Filter_Store;
-use Uncanny_Automator\App\Infrastructure\Database\Stores\Loop\WP_Loop_Store;
-use Uncanny_Automator\App\Infrastructure\Database\Stores\Loop\WP_Filter_Store;
+use Uncanny_Automator\App\Events\Recipe_Change_Events;
+use Uncanny_Automator\App\Events\Dtos\Recipe_Changed;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Block_Modifier_Types;
+use Uncanny_Automator\App\Infrastructure\Database\Database;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Store;
+use Uncanny_Automator\App\Recipe_Builder\Block\Services\Block_Crud_Service;
+use Uncanny_Automator\App\Recipe_Builder\Loop\Value_Objects\Loop_Field_Translator;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Recipe_Store;
-use Uncanny_Automator\App\Recipe_Builder\Loop\Loop;
-use Uncanny_Automator\App\Recipe_Builder\Loop\Loop_Config;
 use Uncanny_Automator\App\Recipe_Builder\Loop\Enums\Loop_Status;
 use Uncanny_Automator\App\Recipe_Builder\Loop\Iterable_Expression\Enums\Iteration_Type;
 use Uncanny_Automator\App\Presentation\Recipe_Builder\Loop\Filters\Loop_Filter_Sentence_Composer;
+use Uncanny_Automator\App\Events\Enums\Recipe_Change_Operation;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Wire_Node_Type;
+use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Type;
+use Uncanny_Automator\App\Recipe_Builder\Loop\Services\Loop_Filter_Reconciliation_Service;
 use Uncanny_Automator\App\Recipe_Builder\Loop\Services\Filter\Filter_CRUD_Service;
 use WP_Error;
 
@@ -45,20 +49,6 @@ class Loop_CRUD_Service {
 	private static ?Loop_CRUD_Service $instance = null;
 
 	/**
-	 * Loop store instance.
-	 *
-	 * @var Loop_Store
-	 */
-	private Loop_Store $loop_store;
-
-	/**
-	 * Filter store instance.
-	 *
-	 * @var Filter_Store
-	 */
-	private Filter_Store $filter_store;
-
-	/**
 	 * Recipe store instance.
 	 *
 	 * @var Recipe_Store
@@ -73,25 +63,29 @@ class Loop_CRUD_Service {
 	private Loop_Filter_Sentence_Composer $filter_sentence_composer;
 
 	/**
+	 * Loop-filter reconciliation service (clears modifiers invalidated by a loop-type change).
+	 *
+	 * @var Loop_Filter_Reconciliation_Service
+	 */
+	private Loop_Filter_Reconciliation_Service $reconciliation;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Loop_Store|null                 $loop_store              Optional loop store instance.
-	 * @param Filter_Store|null               $filter_store            Optional filter store instance.
-	 * @param Recipe_Store|null            $recipe_store            Optional recipe store instance.
+	 * @param Recipe_Store|null                  $recipe_store             Optional recipe store instance.
 	 * @param Loop_Filter_Sentence_Composer|null $filter_sentence_composer Optional filter sentence composer instance.
+	 * @param Loop_Filter_Reconciliation_Service|null $reconciliation       Optional reconciliation service (lazy default).
 	 */
 	private function __construct(
-		?Loop_Store $loop_store = null,
-		?Filter_Store $filter_store = null,
 		?Recipe_Store $recipe_store = null,
-		?Loop_Filter_Sentence_Composer $filter_sentence_composer = null
+		?Loop_Filter_Sentence_Composer $filter_sentence_composer = null,
+		?Loop_Filter_Reconciliation_Service $reconciliation = null
 	) {
 		global $wpdb;
 
-		$this->filter_store             = $filter_store ?? new WP_Filter_Store( $wpdb );
-		$this->loop_store               = $loop_store ?? new WP_Loop_Store( $wpdb, $this->filter_store );
 		$this->recipe_store             = $recipe_store ?? new WP_Recipe_Store( $wpdb );
 		$this->filter_sentence_composer = $filter_sentence_composer ?? new Loop_Filter_Sentence_Composer();
+		$this->reconciliation           = $reconciliation ?? new Loop_Filter_Reconciliation_Service();
 	}
 
 	/**
@@ -114,19 +108,17 @@ class Loop_CRUD_Service {
 	 * Primarily useful for testing where stores should be replaced with mocks.
 	 *
 	 * @since 7.0.0
-	 * @param Loop_Store|null                 $loop_store               Custom loop store.
-	 * @param Filter_Store|null               $filter_store             Custom filter store.
-	 * @param Recipe_Store|null            $recipe_store             Custom recipe store.
+	 * @param Recipe_Store|null                  $recipe_store             Custom recipe store.
 	 * @param Loop_Filter_Sentence_Composer|null $filter_sentence_composer Custom filter sentence composer.
+	 * @param Loop_Filter_Reconciliation_Service|null $reconciliation       Custom reconciliation service.
 	 * @return self
 	 */
 	public static function create_with_dependencies(
-		?Loop_Store $loop_store = null,
-		?Filter_Store $filter_store = null,
 		?Recipe_Store $recipe_store = null,
-		?Loop_Filter_Sentence_Composer $filter_sentence_composer = null
+		?Loop_Filter_Sentence_Composer $filter_sentence_composer = null,
+		?Loop_Filter_Reconciliation_Service $reconciliation = null
 	): self {
-		return new self( $loop_store, $filter_store, $recipe_store, $filter_sentence_composer );
+		return new self( $recipe_store, $filter_sentence_composer, $reconciliation );
 	}
 
 	/**
@@ -161,6 +153,44 @@ class Loop_CRUD_Service {
 	}
 
 	/**
+	 * Add an empty loop block to a parent.
+	 *
+	 * Creates a bare uo-block(loop) row under the given parent (recipe or
+	 * block) through the block service. All configuration is set later via
+	 * update once the user configures the loop in the UI.
+	 * @param int $parent_id Parent post ID (recipe or block).
+	 * @return array|\WP_Error Success data with loop_id or error.
+	 */
+	public function add_empty_to_parent( int $parent_id ) {
+		// Loops are unified blocks — resolve the owning recipe from the
+		// parent (a recipe, or a block carrying its recipe_id stamp) and
+		// create through the block service like every other block type.
+		if ( WP_Recipe_Store::POST_TYPE === get_post_type( $parent_id ) ) {
+			$recipe_id = $parent_id;
+		} else {
+			$parent_block = Database::get_block_store()->get( $parent_id );
+			$recipe_id    = null !== $parent_block ? (int) ( $parent_block['recipe_id'] ?? 0 ) : 0;
+		}
+
+		if ( $recipe_id <= 0 ) {
+			return new WP_Error(
+				'invalid_parent',
+				esc_html_x( 'Loops may only be added to a recipe or one of its blocks.', 'Loop CRUD error', 'uncanny-automator' )
+			);
+		}
+
+		$created = Block_Crud_Service::instance()->add_block( $recipe_id, 'loop', $parent_id );
+		if ( is_wp_error( $created ) ) {
+			return $created;
+		}
+
+		return array(
+			'success' => true,
+			'loop_id' => (int) $created['id'],
+		);
+	}
+
+	/**
 	 * Add loop to recipe.
 	 *
 	 * @since 7.0.0
@@ -178,89 +208,246 @@ class Loop_CRUD_Service {
 		array $filters = array(),
 		$run_on = null
 	) {
-		// Validate recipe exists.
-		if ( ! $this->validate_recipe_exists( $recipe_id ) ) {
-			return new WP_Error(
-				'recipe_not_found',
-				sprintf(
-					/* translators: %d Recipe ID. */
-					esc_html_x( 'Add loop failed: Recipe not found with ID: %d', 'Loop CRUD error', 'uncanny-automator' ),
-					$recipe_id
-				)
-			);
-		}
+		return Recipe_Change_Events::operation(
+			function () use ( $recipe_id, $iterable_expression, $status, $filters, $run_on ) {
+				// Validate iteration type if provided.
+				$type = $iterable_expression['type'] ?? Iteration_Type::USERS;
+				if ( ! $this->is_valid_iteration_type( $type ) ) {
+					return new WP_Error(
+						'invalid_iteration_type',
+						sprintf(
+							/* translators: %s Iteration type. */
+							esc_html_x( "Invalid iteration type: '%s'. Must be one of: users, posts, token", 'Loop CRUD error', 'uncanny-automator' ),
+							$type
+						)
+					);
+				}
 
-		// Validate iteration type if provided.
-		$type = $iterable_expression['type'] ?? Iteration_Type::USERS;
-		if ( ! $this->is_valid_iteration_type( $type ) ) {
-			return new WP_Error(
-				'invalid_iteration_type',
-				sprintf(
-					/* translators: %s Iteration type. */
-					esc_html_x( "Invalid iteration type: '%s'. Must be one of: users, posts, token", 'Loop CRUD error', 'uncanny-automator' ),
-					$type
-				)
-			);
-		}
+				// Loops are unified blocks: create the uo-block(loop) row, then
+				// configure it through the same dual-aware update path the REST and
+				// MCP transports share. The create, the configuration and the filters
+				// are one operation, so only the finished loop fires an event.
+				$created = Block_Crud_Service::instance()->add_block( $recipe_id, Block_Type::LOOP, $recipe_id );
+				if ( is_wp_error( $created ) ) {
+					return $created;
+				}
 
-		// Build loop config.
-		$config = ( new Loop_Config() )
-			->recipe_id( $recipe_id )
-			->status( $status )
-			->iterable_expression( $iterable_expression )
-			->filters( $filters );
+				$loop_id               = (int) $created['id'];
+				$default_filter_result = Recipe_Change_Events::operation(
+					fn() => $this->configure_new_loop( $loop_id, $iterable_expression, $status, $run_on, $filters, $type )
+				);
 
-		if ( null !== $run_on ) {
-			$config->run_on( $run_on );
-		}
+				// A loop and its filters land together or not at all: a loop whose filter was refused is taken back.
+				if ( is_wp_error( $default_filter_result ) ) {
+					return $this->discard_new_loop( $loop_id, $recipe_id, $default_filter_result );
+				}
 
-		try {
-			$loop = new Loop( $config );
+				Recipe_Change_Events::changed( new Recipe_Changed( Recipe_Change_Operation::CREATED, Wire_Node_Type::BLOCK, $loop_id, $recipe_id ) );
 
-			// Save loop (includes filters).
-			$saved_loop = $this->loop_store->save( $loop );
-			$loop_id    = $saved_loop->get_loop_id()->get_value();
-
-			// Add default filter if no filters were provided.
-			$default_filter_result = null;
-			if ( empty( $filters ) ) {
-				$default_filter_result = $this->assign_default_filter( $loop_id, $type );
+				return array(
+					'success'        => true,
+					'message'        => esc_html_x( 'Loop successfully added to recipe.', 'Loop CRUD success message', 'uncanny-automator' ),
+					'loop_id'        => $loop_id,
+					'loop'           => Database::get_block_store()->get( $loop_id ),
+					'default_filter' => $default_filter_result,
+				);
 			}
+		);
+	}
 
-			// Re-fetch loop to include the default filter.
-			$final_loop = $this->loop_store->get( $loop_id );
+	/**
+	 * Configure a loop block just created: its iteration, then its filters.
+	 *
+	 * Initial filters (MCP authoring) ride the dual-aware filter service; when none are supplied, the iteration
+	 * type's default filter is seeded.
+	 *
+	 * @param int             $loop_id             Loop block post id.
+	 * @param array           $iterable_expression Iteration settings.
+	 * @param string          $status              Loop status.
+	 * @param mixed           $run_on              Run-on setting, or null.
+	 * @param array           $filters             Initial filters; empty seeds the default.
+	 * @param string          $type                Iteration type.
+	 *
+	 * @return array|null|WP_Error The default filter's result (null when none was seeded), or the first error.
+	 */
+	private function configure_new_loop( int $loop_id, array $iterable_expression, string $status, $run_on, array $filters, string $type ) {
+		$configured = $this->update_existing_loop( $loop_id, $iterable_expression, $status, $run_on );
+		if ( is_wp_error( $configured ) ) {
+			return $configured;
+		}
 
-			return array(
-				'success'        => true,
-				'message'        => esc_html_x( 'Loop successfully added to recipe.', 'Loop CRUD success message', 'uncanny-automator' ),
-				'loop_id'        => $loop_id,
-				'loop'           => $final_loop ? $final_loop->to_array() : $saved_loop->to_array(),
-				'default_filter' => $default_filter_result,
-			);
+		if ( empty( $filters ) ) {
+			return $this->assign_default_filter( $loop_id, $type );
+		}
 
+		$filter_error = $this->add_initial_filters( $loop_id, $filters );
+
+		return is_wp_error( $filter_error ) ? $filter_error : null;
+	}
+
+	/**
+	 * Take back a loop block whose configuration or filters were refused, with the filters it already has.
+	 *
+	 * Nothing is announced when the loop is gone: the recipe is as it was. When the
+	 * store cannot remove it, the loop landed, so it is announced and the refusal
+	 * says it stays.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int      $loop_id   Loop block post id.
+	 * @param int      $recipe_id Recipe post id.
+	 * @param WP_Error $refusal   Why the loop's configuration or filters were refused.
+	 *
+	 * @return WP_Error The refusal.
+	 */
+	private function discard_new_loop( int $loop_id, int $recipe_id, WP_Error $refusal ): WP_Error {
+		try {
+			Database::get_block_store()->delete( $loop_id );
 		} catch ( \Exception $e ) {
-			return new WP_Error(
-				'loop_save_failed',
+			Recipe_Change_Events::changed( new Recipe_Changed( Recipe_Change_Operation::CREATED, Wire_Node_Type::BLOCK, $loop_id, $recipe_id ) );
+
+			$refusal->add(
+				'loop_discard_failed',
 				sprintf(
-					/* translators: %s Error message. */
-					esc_html_x( 'Failed to save loop: %s', 'Loop CRUD error', 'uncanny-automator' ),
+					/* translators: 1: Loop ID, 2: Error message. */
+					esc_html_x( 'Loop %1$d could not be removed after it was refused, so it stays in the recipe: %2$s', 'Loop CRUD error', 'uncanny-automator' ),
+					$loop_id,
 					$e->getMessage()
 				)
 			);
 		}
+
+		return $refusal;
+	}
+
+	/**
+	 * Resolve a unified `uo-block(loop)` row, or null when the id is a
+	 * not a loop block (or unknown).
+	 *
+	 * @param int $loop_id Candidate loop block post id.
+	 * @return array|null Block row or null.
+	 */
+	private function resolve_unified_loop_row( int $loop_id ): ?array {
+		$block = Database::get_block_store()->get( $loop_id );
+
+		if ( null === $block || 'loop' !== (string) ( $block['block_type'] ?? '' ) ) {
+			return null;
+		}
+
+		return $block;
+	}
+
+	/**
+	 * Update a unified loop row: merge the iteration config into the stored
+	 * `iterable_expression` (legacy parity) and keep the stored structured
+	 * fields coherent with it — callers that send the FE's structured shape
+	 * get it stored verbatim (the wire round-trips it); expression-only
+	 * callers (MCP) get fields re-derived from the merged expression so the
+	 * pair never drifts. Reconciles filters whose ancestor rules no longer
+	 * hold under the new loop type.
+	 *
+	 * @param array       $unified             Unified loop block row.
+	 * @param array       $iterable_expression Iteration config to merge (may be empty).
+	 * @param string|null $status              Requested post status, when provided.
+	 * @param array       $structured_fields   FE wire fields, when the caller has them.
+	 * @param mixed       $run_on              Run-on condition, when provided.
+	 *
+	 * @return array|WP_Error Legacy-shaped success payload or error.
+	 */
+	private function update_unified_loop( array $unified, array $iterable_expression, ?string $status, array $structured_fields, $run_on = null ) {
+		$loop_id = (int) $unified['id'];
+
+		$merged = ! empty( $iterable_expression )
+			? array_merge( (array) ( $unified['iterable_expression'] ?? array() ), $iterable_expression )
+			: (array) ( $unified['iterable_expression'] ?? array() );
+
+		$data = array( 'iterable_expression' => $merged );
+
+		if ( ! empty( $structured_fields ) ) {
+			$data['fields'] = array_replace( (array) ( $unified['fields'] ?? array() ), $structured_fields );
+		} elseif ( ! empty( $iterable_expression ) ) {
+			$data['fields'] = Loop_Field_Translator::to_fields( $merged );
+		}
+
+		if ( null !== $status ) {
+			$data['status'] = $status;
+		}
+
+		if ( null !== $run_on ) {
+			$data['run_on'] = $run_on;
+		}
+
+		try {
+			Database::get_block_store()->update( $loop_id, $data );
+		} catch ( \Exception $e ) {
+			return new WP_Error(
+				'loop_update_failed',
+				sprintf(
+					/* translators: %s Error message. */
+					esc_html_x( 'Failed to update loop: %s', 'Loop CRUD error', 'uncanny-automator' ),
+					$e->getMessage()
+				)
+			);
+		}
+
+		if ( ! empty( $iterable_expression ) ) {
+			$this->reconciliation->reconcile( $loop_id, $merged );
+		}
+
+		$recipe_id = (int) ( $unified['recipe_id'] ?? 0 );
+		if ( $recipe_id > 0 ) {
+			Recipe_Change_Events::changed( new Recipe_Changed( Recipe_Change_Operation::UPDATED, Wire_Node_Type::BLOCK, $loop_id, $recipe_id ) );
+		}
+
+		return array(
+			'success' => true,
+			'message' => esc_html_x( 'Loop successfully updated.', 'Loop CRUD success message', 'uncanny-automator' ),
+			'loop'    => Database::get_block_store()->get( $loop_id ),
+		);
+	}
+
+	/**
+	 * Add caller-supplied initial filters to a freshly created loop through
+	 * the dual-aware filter service (registry validation + iteration-type
+	 * checks included).
+	 *
+	 * @param int   $loop_id Loop block post id.
+	 * @param array $filters Filter rows: each carries code + integration (+ fields/backup).
+	 *
+	 * @return WP_Error|null Error from the first failing filter, null on success.
+	 */
+	private function add_initial_filters( int $loop_id, array $filters ) {
+		$filter_service = Filter_CRUD_Service::instance();
+
+		foreach ( $filters as $filter ) {
+			if ( ! is_array( $filter ) ) {
+				continue;
+			}
+
+			$result = $filter_service->add_to_loop(
+				$loop_id,
+				(string) ( $filter['code'] ?? $filter['meta'] ?? '' ),
+				(string) ( $filter['integration_code'] ?? $filter['integration'] ?? '' ),
+				is_array( $filter['fields'] ?? null ) ? $filter['fields'] : array(),
+				is_array( $filter['backup'] ?? null ) ? $filter['backup'] : array()
+			);
+
+			if ( is_wp_error( $result ) ) {
+				return $result;
+			}
+		}
+
+		return null;
 	}
 
 	/**
 	 * Get a specific loop by ID.
-	 *
-	 * @since 7.0.0
 	 * @param int|string $loop_id Loop ID.
 	 * @return array|\WP_Error Loop data or error.
 	 */
 	public function get_loop( $loop_id ) {
-		$loop = $this->loop_store->get( $this->coerce_loop_id( $loop_id ) );
-
-		if ( ! $loop ) {
+		$unified = $this->resolve_unified_loop_row( $this->coerce_loop_id( $loop_id ) );
+		if ( null === $unified ) {
 			return new WP_Error(
 				'loop_not_found',
 				sprintf(
@@ -273,74 +460,56 @@ class Loop_CRUD_Service {
 
 		return array(
 			'success' => true,
-			'loop'    => $loop->to_array(),
+			'loop'    => $unified,
 		);
 	}
 
 	/**
-	 * Get all loops for a recipe.
-	 *
-	 * @since 7.0.0
-	 * @param int $recipe_id Recipe ID.
-	 * @return array|\WP_Error Recipe loops data or error.
-	 */
-	public function get_recipe_loops( int $recipe_id ) {
-		// Validate recipe exists.
-		$recipe = $this->recipe_store->get( $recipe_id );
-
-		if ( ! $recipe ) {
-			return new WP_Error(
-				'recipe_not_found',
-				sprintf(
-					/* translators: %d Recipe ID. */
-					esc_html_x( 'Get recipe loops failed: Recipe not found with ID: %d', 'Loop CRUD error', 'uncanny-automator' ),
-					$recipe_id
-				)
-			);
-		}
-
-		try {
-			$loops = $this->loop_store->get_recipe_loops( $recipe_id );
-
-			$formatted_loops = array();
-			foreach ( $loops as $loop ) {
-				$formatted_loops[] = $loop->to_array();
-			}
-
-			return array(
-				'success'    => true,
-				'message'    => esc_html_x( 'Loops retrieved successfully.', 'Loop CRUD success message', 'uncanny-automator' ),
-				'recipe_id'  => $recipe_id,
-				'loop_count' => count( $loops ),
-				'loops'      => $formatted_loops,
-			);
-
-		} catch ( \Exception $e ) {
-			return new WP_Error(
-				'recipe_loops_error',
-				sprintf(
-					/* translators: %s Error message. */
-					esc_html_x( 'Failed to retrieve recipe loops: %s', 'Loop CRUD error', 'uncanny-automator' ),
-					$e->getMessage()
-				)
-			);
-		}
-	}
-
-	/**
-	 * Update an existing loop.
+	 * Update an existing loop. A loop saved with a type and no filter gets
+	 * its type's default filter: a loop takes its items from its filters only.
 	 *
 	 * @since 7.0.0
 	 * @param int|string  $loop_id             Loop ID.
 	 * @param array       $iterable_expression Optional new iterable expression.
 	 * @param string|null $status              Optional new status.
 	 * @param mixed       $run_on              Optional new run_on condition.
+	 * @param array       $structured_fields   Optional FE wire fields, stored verbatim on unified rows.
 	 * @return array|\WP_Error Updated loop data or error.
 	 */
-	public function update_loop( $loop_id, array $iterable_expression = array(), ?string $status = null, $run_on = null ) {
-		$existing_loop = $this->loop_store->get( $this->coerce_loop_id( $loop_id ) );
+	public function update_loop( $loop_id, array $iterable_expression = array(), ?string $status = null, $run_on = null, array $structured_fields = array() ) {
+		return Recipe_Change_Events::operation(
+			function () use ( $loop_id, $iterable_expression, $status, $run_on, $structured_fields ) {
+				$updated = $this->update_existing_loop( $this->coerce_loop_id( $loop_id ), $iterable_expression, $status, $run_on, $structured_fields );
+				if ( is_wp_error( $updated ) ) {
+					return $updated;
+				}
 
-		if ( ! $existing_loop ) {
+				$loop_type = (string) ( $updated['loop']['iterable_expression']['type'] ?? '' );
+				$loop_id   = (int) ( $updated['loop']['id'] ?? 0 );
+				if ( '' !== $loop_type && empty( Database::get_block_modifier_store()->get_by_block( $loop_id, Block_Modifier_Types::LOOP_FILTER ) ) ) {
+					$this->assign_default_filter( $loop_id, $loop_type );
+				}
+
+				return $updated;
+			}
+		);
+	}
+
+	/**
+	 * Update a loop row that already exists, without seeding a filter: the
+	 * create path adds the caller's filters or the default itself.
+	 *
+	 * @since 8.0.0
+	 * @param int         $loop_id             Loop block post id.
+	 * @param array       $iterable_expression Iteration config to merge (may be empty).
+	 * @param string|null $status              Requested post status, when provided.
+	 * @param mixed       $run_on              Run-on condition, when provided.
+	 * @param array       $structured_fields   FE wire fields, when the caller has them.
+	 * @return array|WP_Error Updated loop data or error.
+	 */
+	private function update_existing_loop( int $loop_id, array $iterable_expression, ?string $status, $run_on, array $structured_fields = array() ) {
+		$unified = $this->resolve_unified_loop_row( $loop_id );
+		if ( null === $unified ) {
 			return new WP_Error(
 				'loop_not_found',
 				sprintf(
@@ -351,44 +520,7 @@ class Loop_CRUD_Service {
 			);
 		}
 
-		try {
-			$existing_data = $existing_loop->to_array();
-
-			// Merge iterable expression if provided.
-			$merged_expression = ! empty( $iterable_expression )
-				? array_merge( $existing_data['iterable_expression'], $iterable_expression )
-				: $existing_data['iterable_expression'];
-
-			// Build updated config.
-			$config = ( new Loop_Config() )
-				->id( $existing_data['id'] )
-				->recipe_id( $existing_data['recipe_id'] )
-				->status( $status ?? $existing_data['status'] )
-				->ui_order( $existing_data['_ui_order'] )
-				->iterable_expression( $merged_expression )
-				->run_on( $run_on ?? $existing_data['run_on'] )
-				->filters( $existing_data['filters'] )
-				->items( $existing_data['items'] );
-
-			$updated_loop = new Loop( $config );
-			$saved_loop   = $this->loop_store->save( $updated_loop );
-
-			return array(
-				'success' => true,
-				'message' => esc_html_x( 'Loop successfully updated.', 'Loop CRUD success message', 'uncanny-automator' ),
-				'loop'    => $saved_loop->to_array(),
-			);
-
-		} catch ( \Exception $e ) {
-			return new WP_Error(
-				'loop_update_failed',
-				sprintf(
-					/* translators: %s Error message. */
-					esc_html_x( 'Failed to update loop: %s', 'Loop CRUD error', 'uncanny-automator' ),
-					$e->getMessage()
-				)
-			);
-		}
+		return $this->update_unified_loop( $unified, $iterable_expression, $status, $structured_fields, $run_on );
 	}
 
 	/**
@@ -397,9 +529,10 @@ class Loop_CRUD_Service {
 	 * @since 7.0.0
 	 * @param int|string $loop_id   Loop ID.
 	 * @param bool       $confirmed Confirmation flag for safety.
+	 * @param bool       $delete_content Flag to delete loop content.
 	 * @return array|\WP_Error Success confirmation or error.
 	 */
-	public function delete_loop( $loop_id, bool $confirmed = false ) {
+	public function delete_loop( $loop_id, bool $confirmed = false, bool $delete_content = false ) {
 		if ( ! $confirmed ) {
 			return new WP_Error(
 				'confirmation_required',
@@ -407,9 +540,8 @@ class Loop_CRUD_Service {
 			);
 		}
 
-		$loop = $this->loop_store->get( $this->coerce_loop_id( $loop_id ) );
-
-		if ( ! $loop ) {
+		$unified = $this->resolve_unified_loop_row( $this->coerce_loop_id( $loop_id ) );
+		if ( null === $unified ) {
 			return new WP_Error(
 				'loop_not_found',
 				sprintf(
@@ -420,67 +552,17 @@ class Loop_CRUD_Service {
 			);
 		}
 
-		try {
-			$loop_data = $loop->to_array();
-			$recipe_id = (int) $loop_data['recipe_id'];
-			$loop_id   = (int) $loop_data['id'];
+		$unified_id = (int) $unified['id'];
 
-			// Reparent any actions inside this loop to the recipe to prevent orphans.
-			$this->reparent_loop_actions_to_recipe( $loop_id, $recipe_id );
-
-			$this->loop_store->delete( $loop );
-
-			return array(
-				'success'         => true,
-				'message'         => esc_html_x( 'Loop and its filters successfully deleted from recipe. Actions were moved to recipe.', 'Loop CRUD success message', 'uncanny-automator' ),
-				'deleted_loop_id' => $loop_data['id'],
-				'recipe_id'       => $loop_data['recipe_id'],
-			);
-
-		} catch ( \Exception $e ) {
-			return new WP_Error(
-				'delete_loop_failed',
-				sprintf(
-					/* translators: %s Error message. */
-					esc_html_x( 'Failed to delete loop: %s', 'Loop CRUD error', 'uncanny-automator' ),
-					$e->getMessage()
-				)
-			);
+		$deleted = Block_Crud_Service::instance()->delete_block( $unified_id, $delete_content );
+		if ( is_wp_error( $deleted ) ) {
+			return $deleted;
 		}
-	}
 
-	/**
-	 * Reparent actions from a loop to its parent recipe.
-	 *
-	 * When a loop is deleted, any actions inside it need to be moved
-	 * back to the recipe to prevent orphaned actions.
-	 *
-	 * @since 7.0.0
-	 * @param int $loop_id   The loop ID being deleted.
-	 * @param int $recipe_id The recipe ID to reparent actions to.
-	 * @return int Number of actions reparented.
-	 */
-	private function reparent_loop_actions_to_recipe( int $loop_id, int $recipe_id ): int {
-		global $wpdb;
-
-		// Update all actions with post_parent = loop_id to have post_parent = recipe_id.
-		$updated = $wpdb->update(
-			$wpdb->posts,
-			array( 'post_parent' => $recipe_id ),
-			array(
-				'post_parent' => $loop_id,
-				'post_type'   => AUTOMATOR_POST_TYPE_ACTION,
-			),
-			array( '%d' ),
-			array( '%d', '%s' )
+		return array(
+			'success'         => true,
+			'deleted_loop_id' => $unified_id,
 		);
-
-		// Clean post cache for affected actions.
-		if ( $updated > 0 ) {
-			clean_post_cache( $recipe_id );
-		}
-
-		return (int) $updated;
 	}
 
 	/**
@@ -506,35 +588,18 @@ class Loop_CRUD_Service {
 	}
 
 	/**
-	 * Get the loop store.
-	 *
-	 * @return Loop_Store Loop store instance.
-	 */
-	public function get_loop_store(): Loop_Store {
-		return $this->loop_store;
-	}
-
-	/**
-	 * Get the filter store.
-	 *
-	 * @return Filter_Store Filter store instance.
-	 */
-	public function get_filter_store(): Filter_Store {
-		return $this->filter_store;
-	}
-
-	/**
 	 * Assign a default filter to a loop based on iteration type.
 	 *
 	 * Only adds default filter if the filter code is registered (requires Pro).
-	 * Gracefully returns null if filter is not available.
+	 * Returns null when the filter is not registered; a registered default
+	 * filter that is refused returns the refusal, so the loop is taken back.
 	 *
 	 * @since 7.0.0
 	 * @param int    $loop_id Loop ID.
 	 * @param string $type    Iteration type (users, posts, token).
-	 * @return array|null Filter result or null if not available.
+	 * @return array|null|WP_Error Filter result, null if not registered, or the refusal.
 	 */
-	protected function assign_default_filter( int $loop_id, string $type ): ?array {
+	protected function assign_default_filter( int $loop_id, string $type ) {
 		$default = $this->get_default_filter_config( $type );
 
 		if ( null === $default ) {
@@ -551,8 +616,8 @@ class Loop_CRUD_Service {
 			$default['backup']
 		);
 
-		// If filter code is not registered (e.g., Pro not active), return null gracefully.
-		if ( is_wp_error( $result ) ) {
+		// The default filter is Pro's: without it registered, the loop has no default filter.
+		if ( is_wp_error( $result ) && 'filter_not_found' === $result->get_error_code() ) {
 			return null;
 		}
 

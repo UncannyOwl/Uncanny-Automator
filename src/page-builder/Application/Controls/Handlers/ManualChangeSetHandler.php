@@ -164,7 +164,7 @@ final class ManualChangeSetHandler implements ControlHandlerInterface
         if ($hasCustomJavaScript && strlen($customJavaScript) > PageJavaScriptRuntimeService::MAX_SOURCE_BYTES) {
             throw new \InvalidArgumentException(sprintf(
                 'Custom JavaScript source exceeds the %d byte limit.',
-                PageJavaScriptRuntimeService::MAX_SOURCE_BYTES,
+                (int) PageJavaScriptRuntimeService::MAX_SOURCE_BYTES,
             ));
         }
         if (
@@ -335,7 +335,7 @@ final class ManualChangeSetHandler implements ControlHandlerInterface
                 $designData = is_array($designResult['data'] ?? null) ? $designResult['data'] : [];
                 if (($designData['status'] ?? null) === 'error') {
                     throw new \RuntimeException(
-                        (string) ($designData['message'] ?? 'The Manual design changes could not be saved.'),
+                        esc_html((string) ($designData['message'] ?? 'The Manual design changes could not be saved.')),
                     );
                 }
             }

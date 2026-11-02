@@ -16,6 +16,10 @@ use WP_User;
  */
 final class Authenticated_Token_Context {
 
+	public const PURPOSE_FIRST_PARTY_AGENT = 'first_party_agent';
+
+	public const PURPOSE_OAUTH_MCP = 'oauth_mcp';
+
 	/**
 	 * Read-only MCP and Writer operations.
 	 *
@@ -36,6 +40,15 @@ final class Authenticated_Token_Context {
 	 * @var string
 	 */
 	const SCOPE_TOOLS = 'mcp:tools';
+
+	/** First-party Agent read access outside MCP. */
+	const SCOPE_AGENT_READ = 'agent:read';
+
+	/** First-party Agent mutation access outside MCP. */
+	const SCOPE_AGENT_WRITE = 'agent:write';
+
+	/** Permission to receive an OAuth refresh token. */
+	const SCOPE_OFFLINE_ACCESS = 'offline_access';
 
 	/**
 	 * Uncanny Agent site-key binding proof.
@@ -65,15 +78,33 @@ final class Authenticated_Token_Context {
 	 */
 	private array $scopes;
 
+	private string $purpose;
+
+	private string $resource;
+
+	private string $client_id;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param WP_User $user Authenticated WordPress user.
 	 * @param array   $scopes Granted token scopes.
+	 * @param string  $purpose Credential purpose.
+	 * @param string  $resource_identifier Protected resource identifier.
+	 * @param string  $client_id OAuth or first-party client identifier.
 	 */
-	public function __construct( WP_User $user, array $scopes ) {
-		$this->user   = $user;
-		$this->scopes = $this->normalize_scopes( $scopes );
+	public function __construct(
+		WP_User $user,
+		array $scopes,
+		string $purpose = self::PURPOSE_FIRST_PARTY_AGENT,
+		string $resource_identifier = '',
+		string $client_id = ''
+	) {
+		$this->user      = $user;
+		$this->scopes    = $this->normalize_scopes( $scopes );
+		$this->purpose   = $purpose;
+		$this->resource  = $resource_identifier;
+		$this->client_id = $client_id;
 	}
 
 	/**
@@ -93,19 +124,59 @@ final class Authenticated_Token_Context {
 	public function get_scopes(): array {
 		return $this->scopes;
 	}
+	/**
+	 * Get resource.
+	 *
+	 * @return string
+	 */
+	public function get_resource(): string {
+		return $this->resource;
+	}
+	/**
+	 * Get client id.
+	 *
+	 * @return string
+	 */
+	public function get_client_id(): string {
+		return $this->client_id;
+	}
+	/**
+	 * Is first party agent.
+	 *
+	 * @return bool
+	 */
+	public function is_first_party_agent(): bool {
+		return self::PURPOSE_FIRST_PARTY_AGENT === $this->purpose;
+	}
+	/**
+	 * Is oauth mcp.
+	 *
+	 * @return bool
+	 */
+	public function is_oauth_mcp(): bool {
+		return self::PURPOSE_OAUTH_MCP === $this->purpose;
+	}
 
 	/**
 	 * Determine whether the token grants a required scope.
 	 *
-	 * Legacy "mcp" credentials predate granular enforcement and retain their
-	 * former full MCP/Writer behavior until they expire or are rotated.
+	 * Legacy scope names exist only as migration inputs. Token_Manager replaces
+	 * them before creating this runtime context, so authorization decisions are
+	 * always made against the explicit read/write grants.
 	 *
 	 * @param string $required_scope Required scope.
 	 * @return bool Whether access is granted.
 	 */
 	public function has_scope( string $required_scope ): bool {
-		return in_array( self::SCOPE_LEGACY, $this->scopes, true )
-			|| in_array( $required_scope, $this->scopes, true );
+		if ( self::SCOPE_READ === $required_scope && in_array( self::SCOPE_WRITE, $this->scopes, true ) ) {
+			return true;
+		}
+
+		if ( self::SCOPE_AGENT_READ === $required_scope && in_array( self::SCOPE_AGENT_WRITE, $this->scopes, true ) ) {
+			return true;
+		}
+
+		return in_array( $required_scope, $this->scopes, true );
 	}
 
 	/**

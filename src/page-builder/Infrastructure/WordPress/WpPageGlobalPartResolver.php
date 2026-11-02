@@ -10,6 +10,7 @@ use UncannyPageBuilder\Domain\GlobalPart\GlobalPartType;
 use UncannyPageBuilder\Domain\GlobalPart\PageGlobalPartSelectionRepositoryInterface;
 use UncannyPageBuilder\Infrastructure\Persistence\WpPageGlobalPartSelectionRepository;
 use UncannyPageBuilder\Domain\GlobalPart\PageGlobalPartResolverInterface;
+use UncannyPageBuilder\Domain\GlobalPart\ReadOnlyPageGlobalPartResolverInterface;
 
 /**
  * Single source of truth for which global part a page's shell slot renders.
@@ -17,7 +18,7 @@ use UncannyPageBuilder\Domain\GlobalPart\PageGlobalPartResolverInterface;
  * CanvasRenderer, ShellModeService, and the static export all resolve
  * through this class so display, context flags, and export cannot drift.
  */
-final class WpPageGlobalPartResolver implements PageGlobalPartResolverInterface
+final class WpPageGlobalPartResolver implements PageGlobalPartResolverInterface, ReadOnlyPageGlobalPartResolverInterface
 {
     public function __construct(
         private readonly GlobalPartRepositoryInterface $globalParts,
@@ -26,6 +27,16 @@ final class WpPageGlobalPartResolver implements PageGlobalPartResolverInterface
     ) {}
 
     public function resolveForPage(int $pageId, GlobalPartType $type): ?array
+    {
+        return $this->resolve($pageId, $type, true);
+    }
+
+    public function resolveForPageReadOnly(int $pageId, GlobalPartType $type): ?array
+    {
+        return $this->resolve($pageId, $type, false);
+    }
+
+    private function resolve(int $pageId, GlobalPartType $type, bool $repairInvalidDefault): ?array
     {
         // Per-page override: -1 means "none", >0 means specific part.
         $selection = ($this->pageSelections ?? new WpPageGlobalPartSelectionRepository())->loadForPage($pageId);
@@ -46,6 +57,8 @@ final class WpPageGlobalPartResolver implements PageGlobalPartResolverInterface
             }
         }
 
-        return $this->defaults->resolveForType($type);
+        return $repairInvalidDefault
+            ? $this->defaults->resolveForType($type)
+            : $this->defaults->resolveForTypeReadOnly($type);
     }
 }

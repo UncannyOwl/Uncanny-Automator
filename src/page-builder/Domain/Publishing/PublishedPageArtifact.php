@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Domain\Publishing;
 
+use UncannyPageBuilder\Domain\ArrayShape;
 use UncannyPageBuilder\Domain\Shell\ShellMode;
 
 /**
@@ -378,6 +379,7 @@ final class PublishedPageArtifact
     private function assertStoredHash(string $name, string $storedHash, string $calculatedHash): void
     {
         if (preg_match('/^[a-f0-9]{64}$/i', $storedHash) !== 1 || !hash_equals(strtolower($storedHash), $calculatedHash)) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
             throw new \UnexpectedValueException("Published artifact {$name} hash does not match its stored data.");
         }
     }
@@ -401,14 +403,14 @@ final class PublishedPageArtifact
         }
         unset($child);
 
-        if (!array_is_list($value)) {
+        if (!ArrayShape::isList($value)) {
             ksort($value);
         }
     }
 
     private function isAssociativeArray(array $value): bool
     {
-        return $value === [] || !array_is_list($value);
+        return $value === [] || !ArrayShape::isList($value);
     }
 
     private function isListOfArrays(array $records): bool

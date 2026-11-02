@@ -1,290 +1,338 @@
 <?php
 declare(strict_types=1);
+
 namespace Uncanny_Automator\App\Transports\Restful\Recipe;
 
-use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
-use Uncanny_Automator\App\Transports\Restful\Utilities\Traits\Restful_Permissions;
-use Uncanny_Automator\App\Transports\Restful\Utilities\Traits\Rest_Responses;
-use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Type;
-use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Recipe_Store;
-use WP_REST_Server;
-use WP_REST_Request;
-use WP_REST_Response;
-use WP_Error;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Block_Modifier_Types;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
+use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Type;
+use Uncanny_Automator\App\Transports\Restful\Recipe\Routes\Block_Modifiers_Routes;
+use Uncanny_Automator\App\Transports\Restful\Recipe\Routes\Blocks_Routes;
+use Uncanny_Automator\App\Transports\Restful\Recipe\Routes\Get_Most_Active_Route;
+use Uncanny_Automator\App\Transports\Restful\Recipe\Routes\Get_Recipe_Route;
+use Uncanny_Automator\App\Transports\Restful\Recipe\Routes\Recipe_Details_Rest;
+use Uncanny_Automator\App\Transports\Restful\Recipe\Routes\Recipe_Taxonomies_Rest;
+use Uncanny_Automator\App\Transports\Restful\Recipe\Routes\Items_Routes;
+use Uncanny_Automator\App\Transports\Restful\Recipe\Routes\Node_Tests_Routes;
+use Uncanny_Automator\App\Transports\Restful\Recipe\Routes\Recipe_Settings_Rest;
+use Uncanny_Automator\App\Transports\Restful\Recipe\Routes\Reorder_Route;
+use Uncanny_Automator\App\Transports\Restful\Recipe\Routes\Resend_Action_Rest;
+use Uncanny_Automator\App\Transports\Restful\Recipe\Routes\Run_As_Rest;
+use Uncanny_Automator\App\Transports\Restful\Recipe\Routes\Run_Now_Rest;
+use Uncanny_Automator\App\Transports\Restful\Utilities\Rest_Arg;
+use Uncanny_Automator\App\Transports\Restful\Utilities\Traits\Restful_Permissions;
 
 /**
- * Automator REST Controller.
+ * Recipe REST registration hub.
  *
- * WordPress REST API endpoint for Automator.
+ * Static-only. Owns every `register_rest_route()` call for the recipe
+ * surface and the cross-cutting `validate_recipe_id` validator. Route
+ * handler classes are referenced as class-string callables so they
+ * stay autoload-cold until WP dispatches a matching request.
  */
-class Recipe_Rest_Controller {
+final class Recipe_Rest_Controller {
 
 	use Restful_Permissions;
-	use Rest_Responses;
 
 	/**
 	 * Namespace for the REST API.
 	 *
 	 * @var string
 	 */
-	protected $namespace = AUTOMATOR_REST_API_END_POINT;
+	private const NAMESPACE_ID = AUTOMATOR_REST_API_END_POINT;
 
 	/**
-	 * Base route
+	 * Base route segment for the recipe surface.
 	 *
 	 * @var string
 	 */
-	protected $rest_base = 'recipe';
+	private const REST_BASE = 'recipe';
 
 	/**
-	 * Whitelisted operations
-	 *
-	 * @var array
-	 */
-	protected array $whitelisted_operations = array(
-		'add',
-		'delete',
-		'update',
-	);
-
-	/**
-	 * Item handler classes
-	 *
-	 * @var array
-	 */
-	protected array $item_handler_classes = array(
-		Integration_Item_Types::TRIGGER          => __NAMESPACE__ . '\Items\Trigger_Rest',
-		Integration_Item_Types::ACTION           => __NAMESPACE__ . '\Items\Action_Rest',
-		Integration_Item_Types::LOOP_FILTER      => __NAMESPACE__ . '\Items\Loop_Filter_Rest',
-		Integration_Item_Types::FILTER_CONDITION => __NAMESPACE__ . '\Items\Filter_Condition_Rest',
-		Integration_Item_Types::CLOSURE          => __NAMESPACE__ . '\Items\Closure_Rest',
-	);
-
-	/**
-	 * Block handler classes
-	 *
-	 * @var array
-	 */
-	protected array $block_handler_classes = array(
-		Block_Type::FILTER         => __NAMESPACE__ . '\Blocks\Filter_Block_Rest',
-		Block_Type::LOOP           => __NAMESPACE__ . '\Blocks\Loop_Block_Rest',
-		Block_Type::DELAY_SCHEDULE => __NAMESPACE__ . '\Blocks\Delay_Block_Rest',
-	);
-
-	/**
-	 * Registers the routes for recipe mutations.
+	 * Register every recipe REST route. Called once per process from
+	 * `Restful_Bootstrap::register_rest_routes()` on `rest_api_init`.
 	 *
 	 * @return void
 	 */
-	public function register_routes() {
-		// Recipe item route: /wp-json/uap/v2/recipe/1/item/trigger/add
+	public static function register_routes(): void {
+
+		$recipe_id_arg = Rest_Arg::validated( array( self::class, 'validate_recipe_id' ) );
+
+		// GET /uap/v2/recipe/get-most-active
 		register_rest_route(
-			$this->namespace,
-			'/' . $this->rest_base . '/(?P<recipe_id>\d+)/item/(?P<item_type>[a-zA-Z0-9_-]+)/(?P<operation>[a-zA-Z0-9_-]+)',
+			self::NAMESPACE_ID,
+			'/' . self::REST_BASE . '/get-most-active',
 			array(
 				array(
-					'methods'             => WP_REST_Server::EDITABLE, // POST / PUT / PATCH
-					'callback'            => array( $this, 'handle_item_operation' ),
-					'permission_callback' => array( $this, 'permissions_check' ),
-					'args'                => $this->get_item_endpoint_args(),
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( Get_Most_Active_Route::class, 'handle' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
 				),
 			)
 		);
 
-		// Recipe block route: /wp-json/uap/v2/recipe/1/block/filter/add
+		// GET /uap/v2/recipe/{recipe_id}
 		register_rest_route(
-			$this->namespace,
-			'/' . $this->rest_base . '/(?P<recipe_id>\d+)/block/(?P<block_type>[a-zA-Z0-9_-]+)/(?P<operation>[a-zA-Z0-9_-]+)',
+			self::NAMESPACE_ID,
+			'/' . self::REST_BASE . '/(?P<recipe_id>\d+)',
 			array(
 				array(
-					'methods'             => WP_REST_Server::EDITABLE, // POST / PUT / PATCH
-					'callback'            => array( $this, 'handle_block_operation' ),
-					'permission_callback' => array( $this, 'permissions_check' ),
-					'args'                => $this->get_block_endpoint_args(),
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( Get_Recipe_Route::class, 'handle' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
+					'args'                => array(
+						'recipe_id' => $recipe_id_arg,
+					),
+				),
+			)
+		);
+
+		// POST /uap/v2/recipe/{recipe_id}/reorder
+		register_rest_route(
+			self::NAMESPACE_ID,
+			'/' . self::REST_BASE . '/(?P<recipe_id>\d+)/reorder',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::EDITABLE,
+					'callback'            => array( Reorder_Route::class, 'handle' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
+					'args'                => array(
+						'recipe_id' => $recipe_id_arg,
+					),
+				),
+			)
+		);
+
+		// POST /uap/v2/recipe/{recipe_id}/item/{item_type}/{operation}
+		register_rest_route(
+			self::NAMESPACE_ID,
+			'/' . self::REST_BASE . '/(?P<recipe_id>\d+)/item/(?P<item_type>[a-zA-Z0-9_-]+)/(?P<operation>[a-zA-Z0-9_-]+)',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::EDITABLE,
+					'callback'            => array( Items_Routes::class, 'dispatch' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
+					'args'                => array(
+						'recipe_id' => $recipe_id_arg,
+						'item_type' => Rest_Arg::key( array( Integration_Item_Types::class, 'is_valid' ) ),
+						'operation' => Rest_Arg::key( array( Items_Routes::class, 'validate_operation' ) ),
+					),
+				),
+			)
+		);
+
+		// POST /uap/v2/recipe/{recipe_id}/block/{block_type}/{operation}
+		register_rest_route(
+			self::NAMESPACE_ID,
+			'/' . self::REST_BASE . '/(?P<recipe_id>\d+)/block/(?P<block_type>[a-zA-Z0-9_-]+)/(?P<operation>[a-zA-Z0-9_-]+)',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::EDITABLE,
+					'callback'            => array( Blocks_Routes::class, 'dispatch' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
+					'args'                => array(
+						'recipe_id'      => $recipe_id_arg,
+						'block_type'     => Rest_Arg::key( array( Block_Type::class, 'is_valid' ) ),
+						'operation'      => Rest_Arg::key( array( Blocks_Routes::class, 'validate_operation' ) ),
+						// Only `delete` reads it; declared here because the
+						// four block operations share one route definition.
+						'delete_content' => Rest_Arg::boolean(),
+					),
+				),
+			)
+		);
+
+		// POST /uap/v2/recipe/{recipe_id}/block-modifier/{block_modifier_type}/{operation}
+		register_rest_route(
+			self::NAMESPACE_ID,
+			'/' . self::REST_BASE . '/(?P<recipe_id>\d+)/block-modifier/(?P<block_modifier_type>[a-zA-Z0-9_-]+)/(?P<operation>[a-zA-Z0-9_-]+)',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::EDITABLE,
+					'callback'            => array( Block_Modifiers_Routes::class, 'dispatch' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
+					'args'                => array(
+						'recipe_id'           => $recipe_id_arg,
+						'block_modifier_type' => Rest_Arg::key( array( Block_Modifier_Types::class, 'is_valid' ) ),
+						'operation'           => Rest_Arg::key( array( Block_Modifiers_Routes::class, 'validate_operation' ) ),
+					),
+				),
+			)
+		);
+
+		// GET /uap/v2/recipe/{recipe_id}/node-tests/{kind}/{node_id}
+		register_rest_route(
+			self::NAMESPACE_ID,
+			'/' . self::REST_BASE . '/(?P<recipe_id>\d+)/node-tests/(?P<kind>item|block|block-modifier)/(?P<node_id>\d+)',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( Node_Tests_Routes::class, 'list_tests' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
+					'args'                => array(
+						'recipe_id' => $recipe_id_arg,
+						'node_id'   => Rest_Arg::positive_int(),
+					),
+				),
+			)
+		);
+
+		// POST + DELETE /uap/v2/recipe/{recipe_id}/node-tests/{kind}/{node_id}/test/{test_id}/run
+		register_rest_route(
+			self::NAMESPACE_ID,
+			'/' . self::REST_BASE . '/(?P<recipe_id>\d+)/node-tests/(?P<kind>item|block|block-modifier)/(?P<node_id>\d+)/test/(?P<test_id>[a-zA-Z0-9_-]+)/run',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( Node_Tests_Routes::class, 'run' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
+					'args'                => array(
+						'recipe_id' => $recipe_id_arg,
+						'node_id'   => Rest_Arg::positive_int(),
+					),
+				),
+				array(
+					'methods'             => \WP_REST_Server::DELETABLE,
+					'callback'            => array( Node_Tests_Routes::class, 'cancel' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
+					'args'                => array(
+						'recipe_id' => $recipe_id_arg,
+						'node_id'   => Rest_Arg::positive_int(),
+					),
+				),
+			)
+		);
+
+		// GET /uap/v2/recipe/{recipe_id}/node-tests/{kind}/{node_id}/test/{test_id}/run-status
+		register_rest_route(
+			self::NAMESPACE_ID,
+			'/' . self::REST_BASE . '/(?P<recipe_id>\d+)/node-tests/(?P<kind>item|block|block-modifier)/(?P<node_id>\d+)/test/(?P<test_id>[a-zA-Z0-9_-]+)/run-status',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( Node_Tests_Routes::class, 'run_status' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
+					'args'                => array(
+						'recipe_id' => $recipe_id_arg,
+						'node_id'   => Rest_Arg::positive_int(),
+					),
+				),
+			)
+		);
+
+		// POST /uap/v2/recipe/{recipe_id}/settings/{operation}
+		register_rest_route(
+			self::NAMESPACE_ID,
+			'/' . self::REST_BASE . '/(?P<recipe_id>\d+)/settings/(?P<operation>[a-zA-Z0-9_-]+)',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::EDITABLE,
+					'callback'            => array( Recipe_Settings_Rest::class, 'dispatch' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
+					'args'                => array(
+						'recipe_id' => $recipe_id_arg,
+						'operation' => Rest_Arg::key( array( Recipe_Settings_Rest::class, 'validate_operation' ) ),
+					),
+				),
+			)
+		);
+
+		// POST /uap/v2/recipe/{recipe_id}/details/{field}
+		register_rest_route(
+			self::NAMESPACE_ID,
+			'/' . self::REST_BASE . '/(?P<recipe_id>\d+)/details/(?P<field>[a-zA-Z0-9_-]+)',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::EDITABLE,
+					'callback'            => array( Recipe_Details_Rest::class, 'dispatch' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
+					'args'                => array(
+						'recipe_id' => $recipe_id_arg,
+						'field'     => Rest_Arg::key( array( Recipe_Details_Rest::class, 'validate_field' ) ),
+					),
+				),
+			)
+		);
+
+		// POST /uap/v2/recipe/{recipe_id}/run-now
+		register_rest_route(
+			self::NAMESPACE_ID,
+			'/' . self::REST_BASE . '/(?P<recipe_id>\d+)/run-now',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::EDITABLE,
+					'callback'            => array( Run_Now_Rest::class, 'dispatch' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
+					'args'                => array(
+						'recipe_id' => $recipe_id_arg,
+					),
+				),
+			)
+		);
+
+		// POST /uap/v2/recipe/{recipe_id}/run_as/set
+		register_rest_route(
+			self::NAMESPACE_ID,
+			'/' . self::REST_BASE . '/(?P<recipe_id>\d+)/run_as/set',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::EDITABLE,
+					'callback'            => array( Run_As_Rest::class, 'dispatch' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
+					'args'                => array(
+						'recipe_id' => $recipe_id_arg,
+					),
+				),
+			)
+		);
+
+		// GET /uap/v2/recipe-taxonomies
+		register_rest_route(
+			self::NAMESPACE_ID,
+			'/recipe-taxonomies',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( Recipe_Taxonomies_Rest::class, 'dispatch' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
+				),
+			)
+		);
+
+		// POST /uap/v2/action-log/{action_log_id}/resend
+		register_rest_route(
+			self::NAMESPACE_ID,
+			'/action-log/(?P<action_log_id>\d+)/resend',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::EDITABLE,
+					'callback'            => array( Resend_Action_Rest::class, 'dispatch' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
+					'args'                => array(
+						'action_log_id' => Rest_Arg::integer(),
+					),
 				),
 			)
 		);
 	}
 
 	/**
-	 * Defines the item endpoint arguments used for validation.
-	 *
-	 * @return array
-	 */
-	protected function get_item_endpoint_args() {
-		return array(
-			'recipe_id' => array(
-				'validate_callback' => array( $this, 'validate_recipe_id' ),
-			),
-			'item_type' => array(
-				'sanitize_callback' => 'sanitize_key',
-				'validate_callback' => array( Integration_Item_Types::class, 'is_valid' ),
-			),
-			'operation' => array(
-				'sanitize_callback' => 'sanitize_key',
-				'validate_callback' => array( $this, 'validate_operation' ),
-			),
-		);
-	}
-
-	/**
-	 * Defines the block endpoint arguments used for validation.
-	 *
-	 * @return array
-	 */
-	protected function get_block_endpoint_args() {
-		return array(
-			'recipe_id' => array(
-				'validate_callback' => array( $this, 'validate_recipe_id' ),
-			),
-			'block_type' => array(
-				'sanitize_callback' => 'sanitize_key',
-				'validate_callback' => array( Block_Type::class, 'is_valid' ),
-			),
-			'operation' => array(
-				'sanitize_callback' => 'sanitize_key',
-				'validate_callback' => array( $this, 'validate_operation' ),
-			),
-		);
-	}
-
-	/**
-	 * Validates the recipe ID
+	 * Validate the `recipe_id` URL segment used by every recipe-scoped
+	 * route. Referenced as `[ self::class, 'validate_recipe_id' ]` from
+	 * the `register_rest_route()` args specs above.
 	 *
 	 * @param mixed $value
-	 *
 	 * @return bool
 	 */
-	public function validate_recipe_id( $value ): bool {
-
-		// Validate we have post ID.
+	public static function validate_recipe_id( $value ): bool {
 		if ( empty( (int) $value ) || (int) $value <= 0 ) {
 			return false;
 		}
 
-		// Validate it's a recipe post type.
 		$store  = new WP_Recipe_Store();
 		$recipe = $store->get_wp_post( (int) $value );
-		if ( empty( $recipe ) ) {
-			return false;
-		}
 
-		return true;
-	}
-
-	/**
-	 * Validates the operation
-	 *
-	 * @param mixed $value
-	 *
-	 * @return bool
-	 */
-	public function validate_operation( $value ): bool {
-		return in_array( $value, $this->whitelisted_operations, true );
-	}
-
-	/**
-	 * Main router that dispatches item add/delete/update actions.
-	 *
-	 * @param WP_REST_Request $request
-	 *
-	 * @return WP_REST_Response|WP_Error
-	 */
-	public function handle_item_operation( WP_REST_Request $request ) {
-		return $this->handle_entity_operation(
-			$request,
-			'item_type',
-			$this->item_handler_classes,
-			'item'
-		);
-	}
-
-	/**
-	 * Main router that dispatches block add/delete/update actions.
-	 *
-	 * @param WP_REST_Request $request
-	 *
-	 * @return WP_REST_Response|WP_Error
-	 */
-	public function handle_block_operation( WP_REST_Request $request ) {
-		return $this->handle_entity_operation(
-			$request,
-			'block_type',
-			$this->block_handler_classes,
-			'block'
-		);
-	}
-
-	/**
-	 * Generic router that dispatches entity operations.
-	 *
-	 * @param WP_REST_Request $request
-	 * @param string          $type_param The request parameter name for entity type.
-	 * @param array           $handler_classes Handler class map.
-	 * @param string          $entity_label Human-readable entity label for errors.
-	 *
-	 * @return WP_REST_Response|WP_Error
-	 */
-	private function handle_entity_operation(
-		WP_REST_Request $request,
-		string $type_param,
-		array $handler_classes,
-		string $entity_label
-	) {
-		$recipe_id = (int) $request['recipe_id'];
-		$type      = sanitize_key( $request[ $type_param ] );
-		$operation = sanitize_key( $request['operation'] );
-
-		$handler = $this->get_handler_instance( $type, $recipe_id, $request, $handler_classes, $entity_label );
-		if ( is_wp_error( $handler ) ) {
-			return $handler;
-		}
-
-		if ( ! method_exists( $handler, $operation ) ) {
-			return $this->failure(
-				sprintf(
-					'Operation "%s" is not supported for %s type "%s".',
-					esc_html( $operation ),
-					esc_html( $entity_label ),
-					esc_html( $type )
-				),
-				400,
-				'automator_rest_invalid_operation'
-			);
-		}
-
-		return $handler->{$operation}();
-	}
-
-	/**
-	 * Generic handler instance resolver.
-	 *
-	 * @param string          $type Entity type.
-	 * @param int             $recipe_id Recipe ID.
-	 * @param WP_REST_Request $request Request object.
-	 * @param array           $handler_classes Handler class map.
-	 * @param string          $entity_label Human-readable entity label for errors.
-	 *
-	 * @return object|WP_Error Handler instance or error.
-	 */
-	private function get_handler_instance(
-		string $type,
-		int $recipe_id,
-		WP_REST_Request $request,
-		array $handler_classes,
-		string $entity_label
-	) {
-		$class = $handler_classes[ $type ] ?? null;
-
-		if ( ! $class || ! class_exists( $class ) ) {
-			return $this->failure(
-				sprintf( 'Unknown %s type "%s".', esc_html( $entity_label ), esc_html( $type ) ),
-				400,
-				sprintf( 'automator_rest_unknown_%s_type', esc_html( $entity_label ) )
-			);
-		}
-
-		return new $class( $recipe_id, $request );
+		return ! empty( $recipe );
 	}
 }

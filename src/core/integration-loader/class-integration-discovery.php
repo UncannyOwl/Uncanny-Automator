@@ -84,7 +84,7 @@ class Integration_Discovery {
 	 * Recursively read all files in an integration directory.
 	 *
 	 * Identifies the main add-*-integration.php file and component subdirectories
-	 * (actions, helpers, tokens, triggers, closures, conditions, loop-filters).
+	 * (actions, helpers, tokens, triggers, conditions, loop-filters).
 	 *
 	 * @param string $directory The directory to scan.
 	 * @param bool   $recursive Whether to recurse into subdirectories.

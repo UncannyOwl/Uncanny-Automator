@@ -15,6 +15,10 @@ namespace Uncanny_Automator;
  * $is_enabled  True if the setting is enabled
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 
 <form method="POST">
@@ -41,11 +45,11 @@ namespace Uncanny_Automator;
 		class="uap-spacing-top"
 	></uo-switch>
 
-	<uo-button
+	<uas-button
 		type="submit"
 		class="uap-spacing-top"
 	>
 		<?php esc_html_e( 'Save', 'uncanny-automator' ); ?>
-	</uo-button>
+	</uas-button>
 
 </form>

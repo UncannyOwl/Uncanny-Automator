@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects;
 
@@ -72,7 +71,7 @@ class Trigger_Meta_Code {
 		// Non-empty meta must follow code format: alphanumeric, underscores, hyphens
 		if ( ! preg_match( '/^[A-Z0-9_-]+$/i', $value ) ) {
 			throw new \InvalidArgumentException(
-				'Trigger meta must contain only letters, numbers, underscores, and hyphens: ' . $value
+				'Trigger meta must contain only letters, numbers, underscores, and hyphens: ' . esc_html( $value )
 			);
 		}
 	}

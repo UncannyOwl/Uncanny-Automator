@@ -94,8 +94,6 @@ class DB_Tables {
 				'trigger_meta'      => 'uap_trigger_log_meta',
 				'action'            => 'uap_action_log',
 				'action_meta'       => 'uap_action_log_meta',
-				'closure'           => 'uap_closure_log',
-				'closure_meta'      => 'uap_closure_log_meta',
 				'api'               => 'uap_api_log',
 				'api_meta'          => 'uap_api_log_meta',
 				'recipe_logs'       => 'uap_recipe_logs_view',

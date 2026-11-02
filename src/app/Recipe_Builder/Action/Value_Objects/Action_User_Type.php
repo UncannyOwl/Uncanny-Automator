@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Action\Value_Objects;
 
@@ -75,7 +74,7 @@ class Action_User_Type {
 	private function validate( string $value ): void {
 		if ( ! User_Type::is_valid( $value ) ) {
 			throw new \InvalidArgumentException(
-				'Action user type must be "' . User_Type::USER . '" or "' . User_Type::ANONYMOUS . '", got: ' . $value
+				'Action user type must be "' . esc_html( User_Type::USER ) . '" or "' . esc_html( User_Type::ANONYMOUS ) . '", got: ' . esc_html( $value )
 			);
 		}
 	}

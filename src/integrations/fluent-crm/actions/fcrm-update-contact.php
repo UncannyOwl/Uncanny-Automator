@@ -213,6 +213,17 @@ class FCRM_UPDATE_CONTACT {
 			)
 		);
 
+		$options[] = array(
+			'option_code'           => 'FCRM_SEND_CONFIRMATION_EMAIL',
+			'label'                 => esc_html_x( 'Send confirmation email', 'FluentCRM', 'uncanny-automator' ),
+			'input_type'            => 'checkbox',
+			'is_toggle'             => true,
+			'required'              => false,
+			'default_value'         => true,
+			'supports_custom_value' => false,
+			'description'           => esc_html_x( 'Send a confirmation email when the contact is pending. Turning this off preserves the contact status and does not stop other FluentCRM automations.', 'FluentCRM', 'uncanny-automator' ),
+		);
+
 		return Automator()->utilities->keep_order_of_options(
 			array(
 				'options_group' => array(
@@ -441,7 +452,10 @@ class FCRM_UPDATE_CONTACT {
 			return;
 		}
 
-		if ( 'pending' === $contact->status ) {
+		// Recipes saved before this option existed retain confirmation sending.
+		$send_confirmation_email = ! array_key_exists( 'FCRM_SEND_CONFIRMATION_EMAIL', $action_data['meta'] )
+			|| filter_var( $action_data['meta']['FCRM_SEND_CONFIRMATION_EMAIL'], FILTER_VALIDATE_BOOLEAN );
+		if ( 'pending' === $contact->status && $send_confirmation_email ) {
 			$contact->sendDoubleOptinEmail();
 		}
 
@@ -537,7 +551,7 @@ class FCRM_UPDATE_CONTACT {
 								sprintf(
 									// translators: %1$s: field label
 									esc_html_x( 'Invalid date format for field: %1$s', 'FluentCRM', 'uncanny-automator' ),
-									$column_name
+									esc_html( $column_name )
 								)
 							);
 						}
@@ -560,7 +574,7 @@ class FCRM_UPDATE_CONTACT {
 									sprintf(
 										// translators: %1$s: field label
 										esc_html_x( 'Invalid date format for field: %1$s', 'FluentCRM', 'uncanny-automator' ),
-										$field_label
+										esc_html( $field_label )
 									)
 								);
 							}
@@ -573,7 +587,7 @@ class FCRM_UPDATE_CONTACT {
 									sprintf(
 										// translators: %1$s: field label
 										esc_html_x( 'Invalid number for field: %1$s', 'FluentCRM', 'uncanny-automator' ),
-										$field_label
+										esc_html( $field_label )
 									)
 								);
 							}
@@ -589,8 +603,8 @@ class FCRM_UPDATE_CONTACT {
 										sprintf(
 											// translators: %1$s: field label, %2$s: invalid value
 											esc_html_x( 'Invalid value for field %1$s: %2$s', 'FluentCRM', 'uncanny-automator' ),
-											$field_label,
-											$column_value
+											esc_html( $field_label ),
+											esc_html( $column_value )
 										)
 									);
 								}
@@ -615,8 +629,8 @@ class FCRM_UPDATE_CONTACT {
 										sprintf(
 											// translators: %1$s: field label, %2$s: invalid values
 											esc_html_x( 'Invalid value(s) for field %1$s: %2$s', 'FluentCRM', 'uncanny-automator' ),
-											$field_label,
-											implode( ', ', $invalid_values )
+											esc_html( $field_label ),
+											esc_html( implode( ', ', $invalid_values ) )
 										)
 									);
 								}

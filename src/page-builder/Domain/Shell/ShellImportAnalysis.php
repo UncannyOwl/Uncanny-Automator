@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Domain\Shell;
 
+use UncannyPageBuilder\Domain\ArrayShape;
+
 /**
  * Value object describing detected theme shell elements.
  * Used by RenderedShellAnalyzer to produce structured data
@@ -76,6 +78,7 @@ final class ShellImportAnalysis
     {
         $value = $data[$field] ?? null;
         if ($value !== null && !is_string($value)) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
             throw new \InvalidArgumentException($field . ' must be a string or null.');
         }
 
@@ -89,7 +92,8 @@ final class ShellImportAnalysis
     private static function linkList(array $data, string $field): array
     {
         $links = array_key_exists($field, $data) ? $data[$field] : [];
-        if (!is_array($links) || !array_is_list($links)) {
+        if (!is_array($links) || !ArrayShape::isList($links)) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
             throw new \InvalidArgumentException($field . ' must be a list.');
         }
 
@@ -99,6 +103,7 @@ final class ShellImportAnalysis
                 || !is_string($link['label'] ?? null)
                 || !is_string($link['href'] ?? null)
             ) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
                 throw new \InvalidArgumentException($field . ' must contain links with string label and href fields.');
             }
         }
@@ -113,12 +118,14 @@ final class ShellImportAnalysis
     private static function stringList(array $data, string $field): array
     {
         $values = array_key_exists($field, $data) ? $data[$field] : [];
-        if (!is_array($values) || !array_is_list($values)) {
+        if (!is_array($values) || !ArrayShape::isList($values)) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
             throw new \InvalidArgumentException($field . ' must be a list.');
         }
 
         foreach ($values as $value) {
             if (!is_string($value)) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
                 throw new \InvalidArgumentException($field . ' must contain only strings.');
             }
         }
@@ -131,6 +138,7 @@ final class ShellImportAnalysis
     {
         $value = array_key_exists($field, $data) ? $data[$field] : 0;
         if (!is_int($value)) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
             throw new \InvalidArgumentException($field . ' must be an integer.');
         }
 

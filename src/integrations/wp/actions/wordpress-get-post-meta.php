@@ -19,6 +19,7 @@ class WP_GET_POST_META extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Post, %2$s: Meta key */
 				esc_html_x( 'Get the value of {{a meta key:%2$s}} from {{a post:%1$s}}', 'WordPress', 'uncanny-automator' ),
 				$this->get_action_meta(),
 				'WP_META_KEY:' . $this->get_action_meta()

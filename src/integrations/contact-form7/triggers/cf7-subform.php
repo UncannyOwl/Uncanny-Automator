@@ -83,7 +83,7 @@ class CF7_SUBFORM {
 	 */
 	public function wpcf7_submit( $form, $result ) {
 
-		if ( 'validation_failed' !== $result['status'] ) {
+		if ( Contact_Form7_Helpers::is_submission_accepted( $form, $result ) ) {
 
 			$user_id = wp_get_current_user()->ID;
 

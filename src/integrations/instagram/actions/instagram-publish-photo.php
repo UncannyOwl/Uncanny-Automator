@@ -2,6 +2,8 @@
 namespace Uncanny_Automator\Integrations\Instagram;
 
 use Exception;
+use Uncanny_Automator\App\Recipe_Runner\Exceptions\Action_Error_Exception;
+use Uncanny_Automator\App\Recipe_Runner\Value_Objects\Background_Job_Result;
 
 /**
  * Class INSTAGRAM_PUBLISH_PHOTO
@@ -77,7 +79,23 @@ class INSTAGRAM_PUBLISH_PHOTO extends \Uncanny_Automator\Recipe\App_Action {
 	}
 
 	/**
-	 * Process the Instagram action.
+	 * Define the action's output tokens.
+	 *
+	 * @return array
+	 */
+	public function define_tokens() {
+		return array(
+			'INSTAGRAM_POST_URL' => array(
+				'name' => esc_html_x( 'Post URL', 'Instagram', 'uncanny-automator' ),
+				'type' => 'url',
+			),
+		);
+	}
+
+	/**
+	 * Process the Instagram action. The platform may accept the publish as a background job, publish it at once,
+	 * or answer that Instagram is still processing the media; the last finishes as a site job that retries the
+	 * same container.
 	 *
 	 * @param int   $user_id     The user ID.
 	 * @param array $action_data The action data.
@@ -90,6 +108,103 @@ class INSTAGRAM_PUBLISH_PHOTO extends \Uncanny_Automator\Recipe\App_Action {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
+		list( $page_id, $image_uri, $caption ) = $this->publish_args( $parsed );
+
+		try {
+			$result = $this->api->publish_photo( $page_id, $image_uri, $caption, '', $action_data );
+		} catch ( \Throwable $e ) {
+			// Catch \Throwable (not just Exception) so a PHP \Error in the API /
+			// bridge path fails the action cleanly instead of escaping as an
+			// uncaught fatal that white-screens the site.
+			$error = $this->action_error( $e );
+			throw $error;
+		}
+
+		if ( $this->deferred( $result ) ) {
+			return true;
+		}
+
+		if ( Instagram_Api_Caller::is_media_processing( $result ) ) {
+			if ( $this->defer_to_site( array( 'container_id' => (string) ( $result['data']['container_id'] ?? '' ) ), MINUTE_IN_SECONDS, 10 ) ) {
+				return true;
+			}
+			throw Action_Error_Exception::execution_failed( esc_html_x( 'Instagram is still processing this photo.', 'Instagram', 'uncanny-automator' ) );
+		}
+
+		return $this->process_job( is_array( $result ) ? $result : array(), $parsed, $action_data );
+	}
+
+	/**
+	 * Fill the Post URL from the platform's answer: the synchronous write's envelope or a background job's
+	 * completion, whose result sits under `data` in both.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param array $response    The write's envelope, or the job's completion envelope.
+	 * @param array $parsed      The parsed field values.
+	 * @param array $action_data The action data.
+	 *
+	 * @return bool
+	 */
+	protected function process_job( array $response, array $parsed, array $action_data ): bool {
+		$this->hydrate_tokens(
+			array(
+				'INSTAGRAM_POST_URL' => (string) ( $response['data']['permalink'] ?? '' ),
+			)
+		);
+
+		return true;
+	}
+
+	/**
+	 * One synchronous re-publish of the container Instagram was still processing. A transport failure or a
+	 * transient answer (no status, 408, 429, 5xx) waits for the next attempt; the attempt cap bounds it.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param array $parsed     The parsed field values recorded when the action ran.
+	 * @param array $remembered `container_id`.
+	 *
+	 * @return Background_Job_Result|null Null while Instagram is still processing the media.
+	 */
+	protected function retry_job( array $parsed, array $remembered ): ?Background_Job_Result {
+		list( $page_id, $image_uri, $caption ) = $this->publish_args( $parsed );
+
+		try {
+			$result = $this->api->publish_photo( $page_id, $image_uri, $caption, (string) ( $remembered['container_id'] ?? '' ) );
+		} catch ( \Throwable $e ) {
+			$code = (int) $e->getCode();
+			if ( in_array( $code, array( 0, 408, 429 ), true ) || ( $code >= 500 && $code < 600 ) ) {
+				return null;
+			}
+
+			return Background_Job_Result::from_site(
+				Background_Job_Result::STATUS_FAILED,
+				array(),
+				array(
+					'code'        => $code,
+					'description' => $this->get_beautified_error_message( $e->getMessage() ),
+				)
+			);
+		}
+
+		if ( Instagram_Api_Caller::is_media_processing( $result ) ) {
+			return null;
+		}
+
+		return Background_Job_Result::from_site( Background_Job_Result::STATUS_COMPLETED, is_array( $result ) ? $result : array(), array() );
+	}
+
+	/**
+	 * The page, image URL and caption the publish sends.
+	 *
+	 * @param array $parsed The parsed field values.
+	 *
+	 * @return array{0: string, 1: string, 2: string}
+	 * @throws \Exception When the image URL cannot be resolved.
+	 */
+	private function publish_args( array $parsed ) {
+
 		$page_id   = sanitize_text_field( $parsed['INSTAGRAM_PUBLISH_PHOTO_ACCOUNT_ID'] );
 		$image_uri = sanitize_text_field( $parsed['INSTAGRAM_IMAGE_URL'] );
 		$caption   = sanitize_textarea_field( $parsed['INSTAGRAM_HASHTAGS'] );
@@ -100,39 +215,37 @@ class INSTAGRAM_PUBLISH_PHOTO extends \Uncanny_Automator\Recipe\App_Action {
 			$caption = str_replace( "\r\n", "\n\n", $caption );
 		}
 
-		try {
-			$this->api->publish_photo( $page_id, $image_uri, $caption, '', $action_data );
-		} catch ( \Throwable $e ) {
-			// Catch \Throwable (not just Exception) so a PHP \Error in the API /
-			// bridge path fails the action cleanly instead of escaping as an
-			// uncaught fatal that white-screens the site.
-			// Check for retryable error (Media ID not available - code 9007).
-			if ( $this->helpers->is_media_unavailable_error( $e->getMessage() ) ) {
-				// Build retry body with params needed by publish_photo().
-				$retry_body = array(
-					'page_id'   => $page_id,
-					'image_uri' => $image_uri,
-					'caption'   => $caption,
-				);
+		return array( $page_id, $image_uri, $caption );
+	}
 
-				// Try to extract container_id from the response for retry optimization.
-				$container_id = $this->helpers->extract_container_id_from_last_response();
-				if ( ! empty( $container_id ) ) {
-					$retry_body['container_id'] = $container_id;
-				}
-
-				// Use $this->action_data so changes persist to do_action() completion call.
-				$this->helpers->schedule_retry( $user_id, $this->action_data, $recipe_id, $retry_body, 1 );
-
-				// Return true - the await flag will trigger COMPLETED_AWAITING via filter.
-				return true;
-			}
-
-			$message = $this->get_beautified_error_message( $e->getMessage() );
-			throw new Exception( esc_html( $message ) );
+	/**
+	 * The action's failure for what the publish threw: an account the page cannot load is not found; a typed
+	 * failure from the caller keeps its code; anything else failed to execute, with the beautified text.
+	 *
+	 * @param \Throwable $e What the publish threw.
+	 *
+	 * @return Action_Error_Exception
+	 */
+	private function action_error( \Throwable $e ) {
+		if ( $this->is_missing_permissions( $e->getMessage() ) ) {
+			return Action_Error_Exception::not_found( esc_html( $this->get_beautified_error_message( $e->getMessage() ) ) );
+		}
+		if ( $e instanceof Action_Error_Exception ) {
+			return $e;
 		}
 
-		return true;
+		return Action_Error_Exception::execution_failed( esc_html( $this->get_beautified_error_message( $e->getMessage() ) ) );
+	}
+
+	/**
+	 * Whether Meta refused the page's Instagram account for missing permissions.
+	 *
+	 * @param string $message The error message.
+	 *
+	 * @return bool
+	 */
+	private function is_missing_permissions( $message ) {
+		return false !== strpos( (string) $message, 'cannot be loaded due to missing permissions' );
 	}
 
 	/**
@@ -178,7 +291,7 @@ class INSTAGRAM_PUBLISH_PHOTO extends \Uncanny_Automator\Recipe\App_Action {
 	 */
 	protected function get_beautified_error_message( $error_message = '' ) {
 		// TODO REVIEW : We could adjust this at the Facebook_Api_Caller and provide link to KB article.
-		if ( false !== strpos( $error_message, 'cannot be loaded due to missing permissions' ) ) {
+		if ( $this->is_missing_permissions( $error_message ) ) {
 			return esc_html_x( 'Instagram account not found. Check that the requested account is connected to the associated Facebook page.', 'Instagram', 'uncanny-automator' );
 		}
 		return $error_message;

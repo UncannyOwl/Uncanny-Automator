@@ -2,6 +2,10 @@
 
 namespace Uncanny_Automator\Migrations;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Migrate_Triggers.
  *
@@ -71,6 +75,7 @@ class Migrate_Triggers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration.
 		return $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT posts.ID , pm.meta_value as trigger_code

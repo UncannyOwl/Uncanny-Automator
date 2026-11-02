@@ -82,8 +82,9 @@ final class AdoptPageUseCase
             if ($rollbackError !== null) {
                 throw new \RuntimeException(
                     'Page Builder could not take over the page, and its ownership changes could not be rolled back automatically: '
-                    . $rollbackError->getMessage(),
+                    . esc_html($rollbackError->getMessage()),
                     0,
+                    // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- $error is the previous exception, not message text.
                     $error,
                 );
             }

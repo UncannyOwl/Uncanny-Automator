@@ -45,33 +45,39 @@ final class CompactSourceDiffer
         $added = array_slice($afterLines, $prefix, $afterCount - $prefix - $suffix);
 
         $lines = ['@@ line ' . ((int) $prefix + 1) . ' @@'];
+        // Count bytes as well as lines: minified CSS and JavaScript can be one long line.
+        $bodyBytes = strlen($lines[0]);
+        $maxBodyBytes = 4096;
+        $notice = '... diff truncated. Read the source for full detail; do not repeat a saved write.';
         $changedLines = 0;
         $truncated = false;
 
         foreach ($removed as $line) {
-            if ($changedLines >= $maxChangedLines) {
+            if ($changedLines >= $maxChangedLines || $bodyBytes + strlen($line) + 3 + strlen($notice) + 1 > $maxBodyBytes) {
                 $truncated = true;
                 break;
             }
 
             $lines[] = '- ' . $line;
+            $bodyBytes += strlen($line) + 3;
             $changedLines++;
         }
 
         if (!$truncated) {
             foreach ($added as $line) {
-                if ($changedLines >= $maxChangedLines) {
+                if ($changedLines >= $maxChangedLines || $bodyBytes + strlen($line) + 3 + strlen($notice) + 1 > $maxBodyBytes) {
                     $truncated = true;
                     break;
                 }
 
                 $lines[] = '+ ' . $line;
+                $bodyBytes += strlen($line) + 3;
                 $changedLines++;
             }
         }
 
         if ($truncated) {
-            $lines[] = '... diff truncated; use a smaller patch for full detail.';
+            $lines[] = $notice;
         }
 
         return new CompactSourceDiff($label, implode("\n", $lines), true, $truncated);

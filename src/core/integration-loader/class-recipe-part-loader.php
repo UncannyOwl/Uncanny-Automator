@@ -2,7 +2,7 @@
 /**
  * Recipe Part Loader
  *
- * Loads helpers, tokens, triggers, actions, closures, conditions, and loop-filters
+ * Loads helpers, tokens, triggers, actions, conditions, and loop-filters
  * for active integrations. Applies demand-driven gating at both the integration level
  * (via Recipe_Manifest::is_integration_needed) and the item level (via is_class_in_active_map).
  *
@@ -20,7 +20,7 @@ use Uncanny_Automator\Utilities;
  * Class Recipe_Part_Loader
  *
  * Single responsibility: load integration helpers and recipe parts (triggers, actions,
- * closures, conditions, loop-filters, tokens) with manifest-driven gating.
+ * conditions, loop-filters, tokens) with manifest-driven gating.
  */
 class Recipe_Part_Loader {
 
@@ -37,6 +37,18 @@ class Recipe_Part_Loader {
 	 * @var Load_Error_Handler
 	 */
 	private $error_handler;
+
+	/**
+	 * The files whose failure this loader recorded on this request.
+	 *
+	 * Handed to the backward-compat pass, which skips them, so a file that failed is
+	 * recorded once and not loaded again.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var string[]
+	 */
+	private $recorded_files = array();
 
 	/**
 	 * Recipe_Part_Loader constructor.
@@ -95,10 +107,10 @@ class Recipe_Part_Loader {
 					false,
 					'automator_helpers_class_name',
 					function ( $instance, $class ) use ( $dir_name ) {
-						$mod         = str_replace( '-', '_', $dir_name );
-						$is_pro      = ( 0 === strpos( ltrim( $class, '\\' ), 'Uncanny_Automator_Pro' ) );
-						$all         = Utilities::automator_get_all_helper_instances();
-						$existing    = isset( $all[ $mod ] ) ? $all[ $mod ] : null;
+						$mod             = str_replace( '-', '_', $dir_name );
+						$is_pro          = ( 0 === strpos( ltrim( $class, '\\' ), 'Uncanny_Automator_Pro' ) );
+						$all             = Utilities::automator_get_all_helper_instances();
+						$existing        = isset( $all[ $mod ] ) ? $all[ $mod ] : null;
 						$existing_is_pro = ( null !== $existing )
 							&& ( 0 === strpos( get_class( $existing ), 'Uncanny_Automator_Pro' ) );
 
@@ -145,7 +157,7 @@ class Recipe_Part_Loader {
 	}
 
 	/**
-	 * Load triggers, actions, closures, conditions, loop-filters, and tokens
+	 * Load triggers, actions, conditions, loop-filters, and tokens
 	 * for all active integrations.
 	 *
 	 * Tokens always load (no gating — they are shared dependencies).
@@ -187,7 +199,7 @@ class Recipe_Part_Loader {
 		if ( ! class_exists( __NAMESPACE__ . '\\Backward_Compat_Reconciler', false ) ) {
 			require_once __DIR__ . '/class-backward-compat-reconciler.php';
 		}
-		( new Backward_Compat_Reconciler( $this->error_handler ) )->reconcile( $manifest, $load_all );
+		( new Backward_Compat_Reconciler( $this->error_handler, $this->recorded_files ) )->reconcile( $manifest, $load_all );
 	}
 
 	/**
@@ -211,7 +223,7 @@ class Recipe_Part_Loader {
 	}
 
 	/**
-	 * Load gated recipe part files (triggers, actions, closures, conditions, loop-filters).
+	 * Load gated recipe part files (triggers, actions, conditions, loop-filters).
 	 *
 	 * Each file is checked against the item map — only files whose composite key
 	 * is active in the manifest are instantiated (unless in full-load mode).
@@ -254,6 +266,10 @@ class Recipe_Part_Loader {
 	 * Resolves the class name, applies loop-filter namespace, checks the item map,
 	 * and instantiates if allowed.
 	 *
+	 * Resolving the class can run the add-on's autoloader, and including the file compiles
+	 * it, so both run inside the guard with the instantiation. A failure in any of them, a
+	 * parse error included, is recorded for the load-errors notice and skips this file only.
+	 *
 	 * @param string          $file             Absolute file path.
 	 * @param string          $dir_name         Integration directory name.
 	 * @param string          $integration_code Integration code (e.g. WC, LD).
@@ -268,34 +284,74 @@ class Recipe_Part_Loader {
 			return;
 		}
 
+		// The record names the file until its class is resolved.
+		$class = basename( $file, '.php' );
+
+		try {
+			$class = $this->resolve_gated_class( $file, $dir_name );
+
+			// In targeted mode: skip files whose class isn't in the active item map.
+			if ( ! $load_all && ! self::is_class_in_active_map( $class, $manifest, $integration_code ) ) {
+				return;
+			}
+
+			$this->include_and_instantiate( $class, $file );
+		} catch ( \Throwable $e ) {
+			$this->record_failure( $class, $file, $e );
+		}
+	}
+
+	/**
+	 * The fully qualified class name of a gated recipe part file.
+	 *
+	 * Loop-filter classes get a Loop_Filters sub-namespace to avoid collisions.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $file     Absolute file path.
+	 * @param string $dir_name Integration directory name.
+	 *
+	 * @return string
+	 */
+	private function resolve_gated_class( $file, $dir_name ) {
+
 		$class = apply_filters(
 			'automator_recipe_parts_class_name',
 			$this->resolver->resolve( $file, true, $dir_name ),
 			$file
 		);
 
-		// Loop-filter classes need a Loop_Filters sub-namespace to avoid collisions.
 		if ( false !== strpos( $file, 'loop-filter' ) ) {
 			$class = Class_Resolver::prepend_loop_filter_namespace( $class );
 		}
 
-		// In targeted mode: skip files whose class isn't in the active item map.
-		if ( ! $load_all && ! self::is_class_in_active_map( $class, $manifest, $integration_code ) ) {
-			return;
-		}
+		return $class;
+	}
 
-		// Check Utilities tracker, not class_exists.
-		if ( false !== Utilities::get_class_instance( $class ) ) {
-			return;
+	/**
+	 * Include a file and build and track its class, unless the class is already tracked.
+	 *
+	 * Checks the Utilities tracker, not class_exists().
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $class_name The FQCN.
+	 * @param string $file       Absolute file path.
+	 *
+	 * @return object|null The new instance, or null when the class was already tracked.
+	 */
+	private function include_and_instantiate( $class_name, $file ) {
+
+		if ( false !== Utilities::get_class_instance( $class_name ) ) {
+			return null;
 		}
 
 		include_once $file;
 
-		try {
-			Utilities::add_class_instance( $class, new $class() );
-		} catch ( \Throwable $e ) {
-			$this->error_handler->handle( $class, $e );
-		}
+		$instance = new $class_name();
+		Utilities::add_class_instance( $class_name, $instance );
+
+		return $instance;
 	}
 
 	/**
@@ -304,6 +360,10 @@ class Recipe_Part_Loader {
 	 * This is the DRY core of the loading system. All four loading loops (integrations,
 	 * helpers, tokens, gated recipe parts) share this pattern:
 	 *   resolve class name → check tracker → include → instantiate → register → handle error
+	 *
+	 * Resolving the class can run the add-on's autoloader, and including the file compiles
+	 * it, so both run inside the guard with the instantiation. A failure in any of them, a
+	 * parse error included, is recorded for the load-errors notice and skips this file only.
 	 *
 	 * @param string        $file        Absolute path to the PHP file.
 	 * @param string        $dir_name    Integration directory name.
@@ -320,27 +380,40 @@ class Recipe_Part_Loader {
 			return null;
 		}
 
-		$class = apply_filters( $filter_hook, $this->resolver->resolve( $file, $uppercase, $dir_name ), $file );
-
-		if ( false !== Utilities::get_class_instance( $class ) ) {
-			return null;
-		}
-
-		include_once $file;
+		// The record names the file until its class is resolved.
+		$class = basename( $file, '.php' );
 
 		try {
-			$instance = new $class();
-			Utilities::add_class_instance( $class, $instance );
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- The hook name is passed in by this class and starts with the automator_ prefix.
+			$class    = apply_filters( $filter_hook, $this->resolver->resolve( $file, $uppercase, $dir_name ), $file );
+			$instance = $this->include_and_instantiate( $class, $file );
 
-			if ( null !== $post_init ) {
+			if ( null !== $instance && null !== $post_init ) {
 				$post_init( $instance, $class );
 			}
 
 			return $instance;
 		} catch ( \Throwable $e ) {
-			$this->error_handler->handle( $class, $e );
+			$this->record_failure( $class, $file, $e );
 			return null;
 		}
+	}
+
+	/**
+	 * Record a file that failed to load for the load-errors notice, and remember it so the
+	 * backward-compat pass does not load and record it again.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string     $class_name The FQCN, or the file's name when the class never resolved.
+	 * @param string     $file       Absolute file path.
+	 * @param \Throwable $e          The failure.
+	 *
+	 * @return void
+	 */
+	private function record_failure( $class_name, $file, \Throwable $e ) {
+		$this->error_handler->handle( $class_name, $e );
+		$this->recorded_files[] = $file;
 	}
 
 	/**
@@ -417,7 +490,7 @@ class Recipe_Part_Loader {
 
 		// Item-map keys use underscores (loop_filters), not hyphens (loop-filters).
 		// When adding a new gated type, also update automator_get_gated_directory_types() in global-functions.php.
-		foreach ( array( 'triggers', 'actions', 'closures', 'conditions', 'loop_filters' ) as $type ) {
+		foreach ( array( 'triggers', 'actions', 'conditions', 'loop_filters' ) as $type ) {
 
 			if ( empty( $integration_items[ $type ] ) ) {
 				continue;

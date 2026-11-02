@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator\Integrations\Wp;
 
+use Uncanny_Automator\App\Infrastructure\Http\Redirect_Hop_Check;
+
 /**
  * Class WP_CREATEPOST
  *
@@ -271,7 +273,7 @@ class WP_CREATEPOST extends \Uncanny_Automator\Recipe\Action {
 	 * @param array $args        Additional arguments.
 	 * @param array $parsed      Parsed token values.
 	 *
-	 * @return bool
+	 * @return bool|null Null when the post was created but its featured image was not set.
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
@@ -370,6 +372,8 @@ class WP_CREATEPOST extends \Uncanny_Automator\Recipe\Action {
 			return false;
 		}
 
+		$featured_image_error = null;
+
 		if ( $post_id ) {
 			// Handle custom value provided TERMs.
 			if ( $this->is_token_custom_value_text( $action_data['meta']['TERM_readable'] ?? '' ) ) {
@@ -378,11 +382,10 @@ class WP_CREATEPOST extends \Uncanny_Automator\Recipe\Action {
 				$this->set_taxonomy_terms( $post_id, json_decode( $post_terms ) );
 			}
 
-			$featured_image_error = '';
 			if ( ! empty( $post_fimage ) ) {
 				$featured_image_result = $this->add_featured_image( $post_fimage, $post_id );
 				if ( is_wp_error( $featured_image_result ) ) {
-					$featured_image_error = $featured_image_result->get_error_message();
+					$featured_image_error = $featured_image_result;
 				}
 			}
 
@@ -426,10 +429,19 @@ class WP_CREATEPOST extends \Uncanny_Automator\Recipe\Action {
 			)
 		);
 
-		if ( ! empty( $featured_image_error ) ) {
-			// Post was created — featured image failure is a notice, not a fatal error.
+		if ( null !== $featured_image_error ) {
+			// Post was created — featured image failure is a notice, not a fatal error. A null result
+			// with the notice set completes the action as "Completed with notice"; true would drop it.
 			$this->set_complete_with_notice( true );
-			$this->add_log_error( $featured_image_error );
+			$this->add_log_error(
+				sprintf(
+					// translators: %s: Why the featured image was not set.
+					esc_html_x( 'The post was created, but its featured image was not set: %s', 'WordPress', 'uncanny-automator' ),
+					esc_html( $featured_image_error->get_error_message() )
+				)
+			);
+
+			return null;
 		}
 
 		return true;
@@ -540,15 +552,22 @@ class WP_CREATEPOST extends \Uncanny_Automator\Recipe\Action {
 			return new \WP_Error( 'ssrf_blocked', 'The featured image URL resolves to a private or reserved IP address and cannot be used.' );
 		}
 
-		// Otherwise, download and store the image as attachment.
-		$attachment_id = media_sideload_image( $image_url, $post_id, null, 'id' );
-
-		// Assign the downloaded attachment ID to the post.
-		set_post_thumbnail( $post_id, $attachment_id );
+		// Otherwise, download and store the image as attachment. Redirects are followed, each one
+		// checked: a public URL must not hand the download on to an address the check above refuses.
+		$attachment_id = Redirect_Hop_Check::around(
+			static function () use ( $image_url, $post_id ) {
+				return media_sideload_image( $image_url, $post_id, null, 'id' );
+			}
+		);
 
 		if ( is_wp_error( $attachment_id ) ) {
 			automator_log( $attachment_id->get_error_message(), self::class . '->add_featured_image error', true, 'wp-createpost' );
+
+			return $attachment_id;
 		}
+
+		// Assign the downloaded attachment ID to the post.
+		set_post_thumbnail( $post_id, $attachment_id );
 
 		return $attachment_id;
 	}
@@ -632,6 +651,7 @@ class WP_CREATEPOST extends \Uncanny_Automator\Recipe\Action {
 
 		$title = sanitize_title( $title );
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Looks a post up by slug in any status, trash included; get_page_by_path() resolves hierarchical paths and prefers published posts.
 		$post_id = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT ID FROM {$wpdb->posts} WHERE post_name = %s AND post_type = %s",
