@@ -54,7 +54,8 @@ class Mysql_Get_Cell_Chunk_Tool extends Abstract_MCP_Tool {
 		return 'Get a bounded text chunk from one database cell. '
 			. 'Use this only when mysql_select_from_table preview truncates a long value. '
 			. 'Provide table, key_column, key_value, and target_column to identify the row and column. '
-			. 'Then page through the value using offset and length.';
+			. 'Then page through the value using character offset and length. Binary columns are not supported. '
+			. 'Restricted authentication columns cannot be used as either the row key or the target.';
 	}
 
 	/**
@@ -152,7 +153,19 @@ class Mysql_Get_Cell_Chunk_Tool extends Abstract_MCP_Tool {
 			return Json_Rpc_Response::create_error_response( 'target_column is restricted and cannot be retrieved.' );
 		}
 
+		// Filtering on a secret leaks whether a guessed value matches, even when
+		// the returned target column is harmless. Match the SELECT predicate policy.
+		if ( in_array( strtolower( $key_column ), self::REDACTED_COLUMNS, true ) ) {
+			return Json_Rpc_Response::create_error_response( 'key_column is restricted and cannot be used to select a row.' );
+		}
+
+		$boundary = $this->get_table_boundary_response( array( $table ), $user_context );
+		if ( null !== $boundary ) {
+			return $boundary;
+		}
+
 		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- The query string is prepared inside prepare_information_schema_query().
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Live information_schema read for the table browser, must not be cached. The query is prepared inside prepare_information_schema_query().
 		$table_check = $wpdb->get_var(
 			$this->prepare_information_schema_query(
 				'SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ({table_placeholders})',
@@ -160,19 +173,29 @@ class Mysql_Get_Cell_Chunk_Tool extends Abstract_MCP_Tool {
 			)
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
+		$failure = $this->get_query_failure_response();
+		if ( null !== $failure ) {
+			return $failure;
+		}
 		if ( empty( $table_check ) ) {
 			return Json_Rpc_Response::create_error_response( sprintf( 'Table not found: %s', $table ) );
 		}
 
 		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- The query string is prepared inside prepare_information_schema_query().
-		$columns = $wpdb->get_col(
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Live information_schema read for the table browser, must not be cached. The query is prepared inside prepare_information_schema_query().
+		$columns = $wpdb->get_results(
 			$this->prepare_information_schema_query(
-				'SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ({table_placeholders})',
+				'SELECT COLUMN_NAME, DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ({table_placeholders})',
 				array( $table )
 			)
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
-		if ( ! in_array( $key_column, $columns, true ) || ! in_array( $target_column, $columns, true ) ) {
+		$failure = $this->get_query_failure_response();
+		if ( null !== $failure ) {
+			return $failure;
+		}
+		$column_types = wp_list_pluck( (array) $columns, 'DATA_TYPE', 'COLUMN_NAME' );
+		if ( ! isset( $column_types[ $key_column ], $column_types[ $target_column ] ) ) {
 			return Json_Rpc_Response::create_error_response(
 				sprintf(
 					'Column not found. key_column=%s target_column=%s table=%s',
@@ -183,13 +206,23 @@ class Mysql_Get_Cell_Chunk_Tool extends Abstract_MCP_Tool {
 			);
 		}
 
+		// Binary SUBSTRING/CHAR_LENGTH count bytes, while this contract pages
+		// text characters. A byte slice can split UTF-8 or be invalid JSON text;
+		// refuse binary storage rather than return overlapping or corrupt chunks.
+		$binary_types = array( 'binary', 'varbinary', 'tinyblob', 'blob', 'mediumblob', 'longblob', 'bit', 'geometry', 'point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon', 'geometrycollection' );
+		if ( in_array( strtolower( $column_types[ $target_column ] ), $binary_types, true ) ) {
+			return Json_Rpc_Response::create_error_response( 'target_column uses binary storage; this tool only supports text character chunks.' );
+		}
+
 		list( $key_placeholder, $prepared_key_value ) = $this->resolve_key_binding( $key_value );
 
 		$start_position = $offset + 1; // MySQL SUBSTRING() positions are 1-based.
 
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared -- Table/column identifiers are sanitized and validated against information_schema; dynamic placeholders are still prepared.
-		$sql = "SELECT CHAR_LENGTH(`{$target_column}`) AS total_chars, SUBSTRING(`{$target_column}`, %d, %d) AS value_chunk FROM `{$table}` WHERE `{$key_column}` = {$key_placeholder} LIMIT 1";
-		$row = $wpdb->get_row(
+		$table_ref = $this->qualify_table_name( $table );
+		$sql       = "SELECT CHAR_LENGTH(`{$target_column}`) AS total_chars, SUBSTRING(`{$target_column}`, %d, %d) AS value_chunk FROM {$table_ref} WHERE `{$key_column}` = {$key_placeholder} LIMIT 1";
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Live row read for the table browser, must not be cached. The table and column identifiers are sanitized and checked against information_schema; every value is a prepared placeholder.
+		$row       = $wpdb->get_row(
 			$wpdb->prepare(
 				$sql,
 				array(
@@ -247,7 +280,9 @@ class Mysql_Get_Cell_Chunk_Tool extends Abstract_MCP_Tool {
 			return Json_Rpc_Response::create_success_response( 'Offset is beyond the end of value', $payload );
 		}
 
-		$returned    = $this->char_length( $string );
+		// Use the database's character units for both SQL slicing and pagination,
+		// including PHP installations without mbstring.
+		$returned    = min( $length, $total_chars - $offset );
 		$next_offset = $offset + $returned;
 		$has_more    = $next_offset < $total_chars;
 
@@ -306,17 +341,5 @@ class Mysql_Get_Cell_Chunk_Tool extends Abstract_MCP_Tool {
 		}
 
 		return array( '%s', (string) $key_value );
-	}
-
-	/**
-	 * Multibyte-safe length helper.
-	 *
-	 * @since 7.2.4
-	 *
-	 * @param string $value Input string.
-	 * @return int
-	 */
-	private function char_length( string $value ): int {
-		return function_exists( 'mb_strlen' ) ? (int) mb_strlen( $value, 'UTF-8' ) : strlen( $value );
 	}
 }

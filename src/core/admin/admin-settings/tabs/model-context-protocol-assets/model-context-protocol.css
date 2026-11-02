@@ -1,0 +1,787 @@
+.automator-mcp-table-wrap {
+	overflow-x: auto;
+	background: #fff;
+	border: 1px solid var(--uap-accordion-border-color, #cdcdcd);
+	border-radius: var(--uap-border-radius, 10px);
+}
+
+.automator-mcp-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-family: var(--uap-font-family, inherit);
+	font-size: var(--uap-font-size--body-small, 14px);
+	line-height: var(--uap-line-height--body-small, 20px);
+}
+
+.automator-mcp-table th,
+.automator-mcp-table td {
+	padding: var(--uap-accordion-item-padding, 7px 12px);
+	text-align: start;
+	vertical-align: middle;
+}
+
+.automator-mcp-table thead th {
+	background: #fff;
+	border-bottom: 1px solid var(--uap-accordion-border-color, #cdcdcd);
+	color: var(--uap-font-color, #000);
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.automator-mcp-table tbody tr + tr > * {
+	border-top: 1px solid var(--uap-table-border-color, #eee);
+}
+
+.automator-mcp-table--list td:first-child {
+	min-width: 180px;
+}
+
+.automator-mcp-table--list td:first-child strong {
+	display: block;
+	font-size: inherit;
+	line-height: inherit;
+	overflow-wrap: anywhere;
+}
+
+.automator-mcp-copy-status {
+	color: var(--uap-font-color-secondary, #676b6f);
+	font-size: 13px;
+}
+
+.automator-mcp-copy-status:empty,
+#automator-mcp-tool-toggle-alert:empty,
+#automator-mcp-database-alert:empty,
+#automator-mcp-file-reading-alert:empty {
+	display: none;
+}
+
+.automator-mcp-table td form {
+	margin: 0;
+}
+
+.automator-mcp-tools p {
+	max-width: 90ch;
+}
+
+.automator-mcp-tools-help {
+	color: var(--uap-font-color-secondary, #50575e);
+	font-size: 13px;
+}
+
+.automator-mcp-tools-help summary {
+	width: fit-content;
+	cursor: pointer;
+	font-weight: 600;
+	color: #000;
+}
+
+.automator-mcp-database-summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	width: 100%;
+}
+
+.automator-mcp-database-actions {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 16px;
+}
+
+.automator-mcp-database-consent {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	line-height: 1.5;
+	cursor: pointer;
+}
+
+/* Keep the acknowledgement usable inside the admin field resets. */
+
+.automator-mcp-database-consent input[type="checkbox"] {
+	appearance: auto;
+	display: inline-block;
+	flex: 0 0 18px;
+	width: 18px;
+	height: 18px;
+	margin: 2px 0 0;
+	padding: 0;
+	accent-color: #0790e8;
+}
+
+.automator-mcp-database-consent input[type="checkbox"]::before {
+	content: none;
+}
+
+.automator-mcp-database-consent input:focus-visible,
+.automator-mcp-details summary:focus-visible {
+	outline: 2px solid #0790e8;
+	outline-offset: 3px;
+}
+
+.automator-mcp-file-reading-defaults {
+	list-style: disc;
+	padding-left: 1.5em;
+}
+
+.automator-mcp-file-reading-defaults li {
+	margin-bottom: 8px;
+}
+
+.automator-mcp-file-reading-exclusions-field {
+	display: block;
+	width: 100%;
+	max-width: 640px;
+	font-family: Menlo, Consolas, Monaco, monospace;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.automator-mcp-file-reading-exclusions-field:focus-visible {
+	outline: 2px solid #0790e8;
+	outline-offset: 2px;
+}
+
+.automator-mcp-file-reading-exclusions-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+}
+
+.automator-mcp-tool-counts,
+.automator-mcp-tool-summary-chips,
+.automator-mcp-tool-behaviors,
+.automator-mcp-tool-access {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+}
+
+.automator-mcp-tool-summary {
+	display: grid;
+	align-items: center;
+	grid-template-columns: minmax(0, 1fr) auto auto;
+	gap: 12px;
+	width: 100%;
+}
+
+.automator-mcp-tool-summary-controls {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+	margin-inline-start: auto;
+}
+
+.automator-mcp-tool-toggle {
+	flex-shrink: 0;
+}
+
+.automator-mcp-tool-summary > strong,
+.automator-mcp-tool-name span,
+.automator-mcp-tools .automator-mcp-table td:first-child,
+.automator-mcp-tools .automator-mcp-table td:last-child,
+.automator-mcp-wp-ability-summary .automator-mcp-ability-title {
+	overflow-wrap: anywhere;
+}
+
+.automator-mcp-tool-detail {
+	font-size: 13px;
+	line-height: 18px;
+}
+
+.automator-mcp-tool-purpose,
+.automator-mcp-tool-description,
+.automator-mcp-tool-technical-note,
+.automator-mcp-tool-empty-inputs {
+	font-size: 13px;
+	line-height: 19px;
+}
+
+.automator-mcp-tool-name,
+.automator-mcp-tool-description {
+	display: grid;
+	grid-template-columns: minmax(120px, 22%) 1fr;
+	gap: 12px;
+}
+
+.automator-mcp-tool-detail-heading {
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 20px;
+}
+
+.automator-mcp-tool-allowed-values {
+	display: block;
+	margin-top: 4px;
+	color: var(--uap-font-color-secondary, #676b6f);
+	font-size: 13px;
+}
+
+.automator-mcp-bulk-actions,
+.automator-mcp-count-pair,
+.automator-mcp-log-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.automator-mcp-ability-summary {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto auto;
+	gap: 12px;
+	align-items: center;
+	width: 100%;
+}
+
+.automator-mcp-ability-title {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-width: 0;
+}
+
+/* The chip component sets its own display, which beats the browser's [hidden] rule. */
+
+.automator-mcp-abilities uas-chip[hidden],
+.automator-mcp-abilities [data-filtered="out"],
+.automator-mcp-wp-abilities uas-chip[hidden] {
+	display: none !important;
+}
+
+.automator-mcp-ability-icon {
+	width: 20px;
+	height: 20px;
+	flex-shrink: 0;
+}
+
+.automator-mcp-ability-count {
+	font-size: 13px;
+	opacity: 0.65;
+	white-space: nowrap;
+	text-align: end;
+}
+
+.automator-mcp-ability-summary-controls {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	justify-self: end;
+}
+
+.automator-mcp-ability-row {
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 16px;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 0;
+	border-bottom: 1px solid var(--uap-color-border, #e5e5e5);
+}
+
+.automator-mcp-ability-row:last-child {
+	border-bottom: 0;
+}
+
+.automator-mcp-ability-row-label {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+	flex: 1 1 auto;
+}
+
+.automator-mcp-ability-row-controls {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	flex: 0 0 auto;
+	flex-wrap: nowrap;
+	justify-content: flex-end;
+}
+
+.automator-mcp-ability-unavailable {
+	display: grid;
+	grid-template-columns: repeat( 2, minmax( 0, 1fr ) );
+	gap: 4px 32px;
+}
+
+.automator-mcp-ability-unavailable-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-height: 36px;
+	min-width: 0;
+}
+
+.automator-mcp-ability-unavailable-item .automator-mcp-ability-icon {
+	width: 22px;
+	height: 22px;
+}
+
+.automator-mcp-ability-unavailable-name {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.automator-mcp-abilities-search {
+	max-width: 420px;
+}
+
+.automator-mcp-search-control {
+	position: relative;
+}
+
+.automator-mcp-search-control .uap-field-icon {
+	top: 50%;
+	transform: translateY(-50%);
+	pointer-events: none;
+}
+
+.automator-mcp-wp-abilities .automator-mcp-ability-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 96px;
+}
+
+.automator-mcp-wp-abilities .automator-mcp-ability-sentence {
+	font-size: var(--uap-font-size--body-regular, 15px);
+	line-height: 22px;
+	font-weight: 600;
+	overflow-wrap: anywhere;
+}
+
+.automator-mcp-wp-abilities .automator-mcp-ability-description {
+	max-width: 78ch;
+	color: var(--uap-font-color-secondary, #676b6f);
+	font-size: var(--uap-font-size--body-small, 14px);
+	line-height: 1.55;
+	overflow-wrap: anywhere;
+}
+
+.automator-mcp-wp-ability-heading,
+.automator-mcp-wp-ability-behavior {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 12px;
+	min-width: 0;
+}
+
+.automator-mcp-wp-ability-behavior {
+	gap: 6px;
+}
+
+.automator-mcp-wp-abilities .automator-mcp-wp-ability-behavior uas-chip,
+.automator-mcp-log .automator-mcp-table uas-chip {
+	max-width: 100%;
+	--uas--chip--custom-white-space: normal;
+}
+
+.automator-mcp-wp-abilities .automator-mcp-wp-ability-access,
+.automator-mcp-settings .uap-settings-panel-content,
+.automator-mcp-operation-title,
+.automator-mcp-ability-title > span {
+	min-width: 0;
+}
+
+.automator-mcp-wp-ability-details,
+.automator-mcp-wp-permissions-help {
+	color: var(--uap-font-color-secondary, #676b6f);
+	font-size: var(--uap-font-size--body-xsmall, 13px);
+	line-height: 20px;
+}
+
+.automator-mcp-wp-provider-footer {
+	padding-top: var(--uap-spacing-between-elements-small, 8px);
+	border-top: 1px solid var(--uap-color-border, #e5e5e5);
+}
+
+.automator-mcp-wp-ability-details summary,
+.automator-mcp-wp-permissions-help summary {
+	width: fit-content;
+	min-height: 24px;
+	cursor: pointer;
+}
+
+.automator-mcp-wp-ability-details dl {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+	gap: 8px 16px;
+}
+
+.automator-mcp-wp-ability-details dt,
+.automator-mcp-wp-ability-details dd {
+	margin: 0;
+	overflow-wrap: anywhere;
+}
+
+.automator-mcp-wp-ability-details code {
+	display: block;
+	padding: 0;
+	background: none;
+	font-size: inherit;
+	overflow-wrap: anywhere;
+}
+
+.automator-mcp-wp-permissions-help p {
+	max-width: 78ch;
+	font-size: inherit;
+	line-height: 1.5;
+	color: inherit;
+}
+
+.automator-mcp-tool-access-note {
+	color: var(--uap-font-color-secondary, #676b6f);
+	font-size: var(--uap-font-size--body-small, 14px);
+	line-height: var(--uap-line-height--body-small, 20px);
+}
+
+.automator-mcp-ability-parent-off,
+.automator-mcp-access-links span,
+.automator-mcp-settings .automator-mcp-secondary {
+	color: var(--uap-font-color-secondary, #676b6f);
+}
+
+.automator-mcp-access-review {
+	max-width: 800px;
+}
+
+.automator-mcp-access-links {
+	display: grid;
+	gap: var(--uap-spacing-between-elements-small, 8px);
+	padding: 0;
+	list-style: none;
+	font-size: var(--uap-font-size--body-regular, 14px);
+	line-height: var(--uap-line-height--body-regular, 22px);
+}
+
+.automator-mcp-access-links li {
+	display: grid;
+	grid-template-columns: 170px minmax(0, 1fr);
+	gap: 4px 16px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.automator-mcp-approvers {
+	display: grid;
+	gap: var(--uap-spacing-between-elements-small, 8px);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.automator-mcp-approvers li {
+	display: flex;
+	align-items: center;
+	gap: var(--uap-spacing-between-elements-small, 8px);
+	margin: 0;
+	overflow-wrap: anywhere;
+}
+
+.automator-mcp-approvers .avatar {
+	flex-shrink: 0;
+	border-radius: 50%;
+}
+
+/* Let the settings pane own vertical scrolling; closed accordion content must not create another scrollbar in the surrounding tab panels. */
+
+.automator-mcp-settings {
+	overflow: hidden;
+	container: mcp-settings / inline-size;
+}
+
+.automator-mcp-settings .uap-settings-panel-top {
+	min-height: 0;
+	scrollbar-gutter: stable;
+}
+
+.automator-mcp-secondary {
+	display: block;
+	color: var(--uap-font-color-secondary, #676b6f);
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.automator-mcp-operation-title strong,
+.automator-mcp-ability-title strong,
+.automator-mcp-table strong,
+.automator-mcp-database-summary strong {
+	color: var(--uap-font-color, #1d2327);
+	font-weight: 600;
+}
+
+.automator-mcp-scope {
+	display: block;
+	width: fit-content;
+	max-width: 100%;
+	margin-top: 6px;
+	--uas--chip--custom-white-space: normal;
+}
+
+.automator-mcp-details {
+	margin-top: 6px;
+	font-size: 13px;
+	line-height: 1.5;
+	color: var(--uap-font-color-secondary, #676b6f);
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.automator-mcp-details summary {
+	width: fit-content;
+	cursor: pointer;
+	min-height: 24px;
+	color: #50575e;
+}
+
+.automator-mcp-settings .automator-mcp-details p {
+	font-size: inherit;
+	line-height: inherit;
+	margin: 8px 0;
+}
+
+.automator-mcp-details code {
+	overflow-wrap: anywhere;
+	font-size: 12px;
+}
+
+.automator-mcp-details uo-text-field {
+	display: block;
+	width: 100%;
+	min-width: 0;
+	max-width: 320px;
+}
+
+.automator-mcp-log .automator-mcp-table {
+	table-layout: fixed;
+}
+
+.automator-mcp-log .automator-mcp-table th:first-child,
+.automator-mcp-log .automator-mcp-table td:first-child {
+	min-width: 0;
+	width: 19%;
+}
+
+.automator-mcp-log .automator-mcp-table th:last-child {
+	width: 28%;
+}
+
+.automator-mcp-log .automator-mcp-table td {
+	vertical-align: top;
+	overflow-wrap: anywhere;
+}
+
+.automator-mcp-log-software {
+	font-size: 13px;
+}
+
+.automator-mcp-settings .automator-mcp-table time {
+	display: block;
+}
+
+.automator-mcp-settings p.automator-mcp-secondary {
+	font-size: 13px;
+	line-height: 1.5;
+	margin: 8px 0;
+}
+
+.automator-mcp-settings .automator-mcp-ability-sentence {
+	color: var(--uap-font-color, #1d2327);
+}
+
+.automator-mcp-log-software > span {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* WordPress reserves 46px for its mobile admin bar even when the shared desktop-height token becomes zero. Keep one vertical settings scroller. */
+
+@media (max-width: 600px) {
+	body.admin-bar .uap-settings:has(uas-tab-panel[name="model-context-protocol"][active]) {
+		height: calc(100dvh - 46px);
+	}
+}
+
+@container mcp-settings (max-width: 760px) {
+	.automator-mcp-database-actions {
+		grid-template-columns: minmax(0, 1fr);
+		justify-items: start;
+	}
+
+	.automator-mcp-tool-summary,
+	.automator-mcp-ability-summary {
+		grid-template-columns: minmax(0, 1fr) auto;
+	}
+
+	.automator-mcp-tool-summary-controls,
+	.automator-mcp-abilities .automator-mcp-ability-summary-controls {
+		grid-column: 2;
+		grid-row: 1;
+	}
+
+	.automator-mcp-tool-summary-chips {
+		grid-column: 1 / -1;
+		grid-row: 2;
+	}
+
+	.automator-mcp-table-wrap--list {
+		border-radius: 0;
+		background: none;
+		border: 0;
+	}
+
+	.automator-mcp-table--list,
+	.automator-mcp-table--list tbody,
+	.automator-mcp-table--list tr {
+		display: block;
+		width: 100%;
+	}
+
+	.automator-mcp-table--list thead {
+		white-space: nowrap;
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+	}
+
+	.automator-mcp-table--list tr {
+		padding: 0;
+		box-sizing: border-box;
+		margin-bottom: 12px;
+		border: 1px solid var(--uap-accordion-border-color, #cdcdcd);
+		border-radius: var(--uap-border-radius, 10px);
+	}
+
+	.automator-mcp-table--list tbody tr + tr > * {
+		border-top: 0;
+	}
+
+	.automator-mcp-table--list td + td {
+		border-top: 1px solid var(--uap-table-border-color, #eee);
+	}
+
+	.automator-mcp-table--list td > uas-chip {
+		justify-self: start;
+		--uas--chip--custom-white-space: normal;
+	}
+
+	.automator-mcp-tools .automator-mcp-table--list td {
+		grid-template-columns: minmax(90px, 36%) minmax(0, 1fr);
+	}
+
+	.automator-mcp-tool-name,
+	.automator-mcp-tool-description {
+		grid-template-columns: 1fr;
+		gap: 4px;
+	}
+
+	.automator-mcp-table--list td::before {
+		content: attr(data-label);
+		font-weight: 600;
+		color: var(--uap-font-color, #1d2327);
+		grid-column: 1;
+		grid-row: 1;
+	}
+
+	.automator-mcp-ability-state,
+	.automator-mcp-ability-count {
+		grid-column: 1;
+		text-align: start;
+	}
+
+	.automator-mcp-ability-row {
+		flex-wrap: wrap;
+	}
+
+	.automator-mcp-ability-unavailable {
+		grid-template-columns: minmax( 0, 1fr );
+	}
+
+	.automator-mcp-ability-unavailable-item {
+		display: grid;
+		grid-template-columns: 22px minmax(0, 1fr);
+		gap: 6px 10px;
+		padding-block: 4px;
+	}
+
+	.automator-mcp-ability-unavailable-name {
+		white-space: normal;
+		overflow-wrap: anywhere;
+	}
+
+	.automator-mcp-ability-unavailable-item > .automator-mcp-ability-status {
+		grid-column: 2;
+		justify-self: start;
+	}
+
+	.automator-mcp-count-pair {
+		grid-column: 1;
+	}
+
+	.automator-mcp-wp-ability-summary .automator-mcp-ability-title {
+		grid-column: 1 / -1;
+	}
+
+	.automator-mcp-wp-ability-summary .automator-mcp-ability-count {
+		grid-column: 1;
+		grid-row: 2;
+		text-align: start;
+	}
+
+	.automator-mcp-wp-ability-summary .automator-mcp-ability-state {
+		grid-column: 2;
+		grid-row: 2;
+	}
+
+	.automator-mcp-table--list td,
+	.automator-mcp-log .automator-mcp-table td:first-child {
+		box-sizing: border-box;
+		display: grid;
+		grid-template-columns: minmax(0, 30%) minmax(0, 1fr);
+		gap: 4px 12px;
+		width: 100%;
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
+	.automator-mcp-table--list td > * {
+		grid-column: 2;
+		min-width: 0;
+	}
+
+	.automator-mcp-access-links li {
+		grid-template-columns: 1fr;
+	}
+}
+
+@container mcp-settings (max-width: 480px) {
+	.automator-mcp-wp-abilities .automator-mcp-ability-row {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 12px;
+	}
+
+	.automator-mcp-wp-abilities .automator-mcp-wp-ability-access {
+		justify-content: flex-start;
+	}
+
+	.automator-mcp-wp-ability-details dl {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 4px;
+	}
+
+	.automator-mcp-wp-ability-details dd + dt {
+		margin-top: 8px;
+	}
+}

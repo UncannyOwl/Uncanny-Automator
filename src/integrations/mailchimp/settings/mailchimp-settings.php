@@ -124,6 +124,7 @@ class Mailchimp_Settings extends App_Integration_Settings {
 	protected function after_disconnect( $response = array(), $data = array() ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Write; must not be cached.
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->prefix}uap_options WHERE option_name LIKE %s",

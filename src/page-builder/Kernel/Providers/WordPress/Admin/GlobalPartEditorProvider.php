@@ -18,6 +18,7 @@ use UncannyPageBuilder\Application\Settings\ToolSettingsAccess;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartType;
 use UncannyPageBuilder\Infrastructure\WordPress\AdminCanvasEditorWindowedGlobalPartPage;
 use UncannyPageBuilder\Infrastructure\WordPress\CssSanitizationGate;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 use UncannyPageBuilder\Infrastructure\WordPress\GlobalPartDeletionCleanup;
 use UncannyPageBuilder\Infrastructure\WordPress\GlobalPartMetaBox;
 use UncannyPageBuilder\Infrastructure\WordPress\ReusableFactory;
@@ -229,7 +230,7 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
                 GlobalPartType::Section => 'background:#f3f4f6;color:#4b5563',
             };
 
-            echo '<span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:500;' . $colors . '">'
+            echo '<span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:500;' . esc_attr($colors) . '">'
                 . esc_html($label) . '</span>';
 
             // Show "Default" badge for the active header/footer.
@@ -253,9 +254,9 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
             }
             wp_enqueue_script(
                 'upb-admin-codemirror',
-                UNCANNY_PB_URL . 'assets/js/admin-codemirror.js',
+                UNCANNY_PB_URL . 'assets/js/admin-code-editor.js',
                 [],
-                (string) filemtime(UNCANNY_PB_PATH . 'assets/js/admin-codemirror.js'),
+                (string) filemtime(UNCANNY_PB_PATH . 'assets/js/admin-code-editor.js'),
                 true,
             );
         });
@@ -308,7 +309,7 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
                     } catch (\Throwable $failure) {
                         // Render nothing further; a metabox failure must not
                         // fail the complete WordPress edit screen.
-                        error_log('[Uncanny Page Builder] Reusable code metabox render failed (' . $failure::class . ')');
+                        DiagnosticLog::write('[Uncanny Page Builder] Reusable code metabox render failed (' . $failure::class . ')');
                     }
                 },
                 'upb_global_part',
@@ -345,14 +346,16 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
                 return;
             }
 
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Code field; sanitising it as text would corrupt it. HtmlSanitizationGate filters it before storage.
             $rawHtml = wp_unslash($_POST['upb_gp_html'] ?? null);
             if (!is_string($rawHtml)) {
                 return;
             }
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Code field; sanitising it as text would corrupt it. CssSanitizationGate filters it before storage.
             $rawCss = wp_unslash($_POST['upb_gp_css'] ?? null);
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Code field; sanitising it as text would corrupt it. It is saved only for users who can publish unfiltered code.
             $rawJavaScript = wp_unslash($_POST['upb_gp_javascript'] ?? null);
-            $rawName = wp_unslash($_POST['upb_gp_name'] ?? null);
-            $name = sanitize_text_field(is_string($rawName) ? $rawName : '');
+            $name = sanitize_text_field(wp_unslash($_POST['upb_gp_name'] ?? ''));
             $rawType = get_post_meta($postId, '_upb_global_part_type', true);
 
             $saving[$postId] = true;
@@ -391,7 +394,7 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
             } catch (\Throwable $failure) {
                 // WordPress completed its own save before this observer ran.
                 // Contain the failure and surface the standard editor notice.
-                error_log('[Uncanny Page Builder] Reusable code save failed (' . $failure::class . ')');
+                DiagnosticLog::write('[Uncanny Page Builder] Reusable code save failed (' . $failure::class . ')');
                 self::rememberCodeEditorError($postId, _x('The reusable code could not be saved.', 'Page Builder', 'uncanny-automator'));
             } finally {
                 unset($saving[$postId]);
@@ -405,6 +408,7 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
                 return;
             }
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
             $postId = isset($_GET['post']) ? absint(wp_unslash($_GET['post'])) : 0;
             if ($postId <= 0) {
                 return;

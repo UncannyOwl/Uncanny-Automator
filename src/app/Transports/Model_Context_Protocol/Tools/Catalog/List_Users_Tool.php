@@ -22,6 +22,8 @@ use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abstract_MCP_T
  */
 class List_Users_Tool extends Abstract_MCP_Tool {
 
+	use Id_List_Arguments;
+
 	private const SEARCH_FILTER_PRIORITY = 999;
 
 	/**
@@ -203,18 +205,16 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 
 		// Role filter.
 		if ( ! empty( $params['role'] ) ) {
-			$args['role'] = sanitize_key( $params['role'] );
+			// Role keys are stored verbatim; sanitize_key would lowercase them.
+			$args['role'] = sanitize_text_field( (string) $params['role'] );
 		}
 
-		// Include specific IDs.
-		if ( ! empty( $params['include'] ) ) {
-			$args['include'] = array_map( 'intval', explode( ',', $params['include'] ) );
+		// Include and exclude specific IDs; an excluded ID is never returned.
+		$id_args = $this->id_list_query_args( $params, 'include', 'exclude' );
+		if ( null === $id_args ) {
+			return $this->found_answer( array(), 0, $offset, $limit );
 		}
-
-		// Exclude specific IDs.
-		if ( ! empty( $params['exclude'] ) ) {
-			$args['exclude'] = array_map( 'intval', explode( ',', $params['exclude'] ) );
-		}
+		$args = array_merge( $args, $id_args );
 
 		$search_filter = null;
 		if ( ! empty( $params['search'] ) ) {
@@ -236,7 +236,8 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 			}
 
 			$meta_query = array(
-				'key'     => sanitize_key( $params['meta_key'] ),
+				// Meta keys are case-sensitive (e.g. plugin keys like _EventStartDate).
+				'key'     => sanitize_text_field( (string) $params['meta_key'] ),
 				'compare' => $compare,
 			);
 
@@ -272,6 +273,19 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 
 		$items = array_map( array( $this, 'format_user' ), $users );
 
+		return $this->found_answer( $items, $total, $offset, $limit );
+	}
+
+	/**
+	 * The answer listing the users found.
+	 *
+	 * @param array $items  Users on this page.
+	 * @param int   $total  Users matching in all.
+	 * @param int   $offset Users skipped.
+	 * @param int   $limit  Page size.
+	 * @return array
+	 */
+	private function found_answer( array $items, int $total, int $offset, int $limit ): array {
 		return Json_Rpc_Response::create_success_response(
 			sprintf( 'Found %d users (showing %d)', $total, count( $items ) ),
 			array(

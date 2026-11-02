@@ -10,7 +10,7 @@ final class WordPressFailureReporter implements FailureReporterInterface
 {
     public function report(string $scope, int $ownerId, string $step, \Throwable $failure): void
     {
-        \error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] %s %d step "%s" failed (%s).',
             $scope,
             $ownerId,

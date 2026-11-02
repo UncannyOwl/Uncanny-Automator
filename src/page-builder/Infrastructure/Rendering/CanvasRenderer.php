@@ -21,6 +21,7 @@ use UncannyPageBuilder\Domain\Section\SectionRepositoryInterface;
 use UncannyPageBuilder\Domain\Shell\ShellMode;
 use UncannyPageBuilder\Infrastructure\Automator\AutomatorSetupWizardUrl;
 use UncannyPageBuilder\Infrastructure\Section\HtmlBridgeArtifactCleaner;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
 
 final class CanvasRenderer implements CanvasGlobalPartRendererInterface
@@ -68,8 +69,9 @@ final class CanvasRenderer implements CanvasGlobalPartRendererInterface
             return;
         }
 
-        $previewWorkingDraft = isset($_GET['upb_preview'])
-            && !isset($_GET['upb_editor_viewport'])
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        $previewRequested = isset($_GET['upb_preview']) && !isset($_GET['upb_editor_viewport']);
+        $previewWorkingDraft = $previewRequested
             && \UncannyPageBuilder\Infrastructure\WordPress\CanvasEditorChromeGate::currentUserHasAllowedCapability();
         $state = $this->workingCanvas->read($postId, $previewWorkingDraft);
         $sections = $state['sections'];
@@ -242,6 +244,7 @@ final class CanvasRenderer implements CanvasGlobalPartRendererInterface
         if (!empty($data['css'])) {
             $canvasCss = ShadowCompiler::scopeCssToCanvas(ShadowCompiler::repairCss($data['css']));
             echo '<style id="uncanny-page-builder-' . esc_attr($data['post_id']) . '-css">'
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Compiled Page Builder CSS; StyleElementCss::escape() neutralises a closing style tag and HTML escaping would corrupt the CSS.
                 . StyleElementCss::escape($canvasCss) . '</style>';
         }
 
@@ -249,11 +252,13 @@ final class CanvasRenderer implements CanvasGlobalPartRendererInterface
             foreach ($data['sections'] as $section) {
                 $this->notifyBeforeSectionRender($section, (int) $data['post_id']);
                 $html = $section['content']['html'] ?? '';
-                echo $this->renderSectionHtml(
+                $sectionHtml = $this->renderSectionHtml(
                     $html,
                     $section['id'] ?? null,
                     $this->globalPartOwnerAttributes($data, $section),
                 );
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Section HTML passes HtmlSanitizationGate when stored (executable HTML is stripped unless the author has unfiltered_html) and HtmlBridgeArtifactCleaner while rendering; escaping would print the markup as text.
+                echo $sectionHtml;
             }
         }
     }
@@ -335,7 +340,7 @@ final class CanvasRenderer implements CanvasGlobalPartRendererInterface
     private function reportExternalCallbackFailure(string $hook, \Throwable $failure): void
     {
         try {
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] WordPress callback "%s" failed (%s).',
                 $hook,
                 $failure::class,

@@ -108,16 +108,18 @@ class Telegram_Webhooks extends App_Webhooks {
 	 *
 	 * @param WP_REST_Request $request The request object.
 	 *
-	 * @return bool|WP_REST_Response
+	 * @return true|WP_REST_Response
+	 *
+	 * @throws Exception If the secret token header is missing or invalid.
 	 */
 	protected function validate_webhook( $request ) {
 		$request_security_token = $request->get_header( 'X-Telegram-Bot-Api-Secret-Token' );
 		if ( empty( $request_security_token ) ) {
-			return false;
+			throw new Exception( 'Missing secret token' );
 		}
 
 		if ( ! $this->is_valid_webhook_key( $request_security_token ) ) {
-			return false;
+			throw new Exception( 'Invalid secret token' );
 		}
 
 		// Maybe handle registration (both /start and callback queries).
@@ -399,12 +401,9 @@ class Telegram_Webhooks extends App_Webhooks {
 		$bot_username = $bot_info['username'];
 
 		$instructions = sprintf(
+			/* translators: 1: Bot username, 2: Registration token */
 			esc_html_x(
-				'To register a channel:' . "\n\n" .
-				'1. Add me (%s) to your channel as an admin' . "\n" .
-				'2. In your channel, type: `/start %s`' . "\n" .
-				'3. Click the "Register This Channel" button' . "\n\n" .
-				"That's it! I'll automatically detect it's a channel and send the registration button there.",
+				"To register a channel:\n\n1. Add me (%1\$s) to your channel as an admin\n2. In your channel, type: `/start %2\$s`\n3. Click the \"Register This Channel\" button\n\nThat's it! I'll automatically detect it's a channel and send the registration button there.",
 				'Telegram',
 				'uncanny-automator'
 			),

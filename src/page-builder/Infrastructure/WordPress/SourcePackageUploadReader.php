@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Infrastructure\WordPress;
 
 use UncannyPageBuilder\Application\Filesystem\LocalFilesystemPortInterface;
+use UncannyPageBuilder\Domain\ArrayShape;
 use UncannyPageBuilder\Domain\SourcePackage\SourcePackageValidationException;
 use UncannyPageBuilder\Application\SourcePackage\PageSourceImage;
 use UncannyPageBuilder\Application\SourcePackage\UploadedPageSource;
@@ -85,7 +86,7 @@ final class SourcePackageUploadReader
         try {
             return $this->readZipArchive((string) $file['tmp_name']);
         } catch (SourcePackageValidationException $e) {
-            throw $e->withUserMessage(self::INVALID_ARCHIVE_MESSAGE);
+            throw $e->withUserMessage(esc_html(self::INVALID_ARCHIVE_MESSAGE));
         }
     }
 
@@ -108,6 +109,7 @@ final class SourcePackageUploadReader
      */
     private static function uploadedFile(string $fieldName): array
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- The import actions verify the nonce and capability first; the upload fields are validated below.
         $file = $_FILES[$fieldName] ?? null;
         if (!is_array($file)) {
             throw new SourcePackageValidationException('Choose a page source file to import.');
@@ -373,16 +375,16 @@ final class SourcePackageUploadReader
     {
         $entry = $entries[$path] ?? null;
         if (!is_array($entry)) {
-            throw new SourcePackageValidationException("The page archive is missing {$path}.");
+            throw new SourcePackageValidationException(sprintf('The page archive is missing %s.', esc_html($path)));
         }
 
         if ($entry['size'] <= 0 || $entry['size'] > $maxBytes) {
-            throw new SourcePackageValidationException("The archived {$path} file has an invalid size.");
+            throw new SourcePackageValidationException(sprintf('The archived %s file has an invalid size.', esc_html($path)));
         }
 
         $bytes = $zip->getFromIndex($entry['index'], $maxBytes + 1);
         if (!is_string($bytes) || strlen($bytes) !== $entry['size']) {
-            throw new SourcePackageValidationException("The archived {$path} file could not be read completely.");
+            throw new SourcePackageValidationException(sprintf('The archived %s file could not be read completely.', esc_html($path)));
         }
 
         return $bytes;
@@ -419,7 +421,7 @@ final class SourcePackageUploadReader
     ): string {
         $entry = $entries[$path] ?? null;
         if (!is_array($entry) || $entry['size'] <= 0 || $entry['size'] > $maxBytes) {
-            throw new SourcePackageValidationException("The archived {$path} file has an invalid size.");
+            throw new SourcePackageValidationException(sprintf('The archived %s file has an invalid size.', esc_html($path)));
         }
 
         $temporaryPath = self::temporaryPath('uncanny-page-builder-source-image-');
@@ -428,13 +430,13 @@ final class SourcePackageUploadReader
             : $zip->getFromIndex($entry['index'], $maxBytes + 1);
         if (!is_resource($source) && !is_string($source)) {
             $this->filesystem->delete($temporaryPath);
-            throw new SourcePackageValidationException("The archived {$path} file could not be read completely.");
+            throw new SourcePackageValidationException(sprintf('The archived %s file could not be read completely.', esc_html($path)));
         }
 
         $written = $this->filesystem->writeBounded($temporaryPath, $source, $maxBytes);
         if ($written !== $entry['size']) {
             $this->filesystem->delete($temporaryPath);
-            throw new SourcePackageValidationException("The archived {$path} file could not be read completely.");
+            throw new SourcePackageValidationException(sprintf('The archived %s file could not be read completely.', esc_html($path)));
         }
 
         return $temporaryPath;
@@ -492,7 +494,7 @@ final class SourcePackageUploadReader
             || !array_key_exists('page_source_sha256', $manifest)
             || !is_string($manifest['page_source_sha256'])
         ) {
-            throw new SourcePackageValidationException(self::INVALID_ARCHIVE_MESSAGE);
+            throw new SourcePackageValidationException(esc_html(self::INVALID_ARCHIVE_MESSAGE));
         }
 
         $compatibility = $manifest['compatibility'] ?? null;
@@ -592,10 +594,10 @@ final class SourcePackageUploadReader
         try {
             $decoded = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException) {
-            throw new SourcePackageValidationException($invalidMessage);
+            throw new SourcePackageValidationException(esc_html($invalidMessage));
         }
 
-        if (!is_array($decoded) || array_is_list($decoded)) {
+        if (!is_array($decoded) || ArrayShape::isList($decoded)) {
             throw new SourcePackageValidationException('The JSON file must contain a source package object.');
         }
 

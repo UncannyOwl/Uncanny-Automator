@@ -218,6 +218,7 @@ class UOTC_USERATTAINSSCORE extends \Uncanny_Automator\Recipe\Trigger {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 		$result = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT date_time, CURRENT_TIMESTAMP as current_mysql_time
@@ -292,7 +293,8 @@ class UOTC_USERATTAINSSCORE extends \Uncanny_Automator\Recipe\Trigger {
 
 		global $wpdb;
 
-		$table_name   = $wpdb->prefix . Database::TABLE_REPORTING;
+		$table_name = $wpdb->prefix . Database::TABLE_REPORTING;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Tin Canny's own table; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
 		$tin_can_data = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$table_name} WHERE user_id = %d AND module LIKE %s ORDER BY xstored DESC LIMIT 0,1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared

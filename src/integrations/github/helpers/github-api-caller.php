@@ -366,8 +366,8 @@ class Github_Api_Caller extends Api_Caller {
 			if ( '' === $details ) {
 				throw $e;
 			}
-			// $e->getMessage() is already escaped by the parent; escape only the detail.
-			throw new Exception( $e->getMessage() . ': ' . esc_html( $details ) );
+			// The parent's message is already escaped; esc_html() does not double-encode it.
+			throw new Exception( esc_html( $e->getMessage() ) . ': ' . esc_html( $details ) );
 		}
 	}
 

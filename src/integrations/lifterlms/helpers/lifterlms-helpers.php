@@ -88,6 +88,7 @@ class Lifterlms_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_lf_courses', $option );
 	}
 
@@ -132,6 +133,7 @@ class Lifterlms_Helpers {
 			'custom_value_description' => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_lf_lessons', $option );
 	}
 
@@ -174,6 +176,7 @@ class Lifterlms_Helpers {
 			'custom_value_description' => esc_attr__( 'Section ID', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_lf_sections', $option );
 	}
 
@@ -220,6 +223,7 @@ class Lifterlms_Helpers {
 			'custom_value_description' => esc_attr__( 'Membership ID', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_lf_memberships', $option, $is_all_label );
 	}
 
@@ -262,6 +266,7 @@ class Lifterlms_Helpers {
 			'custom_value_description' => esc_attr__( 'Quiz ID', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_lf_quizs', $option );
 	}
 

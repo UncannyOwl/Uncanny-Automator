@@ -36,8 +36,8 @@ class EDD_ANON_PRODUCT_PURCHASE extends Trigger {
 		$this->set_trigger_type( 'anonymous' );
 		$this->set_is_login_required( false );
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_trigger_code(), 'integration/easy-digital-downloads/' ) );
-		// translators: %1$s: Download
 		$this->set_sentence(
+			/* translators: %1$s: Download */
 			sprintf( esc_html_x( 'A customer purchases {{a download:%1$s}}', 'Easy Digital Downloads', 'uncanny-automator' ), $this->get_trigger_meta() )
 		);
 		// Non-active state sentence to show

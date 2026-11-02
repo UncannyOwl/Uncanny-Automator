@@ -4,6 +4,10 @@ namespace Uncanny_Automator;
 
 use WPForms_Provider;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Uncanny Automator integration.
  *
@@ -94,6 +98,7 @@ class WPForms_Uncanny_Automator extends WPForms_Provider {
 		$configured = '';
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Joins core posts and postmeta; no WordPress API returns this.
 		$forms = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT p.post_parent
@@ -124,7 +129,7 @@ GROUP BY p.post_parent",
 		echo '<i class="fa fa-angle-right wpforms-toggle-arrow"></i>';
 
 		if ( ! empty( $configured ) ) {
-			echo '<i class="fa fa-check-circle-o"></i>';
+			echo '<i class="fa fa-circle-check-o"></i>';
 		}
 
 		echo '</a>';
@@ -155,28 +160,30 @@ GROUP BY p.post_parent",
 	 */
 	protected function get_js_strings() {
 
-		$error_could_not_install = sprintf(
-			wp_kses( /* translators: %s - Lite plugin download URL. */
-				__( 'Could not install plugin. Please <a href="%s">download</a> and install manually.', 'uncanny-automator' ), // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
-				array(
-					'a' => array(
-						'href' => true,
-					),
-				)
+		$error_could_not_install = wp_kses(
+			sprintf(
+			/* translators: %s: download link */
+				esc_html__( 'Could not install plugin. Please %s and install manually.', 'uncanny-automator' ),
+				'<a href="' . esc_url( $this->config['download_url'] ) . '">download</a>'
 			),
-			esc_url( $this->config['download_url'] )
+			array(
+				'a' => array(
+					'href' => true,
+				),
+			)
 		);
 
-		$error_could_not_activate = sprintf(
-			wp_kses( /* translators: %s - Lite plugin download URL. */
-				__( 'Could not activate plugin. Please activate from the <a href="%s">Plugins page</a>.', 'uncanny-automator' ), // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
-				array(
-					'a' => array(
-						'href' => true,
-					),
-				)
+		$error_could_not_activate = wp_kses(
+			sprintf(
+			/* translators: %s: Plugins page link */
+				esc_html__( 'Could not activate plugin. Please activate from the %s.', 'uncanny-automator' ),
+				'<a href="' . esc_url( admin_url( 'plugins.php' ) ) . '">Plugins page</a>'
 			),
-			esc_url( admin_url( 'plugins.php' ) )
+			array(
+				'a' => array(
+					'href' => true,
+				),
+			)
 		);
 
 		return array(
@@ -205,7 +212,7 @@ GROUP BY p.post_parent",
 	public function builder_output() {
 		?>
 		<div class="wpforms-panel-content-section wpforms-panel-content-section-<?php echo esc_attr( $this->slug ); ?>"
-			 id="<?php echo esc_attr( $this->slug ); ?>-provider">
+		id="<?php echo esc_attr( $this->slug ); ?>-provider">
 
 			<?php $this->builder_output_before(); ?>
 
@@ -238,12 +245,14 @@ GROUP BY p.post_parent",
 	 */
 	public function builder_output_after() {
 		$this_form_anyone = sprintf(
-			esc_html__( 'When anyone submits %s form', 'uncanny-automator' ), // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
+			/* translators: %s: form reference */
+			esc_html__( 'When anyone submits %s form', 'uncanny-automator' ),
 			sprintf( '<span class="uap-wpf-integration-trigger__field">%s</span>', esc_html__( 'this', 'uncanny-automator' ) )
 		);
 
 		$field_form_anoynone = sprintf(
-			esc_html__( 'When anyone submits %1$s form with %2$s in %3$s', 'uncanny-automator' ), // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
+			/* translators: 1: form reference, 2: value reference, 3: field reference */
+			esc_html__( 'When anyone submits %1$s form with %2$s in %3$s', 'uncanny-automator' ),
 			sprintf( '<span class="uap-wpf-integration-trigger__field">%s</span>', esc_html__( 'this', 'uncanny-automator' ) ),
 			sprintf( '<span class="uap-wpf-integration-trigger__field">%s</span>', esc_html__( 'a specific value', 'uncanny-automator' ) ),
 			sprintf( '<span class="uap-wpf-integration-trigger__field">%s</span>', esc_html__( 'a specific field', 'uncanny-automator' ) )
@@ -301,8 +310,8 @@ GROUP BY p.post_parent",
 								?>
 								<label class="uap-wpf-integration-recipe-trigger <?php echo esc_attr( $class ); ?>">
 									<input type="radio" value="<?php echo esc_attr( $trigger_code ); ?>"
-										   data-target="create_<?php echo esc_attr( $trigger_code ); ?>"
-										   class="uap-wpf-integration-recipe-trigger-radio"
+											data-target="create_<?php echo esc_attr( $trigger_code ); ?>"
+											class="uap-wpf-integration-recipe-trigger-radio"
 										<?php echo esc_attr( $disabled ); ?>
 										<?php echo esc_attr( $checked ); ?>
 									>
@@ -331,14 +340,14 @@ GROUP BY p.post_parent",
 						<div class="uap-wpf-integration-flow-step__number">2</div>
 					</div>
 
-					<div class="uap-wpf-integration-flow-step__content">
-						<a data-id="ANONWPFSUBFORM" href="<?php echo esc_url_raw( $new_recipe_url ); ?>" target="_blank"
-						   class="uap-wpf-integration-create-recipe-btn wpforms-btn wpforms-btn-md wpforms-btn-orange">
-							<?php esc_attr_e( 'Create automation', 'uncanny-automator' ); ?>
-						</a>
-						<a data-id="ANONWPFSUBMITFIELD" href="<?php echo esc_url_raw( $new_anon_recipe_url ); ?>"
-						   target="_blank"
-						   class="uap-wpf-integration-create-recipe-btn wpforms-btn wpforms-btn-md wpforms-btn-orange">
+				<div class="uap-wpf-integration-flow-step__content">
+					<a data-id="ANONWPFSUBFORM" href="<?php echo esc_url_raw( $new_recipe_url ); ?>" target="_blank"
+						class="uap-wpf-integration-create-recipe-btn wpforms-btn wpforms-btn-md wpforms-btn-orange">
+						<?php esc_attr_e( 'Create automation', 'uncanny-automator' ); ?>
+					</a>
+					<a data-id="ANONWPFSUBMITFIELD" href="<?php echo esc_url_raw( $new_anon_recipe_url ); ?>"
+						target="_blank"
+						class="uap-wpf-integration-create-recipe-btn wpforms-btn wpforms-btn-md wpforms-btn-orange">
 							<?php esc_attr_e( 'Create automation', 'uncanny-automator' ); ?>
 						</a>
 					</div>
@@ -367,9 +376,9 @@ GROUP BY p.post_parent",
 				<div class="uap-wpdf-connected-recipes">
 					<ul>
 						<?php foreach ( $this->configured_recipes as $recipe_id ) { ?>
-							<li>
-								<a href="<?php echo esc_url( get_edit_post_link( $recipe_id ) ); ?>"><?php echo esc_html( sprintf( '#%d- %s %s', $recipe_id, empty( get_the_title( $recipe_id ) ) ? esc_html__( 'no title', 'uncanny-automator' ) : get_the_title( $recipe_id ), 'draft' === get_post_status( $recipe_id ) ? __( '(Draft)', 'uncanny-automator' ) : '' ) ); ?></a>
-							</li>
+					<li>
+						<a href="<?php echo esc_url( get_edit_post_link( $recipe_id ) ); ?>"><?php echo esc_html( sprintf( '#%d- %s %s', $recipe_id, empty( get_the_title( $recipe_id ) ) ? esc_html_x( 'no title', 'WPForms', 'uncanny-automator' ) : get_the_title( $recipe_id ), 'draft' === get_post_status( $recipe_id ) ? esc_html_x( '(Draft)', 'WPForms', 'uncanny-automator' ) : '' ) ); ?></a>
+					</li>
 						<?php } ?>
 					</ul>
 				</div>
@@ -405,7 +414,7 @@ GROUP BY p.post_parent",
 	/**
 	 * Output the insall/activate Uncanny Automator button.
 	 *
-	 * @param string $class Additonal button classes.
+	 * @param string $css_class Additonal button classes.
 	 *
 	 * @since 1.7.0
 	 */

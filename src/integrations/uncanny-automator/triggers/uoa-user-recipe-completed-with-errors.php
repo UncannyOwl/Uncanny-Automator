@@ -33,28 +33,26 @@ class UOA_USER_RECIPE_COMPLETED_WITH_ERRORS extends \Uncanny_Automator\Recipe\Tr
 
 		// The action hook to listen into. Automator invokes 'automator_recipe_completed' when a recipe is completed.
 		$this->add_action( 'automator_recipe_completed_with_errors', 99, 4 );
-
 	}
 
 	/**
 	 * Validates the Trigger entry.
 	 *
 	 * @param mixed[] $trigger
-	 * @param mixed[] $hook_args
+	 * @param mixed[] $hook_args The hook's recipe ID, user ID, recipe log ID and run args.
 	 *
-	 * @return bool Only fires the trigger when its processed once.
+	 * @return bool False when this trigger or "An Automator recipe completes with errors" started the run.
 	 */
 	public function validate( $trigger, $hook_args ) {
 
-		static $processed_once = 0;
+		$run_args = (array) ( $hook_args[3] ?? array() );
 
-		if ( 'UOA_USER_RECIPE_COMPLETED_WITH_ERRORS' === $trigger['meta']['code'] ) {
-			$processed_once++;
-		}
+		// A run either "completes with errors" trigger started fires neither: a recipe on one
+		// whose own action fails would fire itself, or a recipe on the other, until the trigger
+		// queue stops. The run's trigger ID is read, not its code: a run closed after its
+		// trigger failed carries only the ID.
+		$started_by = get_post_meta( absint( $run_args['trigger_id'] ?? 0 ), 'code', true );
 
-		return $processed_once === 1;
-
+		return ! in_array( $started_by, array( 'UOA_USER_RECIPE_COMPLETED_WITH_ERRORS', 'UOAERRORS' ), true );
 	}
-
 }
-

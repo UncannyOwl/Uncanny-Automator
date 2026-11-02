@@ -132,7 +132,7 @@ final class WorkingCanvasAdminActions
 
     private function assertPostRequest(): void
     {
-        if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? '')) === 'POST') {
+        if (strtoupper(sanitize_text_field(wp_unslash($_SERVER['REQUEST_METHOD'] ?? ''))) === 'POST') {
             return;
         }
 
@@ -145,7 +145,7 @@ final class WorkingCanvasAdminActions
 
     private function maintenanceFailure(string $operation, \Throwable $failure): never
     {
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] Working canvas maintenance operation "%s" failed (%s).',
             $operation,
             $failure::class,

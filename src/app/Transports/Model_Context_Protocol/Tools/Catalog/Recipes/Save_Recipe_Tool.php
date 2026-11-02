@@ -11,16 +11,18 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Catalog\Recipes;
 
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abstract_MCP_Tool;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Account_Access_Policy;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Json_Rpc_Response;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Recipe_Service;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Utilities\Recipe_Formatter;
-use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Utilities\Recipe_Validator;
 use Uncanny_Automator\App\Recipe_Builder\User_Selector\Services\User_Selector_Service;
 use Uncanny_Automator\App\Recipe_Builder\Token\Services\Validation\Token_Validator;
 use Uncanny_Automator\App\Recipe_Builder\Shared\User\Value_Objects\User_Context;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Status;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Throttle;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Utilities\Recipe_Link_Builder;
 use Uncanny_Automator\App\Recipe_Builder\User_Selector\Services\User_Selector_Advisor;
+use Uncanny_Automator\App\Recipe_Builder\User_Selector\Services\User_Selector_Availability;
 use WP_Error;
 
 class Save_Recipe_Tool extends Abstract_MCP_Tool {
@@ -47,7 +49,7 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 	protected function get_annotations(): array {
 		return array(
 			'readOnlyHint'    => false,
-			'destructiveHint' => false,
+			'destructiveHint' => true,
 			'idempotentHint'  => false,
 			'openWorldHint'   => true,
 		);
@@ -74,7 +76,7 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 				'status'         => array(
 					'type'        => 'string',
 					'description' => 'Recipe publication status.',
-					'enum'        => array( Recipe_Status::DRAFT, Recipe_Status::PUBLISH, 'trash' ),
+					'enum'        => array( Recipe_Status::DRAFT, Recipe_Status::PUBLISH, Recipe_Status::TRASH ),
 					'default'     => Recipe_Status::DRAFT,
 				),
 				'type'           => array(
@@ -91,7 +93,8 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 				),
 				'notes'          => array(
 					'type'        => 'string',
-					'description' => 'Recipe notes or description.',
+					'description' => 'Recipe notes or description. Max 10,000 characters.',
+					'maxLength'   => 10000,
 				),
 				'categories'     => array(
 					'type'        => 'array',
@@ -123,12 +126,12 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 						'unit'     => array(
 							'type'        => 'string',
 							'description' => 'Duration unit.',
-							'enum'        => array( 'minutes', 'hours', 'days' ),
+							'enum'        => Recipe_Throttle::VALID_UNITS,
 						),
 						'scope'    => array(
 							'type'        => 'string',
 							'description' => 'Throttle scope (only for "user" recipes).',
-							'enum'        => array( 'recipe', 'user' ),
+							'enum'        => Recipe_Throttle::VALID_SCOPES,
 						),
 					),
 				),
@@ -141,11 +144,6 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 					'type'        => 'integer',
 					'description' => 'Total runs allowed across all users (anonymous recipes).',
 					'minimum'     => 0,
-				),
-				'redirect_url'   => array(
-					'type'        => 'string',
-					'description' => 'URL to redirect users to when the recipe completes. Leave empty to remove redirect. When provided, automatically creates or updates a redirect closure.',
-					'format'      => 'uri',
 				),
 				'user_selector'  => array(
 					'type'        => 'object',
@@ -280,11 +278,23 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 		$user_selector = $params['user_selector'] ?? null;
 		unset( $params['categories'], $params['tags'], $params['user_selector'] );
 
-		// Validate redirect_url scheme if provided (transport-level input validation).
-		if ( ! empty( $params['redirect_url'] ) ) {
-			$parsed = wp_parse_url( $params['redirect_url'] );
-			if ( ! isset( $parsed['scheme'] ) || ! in_array( $parsed['scheme'], array( 'http', 'https' ), true ) ) {
-				return Json_Rpc_Response::create_error_response( 'redirect_url must use http:// or https:// scheme.' );
+		// Refuse before anything is saved, so a refused selector leaves the recipe as it was.
+		if ( is_array( $user_selector ) && ! empty( $user_selector ) ) {
+			$unavailable = ( new User_Selector_Availability() )->refusal();
+			if ( null !== $unavailable ) {
+				return Json_Rpc_Response::create_error_response(
+					$unavailable->get_error_message(),
+					array(
+						'code'    => $unavailable->get_error_code(),
+						'outcome' => 'refused_before_running',
+					)
+				);
+			}
+		}
+		if ( is_array( $user_selector ) ) {
+			$refusal = ( new Account_Access_Policy() )->user_selector_refusal( $user_selector );
+			if ( null !== $refusal ) {
+				return Json_Rpc_Response::create_error_response( $refusal, array( 'outcome' => 'refused_before_running' ) );
 			}
 		}
 
@@ -299,12 +309,6 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 		}
 
 		if ( $wants_publish && $recipe_id > 0 ) {
-			$validator = new Recipe_Validator();
-			$readiness = $validator->validate_publish_readiness( $recipe_id );
-			if ( is_wp_error( $readiness ) ) {
-				return Json_Rpc_Response::create_error_response( $readiness->get_error_message() );
-			}
-
 			// Block publish if anonymous recipe needs user selector.
 			$advisor        = new User_Selector_Advisor();
 			$selector_error = $advisor->check_on_publish( $recipe_id );
@@ -313,6 +317,7 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 			}
 		}
 
+		$recipe_saved = false;
 		try {
 			if ( $recipe_id > 0 ) {
 				// Update existing recipe.
@@ -321,8 +326,15 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 
 				$result = $service->update_recipe( $recipe_id, $params );
 				if ( is_wp_error( $result ) ) {
-					return Json_Rpc_Response::create_error_response( $result->get_error_message() );
+					if ( 'recipe_update_unconfirmed' === $result->get_error_code() ) {
+						return Json_Rpc_Response::create_error_response(
+							$result->get_error_message(),
+							array_merge( array( 'code' => $result->get_error_code() ), $result->get_error_data() )
+						);
+					}
+					return Json_Rpc_Response::create_error_response( $this->error_with_reasons( $result ) );
 				}
+				$recipe_saved = true;
 
 				$recipe_data = isset( $result['recipe'] ) ? $result['recipe'] : $result;
 				$recipe_data = $this->format_recipe_data( $recipe_data );
@@ -357,8 +369,15 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 				// Create new recipe.
 				$result = $service->create_recipe( $params );
 				if ( is_wp_error( $result ) ) {
+					if ( is_array( $result->get_error_data() ) && 'unconfirmed' === ( $result->get_error_data()['outcome'] ?? null ) ) {
+						return Json_Rpc_Response::create_error_response(
+							$result->get_error_message(),
+							array_merge( array( 'code' => $result->get_error_code() ), $result->get_error_data() )
+						);
+					}
 					return Json_Rpc_Response::create_error_response( $result->get_error_message() );
 				}
+				$recipe_saved = true;
 
 				$recipe_data = $this->format_recipe_data( $result['recipe'] ?? array() );
 				$created_id  = isset( $result['recipe_id'] ) ? (int) $result['recipe_id'] : (int) ( $recipe_data['id'] ?? 0 );
@@ -387,9 +406,19 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 
 				return Json_Rpc_Response::create_success_response( 'Recipe created successfully', $payload );
 			}
-		} catch ( \InvalidArgumentException $e ) {
-			return Json_Rpc_Response::create_error_response( $e->getMessage() );
 		} catch ( \Exception $e ) {
+			if ( $recipe_saved ) {
+				return Json_Rpc_Response::create_error_response(
+					'The recipe was saved, but the rest of the operation could not be confirmed. Check the recipe on the site before retrying.',
+					array(
+						'status'  => 500,
+						'outcome' => 'unconfirmed',
+					)
+				);
+			}
+			if ( $e instanceof \InvalidArgumentException ) {
+				return Json_Rpc_Response::create_error_response( $e->getMessage() );
+			}
 			return Json_Rpc_Response::create_error_response( 'Failed to process recipe: ' . $e->getMessage() );
 		}
 	}

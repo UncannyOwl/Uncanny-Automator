@@ -8,6 +8,7 @@ use UncannyPageBuilder\Application\Canvas\OriginalPageContentReaderInterface;
 use UncannyPageBuilder\Application\Canvas\PublicPageRenderPolicy;
 use UncannyPageBuilder\Application\Rendering\PublishedPage;
 use UncannyPageBuilder\Domain\Shell\ShellMode;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 
 /**
  * Renders the standalone native document from one exact published artifact.
@@ -39,7 +40,7 @@ final class PublishedCanvasRenderer
             // A raw runtime template can contain request-sensitive placeholder
             // data. Use the preserved WordPress body and disable artifact
             // runtime instead of exposing raw source or an empty document.
-            error_log('[Uncanny Page Builder] Published binding render failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Published binding render failed (' . $failure::class . ')');
             $publishedRuntimeEnabled = false;
             $publishedHtml = $this->fallbackContent($postId);
         }
@@ -54,19 +55,20 @@ final class PublishedCanvasRenderer
         try {
             $content = $this->originalContent->publicContent($postId);
         } catch (\Throwable $failure) {
-            error_log('[Uncanny Page Builder] Published WordPress fallback read failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Published WordPress fallback read failed (' . $failure::class . ')');
 
             return '';
         }
 
         try {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, applied as WordPress applies it.
             $filtered = apply_filters('the_content', $content);
 
             return is_string($filtered) ? $filtered : $content;
         } catch (\Throwable $failure) {
             // The preserved body is safer than a blank public document when
             // an unrelated content filter fails.
-            error_log('[Uncanny Page Builder] Published WordPress fallback filter failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Published WordPress fallback filter failed (' . $failure::class . ')');
 
             return $content;
         }

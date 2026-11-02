@@ -30,6 +30,7 @@ class LD_MARKCOURSEDONE extends \Uncanny_Automator\Recipe\Action {
 
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Course */
 				esc_html_x( 'Mark {{a course:%1$s}} complete for the user', 'LearnDash', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)

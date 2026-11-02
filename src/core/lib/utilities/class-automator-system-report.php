@@ -317,6 +317,7 @@ class Automator_System_Report {
 		// and that is why this if condition is needed.
 		if ( defined( 'DB_NAME' ) ) {
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads table sizes from information_schema; no WordPress API exists.
 			$database_table_information = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT
@@ -345,8 +346,6 @@ class Automator_System_Report {
 					'trigger_meta'       => 'uap_trigger_log_meta',
 					'action'             => 'uap_action_log',
 					'action_meta'        => 'uap_action_log_meta',
-					'closure'            => 'uap_closure_log',
-					'closure_meta'       => 'uap_closure_log_meta',
 					'api'                => 'uap_api_log',
 					'api_response_logs'  => 'uap_api_log_response',
 					'tokens_logs'        => 'uap_tokens_log',
@@ -461,6 +460,7 @@ class Automator_System_Report {
 
 		$sum = 0;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads table sizes from information_schema; no WordPress API exists.
 		$tables = $wpdb->get_results(
 			$wpdb->prepare(
 				// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery
@@ -684,18 +684,15 @@ class Automator_System_Report {
 			return;
 		}
 
-		if ( ! class_exists( '\Uncanny_Automator\Admin_Menu' ) ) {
-			include_once UA_ABSPATH . 'src/core/admin/class-admin-menu.php';
-		}
-		$dashboard = Admin_Menu::get_dashboard_details();
-		$credits   = 0;
-		if ( $dashboard->has_site_connected ) {
-			$credits = $dashboard->miscellaneous->free_credits;
-		} else {
+		$meter = ( new \Uncanny_Automator\App\Plan\Services\Account\App_Credits_Service() )->get_meter();
+		if ( is_wp_error( $meter ) ) {
+			$credits = esc_html__( 'Could not be read', 'uncanny-automator' );
+		} elseif ( null === $meter ) {
 			$credits = esc_html__( 'Not connected', 'uncanny-automator' );
-		}
-		if ( $dashboard->is_pro ) {
+		} elseif ( $meter['unlimited'] ) {
 			$credits = esc_html__( 'Unlimited', 'uncanny-automator' );
+		} else {
+			$credits = max( 0, (int) $meter['limit'] - $meter['used'] );
 		}
 
 		return array(
@@ -706,7 +703,6 @@ class Automator_System_Report {
 			'recipe_logs_count'    => Automator()->get->recipe_log_count(),
 			'not_completed_status' => Automator()->get->recipe_log_count( false ),
 			'credits_left'         => $credits,
-			'credit_recipes'       => Automator()->get->count_recipes_with_apps(),
 		);
 	}
 }

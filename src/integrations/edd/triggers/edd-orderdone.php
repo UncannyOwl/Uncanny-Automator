@@ -35,8 +35,8 @@ class EDD_ORDERDONE extends Trigger {
 		$this->set_trigger_meta( self::TRIGGER_META );
 		$this->add_action( 'edd_complete_purchase', 10, 3 );
 		$this->set_sentence(
-			/* translators: %1$s: Order total, %2$s: less or greater than, %3$s: number of times */
 			sprintf(
+				/* translators: %1$s: Comparison, %2$s: Order total, %3$s: Number of times */
 				esc_html_x( 'Order total is {{equals to:%1$s}} ${{0:%2$s}} and placed {{a number of:%3$s}} time(s)', 'Easy Digital Downloads', 'uncanny-automator' ),
 				'NUMBERCOND:' . self::TRIGGER_META,
 				$this->get_trigger_meta() . ':' . self::TRIGGER_META,

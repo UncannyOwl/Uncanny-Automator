@@ -5,68 +5,115 @@ namespace Uncanny_Automator;
 use Uncanny_Automator\Automator_System_Report;
 use Uncanny_Automator\App\Infrastructure\Api_Client\Api_Request;
 use Uncanny_Automator\App\Infrastructure\Page_Builder\Page_Builder_Settings;
+use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Query_Service;
+use Uncanny_Automator\App\Presentation\Recipe_View\Recipe_View;
+use Uncanny_Automator\App\Presentation\Recipe_View\Recipe_View_Preference_Service;
+use Uncanny_Automator\App\Recipe_Builder\Action\Services\Utilities\Delay_Schedule_Wire_Mapper;
+use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Type;
+use Uncanny_Automator\App\Recipe_Builder\Block\Migration\Legacy_Storage_Migration;
+use Uncanny_Automator\App\Recipe_Builder\Block\Registry\Blocks\Delay_Block;
+use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Fields_Bag;
 
+use Uncanny_Automator\Services\Action_Scheduler;
 use WP_REST_Response;
 
 use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
 use function Uncanny_Automator\App\Infrastructure\automator_usage_reports_client;
 
 /**
- * Class Usage_Reports.
+ * Builds the daily usage report and sends it to the Usage Reports Service.
  *
  * @package Uncanny_Automator
  */
 class Usage_Reports {
 
 	/**
+	 * Option that stores the site's opt-in to usage reporting.
 	 *
+	 * @var string
 	 */
-	const  OPTION_NAME = 'automator_reporting';
+	const OPTION_NAME = 'automator_reporting';
+
 	/**
+	 * Cron hook the report is scheduled on and sent from.
 	 *
+	 * @var string
 	 */
-	const  SCHEDULE_NAME = 'automator_report';
+	const SCHEDULE_NAME = 'automator_report';
+
 	/**
+	 * WP-Cron recurrence the report is sent on.
+	 *
 	 * Recurrence for SCHEDULE_NAME. Was 'weekly' until 7.7 — every site now
 	 * reports once a day. Installs carrying the old weekly event are migrated
 	 * by schedule_report(), which compares this against the live recurrence.
-	 */
-	const  SCHEDULE_RECURRENCE = 'daily';
-	/**
 	 *
+	 * @var string
 	 */
-	const  AUTOMATOR_PATH = 'uncanny-automator/uncanny-automator.php';
+	const SCHEDULE_RECURRENCE = 'daily';
+
 	/**
+	 * Plugin basename of Automator Free, for its activation and deactivation hooks.
 	 *
+	 * @var string
 	 */
-	const  AUTOMATOR_PRO_PATH = 'uncanny-automator-pro/uncanny-automator-pro.php';
+	const AUTOMATOR_PATH = 'uncanny-automator/uncanny-automator.php';
+
 	/**
+	 * Plugin basename of Automator Pro, for its activation and deactivation hooks.
 	 *
+	 * @var string
 	 */
-	const  STATS_OPTION_NAME = 'usage_report_stats';
+	const AUTOMATOR_PRO_PATH = 'uncanny-automator-pro/uncanny-automator-pro.php';
+
 	/**
+	 * Option that collects page views and admin events between two sends.
+	 *
+	 * @var string
+	 */
+	const STATS_OPTION_NAME = 'usage_report_stats';
+
+	/**
+	 * Most values one `events` key may hold before further events are dropped.
+	 *
 	 * Per-key ceiling on the `events` buckets in STATS_OPTION_NAME, and on the
 	 * length of a single recorded value. The row is cleared after every
 	 * successful send, so these only bind inside one reporting period — they
 	 * exist so a site that cannot reach the service can't grow a uap_options
 	 * row without limit.
-	 */
-	const  MAX_EVENTS_PER_KEY = 500;
-	/**
 	 *
+	 * @var int
 	 */
-	const  MAX_EVENT_VALUE_LENGTH = 200;
+	const MAX_EVENTS_PER_KEY = 500;
+
 	/**
+	 * Longest stored event value, in characters; longer values are truncated.
+	 *
+	 * @var int
+	 */
+	const MAX_EVENT_VALUE_LENGTH = 200;
+
+	/**
+	 * Provider slugs get_ai_providers() checks for a stored API key.
+	 *
 	 * AI provider slugs whose connection state is reported. Each stores its key
 	 * at `automator_{slug}_api_key`; only whether that key is set is ever sent.
 	 * Mirrors the providers in src/core/lib/ai/provider/.
+	 *
+	 * @var string[]
 	 */
-	const  AI_PROVIDERS = array( 'openai', 'claude', 'perplexity', 'grok', 'gemini', 'cohere', 'mistral' );
+	const AI_PROVIDERS = array( 'openai', 'claude', 'perplexity', 'grok', 'gemini', 'cohere', 'mistral' );
+
 	/**
+	 * Cap on the error code rows count_errors() returns, most frequent first.
+	 *
 	 * How many distinct error codes the health block reports. A long tail of
 	 * one-off codes is noise; the head is where a broken integration shows up.
+	 *
+	 * @var int
 	 */
-	const  MAX_ERROR_CODES = 20;
+	const MAX_ERROR_CODES = 20;
+
 	/**
 	 * How many recipe-log ids to step the health boundary back by.
 	 *
@@ -80,14 +127,21 @@ class Usage_Reports {
 	 * Generous on purpose. Over-reaching costs a slightly wider index range;
 	 * under-reaching would silently drop a delayed action's row from the
 	 * window it actually belongs to.
+	 *
+	 * @var int
 	 */
-	const  BOUNDARY_LOOKBACK = 5000;
+	const BOUNDARY_LOOKBACK = 5000;
+
 	/**
+	 * Status code to stable name map that label_statuses() applies to health rows.
+	 *
 	 * Stable, UNTRANSLATED names for the statuses the health block groups by.
 	 * Automator_Status::name() is translated, which would make the value depend
 	 * on the reporting site's locale.
+	 *
+	 * @var array<int, string>
 	 */
-	const  STATUS_NAMES = array(
+	const STATUS_NAMES = array(
 		0  => 'not_completed',
 		1  => 'completed',
 		2  => 'completed_with_errors',
@@ -101,25 +155,58 @@ class Usage_Reports {
 		13 => 'in_progress_with_error',
 		14 => 'failed',
 	);
+
 	/**
-	 * @var
+	 * The system report this report copies server, theme, plugin and database facts from.
+	 *
+	 * @var array
 	 */
 	public $system_report;
+
 	/**
-	 * @var
+	 * Catalog display names resolved during this report, keyed by integration code.
+	 *
+	 * @var array<string, string>
 	 */
-	public $recipes_data;
+	private $integration_names = array();
+
 	/**
-	 * @var
+	 * Published item rows per report item type (triggers, actions), read once per report.
+	 *
+	 * @var array<string, array<int, array<string, mixed>>>
+	 */
+	private $item_rows = array();
+
+	/**
+	 * Published block rows per block type, read once per report.
+	 *
+	 * @var array<string, array<int, array<string, mixed>>>
+	 */
+	private $block_rows = array();
+
+	/**
+	 * Every delay point in a published recipe, or null until first read.
+	 *
+	 * @var array<int, array{recipe_id: int, mode: string, unit: string}>|null
+	 */
+	private $delay_points = null;
+
+	/**
+	 * The report being assembled, keyed as the Usage Reports Service receives it.
+	 *
+	 * @var array
 	 */
 	public $report;
+
 	/**
+	 * Whether the send was forced rather than scheduled; sent as the report's `forced` key.
+	 *
 	 * @var bool
 	 */
 	private $forced = false;
 
 	/**
-	 * __construct
+	 * Register the hooks that schedule, send and feed the report.
 	 *
 	 * @return void
 	 */
@@ -153,6 +240,8 @@ class Usage_Reports {
 	}
 
 	/**
+	 * Register the REST route the admin screens record usage events through.
+	 *
 	 * @return void
 	 */
 	public function register_rest_endpoints() {
@@ -169,7 +258,9 @@ class Usage_Reports {
 	}
 
 	/**
-	 * @param $request
+	 * Permission check for the log-event route: nonce, capability, then the event and value shape.
+	 *
+	 * @param \WP_REST_Request $request The log-event request.
 	 *
 	 * @return bool|\WP_Error
 	 */
@@ -205,13 +296,13 @@ class Usage_Reports {
 	}
 
 	/**
-	 * Is this a shape sanitize_event_value() can store without losing meaning?
+	 * Whether an event value is a shape sanitize_event_value() can store without losing meaning.
 	 *
 	 * A scalar, or the flat { banner, event } pair whose two members are
 	 * themselves scalar. Rejecting here rather than casting in the writer keeps
 	 * "Array" out of the payload entirely.
 	 *
-	 * @param mixed $value
+	 * @param mixed $value The `value` request parameter.
 	 *
 	 * @return bool
 	 */
@@ -235,9 +326,11 @@ class Usage_Reports {
 	}
 
 	/**
-	 * @param $request
+	 * Record one admin event in the stats option for the next report.
 	 *
-	 * @return \WP_REST_Response
+	 * @param \WP_REST_Request $request The log-event request.
+	 *
+	 * @return WP_REST_Response
 	 */
 	public function log_event( $request ) {
 
@@ -283,7 +376,7 @@ class Usage_Reports {
 	 * deep array from the request went straight into the option and then into
 	 * the report payload.
 	 *
-	 * @param mixed $value
+	 * @param mixed $value The validated `value` request parameter.
 	 *
 	 * @return string|array
 	 */
@@ -300,7 +393,7 @@ class Usage_Reports {
 	}
 
 	/**
-	 * maybe_schedule_report
+	 * Schedule the report when reporting is enabled, otherwise remove the schedule.
 	 *
 	 * @return void
 	 */
@@ -316,7 +409,7 @@ class Usage_Reports {
 	}
 
 	/**
-	 * schedule_report
+	 * Schedule the report event, replacing one left on another recurrence.
 	 *
 	 * @return void
 	 */
@@ -340,7 +433,7 @@ class Usage_Reports {
 	}
 
 	/**
-	 * unschedule_report
+	 * Remove the next scheduled report event, if there is one.
 	 *
 	 * @return void
 	 */
@@ -356,7 +449,7 @@ class Usage_Reports {
 	}
 
 	/**
-	 * pro_deactivated
+	 * Defer the schedule check until Automator Pro has finished deactivating.
 	 *
 	 * Because the deactivation hook runs when a plugin is still active, we need to wait a little, before we try to unschedule the report after Automator Pro is deactivated.
 	 *
@@ -367,7 +460,7 @@ class Usage_Reports {
 	}
 
 	/**
-	 * get_random_timestamp
+	 * Pick the first send time at random within the next 24 hours.
 	 *
 	 * First run at a random point in the next 24 hours. The daily recurrence
 	 * then keeps that time of day, so installs stay spread across the clock
@@ -377,14 +470,14 @@ class Usage_Reports {
 	 * past, which WP fires on the next cron tick and then catches up from,
 	 * bunching sites together.
 	 *
-	 * @return int timestamp
+	 * @return int
 	 */
 	public function get_random_timestamp() {
 		return wp_rand( time(), time() + DAY_IN_SECONDS );
 	}
 
 	/**
-	 * Method maybe_send_report
+	 * Send the report when reporting is enabled.
 	 *
 	 * @return bool
 	 */
@@ -398,7 +491,7 @@ class Usage_Reports {
 	}
 
 	/**
-	 * reporting_enabled
+	 * Whether this site sends usage reports: the wp-config constant, else the opt-in option or an active Pro, through the `automator_reporting` filter.
 	 *
 	 * @return bool
 	 */
@@ -422,7 +515,22 @@ class Usage_Reports {
 			$reporting_enabled = true;
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- The hook name is a class constant that starts with the automator_ prefix.
 		return apply_filters( self::OPTION_NAME, $reporting_enabled );
+	}
+
+	/**
+	 * Whether the site shows the `Allow usage tracking` switch: Automator Free
+	 * without Pro, with no account connected. A connected site is opted in when
+	 * it connects (Admin_Menu::auto_optin_users()) and a Pro site reports while
+	 * Pro is active, so neither has a switch to turn.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool
+	 */
+	public static function has_opt_out_switch() {
+		return ! is_automator_pro_active() && '' === automator_license_manager()->get_type();
 	}
 
 	/**
@@ -440,11 +548,17 @@ class Usage_Reports {
 	}
 
 	/**
-	 * initialize_report
+	 * Reset the per-report caches and set the report to its empty shape.
 	 *
 	 * @return void
 	 */
 	public function initialize_report() {
+
+		$this->integration_names = array();
+		$this->item_rows         = array();
+		$this->block_rows        = array();
+		$this->delay_points      = null;
+
 		$this->report = array(
 			'server'             => array(),
 			'wp'                 => array(),
@@ -462,23 +576,27 @@ class Usage_Reports {
 				'loops_recipes_count'       => 0,
 				'total_actions'             => 0,
 				'total_triggers'            => 0,
-				'total_closures'            => 0,
 				'async_actions_count'       => 0,
 				'delayed_actions_count'     => 0,
 				'scheduled_actions_count'   => 0,
-				// count_async() increments this for async_mode 'custom'. Without
-				// the key here that was an undefined-array-key warning on every
-				// report from a site using a custom delay.
 				'custom_actions_count'      => 0,
 				'unpublished_recipes_count' => 0,
+				// Published recipes the 8.0.0 migrators have not reached. The two
+				// legacy legs in this class retire when this reads zero.
+				'legacy_storage_count'      => 0,
+			),
+			'blocks'             => array(
+				Block_Type::FILTER         => 0,
+				Block_Type::DELAY_SCHEDULE => 0,
+				Block_Type::LOOP           => 0,
 			),
 		);
 	}
 
 	/**
-	 * get_data
+	 * Assemble the full report payload and record how long it took.
 	 *
-	 * @return mixed
+	 * @return array
 	 */
 	public function get_data() {
 
@@ -489,7 +607,6 @@ class Usage_Reports {
 		$automator_system_report = Automator_System_Report::get_instance();
 
 		$this->system_report = $automator_system_report->get();
-		$this->recipes_data  = Automator()->get_recipes_data( false );
 
 		$this->get_unique_site_hash();
 		$this->get_server_info();
@@ -501,6 +618,7 @@ class Usage_Reports {
 		$this->get_automator_info();
 		$this->get_recipes_info();
 		$this->get_user_walkthrough_info();
+		$this->get_recipe_view_info();
 		$this->get_date();
 		$this->get_views();
 		$this->get_template_library_info();
@@ -508,6 +626,7 @@ class Usage_Reports {
 		$this->get_settings();
 		$this->get_health_metrics();
 		$this->get_loops_info();
+		$this->get_blocks_info();
 		$this->get_recipe_complexity();
 		$this->get_never_run_recipes();
 		$this->get_delay_units();
@@ -522,9 +641,10 @@ class Usage_Reports {
 	}
 
 	/**
-	 * get_unique_site_hash
+	 * Add the MD5 hash of the site URL to the report.
 	 *
-	 * Generate a unique site hash. We can't send the site URL without owner's consent due to GDPR.
+	 * The hash is unsalted, so it identifies the site rather than hiding it, and
+	 * the report also sends the home URL itself in `license.site_name`.
 	 *
 	 * @return void
 	 */
@@ -536,7 +656,9 @@ class Usage_Reports {
 	}
 
 	/**
-	 * get_server_info
+	 * Copy the server and environment facts the report sends from the system report.
+	 *
+	 * @return void
 	 */
 	public function get_server_info() {
 
@@ -573,9 +695,9 @@ class Usage_Reports {
 	}
 
 	/**
-	 * import_from_system_report
+	 * Copy the named environment keys from the system report into the report's server section.
 	 *
-	 * @param mixed $keys
+	 * @param string[] $keys Environment keys to copy.
 	 *
 	 * @return void
 	 */
@@ -586,7 +708,7 @@ class Usage_Reports {
 	}
 
 	/**
-	 * get_wp_info
+	 * Add multisite, site count, user count, timezone and locale to the report.
 	 *
 	 * @return void
 	 */
@@ -602,9 +724,9 @@ class Usage_Reports {
 	}
 
 	/**
-	 * get_user_count
+	 * Total registered users, or a translated 'Not set' when WordPress cannot count them.
 	 *
-	 * @return void
+	 * @return int|string
 	 */
 	public function get_user_count() {
 		$usercount = count_users();
@@ -613,7 +735,7 @@ class Usage_Reports {
 	}
 
 	/**
-	 * get_theme_info
+	 * Add the active theme's name and version to the report.
 	 *
 	 * @return void
 	 */
@@ -626,7 +748,7 @@ class Usage_Reports {
 	}
 
 	/**
-	 * get_license_info
+	 * Add the license key, type, item name and site name to the report.
 	 *
 	 * @return void
 	 */
@@ -645,9 +767,11 @@ class Usage_Reports {
 	}
 
 	/**
-	 * get_plugins_info
+	 * Names and versions of the given plugins, skipping any without a name.
 	 *
-	 * @return void
+	 * @param array $plugins Active plugins from the system report.
+	 *
+	 * @return array
 	 */
 	public function get_plugins_info( $plugins ) {
 
@@ -716,9 +840,9 @@ class Usage_Reports {
 	}
 
 	/**
-	 * sites_count
+	 * Number of sites in the network, or 'Not set' when get_blog_count() is unavailable.
 	 *
-	 * @return void
+	 * @return int|string
 	 */
 	public function sites_count() {
 
@@ -734,7 +858,7 @@ class Usage_Reports {
 	}
 
 	/**
-	 * get_automator_info
+	 * Add Automator and database versions, schema health and table sizes to the report.
 	 *
 	 * @return void
 	 */
@@ -848,10 +972,12 @@ class Usage_Reports {
 	}
 
 	/**
+	 * Strip the site's table prefix from a table name.
+	 *
 	 * `wp_7_uap_recipe_log` -> `uap_recipe_log`, so the same table reported by
 	 * two installs is comparable.
 	 *
-	 * @param string $table
+	 * @param string $table Table name with its site prefix.
 	 *
 	 * @return string
 	 */
@@ -863,7 +989,7 @@ class Usage_Reports {
 	}
 
 	/**
-	 * get_recipes_info
+	 * Add completion counts and the recipe census: recipe counters, per-recipe items, integrations and conditions.
 	 *
 	 * @return void
 	 */
@@ -880,19 +1006,33 @@ class Usage_Reports {
 		// across reports counts the same run up to seven times.
 		$this->report['recipes']['completed_recipes_last_day'] = Automator()->get->completed_runs( DAY_IN_SECONDS );
 
-		if ( empty( $this->recipes_data ) ) {
+		$recipes = automator_get_recipe_store()->census_rows();
+
+		if ( empty( $recipes ) ) {
 			return;
 		}
 
-		foreach ( $this->recipes_data as $recipe_data ) {
+		// Newest first, the order the 7.7 report folded recipes in, so the three
+		// lists keyed by first appearance come out as the service has always seen them.
+		$recipes = array_reverse( $recipes );
 
-			if ( 'publish' !== $recipe_data['post_status'] ) {
+		$items      = $this->items_by_recipe();
+		$delays     = $this->delay_points_by_recipe();
+		$conditions = $this->conditions_by_recipe();
+
+		foreach ( $recipes as $recipe ) {
+
+			if ( 'publish' !== $recipe['post_status'] ) {
 				++$this->report['recipes']['unpublished_recipes_count'];
 				continue;
 			}
 
-			$this->process_recipe_data( $recipe_data );
-
+			$this->process_recipe(
+				$recipe,
+				$items[ $recipe['id'] ] ?? array(),
+				$delays[ $recipe['id'] ] ?? array(),
+				$conditions[ $recipe['id'] ] ?? array()
+			);
 		}
 
 		$this->report['integrations_array'] = array_values( $this->report['integrations_array'] );
@@ -901,7 +1041,7 @@ class Usage_Reports {
 	}
 
 	/**
-	 * get_user_walkthrough_info
+	 * Count the users at each step of each walkthrough.
 	 *
 	 * @return void
 	 */
@@ -909,6 +1049,7 @@ class Usage_Reports {
 
 		// Collect all user walkthroughs meta.
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Aggregate over core usermeta for the usage report; no WordPress API returns this.
 		$results = $wpdb->get_results(
 			"SELECT `meta_value` FROM {$wpdb->usermeta} WHERE meta_key = 'automator_walkthrough_progress'"
 		);
@@ -962,7 +1103,93 @@ class Usage_Reports {
 	}
 
 	/**
-	 * get_completed_runs
+	 * Count how people view recipes on this site: who picked the diagram or
+	 * the list, who can open the builder and never picked (by their own
+	 * default view), and who dismissed the diagram introduction.
+	 *
+	 * The values are user options, so they sit under this site's blog-prefixed
+	 * meta key, and each query counts this site's members only. A default that
+	 * is not settled yet is read as the rule gives it today and never stored:
+	 * the report settles nobody. Left out when a default cannot be read,
+	 * rather than reported as zeros.
+	 *
+	 * @return void
+	 */
+	public function get_recipe_view_info() {
+
+		global $wpdb;
+
+		$view_key  = $wpdb->get_blog_prefix() . Recipe_View_Preference_Service::VIEW_USER_OPTION;
+		$intro_key = $wpdb->get_blog_prefix() . Recipe_View_Preference_Service::DIAGRAM_INTRO_USER_OPTION;
+
+		$never_picked = new \WP_User_Query(
+			array(
+				'capability' => automator_get_capability(),
+				'meta_query' => array(
+					array(
+						'key'     => $view_key,
+						'compare' => 'NOT EXISTS',
+					),
+				),
+				'fields'     => 'ID',
+			)
+		);
+		$user_ids     = array_map( 'intval', $never_picked->get_results() );
+
+		update_meta_cache( 'user', $user_ids );
+
+		$not_chosen = array(
+			Recipe_View::LIST    => 0,
+			Recipe_View::DIAGRAM => 0,
+		);
+
+		foreach ( $user_ids as $user_id ) {
+			$default_view = automator_get_recipe_default_view( $user_id );
+
+			if ( is_wp_error( $default_view ) ) {
+				return;
+			}
+
+			++$not_chosen[ $default_view ];
+		}
+
+		$this->report['recipe_view'] = array(
+			Recipe_View::DIAGRAM      => $this->count_users_with( $view_key, Recipe_View::DIAGRAM ),
+			Recipe_View::LIST         => $this->count_users_with( $view_key, Recipe_View::LIST ),
+			'not_chosen'              => $not_chosen,
+			'diagram_intro_dismissed' => $this->count_users_with( $intro_key, '1' ),
+		);
+	}
+
+	/**
+	 * How many users of this site hold a meta value, counted without loading them.
+	 *
+	 * @param string $meta_key   The meta key, blog prefix included.
+	 * @param string $meta_value The value.
+	 *
+	 * @return int
+	 */
+	private function count_users_with( $meta_key, $meta_value ) {
+
+		$query = new \WP_User_Query(
+			array(
+				'meta_query'  => array(
+					array(
+						'key'   => $meta_key,
+						'value' => $meta_value,
+					),
+				),
+				'fields'      => 'ID',
+				'number'      => 1,
+				'count_total' => true,
+			)
+		);
+
+		return (int) $query->get_total();
+	}
+
+	/**
+	 * Count every completed run still in the recipe log.
 	 *
 	 * Counted from uap_recipe_log (completed = 1), NOT from a running option.
 	 *
@@ -987,222 +1214,441 @@ class Usage_Reports {
 	}
 
 	/**
+	 * Loop blocks in published recipes, at any depth.
+	 *
 	 * @return int
 	 */
 	public function get_loop_recipes() {
-		global $wpdb;
-
-		$result = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(p1.ID) as recipes
-FROM $wpdb->posts p
-    JOIN $wpdb->posts p1
-        ON p.ID = p1.post_parent
-WHERE p.post_type LIKE %s
-  AND p1.post_type = %s",
-				AUTOMATOR_POST_TYPE_RECIPE,
-				AUTOMATOR_POST_TYPE_LOOP
-			)
-		);
-
-		return absint( $result );
+		return count( $this->block_rows( Block_Type::LOOP ) );
 	}
 
 	/**
-	 * process_recipe_data
+	 * Fold one published recipe into the counters and append its recipe_items entry.
 	 *
-	 * @param mixed $recipe_data
+	 * @param array $recipe     Census row: id, post_status, recipe_type, version.
+	 * @param array $items      The recipe's item rows, triggers then actions, each with `type`.
+	 * @param array $delays     The recipe's delay points, each with `mode` and `unit`.
+	 * @param array $conditions The recipe's condition strings, `Name/CODE`.
 	 *
 	 * @return void
 	 */
-	public function process_recipe_data( $recipe_data ) {
+	private function process_recipe( $recipe, $items, $delays, $conditions ) {
 
 		++$this->report['recipes']['live_recipes_count'];
 
-		if ( 'user' === $recipe_data['recipe_type'] ) {
+		if ( 'user' === $recipe['recipe_type'] ) {
 			++$this->report['recipes']['user_recipes_count'];
-		} elseif ( 'anonymous' === $recipe_data['recipe_type'] ) {
+		} elseif ( 'anonymous' === $recipe['recipe_type'] ) {
 			++$this->report['recipes']['everyone_recipes_count'];
 		}
 
-		$this->process_recipe_items( $recipe_data );
+		if ( version_compare( (string) $recipe['version'], Legacy_Storage_Migration::BLOCK_STORAGE_SINCE, '<' ) ) {
+			++$this->report['recipes']['legacy_storage_count'];
+		}
+
+		$entry = array(
+			'triggers'     => array(),
+			'actions'      => array(),
+			'integrations' => array(),
+		);
+
+		foreach ( $items as $item ) {
+
+			$name = $this->integration_name( $item['integration_code'] );
+
+			$entry[ $item['type'] ][] = $name . '/' . $item['code'];
+			$entry['integrations'][]  = $name;
+
+			$this->count_integration(
+				array(
+					'integration'      => $item['integration_code'],
+					'integration_name' => $name,
+					'code'             => $item['code'],
+				),
+				$item['type']
+			);
+		}
+
+		// Keys are kept on purpose: the service receives the shape it has always received.
+		$entry['integrations'] = array_unique( $entry['integrations'] );
+
+		$modes = array_count_values( array_column( $delays, 'mode' ) );
+
+		$entry['async_actions_count']     = count( $delays );
+		$entry['delayed_actions_count']   = $modes['delay'] ?? 0;
+		$entry['scheduled_actions_count'] = $modes['schedule'] ?? 0;
+
+		foreach ( $delays as $delay ) {
+			$this->count_delay_point( $delay['mode'] );
+		}
+
+		$entry['type'] = $recipe['recipe_type'];
+
+		$entry['actions_conditions'] = $conditions;
+
+		$this->report['recipe_items'][] = $entry;
 	}
 
 	/**
-	 * process_recipe_items
+	 * Count one delay point: a delay block, or an async action on a recipe the delay migrator has not reached.
 	 *
-	 * @param mixed $recipe
+	 * @param string $mode Wire-vocabulary mode: delay, schedule or custom.
 	 *
 	 * @return void
 	 */
-	public function process_recipe_items( $recipe_data ) {
+	public function count_delay_point( $mode ) {
 
-		$recipes_stats = $this->report['recipes'];
+		++$this->report['recipes']['async_actions_count'];
 
-		$snapshot = array(
-			'async'     => $recipes_stats['async_actions_count'],
-			'delayed'   => $recipes_stats['delayed_actions_count'],
-			'scheduled' => $recipes_stats['scheduled_actions_count'],
-		);
-
-		$recipe                 = array();
-		$recipe['triggers']     = $this->get_recipe_items( $recipe_data, 'triggers' );
-		$recipe['actions']      = $this->get_recipe_items( $recipe_data, 'actions' );
-		$recipe['closures']     = $this->get_recipe_items( $recipe_data, 'closures' );
-		$recipe['integrations'] = $this->get_recipe_integrations( $recipe_data );
-
-		$recipes_stats = $this->report['recipes'];
-
-		$recipe['async_actions_count']     = $recipes_stats['async_actions_count'] - $snapshot['async'];
-		$recipe['delayed_actions_count']   = $recipes_stats['delayed_actions_count'] - $snapshot['delayed'];
-		$recipe['scheduled_actions_count'] = $recipes_stats['scheduled_actions_count'] - $snapshot['scheduled'];
-
-		$recipe['type'] = $recipe_data['recipe_type'];
-
-		$recipe['actions_conditions'] = $this->get_actions_conditions( $recipe_data );
-
-		$this->report['recipe_items'][] = $recipe;
+		if ( 'delay' === $mode ) {
+			++$this->report['recipes']['delayed_actions_count'];
+		} elseif ( 'schedule' === $mode ) {
+			++$this->report['recipes']['scheduled_actions_count'];
+		} elseif ( 'custom' === $mode ) {
+			++$this->report['recipes']['custom_actions_count'];
+		}
 	}
 
 	/**
-	 * get_actions_conditions
+	 * The catalog display name for an integration code, or the code when the catalog has no entry.
 	 *
-	 * @param mixed $recipe_data
+	 * @param string $code Integration code.
 	 *
-	 * @return array
+	 * @return string
 	 */
-	public function get_actions_conditions( $recipe_data ) {
+	private function integration_name( $code ) {
+
+		if ( isset( $this->integration_names[ $code ] ) ) {
+			return $this->integration_names[ $code ];
+		}
+
+		$integration = Integration_Query_Service::get_instance()->get_integration( $code );
+		$name        = null === $integration ? '' : trim( $integration->get_name()->get_value() );
+
+		$this->integration_names[ $code ] = '' === $name ? $code : $name;
+
+		return $this->integration_names[ $code ];
+	}
+
+	/**
+	 * Published item rows of one report type, read once per report.
+	 *
+	 * @param string $type One of triggers, actions.
+	 *
+	 * @return array<int, array{recipe_id: int, post_id: int, parent_id: int, integration_code: string, code: string}>
+	 */
+	private function item_rows( $type ) {
+
+		if ( isset( $this->item_rows[ $type ] ) ) {
+			return $this->item_rows[ $type ];
+		}
+
+		$rows = 'triggers' === $type
+			? automator_get_recipe_trigger_store()->usage_rows()
+			: automator_get_action_store()->usage_rows();
+
+		$this->item_rows[ $type ] = $rows;
+
+		return $rows;
+	}
+
+	/**
+	 * Published items grouped by recipe id, triggers then actions, each tagged with its report type.
+	 *
+	 * @return array<int, array<int, array{type: string, post_id: int, integration_code: string, code: string}>>
+	 */
+	private function items_by_recipe() {
+
+		$map = array();
+
+		foreach ( array( 'triggers', 'actions' ) as $type ) {
+			foreach ( $this->item_rows( $type ) as $row ) {
+				$map[ $row['recipe_id'] ][] = array(
+					'type'             => $type,
+					'post_id'          => $row['post_id'],
+					'integration_code' => $row['integration_code'],
+					'code'             => $row['code'],
+				);
+			}
+		}
+
+		return $map;
+	}
+
+	/**
+	 * Published blocks of one type in published recipes, read once per report.
+	 *
+	 * @param string $block_type A Block_Type constant.
+	 *
+	 * @return array<int, array{block_id: int, recipe_id: int, legacy_group_id: string, fields: array, iterable_expression: array}>
+	 */
+	private function block_rows( $block_type ) {
+
+		if ( ! isset( $this->block_rows[ $block_type ] ) ) {
+			$this->block_rows[ $block_type ] = automator_get_block_store()->rows_in_published_recipes( $block_type );
+		}
+
+		return $this->block_rows[ $block_type ];
+	}
+
+	/**
+	 * Every delay point in a published recipe.
+	 *
+	 * A delay block is one point, read through the block's own field vocabulary and translated
+	 * to the wire modes this report has always sent. On a recipe the delay migrator has not
+	 * reached, each action still carrying `async_mode` is one point; the migrator renames those
+	 * keys, so the two legs never count the same recipe.
+	 *
+	 * @return array<int, array{recipe_id: int, mode: string, unit: string}>
+	 */
+	private function delay_points() {
+
+		if ( null !== $this->delay_points ) {
+			return $this->delay_points;
+		}
+
+		$points = array();
+		$mapper = new Delay_Schedule_Wire_Mapper();
+		$known  = array( Delay_Block::MODE_DELAY, Delay_Block::MODE_SCHEDULE, Delay_Block::MODE_TOKEN );
+
+		foreach ( $this->block_rows( Block_Type::DELAY_SCHEDULE ) as $row ) {
+
+			$fields = Fields_Bag::from_array( $row['fields'] );
+			$mode   = strtolower( $fields->scalar( Delay_Block::FIELD_MODE ) );
+			$unit   = trim( $fields->scalar( Delay_Block::FIELD_UNIT ) );
+
+			// A mode outside the block's vocabulary (absent, empty, or one this build predates)
+			// counts as `delay`, the radio's default; a configured wait is never dropped.
+			$points[] = array(
+				'recipe_id' => $row['recipe_id'],
+				'mode'      => $mapper->block_mode_to_wire_mode( in_array( $mode, $known, true ) ? $mode : Delay_Block::MODE_DELAY ),
+				'unit'      => '' === $unit ? 'minutes' : $unit,
+			);
+		}
+
+		$action_rows    = $this->item_rows( 'actions' );
+		$action_recipes = array_column( $action_rows, 'recipe_id', 'post_id' );
+		$action_parents = array_column( $action_rows, 'parent_id', 'post_id' );
+		$delay_blocks   = array_fill_keys( array_column( $this->block_rows( Block_Type::DELAY_SCHEDULE ), 'block_id' ), true );
+
+		foreach ( $this->legacy_async_rows( array_keys( $action_recipes ) ) as $action_id => $meta ) {
+
+			// Still inside a delay block with live async_* meta: a wrap the migrator left before
+			// the drain. The block above already counted it.
+			if ( isset( $delay_blocks[ $action_parents[ $action_id ] ?? 0 ] ) ) {
+				continue;
+			}
+
+			$points[] = array(
+				'recipe_id' => $action_recipes[ $action_id ],
+				'mode'      => $meta['async_mode'],
+				'unit'      => $meta['async_delay_unit'],
+			);
+		}
+
+		$this->delay_points = $points;
+
+		return $points;
+	}
+
+	/**
+	 * Delay points grouped by recipe id.
+	 *
+	 * @return array<int, array<int, array{recipe_id: int, mode: string, unit: string}>>
+	 */
+	private function delay_points_by_recipe() {
+
+		$map = array();
+
+		foreach ( $this->delay_points() as $point ) {
+			$map[ $point['recipe_id'] ][] = $point;
+		}
+
+		return $map;
+	}
+
+	/**
+	 * `async_mode` and `async_delay_unit` for the given actions, keyed by action id, where a mode is set.
+	 *
+	 * The delay migrator renames these keys to `_legacy_async_*` when it wraps an action in a
+	 * delay block, so a hit is an action on a recipe it has not reached.
+	 *
+	 * @param int[] $action_ids Published actions in published recipes.
+	 *
+	 * @return array<int, array{async_mode: string, async_delay_unit: string}>
+	 */
+	private function legacy_async_rows( $action_ids ) {
+		global $wpdb;
+
+		if ( empty( $action_ids ) ) {
+			return array();
+		}
+
+		$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare(
+				"SELECT pm.post_id, pm.meta_key, pm.meta_value
+				 FROM {$wpdb->postmeta} pm
+				 INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id AND p.post_type = %s AND p.post_status = %s
+				 WHERE pm.meta_key IN ( 'async_mode', 'async_delay_unit' )",
+				AUTOMATOR_POST_TYPE_ACTION,
+				'publish'
+			),
+			ARRAY_A
+		);
+
+		$wanted = array_fill_keys( $action_ids, true );
+		$meta   = array();
+
+		foreach ( (array) $rows as $row ) {
+			$action_id = (int) $row['post_id'];
+			if ( isset( $wanted[ $action_id ] ) ) {
+				$meta[ $action_id ][ $row['meta_key'] ] = (string) $row['meta_value'];
+			}
+		}
 
 		$output = array();
 
-		if ( empty( $recipe_data['actions_conditions'] ) ) {
-			return $output;
-		}
-
-		$actions_conditions = json_decode( $recipe_data['actions_conditions'], true );
-
-		foreach ( $actions_conditions as $conditon_group ) {
-
-			foreach ( $conditon_group['conditions'] as $condition ) {
-
-				$integration_name = empty( $condition['backup']['integrationName'] ) ? $condition['integration_name'] : $condition['backup']['integrationName'];
-
-				$output[] = $integration_name . '/' . $condition['condition'];
-
+		foreach ( $meta as $action_id => $keys ) {
+			$mode = trim( $keys['async_mode'] ?? '' );
+			if ( '' === $mode ) {
+				continue;
 			}
+			$output[ $action_id ] = array(
+				'async_mode'       => $mode,
+				'async_delay_unit' => trim( $keys['async_delay_unit'] ?? '' ),
+			);
 		}
 
 		return $output;
 	}
 
 	/**
-	 * get_recipe_items
+	 * Condition strings per published recipe: filter-condition modifiers, then the stored JSON on recipes the condition migrator has not reached.
 	 *
-	 * @param mixed $recipe
-	 * @param mixed $type
-	 *
-	 * @return array
+	 * @return array<int, string[]>
 	 */
-	public function get_recipe_items( $recipe, $type ) {
+	private function conditions_by_recipe() {
 
-		$recipe_items = array();
+		$map = array();
 
-		if ( empty( $recipe[ $type ] ) ) {
-			return $recipe_items;
+		foreach ( automator_get_block_modifier_store()->rows_in_published_recipes( Block_Type::FILTER ) as $row ) {
+			$map[ $row['recipe_id'] ][] = $this->integration_name( $row['integration_code'] ) . '/' . $row['code'];
 		}
 
-		foreach ( $recipe[ $type ] as $item ) {
-
-			if ( 'publish' !== $item['post_status'] ) {
-				continue;
+		$migrated = array();
+		foreach ( $this->block_rows( Block_Type::FILTER ) as $row ) {
+			if ( '' !== $row['legacy_group_id'] ) {
+				$migrated[ $row['recipe_id'] ][ $row['legacy_group_id'] ] = true;
 			}
-
-			$meta = $item['meta'];
-
-			if ( empty( $meta['integration_name'] ) || empty( $meta['code'] ) ) {
-				continue;
-			}
-
-			$recipe_items[] = $meta['integration_name'] . '/' . $meta['code'];
-
-			$this->count_async( $item );
-
-			$this->count_integration( $meta, $type );
 		}
 
-		return $recipe_items;
+		foreach ( $this->legacy_conditions_rows() as $recipe_id => $json ) {
+			foreach ( $this->legacy_conditions( $json ) as $group ) {
+
+				// A group whose filter block already exists is a pass the migrator left before
+				// moving the JSON. The modifier rows above already counted it.
+				if ( isset( $migrated[ $recipe_id ][ $group['id'] ] ) ) {
+					continue;
+				}
+
+				foreach ( $group['conditions'] as $condition ) {
+					$map[ $recipe_id ][] = $this->integration_name( $condition['integration'] ) . '/' . $condition['code'];
+				}
+			}
+		}
+
+		return $map;
 	}
 
 	/**
-	 * get_recipe_integrations
+	 * Non-empty `actions_conditions` JSON per published recipe.
 	 *
-	 * @param mixed $recipe
+	 * The condition migrator moves this key to `_legacy_actions_conditions`, so a hit is a
+	 * recipe it has not reached. The join bounds the read to published recipes.
 	 *
-	 * @return array
+	 * @return array<int, string>
 	 */
-	public function get_recipe_integrations( $recipe ) {
+	private function legacy_conditions_rows() {
+		global $wpdb;
+
+		$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare(
+				"SELECT pm.post_id, pm.meta_value
+				 FROM {$wpdb->postmeta} pm
+				 INNER JOIN {$wpdb->posts} r ON r.ID = pm.post_id AND r.post_type = %s AND r.post_status = %s
+				 WHERE pm.meta_key = 'actions_conditions' AND pm.meta_value != ''",
+				AUTOMATOR_POST_TYPE_RECIPE,
+				'publish'
+			),
+			ARRAY_A
+		);
 
 		$output = array();
-		$types  = array( 'triggers', 'actions', 'closures' );
 
-		foreach ( $types as $type ) {
+		foreach ( (array) $rows as $row ) {
+			$output[ (int) $row['post_id'] ] = (string) $row['meta_value'];
+		}
 
-			if ( empty( $recipe[ $type ] ) ) {
+		return $output;
+	}
+
+	/**
+	 * The groups of a legacy `actions_conditions` document, each with the id the condition migrator would stamp on its filter block (`actions_conditions[i].id`, else `group-<index>` where the index is the raw key of the decoded document, as the migrator uses it) and its conditions' integration and condition codes. Names are not read from the document.
+	 *
+	 * @param string $json Stored JSON.
+	 *
+	 * @return array<int, array{id: string, conditions: array<int, array{integration: string, code: string}>}>
+	 */
+	public function legacy_conditions( $json ) {
+
+		$groups = json_decode( $json, true );
+
+		if ( ! is_array( $groups ) ) {
+			return array();
+		}
+
+		$output = array();
+
+		foreach ( $groups as $index => $group ) {
+
+			if ( ! is_array( $group ) || ! is_array( $group['conditions'] ?? null ) ) {
 				continue;
 			}
 
-			foreach ( $recipe[ $type ] as $item ) {
-				if ( 'publish' !== $item['post_status'] ) {
+			$conditions = array();
+
+			foreach ( $group['conditions'] as $condition ) {
+
+				$integration = is_array( $condition ) ? trim( (string) ( $condition['integration'] ?? '' ) ) : '';
+				$code        = is_array( $condition ) ? trim( (string) ( $condition['condition'] ?? '' ) ) : '';
+
+				if ( '' === $integration || '' === $code ) {
 					continue;
 				}
-				$meta = $item['meta'];
 
-				if ( empty( $meta['integration_name'] ) ) {
-					continue;
-				}
-
-				$output[] = $meta['integration_name'];
+				$conditions[] = array(
+					'integration' => $integration,
+					'code'        => $code,
+				);
 			}
+
+			// The id the condition migrator stamps on the group's filter block, with its fallback.
+			$id = (string) ( $group['id'] ?? '' );
+
+			$output[] = array(
+				'id'         => '' !== $id ? $id : 'group-' . $index,
+				'conditions' => $conditions,
+			);
 		}
 
-		return array_unique( $output );
+		return $output;
 	}
 
 	/**
-	 * count_async
+	 * Count one item under its integration in `integrations`, `integrations_array` and the matching `total_*` counter.
 	 *
-	 * @param mixed $data
-	 *
-	 * @return void
-	 */
-	public function count_async( $data ) {
-
-		if ( isset( $data['meta']['async_mode'] ) ) {
-
-			++$this->report['recipes']['async_actions_count'];
-
-			if ( 'delay' === $data['meta']['async_mode'] ) {
-
-				++$this->report['recipes']['delayed_actions_count'];
-
-			} elseif ( 'schedule' === $data['meta']['async_mode'] ) {
-
-				++$this->report['recipes']['scheduled_actions_count'];
-
-			} elseif ( 'custom' === $data['meta']['async_mode'] ) {
-
-				++$this->report['recipes']['custom_actions_count'];
-
-			}
-		}
-	}
-
-	/**
-	 * count_integration
-	 *
-	 * @param mixed $integration
-	 * @param mixed $type
-	 * @param mixed $code
+	 * @param array  $meta Item identity: `integration`, `integration_name` and `code`.
+	 * @param string $type Report item type: triggers or actions.
 	 *
 	 * @return void
 	 */
@@ -1238,7 +1684,7 @@ WHERE p.post_type LIKE %s
 	}
 
 	/**
-	 * get_date
+	 * Stamp the report with the UTC calendar fields of the send.
 	 *
 	 * @return void
 	 */
@@ -1251,7 +1697,7 @@ WHERE p.post_type LIKE %s
 	}
 
 	/**
-	 * get_views
+	 * Add the collected page views and events to the report as `stats`.
 	 *
 	 * @return void
 	 */
@@ -1267,7 +1713,7 @@ WHERE p.post_type LIKE %s
 	}
 
 	/**
-	 * get_template_library_info
+	 * Group the template library search and import events by term, with a count for each.
 	 *
 	 * @return void
 	 */
@@ -1325,7 +1771,7 @@ WHERE p.post_type LIKE %s
 	}
 
 	/**
-	 * get_review_tracking_info
+	 * Count each review banner's events and add the non-zero ones to the report.
 	 *
 	 * @return void
 	 */
@@ -1391,9 +1837,9 @@ WHERE p.post_type LIKE %s
 	}
 
 	/**
-	 * send_report
+	 * Build the report, POST it to the Usage Reports Service, and clear the stats option once it is accepted.
 	 *
-	 * @return void
+	 * @return bool
 	 */
 	public function send_report() {
 
@@ -1426,17 +1872,18 @@ WHERE p.post_type LIKE %s
 	}
 
 	/**
-	 * @param $views_directory
-	 * @param $file_name
+	 * Count a view of one of the tracked admin screens, passing the views directory through unchanged.
 	 *
-	 * @return mixed
+	 * @param string $views_directory Directory the view is loaded from.
+	 * @param string $file_name       View file path relative to that directory.
+	 *
+	 * @return string
 	 */
 	public function count_integrations_view( $views_directory, $file_name ) {
 
 		$s = DIRECTORY_SEPARATOR;
 
 		$views_to_count = array(
-			'admin-integrations' . $s . 'archive.php'      => 'All integrations',
 			'admin-settings' . $s . 'tab' . $s . 'general' . $s . 'improve-automator.php' => 'Improve Automator',
 			'admin-settings' . $s . 'tab' . $s . 'general' . $s . 'logs.php' => 'Logs settings',
 			'admin-settings' . $s . 'tab' . $s . 'general.php' => 'General settings',
@@ -1456,7 +1903,9 @@ WHERE p.post_type LIKE %s
 	}
 
 	/**
-	 * @param $page
+	 * Add one view of an admin page to the stats option, per user and in total.
+	 *
+	 * @param string $page Page label the view is counted under.
 	 *
 	 * @return void
 	 */
@@ -1503,14 +1952,13 @@ WHERE p.post_type LIKE %s
 	/**
 	 * Counts the number of times a premium integration settings page is viewed.
 	 *
-	 * @param $settings_page - instance of the settings page class
+	 * @param object $settings_page Premium integration settings page; its get_name() labels the view.
 	 *
 	 * @return void
 	 */
 	public function count_premium_integration_view( $settings_page ) {
 		$this->increment_view( $settings_page->get_name() . ' Settings' );
 	}
-
 
 	/**
 	 * Failure and throughput signals for the reporting window.
@@ -1591,7 +2039,7 @@ WHERE p.post_type LIKE %s
 	 * (delayed, scheduled and background actions especially), so the boundary
 	 * is deliberately pulled back by BOUNDARY_LOOKBACK to catch them.
 	 *
-	 * @param string $since
+	 * @param string $since Window start, site-local `Y-m-d H:i:s`.
 	 *
 	 * @return int
 	 */
@@ -1600,7 +2048,8 @@ WHERE p.post_type LIKE %s
 
 		$table = $wpdb->prefix . Automator()->db->tables->recipe;
 
-		$id = $wpdb->get_var( $wpdb->prepare( "SELECT MIN(ID) FROM {$table} WHERE date_time >= %s", $since ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$id = $wpdb->get_var( $wpdb->prepare( 'SELECT MIN(ID) FROM `' . esc_sql( $table ) . '` WHERE date_time >= %s', $since ) );
 
 		// No run STARTED in the window. That does not mean nothing happened —
 		// a delayed or background action belonging to an older run can still
@@ -1608,7 +2057,8 @@ WHERE p.post_type LIKE %s
 		// pulled back by the same lookback, rather than to a boundary that
 		// matches nothing.
 		if ( null === $id ) {
-			$id = $wpdb->get_var( "SELECT MAX(ID) FROM {$table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+			$id = $wpdb->get_var( 'SELECT MAX(ID) FROM `' . esc_sql( $table ) . '`' );
 		}
 
 		if ( null === $id ) {
@@ -1626,7 +2076,7 @@ WHERE p.post_type LIKE %s
 	/**
 	 * Recipe run outcomes in the window, by status.
 	 *
-	 * @param string $since
+	 * @param string $since Window start, site-local `Y-m-d H:i:s`.
 	 *
 	 * @return array
 	 */
@@ -1635,7 +2085,8 @@ WHERE p.post_type LIKE %s
 
 		$table = $wpdb->prefix . Automator()->db->tables->recipe;
 
-		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT completed, COUNT(*) AS total FROM {$table} WHERE date_time >= %s GROUP BY completed", $since ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$rows = $wpdb->get_results( $wpdb->prepare( 'SELECT completed, COUNT(*) AS total FROM `' . esc_sql( $table ) . '` WHERE date_time >= %s GROUP BY completed', $since ), ARRAY_A );
 
 		return $this->label_statuses( $rows );
 	}
@@ -1655,8 +2106,8 @@ WHERE p.post_type LIKE %s
 	 * date_time here is written with current_time( 'mysql' ), same site-local
 	 * clock as uap_recipe_log, so $since applies unchanged.
 	 *
-	 * @param int    $boundary
-	 * @param string $since
+	 * @param int    $boundary Lowest recipe log id the scan starts from.
+	 * @param string $since Window start, site-local `Y-m-d H:i:s`.
 	 *
 	 * @return array
 	 */
@@ -1665,7 +2116,8 @@ WHERE p.post_type LIKE %s
 
 		$table = $wpdb->prefix . Automator()->db->tables->action;
 
-		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT completed, COUNT(*) AS total FROM {$table} WHERE automator_recipe_log_id >= %d AND date_time >= %s GROUP BY completed", $boundary, $since ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$rows = $wpdb->get_results( $wpdb->prepare( 'SELECT completed, COUNT(*) AS total FROM `' . esc_sql( $table ) . '` WHERE automator_recipe_log_id >= %d AND date_time >= %s GROUP BY completed', $boundary, $since ), ARRAY_A );
 
 		return $this->label_statuses( $rows );
 	}
@@ -1681,8 +2133,8 @@ WHERE p.post_type LIKE %s
 	 * index seek, the date filter defines the window. uap_error_log's date_time
 	 * is written with current_time( 'mysql' ) too.
 	 *
-	 * @param int    $boundary
-	 * @param string $since
+	 * @param int    $boundary Lowest recipe log id the scan starts from.
+	 * @param string $since Window start, site-local `Y-m-d H:i:s`.
 	 *
 	 * @return array
 	 */
@@ -1691,7 +2143,8 @@ WHERE p.post_type LIKE %s
 
 		$table = $wpdb->prefix . Automator()->db->tables->error_log;
 
-		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT error_code, item_type, COUNT(*) AS total FROM {$table} WHERE recipe_log_id >= %d AND date_time >= %s GROUP BY error_code, item_type ORDER BY total DESC LIMIT %d", $boundary, $since, self::MAX_ERROR_CODES ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$rows = $wpdb->get_results( $wpdb->prepare( 'SELECT error_code, item_type, COUNT(*) AS total FROM `' . esc_sql( $table ) . '` WHERE recipe_log_id >= %d AND date_time >= %s GROUP BY error_code, item_type ORDER BY total DESC LIMIT %d', $boundary, $since, self::MAX_ERROR_CODES ), ARRAY_A );
 
 		$codes = array();
 		$total = 0;
@@ -1736,7 +2189,8 @@ WHERE p.post_type LIKE %s
 		// Site-local, same reason as the window in get_health_metrics().
 		$before = date_i18n( 'Y-m-d H:i:s', current_time( 'timestamp' ) - $threshold );
 
-		$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE completed = %d AND date_time < %s", Automator_Status::IN_PROGRESS, $before ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM `' . esc_sql( $table ) . '` WHERE completed = %d AND date_time < %s', Automator_Status::IN_PROGRESS, $before ) );
 
 		return absint( $count );
 	}
@@ -1757,7 +2211,7 @@ WHERE p.post_type LIKE %s
 	 * last_run is a UNIX timestamp written from time(), so it is compared
 	 * against time(), unlike the site-local date_time columns.
 	 *
-	 * @param int $window
+	 * @param int $window Window length in seconds.
 	 *
 	 * @return int
 	 */
@@ -1766,7 +2220,8 @@ WHERE p.post_type LIKE %s
 
 		$table = $wpdb->prefix . Automator()->db->tables->recipe_throttle;
 
-		$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE last_run >= %d", time() - $window ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM `' . esc_sql( $table ) . '` WHERE last_run >= %d', time() - $window ) );
 
 		return absint( $count );
 	}
@@ -1778,7 +2233,7 @@ WHERE p.post_type LIKE %s
 	 * value depend on the reporting site's locale. The code is the real key; the
 	 * name is a convenience for anyone reading a row by hand.
 	 *
-	 * @param array $rows
+	 * @param array $rows Rows carrying `completed` and `total`.
 	 *
 	 * @return array
 	 */
@@ -1802,7 +2257,6 @@ WHERE p.post_type LIKE %s
 		return $output;
 	}
 
-
 	/**
 	 * Loop adoption beyond "this recipe has one".
 	 *
@@ -1821,45 +2275,35 @@ WHERE p.post_type LIKE %s
 	}
 
 	/**
-	 * Loops grouped by what they iterate — users, posts, tokens.
+	 * Published blocks by type in published recipes.
 	 *
-	 * The type lives inside the serialized `iterable_expression` meta, so it is
-	 * read and unserialized here rather than grouped in SQL: the serialized
-	 * bytes differ between an array and a stdClass payload for the same type,
-	 * and grouping on them would split one bucket in two. Bounded by the number
-	 * of loops on the site, which is small.
+	 * @return void
+	 */
+	public function get_blocks_info() {
+
+		foreach ( array( Block_Type::FILTER, Block_Type::DELAY_SCHEDULE, Block_Type::LOOP ) as $block_type ) {
+			$this->report['blocks'][ $block_type ] = count( $this->block_rows( $block_type ) );
+		}
+	}
+
+	/**
+	 * Loops grouped by what they iterate — users, posts, tokens.
 	 *
 	 * @return array
 	 */
 	private function count_loop_types() {
-		global $wpdb;
-
-		$rows = $wpdb->get_col(
-			$wpdb->prepare(
-				"SELECT pm.meta_value
-				FROM {$wpdb->postmeta} pm
-				JOIN {$wpdb->posts} p ON p.ID = pm.post_id
-				WHERE p.post_type = %s AND pm.meta_key = 'iterable_expression'",
-				AUTOMATOR_POST_TYPE_LOOP
-			)
-		);
 
 		$types = array();
 
-		foreach ( (array) $rows as $row ) {
+		foreach ( $this->block_rows( Block_Type::LOOP ) as $row ) {
 
-			// Never a bare unserialize() on stored meta — see the object
-			// injection work that put automator_safe_unserialize() everywhere.
-			$expression = automator_safe_unserialize( $row );
-			$expression = is_object( $expression ) ? get_object_vars( $expression ) : $expression;
+			$type = $row['iterable_expression']['type'] ?? '';
 
-			if ( ! is_array( $expression ) || empty( $expression['type'] ) || ! is_string( $expression['type'] ) ) {
+			if ( ! is_string( $type ) || '' === $type ) {
 				continue;
 			}
 
-			$type = $expression['type'];
-
-			$types[ $type ] = isset( $types[ $type ] ) ? $types[ $type ] + 1 : 1;
+			$types[ $type ] = ( $types[ $type ] ?? 0 ) + 1;
 		}
 
 		$output = array();
@@ -1875,46 +2319,26 @@ WHERE p.post_type LIKE %s
 	}
 
 	/**
-	 * Which loop filters are in use, by integration and code.
+	 * Which loop filters are in use, by integration and code, most used first.
 	 *
 	 * @return array
 	 */
 	private function count_loop_filters() {
-		global $wpdb;
 
-		$rows = $wpdb->get_results(
-			$wpdb->prepare(
-				// LEFT JOINs: `code` is on every loop filter, the integration
-				// metas are not, and an inner join silently dropped the ones
-				// missing them.
-				//
-				// integration_code FIRST — that is the key WP_Filter_Store
-				// writes and every other reader uses; `integration` is the
-				// legacy twin kept for back-compat. Preferring the canonical one
-				// means a filter carrying only it still lands under its real
-				// integration rather than an empty bucket.
-				"SELECT code.meta_value AS code,
-				        COALESCE(integration_code.meta_value, integration.meta_value, '') AS integration,
-				        COUNT(*) AS total
-				FROM {$wpdb->posts} p
-				JOIN {$wpdb->postmeta} code ON code.post_id = p.ID AND code.meta_key = 'code'
-				LEFT JOIN {$wpdb->postmeta} integration_code ON integration_code.post_id = p.ID AND integration_code.meta_key = 'integration_code'
-				LEFT JOIN {$wpdb->postmeta} integration ON integration.post_id = p.ID AND integration.meta_key = 'integration'
-				WHERE p.post_type = %s
-				GROUP BY code.meta_value, COALESCE(integration_code.meta_value, integration.meta_value, '')
-				ORDER BY total DESC",
-				AUTOMATOR_POST_TYPE_LOOP_FILTER
-			),
-			ARRAY_A
-		);
+		$counts = automator_get_block_modifier_store()->count_usage_by_parent_block_type( Block_Type::LOOP );
+
+		arsort( $counts );
 
 		$output = array();
 
-		foreach ( (array) $rows as $row ) {
+		foreach ( $counts as $key => $count ) {
+
+			list( $integration, $code ) = array_pad( explode( ':', $key, 2 ), 2, '' );
+
 			$output[] = array(
-				'code'        => (string) $row['code'],
-				'integration' => (string) $row['integration'],
-				'count'       => (int) $row['total'],
+				'code'        => (string) $code,
+				'integration' => (string) $integration,
+				'count'       => (int) $count,
 			);
 		}
 
@@ -1928,7 +2352,7 @@ WHERE p.post_type LIKE %s
 	 * one 60-action recipe and fifty 1-action recipes averages the same as fifty
 	 * 2-action ones.
 	 *
-	 * Computed from recipe_items, which process_recipe_items() has already
+	 * Computed from recipe_items, which process_recipe() has already
 	 * built, so it costs no query at all.
 	 *
 	 * @return void
@@ -1973,7 +2397,9 @@ WHERE p.post_type LIKE %s
 	}
 
 	/**
-	 * @param int $actions
+	 * Bucket label for a recipe's action count.
+	 *
+	 * @param int $actions Number of actions in the recipe, at least one.
 	 *
 	 * @return string
 	 */
@@ -2006,7 +2432,7 @@ WHERE p.post_type LIKE %s
 	 * Buckets as a list of {bucket, count}. A map keyed by label would need the
 	 * consumer to address every bucket by name.
 	 *
-	 * @param array $buckets
+	 * @param int[] $buckets Counts keyed by bucket label.
 	 *
 	 * @return array
 	 */
@@ -2042,12 +2468,13 @@ WHERE p.post_type LIKE %s
 
 		$log = $wpdb->prefix . Automator()->db->tables->recipe;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table joined to core posts; no WordPress API returns this, and the read must be live.
 		$count = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM {$wpdb->posts} p
 				WHERE p.post_type = %s
 				  AND p.post_status = 'publish'
-				  AND NOT EXISTS ( SELECT 1 FROM {$log} l WHERE l.automator_recipe_id = p.ID )", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				  AND NOT EXISTS ( SELECT 1 FROM `" . esc_sql( $log ) . '` l WHERE l.automator_recipe_id = p.ID )',
 				AUTOMATOR_POST_TYPE_RECIPE
 			)
 		);
@@ -2058,37 +2485,29 @@ WHERE p.post_type LIKE %s
 	/**
 	 * How long people actually delay for.
 	 *
-	 * delayed_actions_count says how many actions are delayed; the unit says
+	 * delayed_actions_count says how many delay points exist; the unit says
 	 * whether the feature is used for a 5-minute nudge or a 30-day follow-up,
 	 * which are different products with the same switch.
 	 *
 	 * @return void
 	 */
 	public function get_delay_units() {
-		global $wpdb;
 
-		$rows = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT pm.meta_value AS unit, COUNT(*) AS total
-				FROM {$wpdb->postmeta} pm
-				JOIN {$wpdb->posts} p ON p.ID = pm.post_id
-				WHERE p.post_type = %s AND p.post_status = 'publish' AND pm.meta_key = 'async_delay_unit'
-				GROUP BY pm.meta_value",
-				AUTOMATOR_POST_TYPE_ACTION
-			),
-			ARRAY_A
-		);
+		$units = array();
+
+		foreach ( $this->delay_points() as $point ) {
+			if ( '' === $point['unit'] ) {
+				continue;
+			}
+			$units[ $point['unit'] ] = ( $units[ $point['unit'] ] ?? 0 ) + 1;
+		}
 
 		$output = array();
 
-		foreach ( (array) $rows as $row ) {
-			if ( empty( $row['unit'] ) ) {
-				continue;
-			}
-
+		foreach ( $units as $unit => $count ) {
 			$output[] = array(
-				'unit'  => (string) $row['unit'],
-				'count' => (int) $row['total'],
+				'unit'  => (string) $unit,
+				'count' => (int) $count,
 			);
 		}
 
@@ -2096,6 +2515,8 @@ WHERE p.post_type LIKE %s
 	}
 
 	/**
+	 * Add the reported plugin settings, then the connected AI providers.
+	 *
 	 * @return void
 	 */
 	public function get_settings() {
@@ -2133,7 +2554,7 @@ WHERE p.post_type LIKE %s
 		);
 
 		if ( is_automator_pro_active() ) {
-			$settings_to_report['Auto-prune activity logs']        = empty( as_next_scheduled_action( 'uapro_auto_purge_logs' ) ) ? 'Disabled' : 'Enabled';
+			$settings_to_report['Auto-prune activity logs']        = empty( Action_Scheduler::next_scheduled_action( 'uapro_auto_purge_logs' ) ) ? 'Disabled' : 'Enabled';
 			$settings_to_report['Auto-prune activity logs (days)'] = (int) automator_get_option( 'uap_automator_purge_days', 0 );
 		}
 
@@ -2145,7 +2566,7 @@ WHERE p.post_type LIKE %s
 	/**
 	 * The Enabled/Disabled convention every existing settings chart groups by.
 	 *
-	 * @param mixed $enabled
+	 * @param mixed $enabled Setting value, read as a boolean.
 	 *
 	 * @return string
 	 */
@@ -2156,7 +2577,7 @@ WHERE p.post_type LIKE %s
 	/**
 	 * A chart-safe label for a free-text setting that may be unset.
 	 *
-	 * @param mixed $value
+	 * @param mixed $value Stored setting value.
 	 *
 	 * @return string
 	 */

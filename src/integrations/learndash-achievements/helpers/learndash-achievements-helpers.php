@@ -36,6 +36,7 @@ class Ld_Achievements_Helpers extends Abstract_Helpers {
 			$title = $achievement->post_title;
 
 			if ( empty( $title ) ) {
+				/* translators: %d: Achievement ID */
 				$title = sprintf( esc_html_x( 'ID: %d (no title)', 'LearnDash', 'uncanny-automator' ), $achievement->ID );
 			}
 

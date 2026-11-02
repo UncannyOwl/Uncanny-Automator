@@ -173,6 +173,7 @@ class SAVETO_WISHLIST_ADD_PRODUCT extends Action {
 		// trigger — Automator's own recursion guard handles the rare case
 		// where the user wires an "add product" action and "user adds product"
 		// trigger in the same recipe.
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- SaveTo Wishlist's own hook.
 		do_action( 'stwlite_after_product_added_to_wishlist', $product_id, $quantity, $collection_id, $user_id );
 
 		$collection = \SaveToWishlist\Classes\Factories\Collections::instance()->get_collection( $collection_id );

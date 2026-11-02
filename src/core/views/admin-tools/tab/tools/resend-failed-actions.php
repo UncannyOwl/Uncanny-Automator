@@ -37,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<p class="uap-orphan-recovery__note">
 				<?php
 				echo esc_html__(
-					'This is a best-effort tool, not a guarantee. Resend replays the API request that was originally sent for a failed App action — it does not re-run the recipe or re-resolve tokens. Some actions can’t be resent: the original request may not have been logged, or the integration may have been disconnected or its credentials changed since the action ran. A resend fires now, against the current connection — later than the action originally ran — and re-firing can repeat the action’s effect on the connected app (for example, a second email or contact). Review the list and try a single resend before resending in bulk.',
+					'This is a best-effort tool, not a guarantee. Resend replays the API request that was originally sent for a failed App action. It does not re-run the recipe or re-resolve tokens. Some actions can’t be resent: the original request may not have been logged, or the integration may have been disconnected or its credentials changed since the action ran. A resend fires now, against the current connection — later than the action originally ran — and re-firing can repeat the action’s effect on the connected app (for example, a second email or contact). Review the list and try a single resend before resending in bulk.',
 					'uncanny-automator'
 				);
 				?>

@@ -15,6 +15,7 @@
  */
 
 defined('ABSPATH') || exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
 ?>
 <!-- Canvas document mount. -->
 <div
@@ -36,6 +37,7 @@ defined('ABSPATH') || exit;
     <?php foreach ($sections as $index => $section) : ?>
         <?php $renderer->notifyBeforeSectionRender($section, $postId); ?>
         <?php
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Section markup is cleaned by CanvasRenderer::renderSectionHtml(); escaping it as text would break the page.
             echo $renderer->renderSectionHtml($section['content']['html'] ?? '', $section['id'] ?? null);
         ?>
     <?php endforeach; ?>

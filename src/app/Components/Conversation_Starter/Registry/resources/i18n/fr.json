@@ -17,7 +17,6 @@
         "All Subscriptions": "Tous les abonnements",
         "All Topics": "Tous les sujets",
         "All Users": "Tous les utilisateurs",
-        "All integrations": "Toutes les intégrations",
         "All recipes": "Toutes les recettes",
         "App integrations": "Intégrations d'applications",
         "Assignments": "Devoirs",
@@ -76,26 +75,6 @@
         "Automator.Addons.5": {
             "Starter": "Planifier l'installation d'un module",
             "Prompt": "Aide-moi à planifier l'installation et la configuration d'un module complémentaire. Demande-moi quel flux de travail je veux automatiser, puis suggère les prochaines étapes."
-        },
-        "Automator.All integrations.1": {
-            "Starter": "Recommander des intégrations",
-            "Prompt": "Examine mes extensions installées et mes intégrations d'applications connectées, puis suggère les intégrations Automator les plus pertinentes pour mon site."
-        },
-        "Automator.All integrations.2": {
-            "Starter": "Trouver des opportunités d'automatisation",
-            "Prompt": "Suggère des idées d'automatisation utiles en fonction de mes extensions installées et de mes intégrations d'applications connectées."
-        },
-        "Automator.All integrations.3": {
-            "Starter": "Expliquer une intégration",
-            "Prompt": "Demande-moi quelle intégration m'intéresse, puis explique quels types de recettes elle peut débloquer."
-        },
-        "Automator.All integrations.4": {
-            "Starter": "Trouver les intégrations manquantes",
-            "Prompt": "Compare mes extensions installées et mes applications connectées avec les intégrations Automator disponibles, puis identifie ce que je dois peut-être installer, connecter ou mettre à niveau."
-        },
-        "Automator.All integrations.5": {
-            "Starter": "Construire avec une intégration",
-            "Prompt": "Aide-moi à choisir une intégration Automator et à la transformer en idée de recette utile pour mon site."
         },
         "Automator.All recipes.1": {
             "Starter": "Afficher mes recettes les plus actives",

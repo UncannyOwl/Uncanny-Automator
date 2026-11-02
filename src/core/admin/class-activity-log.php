@@ -103,9 +103,6 @@ class Activity_Log {
 		// Delete api logs
 		automator_purge_api_logs( $recipe_id, $recipe_log_id );
 
-		// Delete closure logs
-		automator_purge_closure_logs( $recipe_id, $recipe_log_id );
-
 		// Delete action logs
 		automator_purge_action_logs( $recipe_id, $recipe_log_id );
 
@@ -182,7 +179,7 @@ class Activity_Log {
 		}
 		?>
 		<?php if ( 'uncanny-automator-admin-logs' === automator_filter_input( 'page' ) ) { ?>
-			<uo-alert heading="<?php echo esc_attr( $message ); ?>" type="error" no-radius></uo-alert>
+			<uas-alert heading="<?php echo esc_attr( $message ); ?>" type="error" no-radius></uas-alert>
 		<?php } else { ?>
 			<div class="updated notice is-dismissable">
 				<p><?php echo esc_html( $message ); ?></p>
@@ -339,6 +336,7 @@ class Activity_Log {
 			wp_send_json( $return_data );
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table joined to core posts; no WordPress API returns this, and the read must be live.
 		$triggers = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT DISTINCT r.automator_trigger_id AS id, p.post_title as trigger_title
@@ -386,6 +384,7 @@ ORDER BY trigger_title ASC",
 		if ( ! $recipe_id ) {
 			wp_send_json( $return_data );
 		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table joined to core posts; no WordPress API returns this, and the read must be live.
 		$actions = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT DISTINCT r.automator_action_id AS id, p.post_title AS action_title

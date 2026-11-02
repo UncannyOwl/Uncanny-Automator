@@ -323,28 +323,37 @@ class Facebook_Lead_Ads_App_Helpers extends App_Helpers {
 	////////////////////////////////////////////////////////////
 
 	/**
-	 * Analyze and store form field tokens when a form is selected.
+	 * Cache the picked form's questions when a "lead created" trigger is added, its
+	 * page or form changes, or it is switched on without a cache.
 	 *
-	 * Note: Nonce validation is handled upstream by the REST API endpoint that
-	 * fires this hook. The automator_recipe_before_update action only fires
-	 * during authenticated REST requests with valid nonces.
+	 * Listens to `automator_event_trigger_created`, `automator_event_trigger_fields_changed`
+	 * and `automator_event_trigger_status_changed`, so builder, MCP and automator_*()
+	 * saves alike reach it on requests that load this integration. A copied or imported
+	 * trigger lands draft without the cache; switching it on builds it. A toggle with the
+	 * cache in place, or a save that changed neither the page nor the form, makes no API
+	 * call. The trigger's tokens are built from this cache. An API failure is logged and
+	 * the previous cache is kept.
 	 *
-	 * @param \WP_Post         $wp_post The post object.
-	 * @param \WP_REST_Request $request The REST request.
+	 * @param object $change The trigger_created, trigger_fields_changed or trigger_status_changed payload.
 	 *
 	 * @return void
 	 */
-	public function analyze_tokens( $wp_post, $request ) {
-		$option_code = automator_filter_input( 'optionCode', INPUT_POST );
-
-		if ( self::TRIGGER_META !== $option_code ) {
+	public function cache_form_fields( $change ) {
+		$data = $change->to_array();
+		if ( isset( $data['fields'] ) && array() === array_intersect( array( self::TRIGGER_META, 'FORMS' ), (array) $data['fields'] ) ) {
+			return;
+		}
+		if ( isset( $data['new_status'] ) && ( 'publish' !== $data['new_status'] || ! empty( get_post_meta( (int) $data['item_id'], self::FORM_FIELDS_META_KEY, true ) ) ) ) {
 			return;
 		}
 
-		$input_values = automator_filter_input_array( 'optionValue', INPUT_POST );
-		$form_id      = absint( $input_values['FORMS'] ?? 0 );
-		$page_id      = absint( $input_values[ self::TRIGGER_META ] ?? 0 );
+		$trigger_id = (int) $data['item_id'];
+		if ( 'FB_LEAD_ADS_CODE' !== get_post_meta( $trigger_id, 'code', true ) ) {
+			return;
+		}
 
+		$page_id = absint( get_post_meta( $trigger_id, self::TRIGGER_META, true ) );
+		$form_id = absint( get_post_meta( $trigger_id, 'FORMS', true ) );
 		if ( empty( $form_id ) || empty( $page_id ) ) {
 			return;
 		}
@@ -355,8 +364,27 @@ class Facebook_Lead_Ads_App_Helpers extends App_Helpers {
 			return;
 		}
 
-		$fields = $form_fields['data']['questions'] ?? array();
-		update_post_meta( $wp_post->ID, self::FORM_FIELDS_META_KEY, $fields );
+		update_post_meta( $trigger_id, self::FORM_FIELDS_META_KEY, $form_fields['data']['questions'] ?? array() );
+	}
+
+	/**
+	 * Whether a value is a Graph object id: a positive integer, or a string
+	 * of digits that is not all zeros. Page, form and lead ids are; anything
+	 * else a request carries is not an id this integration can use.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param mixed $value The value.
+	 *
+	 * @return bool
+	 */
+	public static function is_graph_id( $value ) {
+
+		if ( is_int( $value ) ) {
+			return 0 < $value;
+		}
+
+		return is_string( $value ) && ctype_digit( $value ) && '' !== ltrim( $value, '0' );
 	}
 
 	/**

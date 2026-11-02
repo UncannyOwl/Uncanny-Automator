@@ -156,7 +156,8 @@ class Removal_Dispatcher {
 		$items_table = \SaveToWishlist\Helpers\Helper_Database::get_collection_items_table_name();
 
 		// Table name comes from the SaveTo helper; value is prepared.
-		$rows = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- SaveTo Wishlist's own table; the plugin offers no API for this query. Table name comes from the SaveTo helper; the value is prepared.
+		$rows = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT product_id FROM {$items_table} WHERE collection_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$collection_id

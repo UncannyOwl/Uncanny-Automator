@@ -310,7 +310,7 @@ final class AI_Settings implements Settings_Interface {
 		}
 
 		$option_key = 'automator_' . $id . '_api_key';
-		$success    = ! empty( automator_get_option( $option_key, '' ) ) ? 'success' : ''; // The 'success' is a valid uo-tab component status.
+		$success    = ! empty( automator_get_option( $option_key, '' ) ) ? 'success' : ''; // The 'success' is a valid uas-tab component status.
 
 		$this->settings_id       = $id;
 		$this->settings_icon     = $args['icon'] ?? '';

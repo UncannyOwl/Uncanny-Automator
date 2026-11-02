@@ -5,6 +5,12 @@
  * @package Automator
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
+
 $report             = Automator()->system_report->get();
 $environment        = $report['environment'];
 $database           = $report['database'];
@@ -87,7 +93,7 @@ $automator_stats    = $report['automator_stats'];
 
 							var description = $description.text().trim();
 							if (description) {
-								the_value += ' — ' + description;
+								the_value += ': ' + description;
 							}
 
 							report = report + '' + the_name + ': ' + the_value + '\n';
@@ -167,29 +173,29 @@ $automator_stats    = $report['automator_stats'];
 
 <div class="uap-spacing-bottom">
 
-	<uo-alert
+	<uas-alert
 		type="info"
 		heading="<?php esc_attr_e( 'Please copy and paste this information in your ticket when contacting support', 'uncanny-automator' ); ?>"
 	>
 
-		<uo-button color="secondary" class="uap-spacing-top--small debug-report">
+		<uas-button color="secondary" class="uap-spacing-top--small debug-report">
 
 			<?php esc_html_e( 'Get system report', 'uncanny-automator' ); ?>
 
-		</uo-button>
+		</uas-button>
 
 		<div id="debug-report" class="uap-spacing-top--small">
 
 			<textarea readonly="readonly"></textarea>
 
-			<uo-button
+			<uas-button
 				color="secondary"
 				id="copy-for-support"
 				href="#"
 				data-tip="<?php esc_attr_e( 'Copied!', 'uncanny-automator' ); ?>"
 			>
 				<?php esc_html_e( 'Copy for support', 'uncanny-automator' ); ?>
-			</uo-button>
+			</uas-button>
 
 			<span id="copy-for-support-status" class="automator-tooltip-help-text">
 				<?php esc_html_e( 'Copied to clipboard!', 'uncanny-automator' ); ?>
@@ -201,7 +207,7 @@ $automator_stats    = $report['automator_stats'];
 
 		</div>
 
-	</uo-alert>
+	</uas-alert>
 
 </div>
 
@@ -246,7 +252,7 @@ $automator_stats    = $report['automator_stats'];
 		<td class="help"><?php echo esc_html__( 'The Automator REST API path on your site.', 'uncanny-automator' ); ?></td>
 		<td>
 			<mark class="yes">
-				<uo-icon id="check"></uo-icon>
+				<uas-icon code="check"></uas-icon>
 			</mark>
 			<?php echo esc_url_raw( site_url() . '/wp-json/' . esc_html( AUTOMATOR_REST_API_END_POINT ) ); ?>
 		</td>
@@ -259,15 +265,15 @@ $automator_stats    = $report['automator_stats'];
 			<td class="help"><?php echo esc_html__( 'Action Scheduler package running on your site.', 'uncanny-automator' ); ?></td>
 			<td>
 				<?php
-				if ( class_exists( 'ActionScheduler_Versions' ) && class_exists( 'ActionScheduler' ) ) {
-					$version = ActionScheduler_Versions::instance()->latest_version();
-					$path    = ActionScheduler::plugin_path( '' ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+				if ( \Uncanny_Automator\Services\Action_Scheduler::is_available() ) {
+					$version = \Uncanny_Automator\Services\Action_Scheduler::version();
+					$path    = \Uncanny_Automator\Services\Action_Scheduler::source_path(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 				} else {
 					$version = null;
 				}
 
 				if ( ! is_null( $version ) ) {
-					echo '<mark class="yes"><uo-icon id="check"></uo-icon></mark> ' . esc_html( $version ) . ' ' . esc_html( $path );
+					echo '<mark class="yes"><uas-icon code="check"></uas-icon></mark> ' . esc_html( $version ) . ' ' . esc_html( $path );
 				} else {
 					echo '<mark class="error"><span class="dashicons dashicons-warning"></span></mark>' . esc_html__( 'Unable to detect the Action Scheduler package.', 'uncanny-automator' );
 				}
@@ -284,7 +290,7 @@ $automator_stats    = $report['automator_stats'];
 			<td>
 				<?php
 				if ( $environment['log_directory_writable'] ) {
-					echo '<mark class="yes"><uo-icon id="check"></uo-icon> <code class="private">' . esc_html( $environment['log_directory'] ) . '</code></mark> ';
+					echo '<mark class="yes"><uas-icon code="check"></uas-icon> <code class="private">' . esc_html( $environment['log_directory'] ) . '</code></mark> ';
 				} else {
 					echo wp_kses(
 						sprintf(
@@ -313,7 +319,7 @@ $automator_stats    = $report['automator_stats'];
 	<tr>
 		<td data-export-label="WP Multisite"><?php esc_html_e( 'WordPress multisite', 'uncanny-automator' ); ?>:</td>
 		<td class="help"><?php esc_html_e( 'Whether or not you have WordPress Multisite enabled.', 'uncanny-automator' ); ?></td>
-		<td><?php echo esc_html( $environment['wp_multisite'] ) ? '<uo-icon id="check"></uo-icon>' : '&ndash;'; ?></td>
+		<td><?php echo esc_html( $environment['wp_multisite'] ) ? '<uas-icon code="check"></uas-icon>' : '&ndash;'; ?></td>
 	</tr>
 	<tr>
 		<td data-export-label="WP Memory Limit"><?php esc_html_e( 'WordPress memory limit', 'uncanny-automator' ); ?>:
@@ -344,12 +350,12 @@ $automator_stats    = $report['automator_stats'];
 				echo wp_kses(
 					sprintf(
 					/* translators: %s: Memory limit. */
-						'<mark class="yes"><uo-icon id="check"></uo-icon></mark> %s',
+						'<mark class="yes"><uas-icon code="check"></uas-icon></mark> %s',
 						esc_html( size_format( $environment['wp_memory_limit'] ) )
 					),
 					array(
-						'mark'    => array( 'class' => array() ),
-						'uo-icon' => array( 'id' => array() ),
+						'mark'     => array( 'class' => array() ),
+						'uas-icon' => array( 'code' => array() ),
 					)
 				);
 			}
@@ -362,7 +368,7 @@ $automator_stats    = $report['automator_stats'];
 		<td>
 			<?php if ( $environment['wp_debug_mode'] ) : ?>
 				<mark class="yes">
-					<uo-icon id="check"></uo-icon>
+					<uas-icon code="check"></uas-icon>
 				</mark>
 			<?php else : ?>
 				<mark class="no">&ndash;</mark>
@@ -375,7 +381,7 @@ $automator_stats    = $report['automator_stats'];
 		<td>
 			<?php if ( $environment['wp_cron'] ) : ?>
 				<mark class="yes">
-					<uo-icon id="check"></uo-icon>
+					<uas-icon code="check"></uas-icon>
 				</mark>
 			<?php else : ?>
 				<mark class="no">&ndash;</mark>
@@ -395,7 +401,7 @@ $automator_stats    = $report['automator_stats'];
 		<td>
 			<?php if ( $environment['external_object_cache'] ) : ?>
 				<mark class="yes">
-					<uo-icon id="check"></uo-icon>
+					<uas-icon code="check"></uas-icon>
 				</mark>
 			<?php else : ?>
 				<mark class="no">&ndash;</mark>
@@ -410,7 +416,7 @@ $automator_stats    = $report['automator_stats'];
 		<td>
 			<?php if ( $environment['automator_cache'] ) : ?>
 				<mark class="yes">
-					<uo-icon id="check"></uo-icon>
+					<uas-icon code="check"></uas-icon>
 				</mark>
 			<?php else : ?>
 				<mark class="no">&ndash;</mark>
@@ -425,7 +431,7 @@ $automator_stats    = $report['automator_stats'];
 		<td>
 			<?php if ( $environment['automator_bg_processing'] ) : ?>
 				<mark class="yes">
-					<uo-icon id="check"></uo-icon>
+					<uas-icon code="check"></uas-icon>
 				</mark>
 			<?php else : ?>
 				<mark class="no">&ndash;</mark>
@@ -460,25 +466,7 @@ $automator_stats    = $report['automator_stats'];
 	<tr>
 		<td data-export-label="PHP Version"><?php esc_html_e( 'PHP version', 'uncanny-automator' ); ?>:</td>
 		<td class="help"><?php esc_html_e( 'The version of PHP installed on your hosting server.', 'uncanny-automator' ); ?></td>
-		<td>
-			<?php
-			if ( version_compare( $environment['php_version'], '7.2', '>=' ) ) {
-				echo '<mark class="yes">' . esc_html( $environment['php_version'] ) . '</mark>';
-			} else {
-				$update_link = ' <a href="https://automatorplugin.com/knowledge-base/php-version/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=tools-status-update-php-version" target="_blank">' . esc_html__( 'How to update your PHP version', 'uncanny-automator' ) . '</a>';
-				$class       = 'error';
-
-				if ( version_compare( $environment['php_version'], '5.6', '<' ) ) {
-					$notice = '<span class="dashicons dashicons-warning"></span> ' . esc_html__( 'Automator will not run under this version of PHP, however, it has reached end of life. We recommend using PHP version 5.6 or above for greater performance and security.', 'uncanny-automator' ) . $update_link;
-				} elseif ( version_compare( $environment['php_version'], '7.2', '<' ) ) {
-					$notice = esc_html__( 'We recommend using PHP version 7.2 or above for greater performance and security.', 'uncanny-automator' ) . $update_link;
-					$class  = 'recommendation';
-				}
-
-				echo '<mark class="' . esc_attr( $class ) . '">' . esc_html( $environment['php_version'] ) . ' - ' . wp_kses_post( $notice ) . '</mark>';
-			}
-			?>
-		</td>
+		<td><mark class="yes"><?php echo esc_html( $environment['php_version'] ); ?></mark></td>
 	</tr>
 	<?php if ( function_exists( 'ini_get' ) ) : ?>
 		<tr>
@@ -537,7 +525,7 @@ $automator_stats    = $report['automator_stats'];
 				/* translators: %s: the default timezone configured for the site. */
 				echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . sprintf( esc_html__( 'Default timezone is %s - it should be UTC', 'uncanny-automator' ), esc_html( $environment['default_timezone'] ) ) . '</mark>';
 			} else {
-				echo '<mark class="yes"><uo-icon id="check"></uo-icon></mark>';
+				echo '<mark class="yes"><uas-icon code="check"></uas-icon></mark>';
 			}
 			?>
 		</td>
@@ -548,7 +536,7 @@ $automator_stats    = $report['automator_stats'];
 		<td>
 			<?php
 			if ( $environment['remote_post_successful'] ) {
-				echo '<mark class="yes"><uo-icon id="check"></uo-icon></mark>';
+				echo '<mark class="yes"><uas-icon code="check"></uas-icon></mark>';
 			} else {
 				/* translators: %s: name of the WordPress HTTP function that failed. */
 				echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . sprintf( esc_html__( '%s failed. Contact your hosting provider.', 'uncanny-automator' ), 'wp_remote_post()' ) . ' ' . esc_html( $environment['remote_post_response'] ) . '</mark>';
@@ -562,7 +550,7 @@ $automator_stats    = $report['automator_stats'];
 		<td>
 			<?php
 			if ( $environment['remote_get_successful'] ) {
-				echo '<mark class="yes"><uo-icon id="check"></uo-icon></mark>';
+				echo '<mark class="yes"><uas-icon code="check"></uas-icon></mark>';
 			} else {
 				/* translators: %s: name of the WordPress HTTP function that failed. */
 				echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . sprintf( esc_html__( '%s failed. Contact your hosting provider.', 'uncanny-automator' ), 'wp_remote_get()' ) . ' ' . esc_html( $environment['remote_get_response'] ) . '</mark>';
@@ -570,6 +558,84 @@ $automator_stats    = $report['automator_stats'];
 			?>
 		</td>
 	</tr>
+	</tbody>
+</table>
+<?php
+// ─── App Integration Platform ───────────────────────────────────────────────
+$aip        = automator_get_platform_status();
+$aip_status = isset( $aip['status'] ) ? $aip['status'] : 'disconnected';
+?>
+<table class="automator_status_table widefat" cellspacing="0">
+	<thead>
+	<tr>
+		<th colspan="3" data-export-label="Automator App Platform">
+			<h2><?php esc_html_e( 'Automator App Platform', 'uncanny-automator' ); ?></h2></th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td data-export-label="Connection status"><?php esc_html_e( 'Connection status', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php esc_html_e( 'Whether this site is registered with the Automator App Platform.', 'uncanny-automator' ); ?></td>
+		<td>
+			<?php
+			echo 'connected' === $aip_status
+				? '<mark class="yes"><uo-icon id="check"></uo-icon></mark> '
+				: ( 'disconnected' === $aip_status
+					? '<mark class="error"><span class="dashicons dashicons-warning"></span></mark> '
+					: '' );
+			echo esc_html( $aip['status_label'] );
+			?>
+		</td>
+	</tr>
+	<?php if ( '' !== $aip['registration_detail'] ) : ?>
+	<tr>
+		<td data-export-label="Registration"><?php esc_html_e( 'Registration', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php esc_html_e( "Where this site's registration with the Automator App Platform stands, and what to do about it.", 'uncanny-automator' ); ?></td>
+		<td data-state="<?php echo esc_attr( $aip['registration_state'] ); ?>"><?php echo wp_kses( $aip['registration_detail'], array() ); ?></td>
+	</tr>
+	<?php endif; ?>
+	<tr>
+		<td data-export-label="Site ID"><?php esc_html_e( 'Site ID', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php esc_html_e( 'The identifier this site is known by on the Automator App Platform (its normalized address).', 'uncanny-automator' ); ?></td>
+		<td><?php echo $aip['site_id'] ? '<code>' . esc_html( $aip['site_id'] ) . '</code>' : '&ndash;'; ?></td>
+	</tr>
+	<tr>
+		<td data-export-label="Callback URL"><?php esc_html_e( 'Callback URL', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php esc_html_e( 'The endpoint the Automator App Platform calls back to deliver events to this site.', 'uncanny-automator' ); ?></td>
+		<td><?php echo $aip['callback_url'] ? esc_url( $aip['callback_url'] ) : '&ndash;'; ?></td>
+	</tr>
+	<tr>
+		<td data-export-label="License active"><?php esc_html_e( 'License active', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php esc_html_e( 'Whether a valid license is on file. Registration requires an active license.', 'uncanny-automator' ); ?></td>
+		<td>
+			<?php if ( $aip['license_active'] ) : ?>
+				<mark class="yes"><uo-icon id="check"></uo-icon></mark>
+			<?php else : ?>
+				<mark class="no">&ndash;</mark>
+			<?php endif; ?>
+		</td>
+	</tr>
+	<?php if ( '' !== $aip['fingerprint'] ) : ?>
+	<tr>
+		<td data-export-label="Credential fingerprint"><?php esc_html_e( 'Credential fingerprint', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php esc_html_e( 'A non-secret identifier for the current signing credential.', 'uncanny-automator' ); ?></td>
+		<td><code><?php echo esc_html( $aip['fingerprint'] ); ?></code></td>
+	</tr>
+	<?php endif; ?>
+	<?php if ( $aip['credentials_rotated_at'] > 0 ) : ?>
+	<tr>
+		<td data-export-label="Credentials rotated"><?php esc_html_e( 'Credentials rotated', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php esc_html_e( 'When the signing credential was last rotated.', 'uncanny-automator' ); ?></td>
+		<td><?php echo esc_html( gmdate( 'Y-m-d H:i:s', $aip['credentials_rotated_at'] ) ); ?> UTC</td>
+	</tr>
+	<?php endif; ?>
+	<?php if ( $aip['last_register_attempt'] > 0 ) : ?>
+	<tr>
+		<td data-export-label="Last registration attempt"><?php esc_html_e( 'Last registration attempt', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php esc_html_e( 'When the site last tried to register. Present only while a retry is pending.', 'uncanny-automator' ); ?></td>
+		<td><?php echo esc_html( gmdate( 'Y-m-d H:i:s', $aip['last_register_attempt'] ) ); ?> UTC</td>
+	</tr>
+	<?php endif; ?>
 	</tbody>
 </table>
 <table class="automator_status_table widefat" cellspacing="0">
@@ -615,11 +681,6 @@ $automator_stats    = $report['automator_stats'];
 		<td class="help"><?php esc_html_e( 'Available app credits.', 'uncanny-automator' ); ?></td>
 		<td><?php echo esc_html( $automator_stats['credits_left'] ); ?></td>
 	</tr>
-	<tr>
-		<td data-export-label="Recipes using app credits"><?php esc_html_e( 'Recipes using app credits', 'uncanny-automator' ); ?>:</td>
-		<td class="help"><?php esc_html_e( 'Total number of recipes using app credits on your site.', 'uncanny-automator' ); ?></td>
-		<td><?php echo esc_html( $automator_stats['credit_recipes'] ); ?></td>
-	</tr>
 	</tbody>
 </table>
 <?php
@@ -649,7 +710,7 @@ if ( ! empty( $page_builder ) ) :
 	}
 	$pb_mark = static function ( $ok ) {
 		echo $ok
-			? '<mark class="yes"><uo-icon id="check"></uo-icon></mark> '
+			? '<mark class="yes"><uas-icon code="check"></uas-icon></mark> '
 			: '<mark class="error"><span class="dashicons dashicons-warning"></span></mark> ';
 	};
 	?>
@@ -764,7 +825,6 @@ $loading_load_all      = $loading_manifest->should_load_all();
 $manifest_integrations = array();
 $manifest_triggers     = 0;
 $manifest_actions      = 0;
-$manifest_closures     = 0;
 $manifest_conditions   = 0;
 $manifest_loop_filters = 0;
 
@@ -775,7 +835,7 @@ foreach ( $loading_manifest_data as $composite_key => $integration_code ) {
 
 	// Determine the type from the item map.
 	if ( ! empty( $loading_item_map[ $integration_code ] ) ) {
-		foreach ( array( 'triggers', 'actions', 'closures', 'conditions', 'loop_filters' ) as $item_type ) {
+		foreach ( array( 'triggers', 'actions', 'conditions', 'loop_filters' ) as $item_type ) {
 			if ( isset( $loading_item_map[ $integration_code ][ $item_type ][ $composite_key ] ) ) {
 				switch ( $item_type ) {
 					case 'triggers':
@@ -783,9 +843,6 @@ foreach ( $loading_manifest_data as $composite_key => $integration_code ) {
 						break;
 					case 'actions':
 						++$manifest_actions;
-						break;
-					case 'closures':
-						++$manifest_closures;
 						break;
 					case 'conditions':
 						++$manifest_conditions;
@@ -803,7 +860,6 @@ foreach ( $loading_manifest_data as $composite_key => $integration_code ) {
 // Item map totals.
 $map_total_triggers     = 0;
 $map_total_actions      = 0;
-$map_total_closures     = 0;
 $map_total_conditions   = 0;
 $map_total_loop_filters = 0;
 $map_total_integrations = count( $loading_item_map );
@@ -811,7 +867,6 @@ $map_total_integrations = count( $loading_item_map );
 foreach ( $loading_item_map as $int_code => $types ) {
 	$map_total_triggers     += isset( $types['triggers'] ) ? count( $types['triggers'] ) : 0;
 	$map_total_actions      += isset( $types['actions'] ) ? count( $types['actions'] ) : 0;
-	$map_total_closures     += isset( $types['closures'] ) ? count( $types['closures'] ) : 0;
 	$map_total_conditions   += isset( $types['conditions'] ) ? count( $types['conditions'] ) : 0;
 	$map_total_loop_filters += isset( $types['loop_filters'] ) ? count( $types['loop_filters'] ) : 0;
 }
@@ -819,7 +874,6 @@ foreach ( $loading_item_map as $int_code => $types ) {
 // Loaded counts from Automator runtime.
 $loaded_triggers     = function_exists( 'Automator' ) ? count( Automator()->get_triggers() ) : 0;
 $loaded_actions      = function_exists( 'Automator' ) ? count( Automator()->get_actions() ) : 0;
-$loaded_closures     = function_exists( 'Automator' ) ? count( Automator()->get_closures() ) : 0;
 $loaded_integrations = class_exists( 'Uncanny_Automator\Set_Up_Automator', false )
 	? count( \Uncanny_Automator\Set_Up_Automator::$active_integrations_code )
 	: 0;
@@ -879,7 +933,7 @@ if ( $loading_load_all ) {
 		$load_mode_label .= '<br><small style="color:#646970;">Frontend mode: <strong>Demand-driven</strong> (' . count( $loading_manifest_data ) . ' active codes)</small>';
 	}
 } else {
-	$load_mode_label = '<mark class="yes"><uo-icon id="check"></uo-icon> Demand-driven</mark>';
+	$load_mode_label = '<mark class="yes"><uas-icon code="check"></uas-icon> Demand-driven</mark>';
 }
 
 // Peak memory.
@@ -928,14 +982,6 @@ $peak_memory = size_format( memory_get_peak_usage( true ), 1 );
 		<td>
 			<?php echo esc_html( $loaded_actions ); ?>
 			<small>/ <?php echo esc_html( $map_total_actions ); ?> in item map</small>
-		</td>
-	</tr>
-	<tr>
-		<td data-export-label="Loaded closures"><?php esc_html_e( 'Loaded closures', 'uncanny-automator' ); ?>:</td>
-		<td class="help"><?php esc_html_e( 'Closures instantiated this request vs total available in the item map.', 'uncanny-automator' ); ?></td>
-		<td>
-			<?php echo esc_html( $loaded_closures ); ?>
-			<small>/ <?php echo esc_html( $map_total_closures ); ?> in item map</small>
 		</td>
 	</tr>
 	<tr>
@@ -992,16 +1038,6 @@ $peak_memory = size_format( memory_get_peak_usage( true ), 1 );
 			<small>/ <?php echo esc_html( $map_total_actions ); ?> total</small>
 		</td>
 	</tr>
-	<?php if ( $map_total_closures > 0 ) : ?>
-	<tr>
-		<td data-export-label="Manifest closures"><?php esc_html_e( 'Closures in manifest', 'uncanny-automator' ); ?>:</td>
-		<td class="help"><?php esc_html_e( 'Closure codes active in published recipes.', 'uncanny-automator' ); ?></td>
-		<td>
-			<?php echo esc_html( $manifest_closures ); ?>
-			<small>/ <?php echo esc_html( $map_total_closures ); ?> total</small>
-		</td>
-	</tr>
-	<?php endif; ?>
 	<?php if ( $map_total_conditions > 0 ) : ?>
 	<tr>
 		<td data-export-label="Manifest conditions"><?php esc_html_e( 'Conditions in manifest', 'uncanny-automator' ); ?>:</td>
@@ -1034,11 +1070,11 @@ $peak_memory = size_format( memory_get_peak_usage( true ), 1 );
 				$post_type_labels    = array(
 					'uo-trigger'     => 'Trigger',
 					'uo-action'      => 'Action',
-					'uo-closure'     => 'Closure',
 					'uo-loop-filter' => 'Loop Filter',
 				);
 
 				// Direct children.
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Joins core posts and postmeta; no WordPress API returns this.
 				$direct_types = $wpdb->get_results(
 					"SELECT DISTINCT
 						CONCAT( int_meta.meta_value, '_', code_meta.meta_value ) AS composite_key,
@@ -1048,13 +1084,14 @@ $peak_memory = size_format( memory_get_peak_usage( true ), 1 );
 						ON int_meta.post_id = code_meta.post_id AND int_meta.meta_key = 'integration'
 					INNER JOIN {$wpdb->posts} part
 						ON part.ID = code_meta.post_id AND part.post_status = 'publish'
-						AND part.post_type IN ('uo-trigger','uo-action','uo-closure')
+						AND part.post_type IN ('uo-trigger','uo-action')
 					INNER JOIN {$wpdb->posts} recipe
 						ON recipe.ID = part.post_parent AND recipe.post_status = 'publish' AND recipe.post_type = 'uo-recipe'
 					WHERE code_meta.meta_key = 'code'",
 					OBJECT
 				);
 				// Loop children.
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Joins core posts and postmeta; no WordPress API returns this.
 				$loop_types = $wpdb->get_results(
 					"SELECT DISTINCT
 						CONCAT( int_meta.meta_value, '_', code_meta.meta_value ) AS composite_key,
@@ -1064,7 +1101,7 @@ $peak_memory = size_format( memory_get_peak_usage( true ), 1 );
 						ON int_meta.post_id = code_meta.post_id AND int_meta.meta_key = 'integration'
 					INNER JOIN {$wpdb->posts} loop_child
 						ON loop_child.ID = code_meta.post_id AND loop_child.post_status = 'publish'
-						AND loop_child.post_type IN ('uo-action','uo-closure','uo-loop-filter')
+						AND loop_child.post_type IN ('uo-action','uo-loop-filter')
 					INNER JOIN {$wpdb->posts} loop_post
 						ON loop_post.ID = loop_child.post_parent AND loop_post.post_type = 'uo-loop'
 					INNER JOIN {$wpdb->posts} recipe
@@ -1082,7 +1119,6 @@ $peak_memory = size_format( memory_get_peak_usage( true ), 1 );
 				$item_map_type_labels = array(
 					'triggers'     => 'Trigger',
 					'actions'      => 'Action',
-					'closures'     => 'Closure',
 					'conditions'   => 'Condition',
 					'loop_filters' => 'Loop Filter',
 				);
@@ -1115,7 +1151,7 @@ $peak_memory = size_format( memory_get_peak_usage( true ), 1 );
 								<tr>
 									<td><code><?php echo esc_html( $key ); ?></code></td>
 									<td><?php echo esc_html( $int ); ?></td>
-									<td><?php echo esc_html( $manifest_post_types[ $key ] ?? '—' ); ?></td>
+									<td><?php echo esc_html( $manifest_post_types[ $key ] ?? '-' ); ?></td>
 								</tr>
 							<?php endforeach; ?>
 						</tbody>
@@ -1134,11 +1170,11 @@ $peak_memory = size_format( memory_get_peak_usage( true ), 1 );
 			$item_map_file = UA_ABSPATH . 'vendor/composer/autoload_item_map.php';
 			if ( file_exists( $item_map_file ) ) {
 				$item_map_modified = gmdate( 'Y-m-d H:i:s', filemtime( $item_map_file ) );
-				echo '<mark class="yes"><uo-icon id="check"></uo-icon></mark> ';
+				echo '<mark class="yes"><uas-icon code="check"></uas-icon></mark> ';
 				/* translators: %s: date and time the item map file was generated. */
 				printf( esc_html__( 'Generated %s', 'uncanny-automator' ), esc_html( $item_map_modified ) );
 			} else {
-				echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . esc_html__( 'Missing — demand-driven loading disabled', 'uncanny-automator' ) . '</mark>';
+				echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . esc_html__( 'Missing: demand-driven loading disabled', 'uncanny-automator' ) . '</mark>';
 			}
 			?>
 		</td>
@@ -1390,7 +1426,7 @@ if ( 0 < count( $dropins_mu_plugins['mu_plugins'] ) ) :
 			<td class="help"><?php esc_html_e( 'Displays whether or not the current theme is a child theme.', 'uncanny-automator' ); ?></td>
 			<td>
 				<mark class="yes">
-					<uo-icon id="check"></uo-icon>
+					<uas-icon code="check"></uas-icon>
 				</mark>
 			</td>
 		</tr>

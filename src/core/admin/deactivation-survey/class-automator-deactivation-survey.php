@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'Automator_Deactivation_Survey' ) ) {
 	/**
 	 * Awesome Motive Deactivation Survey.
@@ -379,8 +383,17 @@ if ( ! class_exists( 'Automator_Deactivation_Survey' ) ) {
 			}
 
 			$options = array(
+				// Titles must match the survey form's choice labels exactly: the
+				// receiving endpoint matches on the text, not the code.
 				1 => array(
 					'title' => esc_html__( "It's a temporary deactivation", 'uncanny-automator' ),
+				),
+				6 => array(
+					'title' => esc_html__( "I couldn't connect my AI", 'uncanny-automator' ),
+				),
+				7 => array(
+					'title'   => esc_html__( "My AI couldn't do what I asked", 'uncanny-automator' ),
+					'details' => esc_html__( 'What did you ask it to do?', 'uncanny-automator' ),
 				),
 				2 => array(
 					'title'   => esc_html__( "It can't do something I need", 'uncanny-automator' ),

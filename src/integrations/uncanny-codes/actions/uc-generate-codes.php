@@ -187,7 +187,8 @@ class UC_GENERATE_CODES extends \Uncanny_Automator\Recipe\Action {
 
 		$tbl_codes = $wpdb->prefix . \uncanny_learndash_codes\Config::$tbl_codes;
 
-		$codes = $wpdb->get_col( $wpdb->prepare( "SELECT `code` FROM $tbl_codes WHERE code_group = %d", $group_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Uncanny Codes' own table; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
+		$codes = $wpdb->get_col( $wpdb->prepare( "SELECT `code` FROM $tbl_codes WHERE code_group = %d", $group_id ) );
 
 		return implode( ', ', $codes );
 	}

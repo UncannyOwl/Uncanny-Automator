@@ -47,6 +47,21 @@ final class Automator_Integration_Registry_Bridge implements Integration_Registr
 	/**
 	 * @inheritDoc
 	 */
+	public function get_app_platform_integrations(): array {
+		$apps = array();
+		foreach ( $this->get_all_integrations() as $code => $integration ) {
+			if ( is_array( $integration ) && ! empty( $integration['app_platform'] ) ) {
+				$apps[ (string) $code ] = (string) ( $integration['name'] ?? $code );
+			}
+		}
+		asort( $apps, SORT_NATURAL | SORT_FLAG_CASE );
+
+		return $apps;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public function get_active_integrations(): array {
 		$integrations = \Automator()->get_integrations();
 
@@ -108,26 +123,8 @@ final class Automator_Integration_Registry_Bridge implements Integration_Registr
 	/**
 	 * @inheritDoc
 	 */
-	public function get_integration_for_closure( string $closure_code ): ?string {
-		$result = \Automator()->get->closure_integration_from_closure_code( $closure_code );
-
-		return is_string( $result ) && '' !== $result ? $result : null;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
 	public function get_action_execution_callback( string $action_code ) {
 		$callback = \Automator()->get->action_execution_function_from_action_code( $action_code );
-
-		return is_callable( $callback ) ? $callback : null;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function get_closure_execution_callback( string $closure_code ) {
-		$callback = \Automator()->get->closure_execution_function_from_closure_code( $closure_code );
 
 		return is_callable( $callback ) ? $callback : null;
 	}

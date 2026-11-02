@@ -123,7 +123,7 @@ final class MagicBridgeEnqueuer
         } catch (\Throwable $failure) {
             // wp_enqueue_scripts is a shared WordPress surface. A Page
             // Builder failure must not terminate the request.
-            error_log('[Uncanny Page Builder] Magic Bridge enqueue failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Magic Bridge enqueue failed (' . $failure::class . ')');
         }
     }
 
@@ -237,6 +237,7 @@ final class MagicBridgeEnqueuer
 
     private function isPreviewRequest(): bool
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
         return isset($_GET['upb_preview']);
     }
 

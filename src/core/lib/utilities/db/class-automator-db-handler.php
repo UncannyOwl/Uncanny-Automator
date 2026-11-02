@@ -30,10 +30,6 @@ class Automator_DB_Handler {
 	 */
 	public $action;
 	/**
-	 * @var Automator_DB_Handler_Closures
-	 */
-	public $closure;
-	/**
 	 * @var Automator_DB_Handler_Tokens
 	 */
 	public $token;
@@ -52,7 +48,6 @@ class Automator_DB_Handler {
 		$this->token   = Automator_DB_Handler_Tokens::get_instance();
 		$this->trigger = Automator_DB_Handler_Triggers::get_instance();
 		$this->action  = Automator_DB_Handler_Actions::get_instance();
-		$this->closure = Automator_DB_Handler_Closures::get_instance();
 		$this->api     = Automator_DB_Handler_Api::get_instance();
 	}
 
@@ -80,6 +75,7 @@ class Automator_DB_Handler {
 	public function update( $table, $update, $where, $where_format, $update_format ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		return $wpdb->update(
 			$table,
 			$update,

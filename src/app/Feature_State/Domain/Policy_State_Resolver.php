@@ -131,6 +131,15 @@ final class Policy_State_Resolver {
 			throw new \UnexpectedValueException( 'A connected Lite account requires allocation facts.' );
 		}
 
+		// Hosted Free credits do not enroll a WordPress site. A missing fact
+		// is unavailable evidence, while false is an authoritative hidden state.
+		if ( null === $allocation->phase_1_lite_enrolled() ) {
+			throw new \UnexpectedValueException( 'The WordPress Lite enrollment fact is unavailable.' );
+		}
+		if ( ! $allocation->phase_1_lite_enrolled() ) {
+			return Policy_State::lite_only_connected( Allocation_State::never_had_allocation() );
+		}
+
 		$pending_grant = $allocation->pending_first_use_allocation();
 
 		if ( Pending_First_Use_Allocation::PHASE_1_LITE === $pending_grant->value() ) {

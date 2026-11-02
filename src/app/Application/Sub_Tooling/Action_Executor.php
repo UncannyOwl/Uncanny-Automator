@@ -21,7 +21,8 @@ use Uncanny_Automator\App\Bridge\Action_Definition_Bridge;
 use Uncanny_Automator\App\Bridge\Automator_Action_Definition_Bridge;
 use Uncanny_Automator\App\Recipe_Builder\Action\Value_Objects\Action_Code;
 use Uncanny_Automator\App\Recipe_Builder\Shared\Sentence_Html\Field_Label_Resolver;
-use Uncanny_Automator\App\Recipe_Builder\Action\Services\Utilities\Action_Validator;
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Field_Validation_Service;
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Utilities\Custom_Value_Resolver;
 use WP_Error;
 use Uncanny_Automator\App\Events\Dispatcher;
 
@@ -42,9 +43,9 @@ class Action_Executor {
 	 * @var array<string, string>
 	 */
 	private const BANNED_ACTIONS = array(
-		'DB_QUERY_RUN_QUERY_STRING'  => 'Running raw database queries is restricted. Use the MySQL select tools (mysql_get_tables, mysql_get_table_columns, mysql_select_from_table) for read-only database operations.',
-		'DB_QUERY_SELECT_QUERY_RUN'  => 'Use the MySQL select tools (mysql_get_tables, mysql_get_table_columns, mysql_select_from_table) instead.',
-		'DELETEUSER'                 => 'Deleting users is restricted for safety.',
+		'DB_QUERY_RUN_QUERY_STRING' => 'Running raw database queries is restricted. Use the MySQL select tools (mysql_get_tables, mysql_get_table_columns, mysql_select_from_table) for read-only database operations.',
+		'DB_QUERY_SELECT_QUERY_RUN' => 'Use the MySQL select tools (mysql_get_tables, mysql_get_table_columns, mysql_select_from_table) instead.',
+		'DELETEUSER'                => 'Deleting users is restricted for safety.',
 	);
 
 	/**
@@ -55,11 +56,11 @@ class Action_Executor {
 	private $action_code = null;
 
 	/**
-	 * Cached validator instance (lazy-loaded).
+	 * Field validation service (single validation entry point).
 	 *
-	 * @var Action_Validator|null
+	 * @var Field_Validation_Service|null
 	 */
-	private $validator = null;
+	private $validation_service = null;
 
 	/**
 	 * Execution start time for metrics.
@@ -82,9 +83,11 @@ class Action_Executor {
 	 * (Rule 6 #3) — no setter, no static state, no singleton.
 	 *
 	 * @param Action_Definition_Bridge|null $action_definitions Optional bridge override (tests).
+	 * @param Field_Validation_Service|null $validation_service Optional validation service (tests).
 	 */
-	public function __construct( ?Action_Definition_Bridge $action_definitions = null ) {
+	public function __construct( ?Action_Definition_Bridge $action_definitions = null, ?Field_Validation_Service $validation_service = null ) {
 		$this->action_definitions = $action_definitions ?? new Automator_Action_Definition_Bridge();
+		$this->validation_service = $validation_service ?? Field_Validation_Service::instance();
 	}
 
 	/**
@@ -144,6 +147,10 @@ class Action_Executor {
 
 		// Normalize fields AFTER validation (JSON-encode arrays for repeater/multi-select fields).
 		$fields = $this->normalize_fields( $fields );
+
+		// A select sent the way the builder saves it ("automator_custom_value" plus
+		// its {code}_custom companion) runs with the companion, as in a recipe run.
+		$fields = Custom_Value_Resolver::resolve( $fields );
 
 		// Get action definition from registry.
 		$definition = $this->get_action_definition( $this->action_code );
@@ -232,6 +239,18 @@ class Action_Executor {
 	}
 
 	/**
+	 * Actions no AI caller may run, keyed by code with the reason as value.
+	 *
+	 * Shared with Action_Availability_Policy so save, search and schema paths
+	 * refuse the same codes the execute path refuses.
+	 *
+	 * @return array<string,string>
+	 */
+	public static function get_banned_actions(): array {
+		return (array) Dispatcher::filter( 'automator_agent_banned_actions', self::BANNED_ACTIONS );
+	}
+
+	/**
 	 * Check if an action is banned from AI execution.
 	 *
 	 * Some actions are restricted for safety reasons (e.g., destructive operations).
@@ -246,7 +265,7 @@ class Action_Executor {
 	private function check_action_banned( string $action_code ) {
 
 		// Allow filtering of banned actions for extensibility.
-		$banned_actions = Dispatcher::filter( 'automator_agent_banned_actions', self::BANNED_ACTIONS );
+		$banned_actions = self::get_banned_actions();
 
 		if ( ! isset( $banned_actions[ $action_code ] ) ) {
 			return true;
@@ -268,7 +287,8 @@ class Action_Executor {
 	/**
 	 * Validate fields against action schema.
 	 *
-	 * Uses Action_Validator to check required fields, formats, and business rules.
+	 * Routes through Field_Validation_Service to check required fields,
+	 * formats, and business rules.
 	 *
 	 * @param string $action_code Action code.
 	 * @param array  $fields      Field values (raw, before normalization).
@@ -277,28 +297,13 @@ class Action_Executor {
 	 */
 	private function validate_fields( string $action_code, array $fields ) {
 
-		$validator = $this->get_validator();
-		$result    = $validator->validate( $action_code, $fields );
+		$result = $this->validation_service->validate_config( $action_code, $fields, 'action', false );
 
 		if ( is_wp_error( $result ) ) {
 			return $result;
 		}
 
 		return true;
-	}
-
-	/**
-	 * Get or create validator instance (lazy-loaded singleton).
-	 *
-	 * @return Action_Validator
-	 */
-	private function get_validator(): Action_Validator {
-
-		if ( null === $this->validator ) {
-			$this->validator = new Action_Validator();
-		}
-
-		return $this->validator;
 	}
 
 	/**
@@ -519,6 +524,8 @@ class Action_Executor {
 	 * Inject state into action instance.
 	 *
 	 * Modern actions expect certain properties to be set before process_action() is called.
+	 * The collected errors are emptied too, as do_action() does: the action instance is
+	 * shared, and errors left by an earlier run would fail this one.
 	 *
 	 * @param object $action      Action instance.
 	 * @param int    $user_id     User ID.
@@ -528,11 +535,13 @@ class Action_Executor {
 	private function inject_action_state( object $action, int $user_id, array $action_data, array $fields ): void {
 
 		$critical_properties = array(
-			'user_id'      => $user_id,
-			'action_data'  => $action_data,
-			'recipe_id'    => 0,
-			'args'         => array(),
-			'maybe_parsed' => $fields,
+			'user_id'           => $user_id,
+			'action_data'       => $action_data,
+			'recipe_id'         => 0,
+			'args'              => array(),
+			'maybe_parsed'      => $fields,
+			'errors'            => array(),
+			'structured_errors' => array(),
 		);
 
 		foreach ( $critical_properties as $name => $value ) {

@@ -114,9 +114,9 @@ class Pro_Upsell {
 
 					/* Material dark scheme of #6BC45A */
 					/* Primary color */
-					background-color: #a5d396;
+					background-color: #a5d396 !important;
 					/* On primary color */
-					color: #11380c;
+					color: #11380c !important;
 
 					margin-top: 3px;
 

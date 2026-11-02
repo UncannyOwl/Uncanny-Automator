@@ -175,14 +175,14 @@ final class ControlDispatcher
         if (is_callable($handler) && !is_string($handler)) {
             $resolved = $handler();
             if (!$resolved instanceof ControlHandlerInterface) {
-                throw new \RuntimeException(sprintf('Factory for "%s" must return ControlHandlerInterface.', $controlId));
+                throw new \RuntimeException(sprintf('Factory for "%s" must return ControlHandlerInterface.', esc_html($controlId)));
             }
 
             return $resolved;
         }
 
         if (!is_string($handler)) {
-            throw new \RuntimeException(sprintf('Handler for "%s" is invalid.', $controlId));
+            throw new \RuntimeException(sprintf('Handler for "%s" is invalid.', esc_html($controlId)));
         }
 
         $resolved = $this->container->has($handler)
@@ -190,7 +190,7 @@ final class ControlDispatcher
             : new $handler();
 
         if (!$resolved instanceof ControlHandlerInterface) {
-            throw new \RuntimeException(sprintf('Handler for "%s" must implement ControlHandlerInterface.', $controlId));
+            throw new \RuntimeException(sprintf('Handler for "%s" must implement ControlHandlerInterface.', esc_html($controlId)));
         }
 
         return $resolved;

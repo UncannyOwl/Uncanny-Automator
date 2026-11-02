@@ -16,6 +16,7 @@ namespace Uncanny_Automator\App\Infrastructure\Search\Services\Collectors;
 use Uncanny_Automator\App\Infrastructure\Search\Shared\Component_Availability;
 use Uncanny_Automator\App\Infrastructure\Search\Condition\Condition_Search_Result;
 use Uncanny_Automator\App\Infrastructure\Search\Condition\Condition_Search_Result_Collection;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integration_Required_Tier;
 use Uncanny_Automator\App\Recipe_Builder\Condition\Services\Condition_Registry_Service;
 
 /**
@@ -32,14 +33,15 @@ class Condition_Collector {
 	 * Collect condition candidates for a search query.
 	 *
 	 * @param string $query Search term.
-	 * @return Condition_Search_Result_Collection Collection of condition search results.
+	 * @return Condition_Search_Result_Collection|\WP_Error Collection of condition search results.
 	 */
-	public function collect_conditions( string $query ): Condition_Search_Result_Collection {
+	public function collect_conditions( string $query ) {
 		$service = Condition_Registry_Service::instance();
 		$result  = $service->find_conditions( $query, array(), self::FETCH_LIMIT );
 
 		if ( is_wp_error( $result ) ) {
-			return Condition_Search_Result_Collection::empty();
+			// A failed condition search does not mean there are no conditions.
+			return $result;
 		}
 
 		$raw_conditions = $result['conditions'] ?? array();
@@ -50,7 +52,45 @@ class Condition_Collector {
 
 		$items = $this->build_search_results( $raw_conditions );
 
-		return new Condition_Search_Result_Collection( $items, count( $raw_conditions ) );
+		return new Condition_Search_Result_Collection( $items, count( $items ) );
+	}
+
+	/**
+	 * Collect every registered condition, for the deterministic listing.
+	 *
+	 * Reads the local registry rather than the hosted index, and returns the
+	 * same item as a search, so an Agent reads `code` and `integration_id`
+	 * whichever mode found the condition.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string|null $integration Integration code to list, or null for all.
+	 * @return Condition_Search_Result_Collection|\WP_Error Collection, or the registry's failure.
+	 */
+	public function collect_registered_conditions( ?string $integration = null ) {
+		$filters = null === $integration || '' === $integration ? array() : array( 'integration' => $integration );
+		$result  = Condition_Registry_Service::instance()->list_conditions( $filters );
+
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		$candidates = array();
+		foreach ( $result['conditions'] ?? array() as $row ) {
+			$candidates[] = array(
+				'code'             => $row['condition_code'] ?? '',
+				// Definitions store their name escaped for HTML; an Agent reads text.
+				'sentence'         => wp_specialchars_decode( (string) ( $row['name'] ?? '' ), ENT_QUOTES ),
+				'integration_id'   => $row['integration_code'] ?? '',
+				'integration_name' => $row['integration_name'] ?? $row['integration_code'] ?? '',
+				'required_tier'    => Integration_Required_Tier::from_registry_flags( $row )->get_value(),
+				'deprecated'       => ! empty( $row['deprecated'] ),
+			);
+		}
+
+		$items = $this->build_search_results( $candidates );
+
+		return new Condition_Search_Result_Collection( $items, count( $items ) );
 	}
 
 	/**
@@ -59,6 +99,16 @@ class Condition_Collector {
 	 * Skips items that fail validation (e.g., empty code, invalid tier).
 	 * This is defensive - bad data in RAG index should not break search.
 	 *
+	 * Skips deprecated conditions too, which are not for new work. A recipe that
+	 * already uses one still reads its schema through get_component_schema.
+	 *
+	 * Trade-off: left out rather than flagged, because a flag can be ignored and
+	 * the old condition can rank above its replacement. So an Agent can't find a
+	 * deprecated condition by search; it learns the code from the recipe using it.
+	 *
+	 * Trade-off: a refused sentence, such as one over the length limit, is left
+	 * out with no error rather than failing the whole list.
+	 *
 	 * @param array $raw_conditions Raw condition data from registry/RAG.
 	 * @return Condition_Search_Result[] Array of search result value objects.
 	 */
@@ -66,6 +116,10 @@ class Condition_Collector {
 		$items = array();
 
 		foreach ( $raw_conditions as $condition ) {
+			if ( $this->is_deprecated( $condition ) ) {
+				continue;
+			}
+
 			try {
 				$availability = $this->get_condition_availability( $condition );
 				$items[]      = Condition_Search_Result::from_rag_result( $condition, $availability );
@@ -76,6 +130,32 @@ class Condition_Collector {
 		}
 
 		return $items;
+	}
+
+	/**
+	 * Whether this condition is deprecated on this site.
+	 *
+	 * Registry rows say so themselves. The hosted catalog doesn't know, so its
+	 * rows are checked against the site's definition.
+	 *
+	 * Trade-off: a condition this site hasn't registered, such as one from an
+	 * inactive plugin, has no definition to check. It stays in the results, so an
+	 * Agent can say what to activate, even if that condition is deprecated.
+	 *
+	 * @param array $condition Condition data.
+	 * @return bool
+	 */
+	private function is_deprecated( array $condition ): bool {
+		if ( isset( $condition['deprecated'] ) ) {
+			return (bool) $condition['deprecated'];
+		}
+
+		$definition = Condition_Registry_Service::instance()->get_condition_definition(
+			(string) ( $condition['integration_id'] ?? $condition['integration_code'] ?? '' ),
+			(string) ( $condition['code'] ?? $condition['condition_code'] ?? '' )
+		);
+
+		return ! is_wp_error( $definition ) && ! empty( $definition['condition']['deprecated'] );
 	}
 
 	/**

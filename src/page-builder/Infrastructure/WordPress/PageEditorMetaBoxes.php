@@ -161,7 +161,7 @@ final class PageEditorMetaBoxes
         } catch (\Throwable $failure) {
             // This callback shares the WordPress edit screen. On failure,
             // render nothing further instead of failing the complete screen.
-            error_log('[Uncanny Page Builder] Page actions row render failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Page actions row render failed (' . $failure::class . ')');
         }
     }
 
@@ -289,7 +289,7 @@ final class PageEditorMetaBoxes
         } catch (\Throwable $failure) {
             // Render nothing further; a metabox failure must not fail the
             // complete WordPress edit screen.
-            error_log('[Uncanny Page Builder] Page sections metabox render failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Page sections metabox render failed (' . $failure::class . ')');
         }
     }
 
@@ -324,7 +324,7 @@ final class PageEditorMetaBoxes
         } catch (\Throwable $failure) {
             // Render nothing further; a metabox failure must not fail the
             // complete WordPress edit screen.
-            error_log('[Uncanny Page Builder] Page layout metabox render failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Page layout metabox render failed (' . $failure::class . ')');
         }
     }
 
@@ -342,7 +342,7 @@ final class PageEditorMetaBoxes
         } catch (\Throwable $failure) {
             // Render nothing further; a metabox failure must not fail the
             // complete WordPress edit screen.
-            error_log('[Uncanny Page Builder] Website status metabox render failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Website status metabox render failed (' . $failure::class . ')');
         }
     }
 

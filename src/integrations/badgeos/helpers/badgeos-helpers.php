@@ -81,6 +81,7 @@ class Badgeos_Helpers {
 		if ( Automator()->helpers->recipe->load_helpers ) {
 
 			//$posts = Automator()->helpers->recipe->options->wp_query( [ 'post_type' => 'achievement-type' ] );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Option list: reads only the ID and title columns; get_posts() would load every full post.
 			$posts = $wpdb->get_results(
 				"SELECT ID, post_name, post_title, post_type
 											FROM $wpdb->posts
@@ -108,6 +109,7 @@ class Badgeos_Helpers {
 			'custom_value_description' => _x( 'Achievement type slug', 'BadgeOS', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_list_bo_award_types', $option );
 	}
 
@@ -140,6 +142,7 @@ class Badgeos_Helpers {
 		if ( Automator()->helpers->recipe->load_helpers ) {
 
 			//$posts = Automator()->helpers->recipe->options->wp_query( [ 'post_type' => 'point_type' ] );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Option list: reads only the ID and title columns; get_posts() would load every full post.
 			$posts = $wpdb->get_results(
 				"SELECT ID, post_name, post_title
 											FROM $wpdb->posts
@@ -168,6 +171,7 @@ class Badgeos_Helpers {
 			'custom_value_description' => _x( 'Point type slug', 'BadgeOS', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_list_bo_points_types', $option );
 	}
 
@@ -194,6 +198,7 @@ class Badgeos_Helpers {
 		if ( Automator()->helpers->recipe->load_helpers ) {
 
 			//$posts = Automator()->helpers->recipe->options->wp_query( [ 'post_type' => 'rank_types' ] );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Option list: reads only the ID and title columns; get_posts() would load every full post.
 			$posts = $wpdb->get_results(
 				"SELECT ID, post_name, post_title, post_type
 											FROM $wpdb->posts
@@ -220,6 +225,7 @@ class Badgeos_Helpers {
 			'custom_value_description' => _x( 'Rank type slug', 'BadgeOS', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_list_bo_rank_types', $option );
 	}
 

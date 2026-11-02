@@ -60,12 +60,49 @@ trait Premium_Integration_Templating {
 	public function output_form() {
 		?>
 		<uap-app-integration-settings-form integration-id="<?php echo esc_attr( $this->get_id() ); ?>">
+			<?php $this->output_notify_dependency_solver(); ?>
+			
 			<form method="POST">
 				<?php wp_nonce_field( 'automator_integration_settings', 'automator_nonce' ); ?>
 				<input type="hidden" name="action" value="automator_integration_settings_<?php echo esc_attr( $this->get_id() ); ?>">
 				<?php $this->output_panel(); ?>
 			</form>
 		</uap-app-integration-settings-form>
+		<?php
+	}
+
+	/**
+	 * Tell the window that opened this one (a dependency solver) that the app
+	 * is connected, once it is.
+	 *
+	 * @return void
+	 */
+	public function output_notify_dependency_solver() {
+		if ( ! $this->is_connected ) {
+			return;
+		}
+
+		?>
+
+		<script>
+			(function() {
+				// Verify the window has an opener to prevent errors if accessed directly.
+				if ( window.opener ) {
+					
+					// Signal the parent window that the dependency resolution is complete.
+					// The type 'UAP_DEPENDENCY_RESOLVED' matches the listener in the Lit component.
+					// TargetOrigin is set to '*' to ensure delivery even if the redirect domain differs.
+					window.opener.postMessage( { type: 'UAP_DEPENDENCY_RESOLVED' }, '*' );
+
+					// Close the popup window.
+					// A 100ms delay prevents the window from closing before the postMessage is successfully dispatched to the parent.
+					setTimeout( function() {
+						window.close();
+					}, 100 );
+				}
+			})();
+		</script>
+
 		<?php
 	}
 
@@ -92,6 +129,17 @@ trait Premium_Integration_Templating {
 			<div class="uap-settings-panel-top">
 				<?php $this->output_panel_top(); ?>
 				<?php $this->display_alerts(); ?>
+				<?php
+				/**
+				 * Alerts about this app that are not the panel's own — they print
+				 * where the panel's alerts do, under its title and above its content.
+				 *
+				 * @since 8.0.0
+				 *
+				 * @param object $this The integration settings instance; its `alert_html()` prints an alert.
+				 */
+				do_action( 'automator_settings_premium_integration_alerts', $this );
+				?>
 				<div class="uap-settings-panel-content">
 					<?php $this->output_panel_content(); ?>
 				</div>
@@ -129,11 +177,9 @@ trait Premium_Integration_Templating {
 	 */
 	public function output_panel_title() {
 		?>
-		<uo-icon integration="<?php echo esc_attr( $this->get_icon() ); ?>"></uo-icon> <?php echo esc_attr( $this->get_name() ); ?>
+		<uap-d-integrations-icon code="<?php echo esc_attr( $this->get_icon() ); ?>" size="sm"></uap-d-integrations-icon> <?php echo esc_attr( $this->get_name() ); ?>
 		<?php if ( $this->get_is_third_party() ) : ?>
-			<uo-chip size="small" filled>
-				<?php echo esc_html_x( '3rd-party', 'Integration settings', 'uncanny-automator' ); ?>
-			</uo-chip>
+			<uas-chip size="sm" label="<?php echo esc_attr_x( '3rd-party', 'Integration settings', 'uncanny-automator' ); ?>" color="info" filled></uas-chip>
 		<?php endif; ?>
 		<?php
 	}
@@ -211,24 +257,18 @@ trait Premium_Integration_Templating {
 	 * @return void - Outputs HTML directly
 	 */
 	protected function output_single_account_message( $additional_message = '' ) {
+		// Printed inline: uas-alert reads heading as markdown, so an indented value renders as a code block.
+		$heading = sprintf(
+			// translators: %s: Integration name
+			esc_html_x( 'Uncanny Automator only supports connecting to one %s account at a time.', 'Integration settings', 'uncanny-automator' ),
+			esc_html( $this->get_name() )
+		);
 		?>
-		<uo-alert 
-			heading="
-			<?php
-			echo esc_attr(
-				sprintf(
-					// translators: %s: Integration name
-					esc_html_x( 'Uncanny Automator only supports connecting to one %s account at a time.', 'Integration settings', 'uncanny-automator' ),
-					esc_html( $this->get_name() )
-				)
-			);
-			?>
-			" 
-			class="uap-spacing-bottom">
+		<uas-alert heading="<?php echo esc_attr( $heading ); ?>" class="uap-spacing-bottom">
 			<?php if ( ! empty( $additional_message ) ) : ?>
 				<?php echo wp_kses( $additional_message, $this->filter_content_kses_args() ); ?>
 			<?php endif; ?>
-		</uo-alert>
+		</uas-alert>
 		<?php
 	}
 
@@ -390,7 +430,7 @@ trait Premium_Integration_Templating {
 	public function output_item_line( $type, $description ) {
 		?>
 		<li>
-			<uo-icon id="bolt"></uo-icon> 
+			<uas-icon code="bolt"></uas-icon> 
 			<strong><?php echo esc_html( $type ); ?>:</strong> 
 			<?php echo esc_html( $description ); ?>
 		</li>
@@ -442,7 +482,7 @@ trait Premium_Integration_Templating {
 					case 'icon':
 					default:
 						?>
-						<uo-icon integration="<?php echo esc_attr( $args['avatar_value'] ); ?>"></uo-icon>
+						<uap-d-integrations-icon code="<?php echo esc_attr( $args['avatar_value'] ); ?>"></uap-d-integrations-icon>
 						<?php
 				}
 				?>
@@ -451,7 +491,7 @@ trait Premium_Integration_Templating {
 				<div class="uap-settings-panel-user-info__main">
 					<?php echo wp_kses( $args['main_info'], $kses_args ); ?>
 					<?php if ( $args['main_info_icon'] ) : ?>
-						<uo-icon integration="<?php echo esc_attr( $this->get_icon() ); ?>"></uo-icon>
+						<uap-d-integrations-icon code="<?php echo esc_attr( $this->get_icon() ); ?>" size="xs"></uap-d-integrations-icon>
 					<?php endif; ?>
 				</div>
 				<?php if ( ! empty( $args['additional'] ) ) : ?>

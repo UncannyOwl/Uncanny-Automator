@@ -17,7 +17,6 @@
         "All Subscriptions": "Todas las suscripciones",
         "All Topics": "Todos los temas",
         "All Users": "Todos los usuarios",
-        "All integrations": "Todas las integraciones",
         "All recipes": "Todas las recetas",
         "App integrations": "Integraciones de aplicaciones",
         "Assignments": "Tareas",
@@ -76,26 +75,6 @@
         "Automator.Addons.5": {
             "Starter": "Planificar la configuración de un complemento",
             "Prompt": "Ayúdame a planificar la instalación y configuración de un complemento. Pregúntame qué flujo de trabajo quiero automatizar y sugiéreme los próximos pasos."
-        },
-        "Automator.All integrations.1": {
-            "Starter": "Recomendar integraciones",
-            "Prompt": "Revisa mis plugins instalados y mis integraciones de aplicaciones conectadas, y sugiéreme las integraciones de Automator más relevantes para mi sitio."
-        },
-        "Automator.All integrations.2": {
-            "Starter": "Encontrar oportunidades de automatización",
-            "Prompt": "Sugiéreme ideas de automatización útiles según mis plugins instalados y mis integraciones de aplicaciones conectadas."
-        },
-        "Automator.All integrations.3": {
-            "Starter": "Explicar una integración",
-            "Prompt": "Pregúntame qué integración me interesa y explícame qué tipo de recetas puede habilitar."
-        },
-        "Automator.All integrations.4": {
-            "Starter": "Encontrar integraciones faltantes",
-            "Prompt": "Compara mis plugins instalados y aplicaciones conectadas con las integraciones disponibles de Automator, e identifica todo lo que pueda necesitar instalar, conectar o actualizar."
-        },
-        "Automator.All integrations.5": {
-            "Starter": "Construir con una integración",
-            "Prompt": "Ayúdame a elegir una integración de Automator y a convertirla en una idea de receta útil para mi sitio."
         },
         "Automator.All recipes.1": {
             "Starter": "Mostrar mis recetas más activas",

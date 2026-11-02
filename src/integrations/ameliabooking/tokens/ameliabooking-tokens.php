@@ -416,6 +416,7 @@ class AMELIABOOKING_TOKENS {
 
 		$category_name = '';
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Amelia's own table; the plugin offers no API for this query.
 		$category = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT services.id as service_id, services.name as service_name,
@@ -449,6 +450,7 @@ class AMELIABOOKING_TOKENS {
 
 		$service_name = '';
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Amelia's own table; the plugin offers no API for this query.
 		$service = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT name, id from {$wpdb->prefix}amelia_services WHERE id = %d",

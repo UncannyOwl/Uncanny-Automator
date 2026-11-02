@@ -7,6 +7,10 @@
 
 namespace Uncanny_Automator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 
 <form method="POST" action="options.php">
@@ -21,11 +25,11 @@ namespace Uncanny_Automator;
 
 				<?php if ( 'yes' === automator_filter_input( 'failed' ) ) { ?>
 
-					<uo-alert class="uap-spacing-bottom" type="error" heading="<?php esc_html_e( 'There was an error removing the file.', 'uncanny-automator' ); ?>"></uo-alert>
+					<uas-alert class="uap-spacing-bottom" type="error" heading="<?php esc_html_e( 'There was an error removing the file.', 'uncanny-automator' ); ?>"></uas-alert>
 
 				<?php } else { ?>
 
-					<uo-alert class="uap-spacing-bottom" type="success" heading="<?php esc_html_e( 'Log file has been successfully removed.', 'uncanny-automator' ); ?>"></uo-alert>
+					<uas-alert class="uap-spacing-bottom" type="success" heading="<?php esc_html_e( 'Log file has been successfully removed.', 'uncanny-automator' ); ?>"></uas-alert>
 
 				<?php } ?>
 
@@ -44,7 +48,7 @@ namespace Uncanny_Automator;
 					<uo-switch label="<?php esc_attr_e( 'Logs', 'uncanny-automator' ); ?>"
 						<?php checked( automator_get_option( 'automator_settings_debug_enabled', false ), true, true ); ?>
 						id="automator_settings_debug_enabled"
-						status-label="Enabled,Disabled" class="uap-spacing-top">
+						status-label="<?php echo esc_attr_x( 'Enabled', 'toggle status label', 'uncanny-automator' ); ?>,<?php echo esc_attr_x( 'Disabled', 'toggle status label', 'uncanny-automator' ); ?>" class="uap-spacing-top">
 					</uo-switch>
 
 					<div class="uap-field-description">
@@ -81,11 +85,11 @@ namespace Uncanny_Automator;
 
 			<div class="uap-settings-panel-bottom-left">
 
-				<uo-button type="submit">
+				<uas-button type="submit">
 
 					<?php esc_html_e( 'Save settings', 'uncanny-automator' ); ?>
 
-				</uo-button>
+				</uas-button>
 
 			</div>
 

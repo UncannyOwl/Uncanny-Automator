@@ -91,7 +91,7 @@ class ClickUp_Api_Caller extends \Uncanny_Automator\App_Integrations\Api_Caller 
 			throw new Exception(
 				sprintf(
 					/* translators: %1$s: Error type, %2$s: Error description */
-					esc_html_x( 'Uncanny Automator API has responded with error %1$s: %2$s', 'ClickUp', 'uncanny-automator' ),
+					esc_html_x( 'The Automator App Platform responded with error %1$s: %2$s', 'ClickUp', 'uncanny-automator' ),
 					esc_html( $response['error']['type'] ?? 'Unknown' ),
 					esc_html( $response['error']['description'] ?? 'Unknown error' )
 				),

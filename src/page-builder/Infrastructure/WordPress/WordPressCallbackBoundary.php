@@ -56,7 +56,7 @@ final class WordPressCallbackBoundary
 
     private static function report(string $context, \Throwable $failure): void
     {
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] WordPress callback %s failed (%s).',
             str_replace(["\r", "\n"], '', $context),
             $failure::class,

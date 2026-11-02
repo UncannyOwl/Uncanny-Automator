@@ -61,6 +61,7 @@ class Advanced_Ads_Helpers {
 			'options'               => $options,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_get_all_ads', $option );
 	}
 
@@ -94,6 +95,7 @@ class Advanced_Ads_Helpers {
 			'options'         => $statuses,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_ad_statuses', $option );
 	}
 

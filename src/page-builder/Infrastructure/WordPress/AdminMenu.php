@@ -229,7 +229,7 @@ final class AdminMenu
             // The import affordance is an enhancement of the native Pages
             // list; a failure must render nothing instead of breaking the
             // admin footer.
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Native page import form failed (%s).',
                 $failure::class,
             ));
@@ -243,7 +243,7 @@ final class AdminMenu
         } catch (\Throwable $failure) {
             // WordPress invokes menu renderers without a plugin exception
             // boundary. A render failure must become a controlled admin page.
-            error_log('[Uncanny Page Builder] Settings page render failed (' . $failure::class . ').');
+            DiagnosticLog::write('[Uncanny Page Builder] Settings page render failed (' . $failure::class . ').');
             wp_die(
                 esc_html_x(
                     'Uncanny Page Builder could not open these settings. Return to the previous page and try again.',
@@ -322,7 +322,6 @@ final class AdminMenu
         $sidebar = $this->settingsSidebar($activeTab, $activeDesignSection);
         $sidebarItems = $sidebar['items'];
         $activeSidebar = $sidebar['active'];
-        $sidebarParameter = $sidebar['parameter'];
 
         include __DIR__ . '/../../Presentation/Settings/settings-new-shell.php';
     }
@@ -419,7 +418,7 @@ final class AdminMenu
 
     private function terminateWindowedCanvasFailure(\Throwable $failure): never
     {
-        error_log('[Uncanny Page Builder] Windowed canvas host failed (' . $failure::class . ')');
+        DiagnosticLog::write('[Uncanny Page Builder] Windowed canvas host failed (' . $failure::class . ')');
         wp_die(
             esc_html_x(
                 'Uncanny Page Builder could not open this editor. Return to the previous page and try again.',
@@ -493,7 +492,7 @@ final class AdminMenu
         } catch (\Throwable $failure) {
             // This stylesheet is an admin enhancement. An Automator asset
             // failure must not terminate the WordPress admin request.
-            error_log('[Uncanny Page Builder] Settings assets failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Settings assets failed (' . $failure::class . ')');
         }
     }
 
@@ -509,7 +508,7 @@ final class AdminMenu
 
         // Reuse Automator's compiled admin bundle so this screen renders with the
         // exact same chrome as the Automator settings page: the uap-settings
-        // classes and the uo-tabs / uo-button / uo-icon web components all ship
+        // classes and the uas-tabs / uas-icon / uo-button web components all ship
         // in that bundle, so the Page Builder settings need no styling of their own.
         if (class_exists('\\Uncanny_Automator\\Utilities')) {
             wp_enqueue_style(
@@ -651,10 +650,10 @@ final class AdminMenu
 
     private function renderCanvasEditorWindowedNotice(): void
     {
-        $errorCode = is_string($_GET[AdminCanvasEditorWindowedPage::ERROR_QUERY_ARG] ?? null)
-            ? (string) $_GET[AdminCanvasEditorWindowedPage::ERROR_QUERY_ARG]
-            : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        $errorCode = isset($_GET[AdminCanvasEditorWindowedPage::ERROR_QUERY_ARG]) && is_string($_GET[AdminCanvasEditorWindowedPage::ERROR_QUERY_ARG]) ? sanitize_text_field(wp_unslash($_GET[AdminCanvasEditorWindowedPage::ERROR_QUERY_ARG])) : '';
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
         $pageId = absint($_GET[AdminCanvasEditorWindowedPage::ERROR_PAGE_ID_QUERY_ARG] ?? 0);
         $message = AdminCanvasEditorWindowedPage::errorNoticeHtml($errorCode, $pageId);
         if ($message === '') {
@@ -668,21 +667,20 @@ final class AdminMenu
     {
         global $pagenow;
 
-        return $pagenow === 'edit.php'
-            && is_string($_GET['post_type'] ?? null)
-            && $_GET['post_type'] === 'page';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        return $pagenow === 'edit.php' && is_string($_GET['post_type'] ?? null) && $_GET['post_type'] === 'page';
     }
 
     private function isCanvasEditorWindowedRequest(): bool
     {
-        return is_string($_GET['page'] ?? null)
-            && $_GET['page'] === AdminCanvasEditorWindowedPage::PAGE_SLUG;
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        return is_string($_GET['page'] ?? null) && $_GET['page'] === AdminCanvasEditorWindowedPage::PAGE_SLUG;
     }
 
     private function isCanvasEditorWindowedGlobalPartRequest(): bool
     {
-        return is_string($_GET['page'] ?? null)
-            && $_GET['page'] === AdminCanvasEditorWindowedGlobalPartPage::PAGE_SLUG;
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        return is_string($_GET['page'] ?? null) && $_GET['page'] === AdminCanvasEditorWindowedGlobalPartPage::PAGE_SLUG;
     }
 
     private function attachCanvasEditorToMenuState(string $parentMenuSlug, string $pageSlug): void
@@ -786,9 +784,8 @@ final class AdminMenu
      */
     private function currentSettingsTab(array $tabs): string
     {
-        $requested = isset($_GET['settings'])
-            ? sanitize_key(wp_unslash($_GET['settings']))
-            : 'design';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        $requested = isset($_GET['settings']) ? sanitize_key(wp_unslash($_GET['settings'])) : 'design';
         $allowed = array_column($tabs, 'id');
 
         return in_array($requested, $allowed, true) ? $requested : 'design';
@@ -889,9 +886,8 @@ final class AdminMenu
      */
     private function currentSectionId(array $sections, string $default): string
     {
-        $requested = isset($_GET['section'])
-            ? sanitize_key(wp_unslash($_GET['section']))
-            : $default;
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        $requested = isset($_GET['section']) ? sanitize_key(wp_unslash($_GET['section'])) : $default;
 
         return in_array($requested, array_column($sections, 'id'), true) ? $requested : $default;
     }
@@ -902,7 +898,7 @@ final class AdminMenu
      * Brand styles and Text styles each expose their own sections; every other
      * tab mirrors the Automator settings pattern of a single default entry.
      *
-     * @return array{items: array<int, array{id: string, label: string, url: string, icon: string}>, active: string, parameter: string}
+     * @return array{items: array<int, array{id: string, label: string, url: string, icon: string}>, active: string}
      */
     private function settingsSidebar(string $activeTab, string $activeDesignSection): array
     {
@@ -910,7 +906,6 @@ final class AdminMenu
             return [
                 'items' => $this->designSections(),
                 'active' => $activeDesignSection,
-                'parameter' => 'section',
             ];
         }
 
@@ -920,7 +915,6 @@ final class AdminMenu
             return [
                 'items' => $sections,
                 'active' => $this->currentSectionId($sections, 'headings'),
-                'parameter' => 'section',
             ];
         }
 
@@ -934,7 +928,6 @@ final class AdminMenu
                 ],
             ],
             'active' => 'general',
-            'parameter' => 'settings',
         ];
     }
 
@@ -943,9 +936,8 @@ final class AdminMenu
      */
     private function currentDesignSection(array $sections): string
     {
-        $requested = isset($_GET['section'])
-            ? sanitize_key(wp_unslash($_GET['section']))
-            : 'logo';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        $requested = isset($_GET['section']) ? sanitize_key(wp_unslash($_GET['section'])) : 'logo';
         $allowed = array_column($sections, 'id');
 
         return in_array($requested, $allowed, true) ? $requested : 'logo';

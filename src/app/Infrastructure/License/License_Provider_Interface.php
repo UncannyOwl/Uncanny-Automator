@@ -21,11 +21,12 @@ namespace Uncanny_Automator\App\Infrastructure\License;
  *     `get_resolved_plan_name()`)
  *   - Pro plugin activation state (`is_pro_active()`)
  *
- * Those methods live on the concrete `License_Manager` because they are
- * presentation/CTA concerns consumed by `License_Summary`, not header-
- * injection inputs. Callers that need them should depend on the concrete
- * class. If a second consumer ever needs them through an abstraction,
- * introduce a separate richer interface rather than widening this one.
+ * Those methods live on the concrete `License_Manager` because they are plan
+ * and activation concerns — read by the addons summary shaper, the addons tier
+ * gate and the feature-state adapters — not header-injection inputs. Callers
+ * that need them should depend on the concrete class. If a second consumer
+ * ever needs them through an abstraction, introduce a separate richer
+ * interface rather than widening this one.
  *
  * @since 7.0.0
  * @package Uncanny_Automator\App\Infrastructure\License

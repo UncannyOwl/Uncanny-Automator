@@ -183,7 +183,7 @@ class Wp_Event_Manager_Helpers {
 			foreach ( $event_registration_form_fields as $field_key => $field_data ) {
 				$event_tokens[] = array(
 					'tokenId'   => 'EVENT_FORM_FIELD|' . str_replace( ' ', '_', $field_key ),
-					'tokenName' => esc_html_x( $field_data['label'], 'WP Event Manager', 'uncanny-automator' ),
+					'tokenName' => esc_html( $field_data['label'] ),
 					'tokenType' => $this->get_token_type_from_field_type( $field_data['type'] ),
 				);
 			}

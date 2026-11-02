@@ -15,6 +15,7 @@
 namespace Uncanny_Automator\Recipe;
 
 use Exception;
+use Uncanny_Automator\App\Integration_Catalog\Services\Hidden_Items;
 use Uncanny_Automator\Token_Identifier_Partitioner;
 
 /**
@@ -175,10 +176,12 @@ abstract class Trigger {
 	 * Token definitions for the current trigger fire, with tokenIdentifier and
 	 * tokenType defaults applied. Populated by process() before save_tokens()
 	 * runs; read by save_tokens() to bucket runtime values by identifier.
+	 * Null until process() resolves it; an empty array is a trigger that
+	 * declares no tokens.
 	 *
-	 * @var array
+	 * @var array|null
 	 */
-	protected $token_definitions = array();
+	protected $token_definitions = null;
 
 	/**
 	 * run_number
@@ -353,6 +356,19 @@ abstract class Trigger {
 	}
 
 	/**
+	 * Why the trigger's requirements are not met on this site, for a recipe
+	 * that already holds it. Override alongside requirements_met(); '' tells
+	 * the generic sentence.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return string
+	 */
+	public function requirements_unmet_message(): string {
+		return '';
+	}
+
+	/**
 	 * register_trigger
 	 *
 	 * @param mixed $triggers
@@ -364,6 +380,9 @@ abstract class Trigger {
 		$requirement_met = $this->requirements_met();
 		$requirement_met = apply_filters( 'automator_item_requirement_meta', $requirement_met, $triggers );
 		if ( ! $requirement_met ) {
+			// Not offered; a recipe that already holds it is told why (decision A4).
+			Hidden_Items::record( (string) $this->get_integration(), 'trigger', (string) $this->get_trigger_code(), $this->requirements_unmet_message() );
+
 			return $triggers;
 		}
 
@@ -374,6 +393,7 @@ abstract class Trigger {
 			'is_pro'              => $this->get_is_pro(), // free or pro trigger.
 			'is_elite'            => $this->get_is_elite(), // elite trigger.
 			'is_deprecated'       => $this->get_is_deprecated(), // whether trigger is deprecated.
+			'has_status_toggle'   => $this->get_has_status_toggle(), // whether the builder renders an on / off switch.
 			'integration'         => $this->get_integration(), // trigger the integration belongs to.
 			'code'                => $this->get_code(), // unique trigger code.
 			'meta_code'           => $this->get_trigger_meta(), // primary meta field code.
@@ -711,53 +731,62 @@ abstract class Trigger {
 		$this->run_number        = $result['run_number'];
 		$this->trigger_log_id    = $result['trigger_log_id'];
 
-		$this->trigger_records = array(
-			'code'           => $this->get_code(),
-			'user_id'        => $this->user_id,
-			'trigger_id'     => (int) $this->trigger['ID'],
-			'recipe_id'      => $this->recipe_id,
-			'trigger_log_id' => $this->trigger_log_entry,
-			'recipe_log_id'  => $this->recipe_log_id,
-			'run_number'     => (int) Automator()->get->next_run_number( $this->recipe_id, $this->user_id, true ),
-			'meta'           => $this->get_trigger_meta(),
-			'get_trigger_id' => $this->trigger_log_entry,
-			'engine'         => 'recipe_runner',
-		);
+		// The run exists from here. Whatever the trigger throws now (its token hydration, a
+		// trigger hook, the trigger's completion) closes the run with the error, then goes
+		// on to the caller as before.
+		try {
+			$this->trigger_records = array(
+				'code'           => $this->get_code(),
+				'user_id'        => $this->user_id,
+				'trigger_id'     => (int) $this->trigger['ID'],
+				'recipe_id'      => $this->recipe_id,
+				'trigger_log_id' => $this->trigger_log_entry,
+				'recipe_log_id'  => $this->recipe_log_id,
+				'run_number'     => (int) Automator()->get->next_run_number( $this->recipe_id, $this->user_id, true ),
+				'meta'           => $this->get_trigger_meta(),
+				'get_trigger_id' => $this->trigger_log_entry,
+				'engine'         => 'recipe_runner',
+			);
 
-		// Populate the token-definitions cache for save_tokens() to read.
-		// Always re-resolve here, scoped to the row that's actually firing:
-		// trigger objects are singletons in Automator's registry, so caching
-		// across calls would let one row's definitions leak into another row's
-		// fire. Empty $existing because process() needs only this trigger's
-		// own contribution — isolated from filter-chain accumulation.
-		//
-		// Normalize triggers_meta -> meta to match register_tokens(): the recipe
-		// row stores selected option_codes under triggers_meta but define_tokens()
-		// reads $trigger['meta'][$option_code]. Without this swap, dynamic
-		// per-field token discovery sees an empty form_id and emits no tokens.
-		$trigger_for_defs         = $this->trigger;
-		$trigger_for_defs['meta'] = $trigger_for_defs['triggers_meta'] ?? ( $trigger_for_defs['meta'] ?? array() );
-		$this->token_definitions  = $this->resolve_token_definitions( $trigger_for_defs );
+			// Populate the token-definitions cache for save_tokens() to read.
+			// Always re-resolve here, scoped to the row that's actually firing:
+			// trigger objects are singletons in Automator's registry, so caching
+			// across calls would let one row's definitions leak into another row's
+			// fire. Empty $existing because process() needs only this trigger's
+			// own contribution — isolated from filter-chain accumulation.
+			//
+			// Normalize triggers_meta -> meta to match register_tokens(): the recipe
+			// row stores selected option_codes under triggers_meta but define_tokens()
+			// reads $trigger['meta'][$option_code]. Without this swap, dynamic
+			// per-field token discovery sees an empty form_id and emits no tokens.
+			$trigger_for_defs         = $this->trigger;
+			$trigger_for_defs['meta'] = $trigger_for_defs['triggers_meta'] ?? ( $trigger_for_defs['meta'] ?? array() );
+			$this->token_definitions  = $this->resolve_token_definitions( $trigger_for_defs );
 
-		// Token hydration — trigger-specific, stays here.
-		$this->token_values = $this->hydrate_tokens( $this->trigger, $this->hook_args );
-		$this->save_tokens( $this->get_code(), $this->token_values );
+			// Token hydration — trigger-specific, stays here.
+			$this->token_values = $this->hydrate_tokens( $this->trigger, $this->hook_args );
+			$this->save_tokens( $this->get_code(), $this->token_values );
 
-		$do_action = array(
-			'trigger_entry' => $this->trigger,
-			'entry_args'    => $this->trigger_records,
-			'trigger_args'  => $this->hook_args,
-		);
+			$do_action = array(
+				'trigger_entry' => $this->trigger,
+				'entry_args'    => $this->trigger_records,
+				'trigger_args'  => $this->hook_args,
+			);
 
-		do_action( 'automator_before_trigger_completed', $do_action, $this );
+			do_action( 'automator_before_trigger_completed', $do_action, $this );
 
-		$process_further = apply_filters( 'automator_trigger_should_complete', true, $do_action, $this );
+			$process_further = apply_filters( 'automator_trigger_should_complete', true, $do_action, $this );
 
-		if ( $process_further ) {
-			$this->register_loopable_trigger_tokens_hooks( $do_action );
-			do_action( 'automator_loopable_token_hydrate', $do_action['entry_args'], $do_action['trigger_args'] );
-			// Direct Recipe_Runner call — bypasses facade entirely.
-			Automator()->recipe_runner->complete_trigger( $this->trigger_records );
+			if ( $process_further ) {
+				$this->register_loopable_trigger_tokens_hooks( $do_action );
+				do_action( 'automator_loopable_token_hydrate', $do_action['entry_args'], $do_action['trigger_args'] );
+				// Direct Recipe_Runner call — bypasses facade entirely.
+				Automator()->recipe_runner->complete_trigger( $this->trigger_records );
+			}
+		} catch ( \Throwable $failure ) {
+			Automator()->recipe_runner->fail_trigger( absint( $this->recipe_id ), absint( $this->user_id ), absint( $this->recipe_log_id ), absint( $this->trigger['ID'] ), $failure );
+
+			throw $failure;
 		}
 
 		do_action( 'automator_after_maybe_trigger_complete', $do_action, $this );
@@ -838,17 +867,19 @@ abstract class Trigger {
 			return;
 		}
 
-		// Defensive fallback: if token_definitions never got populated but we
-		// have values to persist, fall back to the pre-patch single-row save
+		// Defensive fallback: if process() never resolved token_definitions but
+		// we have values to persist, fall back to the pre-patch single-row save
 		// so data isn't silently dropped. This is a misuse path — a subclass
 		// overrode process() without populating the cache, OR save_tokens()
 		// was called outside process(). Surface it loudly so it gets fixed.
-		if ( empty( $this->token_definitions ) && ! empty( $values ) ) {
+		// A resolved empty list is a trigger that declares no tokens: the
+		// partitioner writes the same single row, without the notice.
+		if ( null === $this->token_definitions && ! empty( $values ) ) {
 
 			_doing_it_wrong(
 				__METHOD__,
 				sprintf(
-					'save_tokens() called with an empty $token_definitions cache for trigger code "%s". '
+					'save_tokens() called before process() resolved $token_definitions for trigger code "%s". '
 					. 'This usually means process() was overridden without calling parent::process() '
 					. 'or without populating $this->token_definitions. Any tokens declared with a '
 					. 'custom tokenIdentifier will fail to resolve for this trigger fire. Falling '
@@ -863,7 +894,7 @@ abstract class Trigger {
 		}
 
 		Token_Identifier_Partitioner::partition_and_save(
-			$this->token_definitions,
+			$this->token_definitions ?? array(),
 			$values,
 			$code,
 			$this->trigger_records

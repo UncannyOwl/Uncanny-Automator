@@ -8,8 +8,7 @@ namespace Uncanny_Automator\App\Infrastructure\Database\Interfaces;
  *
  * Owns CRUD across the execution log tables: uap_trigger_log,
  * uap_trigger_log_meta, uap_action_log, uap_action_log_meta,
- * uap_recipe_log, uap_recipe_count, uap_closure_log,
- * uap_closure_log_meta. Legacy DB handlers (Automator_DB_Handler_*)
+ * uap_recipe_log, uap_recipe_count. Legacy DB handlers (Automator_DB_Handler_*)
  * delegate to the implementation. The recipe runner is the source of
  * truth for execution log writes.
  *
@@ -18,9 +17,71 @@ namespace Uncanny_Automator\App\Infrastructure\Database\Interfaces;
  * api-layer refactor moved it from `application/recipe_runner/services/`
  * to its correct home in `database/stores/` without altering the surface.
  *
- * @since 7.4.0
+ * Its Error_Message_Rewrite_Store methods rewrite uap_action_log.error_message.
+ *
+ * @since 8.0.0
  */
-interface Execution_Log_Store {
+interface Execution_Log_Store extends Error_Message_Rewrite_Store {
+
+	/**
+	 * Recipe-log meta: `{ "<block_id>": { "chosen_path": "<path_code>" } }`, written by the children runner for every multi-path block outside loop scope.
+	 *
+	 * @var string
+	 */
+	public const META_BLOCK_CHOSEN_PATHS = '_automator_block_chosen_paths';
+
+	/**
+	 * Recipe-log meta: `{ "<block_id>": { "block_type", "fields", "modifiers" } }`, the configuration each dispatched block executed with.
+	 *
+	 * @var string
+	 */
+	public const META_BLOCK_RUN_CONFIG = '_automator_block_run_config';
+
+	/**
+	 * Recipe-log meta: `{ "<node_id>": { "kind": "action"|"block", "waiting_on": [<action ids>], "integration_code": "<code, empty for a block>", "covers": [<action ids under a blocked block>] } }`,
+	 * the nodes of this run waiting on an unfinished background app action. Written by the walker one entry at a time
+	 * through merge_recipe_log_meta_entry(), cleared node by node as Recipe_Runner::complete_background_action() releases or skips them.
+	 *
+	 * @var string
+	 */
+	public const META_BLOCKED_NODES = '_automator_blocked_nodes';
+
+	/**
+	 * Recipe-log meta: `{ "<block_id>": { "reason": "<plain text>", "violations": [ { "code", "message", "target" } ] } }`,
+	 * the blocks the walker refused because their configuration was incomplete. Written once per block per run through
+	 * merge_recipe_log_meta_entry(); the run log reads it to show which modifier caused the refusal and why.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var string
+	 */
+	public const META_BLOCK_REFUSALS = '_automator_block_refusals';
+
+	/**
+	 * Recipe-log meta: `{ "<loop_filter_id>": { "met": false, "message": "<plain text>" } }`, the loop filters of this
+	 * run that matched no items for a reason the owner should read: the filter threw (the loop could not start), or
+	 * the plugin it needs is not active. Written by Pro's loop, one entry per filter, through
+	 * merge_recipe_log_meta_entry(); the run log shows such a filter as not met, with the message.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var string
+	 */
+	public const META_LOOP_FILTER_OUTCOMES = '_automator_loop_filter_outcomes';
+
+	/**
+	 * Recipe-log meta: `{ "<action_id>": "{\"type\":\"delay|schedule|token\",\"time\":<utc epoch>}" }` for actions waiting under a delay.
+	 *
+	 * @var string
+	 */
+	public const META_ACTION_DELAYS = 'action_delays';
+
+	/**
+	 * Action-log meta: the Action Scheduler job id that will resume the row's delay block.
+	 *
+	 * @var string
+	 */
+	public const ACTION_META_ASYNC_JOB_ID = 'async_job_id';
 
 	// Trigger logs.
 	public function add_trigger( int $user_id, int $trigger_id, int $recipe_id, bool $is_completed, int $recipe_log_id ): int;
@@ -42,6 +103,23 @@ interface Execution_Log_Store {
 	// Action logs.
 	public function add_action( array $data ): int;
 	public function add_action_meta( int $user_id, int $action_log_id, int $action_id, string $meta_key, string $meta_value ): void;
+
+	/**
+	 * Read a single meta value for an (action_log_id, meta_key) pair.
+	 *
+	 * Returns the most-recent row's `meta_value` when multiple rows
+	 * share the key (e.g. duplicate writes), `null` when no row exists.
+	 *
+	 * Phase 2 upload-action body persistence (R6 idempotency replay)
+	 * needs this to read back the JCS-canonical request bytes on retry —
+	 * see {@see \Uncanny_Automator\Recipe\App_Action::read_persisted_upload_request()}.
+	 *
+	 * @param int    $action_log_id uap_action_log primary key.
+	 * @param string $meta_key      Meta key to look up.
+	 *
+	 * @return string|null Stored meta value, or null when missing.
+	 */
+	public function get_action_meta_value( int $action_log_id, string $meta_key ): ?string;
 	public function mark_action_complete( int $action_id, int $recipe_log_id, int $completed, string $error_message = '' ): void;
 
 	/**
@@ -96,6 +174,17 @@ interface Execution_Log_Store {
 	 */
 	public function get_action_log_id_by_action_and_recipe_log( int $action_id, int $recipe_log_id ): int;
 
+	/**
+	 * Fetch the raw uap_action_log row for a given primary key.
+	 *
+	 * Returns the row's `user_id`, `automator_action_id`, `automator_recipe_id`,
+	 * and `automator_recipe_log_id` — enough for callers that need to rebuild
+	 * an action_data shape (resume / replay / dispatch paths).
+	 *
+	 * @return object|null wpdb row object, or null when no row matches.
+	 */
+	public function get_action_log_row( int $action_log_id ): ?object;
+
 	public function get_all_action_statuses( int $recipe_log_id ): array;
 
 	// Recipe logs.
@@ -117,30 +206,14 @@ interface Execution_Log_Store {
 
 	public function get_recipe_status( int $recipe_log_id ): ?int;
 
-	// Closure logs.
-
 	/**
-	 * Insert a closure log entry.
+	 * The newest recipe-log row for a recipe, or null when it has never run.
 	 *
-	 * @return int|null Insert ID, or null on insert failure. Note: in 7.3 the legacy
-	 *                  signature returned `int|false`. Phase 1c of the api-layer
-	 *                  refactor (review note C33) tightened this to `?int` so the
-	 *                  contract has a single absent-value sentinel. Consumers must
-	 *                  use `null !==` instead of `false !==`.
+	 * @param int $recipe_id The recipe ID.
+	 *
+	 * @return object|null Row with { ID, run_number, completed }, or null when none.
 	 */
-	public function add_closure_entry( array $data ): ?int;
-
-	public function add_closure_entry_meta( array $identifiers, string $meta_key, string $meta_value ): void;
-
-	/**
-	 * Update a closure log entry's completion status.
-	 *
-	 * @param int $closure_log_id The closure log ID.
-	 * @param int $completed      The completion status.
-	 *
-	 * @return void
-	 */
-	public function mark_closure_complete( int $closure_log_id, int $completed ): void;
+	public function get_latest_recipe_log( int $recipe_id ): ?object;
 
 	// Trigger log lookups for run-number sync.
 
@@ -190,6 +263,16 @@ interface Execution_Log_Store {
 	public function find_pending_recipe_log( int $recipe_id, int $user_id, array $terminal_statuses ): ?int;
 
 	/**
+	 * Runs whose actions stopped progressing: candidates for stuck recovery.
+	 *
+	 * @param int $threshold_seconds Idle time, measured from the run's newest action row.
+	 * @param int $batch_size        Maximum rows.
+	 *
+	 * @return object[] Rows with ID, automator_recipe_id, user_id, date_time, last_action_activity.
+	 */
+	public function find_stuck_recipe_logs( int $threshold_seconds, int $batch_size ): array;
+
+	/**
 	 * @param int $recipe_id The recipe ID.
 	 * @param int $user_id   The user ID.
 	 *
@@ -203,6 +286,18 @@ interface Execution_Log_Store {
 	 * @return int
 	 */
 	public function get_max_recipe_log_number( int $recipe_id ): int;
+
+	/**
+	 * The published or draft recipes that ran the most, most runs first and
+	 * the newer recipe first on a tie. Recipes that never ran are left out.
+	 *
+	 * @param int $limit The most recipes to return.
+	 *
+	 * @return array<int,array{id:int,title:string,runs:int}> Raw post titles.
+	 *
+	 * @throws \Uncanny_Automator\App\Infrastructure\Exceptions\Store_Exception When the query fails.
+	 */
+	public function get_most_active_recipes( int $limit ): array;
 
 	/**
 	 * @param int      $recipe_id  The recipe ID.
@@ -309,4 +404,206 @@ interface Execution_Log_Store {
 	 * @return void
 	 */
 	public function copy_recipe_log_meta( int $source_log_id, int $target_log_id, int $recipe_id, array $keys ): void;
+
+	/**
+	 * Run-identity row for the (recipe, run, log) triple.
+	 *
+	 * @param int $recipe_id  Recipe post id.
+	 * @param int $run_number 1-indexed run number.
+	 * @param int $log_id     Recipe-log row id.
+	 * @return array<string,mixed>|null
+	 */
+	public function get_recipe_log_row_by_ids( int $recipe_id, int $run_number, int $log_id ): ?array;
+
+	/**
+	 * All trigger-log rows for a recipe-log, ordered by date_time ASC.
+	 *
+	 * @param int $recipe_log_id Recipe-log row id.
+	 * @return array<int,array<string,mixed>>
+	 */
+	public function get_trigger_log_rows( int $recipe_log_id ): array;
+
+	/**
+	 * All action-log rows for a recipe-log, ordered by date_time ASC.
+	 *
+	 * @param int $recipe_log_id Recipe-log row id.
+	 * @return array<int,array<string,mixed>>
+	 */
+	public function get_action_log_rows( int $recipe_log_id ): array;
+
+	/**
+	 * Flattened TOKEN-code => resolved-value map for a run.
+	 *
+	 * @param int $recipe_id     Recipe post id.
+	 * @param int $recipe_log_id Recipe-log row id.
+	 * @param int $run_number    1-indexed run number.
+	 * @return array<string,string>
+	 */
+	public function get_tokens_record_map( int $recipe_id, int $recipe_log_id, int $run_number ): array;
+
+	/**
+	 * Action-log meta indexed [action_log_id][meta_key] => value.
+	 *
+	 * @param array<int,int> $action_log_ids Action-log row ids.
+	 * @return array<int,array<string,string>>
+	 */
+	public function get_action_log_meta_bag( array $action_log_ids ): array;
+
+	/**
+	 * Every value one meta key holds per trigger log, oldest row first, indexed [trigger_log_id] => values. A trigger
+	 * log can hold several rows under one key: each `set_trigger_log_properties()` call stores its own `properties`
+	 * row, which get_trigger_log_meta_bag() would collapse into one.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param array<int,int> $trigger_log_ids Trigger-log row ids.
+	 * @param string         $meta_key        Meta key.
+	 * @return array<int,array<int,string>>
+	 */
+	public function get_trigger_log_meta_values( array $trigger_log_ids, string $meta_key ): array;
+
+	/**
+	 * Trigger-log meta indexed [trigger_log_id][meta_key] => value.
+	 *
+	 * @param array<int,int> $trigger_log_ids Trigger-log row ids.
+	 * @return array<int,array<string,string>>
+	 */
+	public function get_trigger_log_meta_bag( array $trigger_log_ids ): array;
+
+	/**
+	 * Recipe-log meta for the fixed log keys (`triggers_logic`, `META_ACTION_DELAYS`, `META_BLOCK_CHOSEN_PATHS`, `META_BLOCK_RUN_CONFIG`, `META_BLOCKED_NODES`, `META_BLOCK_REFUSALS`, `META_LOOP_FILTER_OUTCOMES`) plus any extra keys, indexed [meta_key] => value.
+	 *
+	 * @param int            $recipe_log_id Recipe-log row id.
+	 * @param array<int,string> $extra_keys Additional meta keys to fetch (e.g. condition group hashes).
+	 * @return array<string,string>
+	 */
+	public function get_recipe_log_meta_bag( int $recipe_log_id, array $extra_keys = array() ): array;
+
+	/**
+	 * Loop-run rows for a recipe-log/run, indexed by loop_id. Empty when the Pro loop table is absent.
+	 *
+	 * @param int $recipe_log_id Recipe-log row id.
+	 * @param int $run_number    1-indexed run number.
+	 * @return array<int,array<string,mixed>>
+	 */
+	public function get_loop_entries( int $recipe_log_id, int $run_number ): array;
+
+	/**
+	 * Whether a loop of the run ended Completed with errors: a uap_loop_entries row of the run whose status is
+	 * `completed-with-errors`, which Pro writes when a loop could not start (its filter or token failed, the
+	 * walker refused it). The loops in `$except_loop_ids` are left out. False when the Pro loop table is absent.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int   $recipe_log_id   Recipe-log row id.
+	 * @param int[] $except_loop_ids Loop block ids whose entries do not count.
+	 *
+	 * @return bool
+	 */
+	public function has_failed_loop_entries( int $recipe_log_id, array $except_loop_ids = array() ): bool;
+
+	/**
+	 * Per-action per-status loop-item counts, indexed [action_id][status] => count. Empty when the Pro table is absent.
+	 *
+	 * @param int $recipe_log_id Recipe-log row id.
+	 * @param int $run_number    1-indexed run number.
+	 * @return array<int,array<string,int>>
+	 */
+	public function get_loop_item_status_breakdown( int $recipe_log_id, int $run_number ): array;
+
+	/**
+	 * Paged per-iteration rows for one loop-body action in one run (ITEM arm
+	 * of the iterations sub-resource). Kind-aware search joins users/posts by
+	 * entity_id when $loop_type warrants; all kinds match entity_id and
+	 * error_message. Empty array when the Pro loop tables are absent.
+	 *
+	 * @param int    $recipe_id  Recipe post id.
+	 * @param int    $recipe_log_id Recipe-log row id.
+	 * @param int    $run_number Run number.
+	 * @param int    $action_id  Loop-body action post id.
+	 * @param int    $per_page   Page size.
+	 * @param int    $offset     Row offset.
+	 * @param string $search     Raw search term; '' disables the search filter.
+	 * @param string $loop_type  Loop kind: users|posts|token|'' (drives the search JOIN).
+	 * @return array<int,array<string,mixed>> Iteration rows ordered by ID ASC.
+	 */
+	public function get_action_iteration_rows( int $recipe_id, int $recipe_log_id, int $run_number, int $action_id, int $per_page, int $offset, string $search, string $loop_type ): array;
+
+	/**
+	 * Total per-iteration row count for one loop-body action in one run,
+	 * honouring the same kind-aware search as get_action_iteration_rows().
+	 * Zero when the Pro loop tables are absent.
+	 *
+	 * @param int    $recipe_id  Recipe post id.
+	 * @param int    $recipe_log_id Recipe-log row id.
+	 * @param int    $run_number Run number.
+	 * @param int    $action_id  Loop-body action post id.
+	 * @param string $search     Raw search term; '' disables the search filter.
+	 * @param string $loop_type  Loop kind: users|posts|token|''.
+	 * @return int The matching row count.
+	 */
+	public function count_action_iteration_rows( int $recipe_id, int $recipe_log_id, int $run_number, int $action_id, string $search, string $loop_type ): int;
+
+	/**
+	 * Read a single recipe-log-meta value, or null when missing.
+	 *
+	 * @param int    $recipe_log_id The recipe log ID.
+	 * @param string $meta_key      The meta key.
+	 *
+	 * @return string|null
+	 */
+	public function get_recipe_log_meta( int $recipe_log_id, string $meta_key ): ?string;
+
+	/**
+	 * Upsert: insert if no row, otherwise update meta_value in place.
+	 *
+	 * @param int    $recipe_id     The recipe ID.
+	 * @param int    $recipe_log_id The recipe log ID.
+	 * @param string $meta_key      The meta key.
+	 * @param string $meta_value    The meta value.
+	 *
+	 * @return void
+	 */
+	public function set_recipe_log_meta( int $recipe_id, int $recipe_log_id, string $meta_key, string $meta_value ): void;
+
+	/**
+	 * Delete the row for this (recipe_log_id, meta_key) pair. No-op if missing.
+	 *
+	 * @param int    $recipe_log_id The recipe log ID.
+	 * @param string $meta_key      The meta key.
+	 *
+	 * @return void
+	 */
+	public function delete_recipe_log_meta( int $recipe_log_id, string $meta_key ): void;
+
+	/**
+	 * Set or remove one entry of a JSON-object recipe-log meta under the run-meta advisory lock, so two walks
+	 * of the same run never lose each other's entries. Removing an entry that is already gone writes nothing and
+	 * returns false.
+	 *
+	 * @param int        $recipe_id     The recipe.
+	 * @param int        $recipe_log_id The run.
+	 * @param string     $meta_key      The meta key holding a JSON object.
+	 * @param string     $entry_key     The entry to set or remove.
+	 * @param array|null $entry         The entry, or null to remove it.
+	 *
+	 * @return bool Whether the record changed.
+	 */
+	public function merge_recipe_log_meta_entry( int $recipe_id, int $recipe_log_id, string $meta_key, string $entry_key, ?array $entry ): bool;
+
+	/**
+	 * Stamp one entry of a JSON-object recipe-log meta with its holder, under the run-meta advisory lock, only when
+	 * its current holder is the one expected (null for an unclaimed entry). Of two walks claiming the same entry
+	 * with the same expectation, exactly one gets true.
+	 *
+	 * @param int         $recipe_id       The recipe.
+	 * @param int         $recipe_log_id   The run.
+	 * @param string      $meta_key        The meta key holding a JSON object.
+	 * @param string      $entry_key       The entry to claim.
+	 * @param string      $holder          Who claims it; written to the entry's `claimed_by`.
+	 * @param string|null $previous_holder The holder the entry must currently name, or null for none.
+	 *
+	 * @return bool Whether the entry was claimed.
+	 */
+	public function claim_recipe_log_meta_entry( int $recipe_id, int $recipe_log_id, string $meta_key, string $entry_key, string $holder, ?string $previous_holder ): bool;
 }

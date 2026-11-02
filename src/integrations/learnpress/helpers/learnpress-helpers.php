@@ -109,6 +109,7 @@ class Learnpress_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_lp_courses', $option );
 	}
 
@@ -150,6 +151,7 @@ class Learnpress_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_lp_lessons', $option );
 	}
 
@@ -167,6 +169,7 @@ class Learnpress_Helpers {
 
 		if ( $value > 0 ) {
 			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- LearnPress's own table; the plugin offers no API for this query.
 			$sections = $wpdb->get_results( $wpdb->prepare( "SELECT section_id, section_name FROM {$wpdb->prefix}learnpress_sections WHERE section_course_id=%d", $value ) );
 
 			foreach ( $sections as $section ) {

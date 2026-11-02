@@ -24,9 +24,9 @@ class UOG_REMOVESEATSFROMGROUP extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_meta( 'UNCANNYGROUP' );
 		$this->set_requires_user( false );
 
-		// translators: %1$s is the number of seats, %2$s is the group.
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Number of seats, %2$s: Uncanny group */
 				esc_html_x( 'Remove {{a number of:%1$s}} seats from {{an Uncanny group:%2$s}}', 'Uncanny Groups', 'uncanny-automator' ),
 				'NUMOFSEATS',
 				$this->get_action_meta()
@@ -121,7 +121,8 @@ class UOG_REMOVESEATSFROMGROUP extends \Uncanny_Automator\Recipe\Action {
 
 		// If seats to remove are less than empty seats.
 		if ( $uo_remove_seats < $empty_seats ) {
-			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->prefix{$tbl} WHERE group_id = %d AND student_id IS NULL LIMIT %d", $code_group_id, $uo_remove_seats ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Uncanny Groups' own table; write; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
+			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->prefix{$tbl} WHERE group_id = %d AND student_id IS NULL LIMIT %d", $code_group_id, $uo_remove_seats ) );
 			update_post_meta( $uo_group_id, '_ulgm_total_seats', $empty_seats );
 
 			$this->hydrate_tokens(
@@ -136,7 +137,8 @@ class UOG_REMOVESEATSFROMGROUP extends \Uncanny_Automator\Recipe\Action {
 
 		// If seats to remove are more than or equal to empty seats.
 		if ( $uo_remove_seats >= $empty_seats ) {
-			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->prefix{$tbl} WHERE group_id = %d AND student_id IS NULL", $code_group_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Uncanny Groups' own table; write; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
+			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->prefix{$tbl} WHERE group_id = %d AND student_id IS NULL", $code_group_id ) );
 
 			$this->hydrate_tokens(
 				array(

@@ -55,15 +55,6 @@ class Integration_Registry {
 		return $this->integrations->get_integration_for_trigger( $trigger_code );
 	}
 
-	/**
-	 * @param string $closure_code The closure code.
-	 *
-	 * @return string|null The integration slug.
-	 */
-	public function get_closure_integration( string $closure_code ): ?string {
-		return $this->integrations->get_integration_for_closure( $closure_code );
-	}
-
 	// ── Plugin status ──
 
 	/**
@@ -103,8 +94,8 @@ class Integration_Registry {
 	public function is_plugin_active( ?string $integration ): bool {
 		// A null status (unknown / unresolved integration) is intentionally
 		// PASS-THROUGH here, mirroring the legacy `0 === get_plugin_status()`
-		// guard that blocked only an explicit 0. Trigger/Closure completion stages
-		// rely on this — an unresolved integration must not silently stop hooks.
+		// guard that blocked only an explicit 0. The trigger completion stage
+		// relies on this — an unresolved integration must not silently stop hooks.
 		// The 7.3.1.4 TypeError is guarded at is_app_connected(), not here.
 		return 0 !== $this->get_plugin_status( $integration );
 	}
@@ -142,14 +133,5 @@ class Integration_Registry {
 	 */
 	public function get_action_execution_function( string $action_code ): ?callable {
 		return $this->integrations->get_action_execution_callback( $action_code );
-	}
-
-	/**
-	 * @param string $closure_code The closure code.
-	 *
-	 * @return callable|null The execution function, or null if not found.
-	 */
-	public function get_closure_execution_function( string $closure_code ): ?callable {
-		return $this->integrations->get_closure_execution_callback( $closure_code );
 	}
 }

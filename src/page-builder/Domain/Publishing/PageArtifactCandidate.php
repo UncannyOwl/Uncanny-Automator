@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Domain\Publishing;
 
+use UncannyPageBuilder\Domain\ArrayShape;
 use UncannyPageBuilder\Domain\Concurrency\SourceGenerationSnapshot;
 use UncannyPageBuilder\Domain\Shell\ShellMode;
 
@@ -223,13 +224,13 @@ final class PageArtifactCandidate
     /** @param array<mixed> $value */
     private function isAssociativeArray(array $value): bool
     {
-        return $value === [] || !array_is_list($value);
+        return $value === [] || !ArrayShape::isList($value);
     }
 
     /** @param array<mixed> $value */
     private function isListOfArrays(array $value): bool
     {
-        if (!array_is_list($value)) {
+        if (!ArrayShape::isList($value)) {
             return false;
         }
 

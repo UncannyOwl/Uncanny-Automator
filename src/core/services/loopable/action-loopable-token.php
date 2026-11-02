@@ -23,6 +23,13 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 	protected $action = array();
 
 	/**
+	 * The action post id this instance was built for. Concretes set it.
+	 *
+	 * @var int
+	 */
+	protected $action_id = 0;
+
+	/**
 	 * Registers the loopable token on object creation.
 	 *
 	 * @return void
@@ -105,15 +112,12 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 
 		$value = Automator()->db->action->get_meta( $action_log_id, $key );
 
+		// The action saved no list for this run: leave the field for the parser to finish.
 		if ( ! is_string( $value ) ) {
-			return '';
+			return $text;
 		}
 
 		$to_array = (array) automator_safe_unserialize( $value );
-
-		if ( ! is_array( $to_array ) ) {
-			return '';
-		}
 
 		// The result of this filter becomes the field text that the input parser
 		// then runs through stripcslashes() in maybe_parse_shortcodes_in_fields().
@@ -128,7 +132,11 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 		// stripcslashes turns \\ into \, restoring the original JSON.
 		$json = wp_json_encode( $to_array, JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE );
 
-		return str_replace( '\\', '\\\\', (string) $json );
+		// The list takes the token's place only: a text field that holds the
+		// token among other content keeps that content.
+		$token = '{{' . implode( ':', array_values( $token_parts ) ) . '}}';
+
+		return str_replace( $token, str_replace( '\\', '\\\\', (string) $json ), $text );
 	}
 
 	/**
@@ -173,6 +181,10 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 
 		if ( $loopable_token_id !== $current_loopable_token_id ) {
 			return $tokens; // Avoid conflict. Only display the child tokens of the specific loopable token.
+		}
+
+		if ( (int) $this->action_id !== (int) $action_id ) {
+			return $tokens; // Avoid conflict. Only display the child tokens of the specific loopable action item.
 		}
 
 		if ( empty( $action_id ) ) {
@@ -275,9 +287,21 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 
 		$extracted_tokens = $this->extract_children_token( $field_text );
 
-		$loop_query       = new Loop_Entry_Query();
-		$loop             = $loop_query->find_entry_by_process_id( $process_id );
-		$tokens_reference = (array) json_decode( $loop->get_user_ids(), true );
+		// Another loopable token of the same id shares this hook. Leave text that holds none of this token's children alone.
+		if ( empty( $extracted_tokens ) ) {
+			return $field_text;
+		}
+
+		// Loop entries exist only while Pro runs a loop, and Pro returns false for a process it has no entry for.
+		$tokens_reference = array();
+
+		if ( ! empty( $process_id ) && class_exists( Loop_Entry_Query::class ) ) {
+			$loop_query = new Loop_Entry_Query();
+			$loop       = $loop_query->find_entry_by_process_id( $process_id );
+			if ( $loop ) {
+				$tokens_reference = (array) json_decode( $loop->get_user_ids() ?? '', true );
+			}
+		}
 
 		if ( empty( $tokens_reference ) ) {
 			return $field_text;

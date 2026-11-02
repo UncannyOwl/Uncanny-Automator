@@ -72,7 +72,7 @@ final class WorkingDesignTokenCss implements WorkingDesignTokenCssRendererInterf
              * REST failure. The browser keeps its current preview until reload
              * when the exact server projection is unavailable.
              */
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Working design token projection unavailable (%s).',
                 $failure::class,
             ));

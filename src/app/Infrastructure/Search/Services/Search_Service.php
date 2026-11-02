@@ -16,17 +16,16 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Infrastructure\Search\Services;
 
-use Uncanny_Automator\App\Recipe_Builder\Action\Services\Action_Registry_Service;
-use Uncanny_Automator\App\Recipe_Builder\Condition\Services\Condition_Registry_Service;
 use Uncanny_Automator\App\Recipe_Builder\Loop\Services\Filter\Filter_Registry_Service;
 use Uncanny_Automator\App\Recipe_Builder\Loop\Services\Loop_CRUD_Service;
-use Uncanny_Automator\App\Recipe_Builder\Trigger\Services\Trigger_Registry_Service;
 use WP_Error;
 
 /**
  * Orchestrates search and listing across component types.
  */
 class Search_Service {
+
+	private const INTEGRATION_CATALOG_LIMIT = 100;
 
 	private const SUPPORTED_TYPES = array( 'trigger', 'action', 'condition', 'loopable_token', 'loop_filter' );
 	private const SUPPORTED_MODES = array( 'search', 'list' );
@@ -105,12 +104,12 @@ class Search_Service {
 	 * @param int         $limit       Max results.
 	 * @param int         $offset      Results offset.
 	 *
-	 * @return array Search results with 'message' and 'data' keys.
+	 * @return array|WP_Error Search results or the catalog access error.
 	 */
-	private function execute_search( string $type, string $query, ?string $integration, int $limit, int $offset ): array {
+	private function execute_search( string $type, string $query, ?string $integration, int $limit, int $offset ) {
 
-		// If integration is provided, delegate to integration-based listing.
-		if ( $integration ) {
+		// Preserve integration-only browsing; a query always uses semantic search.
+		if ( '' === $query && $integration ) {
 			return $this->list_by_integration( $type, $integration, $limit, $offset );
 		}
 
@@ -120,7 +119,10 @@ class Search_Service {
 		switch ( $type ) {
 			case 'trigger':
 				$collection = $this->factory->get_trigger_collector()->collect_triggers( $query );
-				$items      = $collection->to_array();
+				if ( is_wp_error( $collection ) ) {
+					return $collection;
+				}
+				$items = $collection->to_array();
 				if ( $collection->has_alternative_triggers() ) {
 					$alternative_triggers = $collection->get_alternative_triggers()->to_array();
 				}
@@ -128,12 +130,18 @@ class Search_Service {
 
 			case 'action':
 				$collection = $this->factory->get_action_collector()->collect_actions( $query );
-				$items      = $collection->to_array();
+				if ( is_wp_error( $collection ) ) {
+					return $collection;
+				}
+				$items = $collection->to_array();
 				break;
 
 			case 'condition':
 				$collection = $this->factory->get_condition_collector()->collect_conditions( $query );
-				$items      = $collection->to_array();
+				if ( is_wp_error( $collection ) ) {
+					return $collection;
+				}
+				$items = $collection->to_array();
 				break;
 
 			case 'loopable_token':
@@ -143,7 +151,10 @@ class Search_Service {
 
 			case 'loop_filter':
 				$collection = $this->factory->get_loop_filter_collector()->collect_loop_filters( $query );
-				$items      = $collection->to_array();
+				if ( is_wp_error( $collection ) ) {
+					return $collection;
+				}
+				$items = $collection->to_array();
 				break;
 		}
 
@@ -205,20 +216,7 @@ class Search_Service {
 		if ( 'loop_filter' === $type ) {
 			// If integration is provided, use the collector's integration-based listing.
 			if ( $integration ) {
-				$fetch_limit = $this->get_fetch_limit_for_offset( $limit, $offset );
-				$collection  = $this->factory->get_loop_filter_collector()->collect_loop_filters_by_integration( $integration, $fetch_limit );
-				$items       = $collection->to_array();
-				$sliced      = array_values( array_slice( $items, $offset, $limit ) );
-
-				return array(
-					'message' => sprintf( 'Found %d loop filter(s) for integration %s.', count( $sliced ), $integration ),
-					'data'    => array(
-						'type'        => 'loop_filter',
-						'integration' => $integration,
-						'items'       => $sliced,
-						'total'       => count( $items ),
-					),
-				);
+				return $this->list_by_integration( $type, $integration, $limit, $offset );
 			}
 
 			return $this->list_loop_filters( $loop_id, $limit, $offset );
@@ -228,7 +226,8 @@ class Search_Service {
 	}
 
 	/**
-	 * List triggers from Trigger_Registry_Service.
+	 * List triggers: the hosted catalog for one integration, otherwise the
+	 * registered triggers, as the same items a search returns.
 	 *
 	 * @param string|null $integration Optional integration filter.
 	 * @param int         $limit       Max results.
@@ -239,20 +238,16 @@ class Search_Service {
 	private function list_triggers( ?string $integration, int $limit, int $offset ) {
 
 		if ( $integration ) {
-			$fetch_limit = $this->get_fetch_limit_for_offset( $limit, $offset );
-			$collection  = $this->factory->get_trigger_collector()->collect_triggers_by_integration( $integration, null, $fetch_limit );
-			$items       = $collection->to_array();
-		} else {
-			$service = Trigger_Registry_Service::instance();
-			$result  = $service->list_triggers( array(), false );
-
-			if ( is_wp_error( $result ) ) {
-				return $result;
-			}
-
-			$items = $result['triggers'] ?? $result;
+			return $this->list_by_integration( 'trigger', $integration, $limit, $offset );
 		}
 
+		$collection = $this->factory->get_trigger_collector()->collect_registered_triggers();
+
+		if ( is_wp_error( $collection ) ) {
+			return $collection;
+		}
+
+		$items  = $collection->to_array();
 		$sliced = array_values( array_slice( $items, $offset, $limit ) );
 
 		return array(
@@ -266,7 +261,8 @@ class Search_Service {
 	}
 
 	/**
-	 * List actions from Action_Registry_Service.
+	 * List actions: the hosted catalog for one integration, otherwise the
+	 * registered actions, as the same items a search returns.
 	 *
 	 * @param string|null $integration Optional integration filter.
 	 * @param int         $limit       Max results.
@@ -277,20 +273,16 @@ class Search_Service {
 	private function list_actions( ?string $integration, int $limit, int $offset ) {
 
 		if ( $integration ) {
-			$fetch_limit = $this->get_fetch_limit_for_offset( $limit, $offset );
-			$collection  = $this->factory->get_action_collector()->collect_actions_by_integration( $integration, $fetch_limit );
-			$items       = $collection->to_array();
-		} else {
-			$service = Action_Registry_Service::instance();
-			$result  = $service->get_available_actions( '', false );
-
-			if ( is_wp_error( $result ) ) {
-				return $result;
-			}
-
-			$items = $result['actions'] ?? $result;
+			return $this->list_by_integration( 'action', $integration, $limit, $offset );
 		}
 
+		$collection = $this->factory->get_action_collector()->collect_registered_actions();
+
+		if ( is_wp_error( $collection ) ) {
+			return $collection;
+		}
+
+		$items  = $collection->to_array();
 		$sliced = array_values( array_slice( $items, $offset, $limit ) );
 
 		return array(
@@ -304,7 +296,7 @@ class Search_Service {
 	}
 
 	/**
-	 * List conditions from Condition_Registry_Service.
+	 * List the registered conditions, as the same items a search returns.
 	 *
 	 * @param string|null $integration Optional integration filter.
 	 * @param int         $limit       Max results.
@@ -314,15 +306,13 @@ class Search_Service {
 	 */
 	private function list_conditions( ?string $integration, int $limit, int $offset ) {
 
-		$service = Condition_Registry_Service::instance();
-		$filters = $integration ? array( 'integration' => $integration ) : array();
-		$result  = $service->list_conditions( $filters );
+		$collection = $this->factory->get_condition_collector()->collect_registered_conditions( $integration );
 
-		if ( is_wp_error( $result ) ) {
-			return $result;
+		if ( is_wp_error( $collection ) ) {
+			return $collection;
 		}
 
-		$items  = $result['conditions'] ?? $result;
+		$items  = $collection->to_array();
 		$sliced = array_values( array_slice( $items, $offset, $limit ) );
 
 		return array(
@@ -461,7 +451,7 @@ class Search_Service {
 	/**
 	 * List components by integration via collectors.
 	 *
-	 * Used when mode=search but integration is provided.
+	 * Used for explicit listing or integration-only searches without a query.
 	 *
 	 * @param string $type        Component type.
 	 * @param string $integration Integration code.
@@ -473,17 +463,14 @@ class Search_Service {
 	private function list_by_integration( string $type, string $integration, int $limit, int $offset ) {
 
 		$items       = array();
-		$fetch_limit = $this->get_fetch_limit_for_offset( $limit, $offset );
+		$fetch_limit = self::INTEGRATION_CATALOG_LIMIT;
 
 		if ( 'trigger' === $type ) {
 			$collection = $this->factory->get_trigger_collector()->collect_triggers_by_integration( $integration, null, $fetch_limit );
-			$items      = $collection->to_array();
 		} elseif ( 'action' === $type ) {
 			$collection = $this->factory->get_action_collector()->collect_actions_by_integration( $integration, $fetch_limit );
-			$items      = $collection->to_array();
 		} elseif ( 'loop_filter' === $type ) {
 			$collection = $this->factory->get_loop_filter_collector()->collect_loop_filters_by_integration( $integration, $fetch_limit );
-			$items      = $collection->to_array();
 		} elseif ( 'condition' === $type || 'loopable_token' === $type ) {
 			return new WP_Error(
 				'unsupported_integration_listing',
@@ -491,16 +478,27 @@ class Search_Service {
 			);
 		}
 
+		// Return the access error before formatting a successful catalog response.
+		if ( is_wp_error( $collection ) ) {
+			return $collection;
+		}
+		$items = $collection->to_array();
+
+		// The hosted endpoint has no offset and caps its catalog at 100 rows.
+		// Count the full available candidate set, and disclose possible truncation.
+		$catalog_may_be_truncated = $collection->get_total_count() >= self::INTEGRATION_CATALOG_LIMIT;
+
 		$sliced = array_values( array_slice( $items, $offset, $limit ) );
 
 		if ( empty( $sliced ) ) {
 			return array(
 				'message' => sprintf( "No %s components found for integration '%s'.", $type, $integration ),
 				'data'    => array(
-					'type'        => $type,
-					'integration' => $integration,
-					'items'       => array(),
-					'total'       => count( $items ),
+					'type'                     => $type,
+					'integration'              => $integration,
+					'items'                    => array(),
+					'total'                    => count( $items ),
+					'catalog_may_be_truncated' => $catalog_may_be_truncated,
 				),
 			);
 		}
@@ -508,26 +506,12 @@ class Search_Service {
 		return array(
 			'message' => sprintf( 'Found %d %s(s) for integration %s.', count( $sliced ), $type, $integration ),
 			'data'    => array(
-				'type'        => $type,
-				'integration' => $integration,
-				'items'       => $sliced,
-				'total'       => count( $items ),
+				'type'                     => $type,
+				'integration'              => $integration,
+				'items'                    => $sliced,
+				'total'                    => count( $items ),
+				'catalog_may_be_truncated' => $catalog_may_be_truncated,
 			),
 		);
-	}
-
-	/**
-	 * Calculate collector fetch size for integration-backed local offset paging.
-	 *
-	 * Integration collectors accept only a limit. Fetch through the requested
-	 * offset, then slice locally so later pages are not empty just because the
-	 * first collector call only fetched one page.
-	 *
-	 * @param int $limit  Requested page size.
-	 * @param int $offset Requested offset.
-	 * @return int
-	 */
-	private function get_fetch_limit_for_offset( int $limit, int $offset ): int {
-		return max( $limit, $limit + $offset );
 	}
 }

@@ -4,12 +4,15 @@ namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools;
 
 use Uncanny_Automator\App\Recipe_Builder\Shared\User\Value_Objects\User_Context;
 use Uncanny_Automator\App\Recipe_Builder\Shared\Traits\Empty_Array_To_Object;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Json_Rpc_Response;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Schema_Validator;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abilities\Ability_Switch_Guard;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abilities\Ability_Switched_Off_Exception;
 
 /**
  * Abstract MCP Tool.
  *
- * Base class for MCP tools with User_Context integration and automatic schema generation.
+ * Base class for MCP tools with User_Context integration and explicit schema definitions.
  *
  * @since 7.0.0
  */
@@ -27,8 +30,9 @@ abstract class Abstract_MCP_Tool implements MCP_Tool_Interface {
 	public function get_schema() {
 		$schema = array(
 			'name'        => $this->get_name(),
+			'title'       => $this->get_title(),
 			'description' => $this->get_description(),
-			'inputSchema' => $this->schema_definition(),
+			'inputSchema' => $this->get_normalized_input_schema(),
 			'annotations' => $this->get_annotations(),
 		);
 
@@ -48,6 +52,55 @@ abstract class Abstract_MCP_Tool implements MCP_Tool_Interface {
 	}
 
 	/**
+	 * Supply a human-readable title for the tool catalog.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return string
+	 */
+	protected function get_title(): string {
+		$titles = array(
+			Catalog\Delete_Tool::class                     => 'Delete recipe component',
+			Catalog\Get_Component_Schema_Tool::class       => 'Get component schema',
+			Catalog\Get_Field_Options_Tool::class          => 'Get field options',
+			Catalog\Get_Logs_Tool::class                   => 'Get recipe logs',
+			Catalog\Get_Posts_Tool::class                  => 'Get posts',
+			Catalog\Recipes\Get_Recipe_Tool::class         => 'Get recipe',
+			Catalog\Get_Site_Context_Tool::class           => 'Get site context',
+			Catalog\Get_Terms_Tool::class                  => 'Get terms',
+			Catalog\Get_Tokens_Tool::class                 => 'Get recipe tokens',
+			Catalog\List_Plugins_Tool::class               => 'List plugins',
+			Catalog\Recipes\List_Recipes_Tool::class       => 'List recipes',
+			Catalog\List_Roles_Tool::class                 => 'List roles',
+			Catalog\List_Users_Tool::class                 => 'List users',
+			Catalog\Mysql_Get_Cell_Chunk_Tool::class       => 'Read a database cell chunk',
+			Catalog\Mysql_Get_Table_Columns_Tool::class    => 'List database columns',
+			Catalog\Mysql_Get_Tables_Tool::class           => 'List database tables',
+			Catalog\Mysql_Select_From_Table_Tool::class    => 'Query database tables',
+			Catalog\Posts\Post_Apply_Content_Edit_Tool::class => 'Edit post content',
+			Catalog\Posts\Post_Apply_Meta_Edit_Tool::class => 'Edit post custom fields',
+			Catalog\Rest\Rest_Discover_Tool::class         => 'Discover WordPress operations',
+			Catalog\Rest\Rest_Request_Tool::class          => 'Run a WordPress REST operation',
+			Catalog\Abilities\Run_Ability_Tool::class      => 'Run a WordPress ability',
+			Catalog\Actions\Run_Action_Tool::class         => 'Run an Automator action',
+			Catalog\Recipes\Run_Recipe_Tool::class         => 'Run a recipe',
+			Catalog\Actions\Save_Action_Tool::class        => 'Save action',
+			Catalog\Blocks\Save_Block_Tool::class          => 'Save block',
+			Catalog\Blocks\Save_Filter_Condition_Tool::class => 'Save filter condition',
+			Catalog\Loops\Save_Loop_Tool::class            => 'Save loop',
+			Catalog\Loops\Save_Loop_Filter_Tool::class     => 'Save loop filter',
+			Catalog\Recipes\Save_Recipe_Tool::class        => 'Create or update recipe',
+			Catalog\Triggers\Save_Trigger_Tool::class      => 'Save trigger',
+			Catalog\Search_Tool::class                     => 'Search Automator capabilities',
+			Catalog\Site_Commands\Site_Command_Tool::class => 'Inspect site and files',
+			Catalog\Site_Commands\Site_Manage_Tool::class  => 'Manage site',
+		);
+		$name   = (string) $this->get_name();
+
+		return $titles[ get_class( $this ) ] ?? ucfirst( str_replace( array( '_', '-' ), ' ', $name ) );
+	}
+
+	/**
 	 * Define the input schema for this tool.
 	 *
 	 * Child classes MUST override this method to provide their schema definition.
@@ -62,19 +115,45 @@ abstract class Abstract_MCP_Tool implements MCP_Tool_Interface {
 	/**
 	 * Get MCP 2025-03-26 tool annotations.
 	 *
-	 * Default: read-only, non-destructive, idempotent. Override in tools that
-	 * write data (save_*, execute, delete).
+	 * Unknown tools use conservative hints. Known read-only built-ins specify
+	 * whether their data is limited to this installation's own domain.
 	 *
 	 * @since 7.1.0
 	 *
 	 * @return array Tool annotations.
 	 */
 	protected function get_annotations(): array {
+		$closed_readers = array(
+			Catalog\Abilities\Discover_Ability_Tool::class,
+			Catalog\Get_Logs_Tool::class,
+			Catalog\Get_Posts_Tool::class,
+			Catalog\Get_Terms_Tool::class,
+			Catalog\List_Plugins_Tool::class,
+			Catalog\List_Roles_Tool::class,
+			Catalog\List_Users_Tool::class,
+			Catalog\Recipes\List_Recipes_Tool::class,
+			Catalog\Mysql_Get_Cell_Chunk_Tool::class,
+			Catalog\Mysql_Get_Table_Columns_Tool::class,
+			Catalog\Mysql_Get_Tables_Tool::class,
+			Catalog\Mysql_Select_From_Table_Tool::class,
+			Catalog\Rest\Rest_Discover_Tool::class,
+		);
+		$open_readers   = array(
+			Catalog\Get_Component_Schema_Tool::class,
+			Catalog\Get_Field_Options_Tool::class,
+			Catalog\Get_Site_Context_Tool::class,
+			Catalog\Get_Tokens_Tool::class,
+			Catalog\Recipes\Get_Recipe_Tool::class,
+			Catalog\Search_Tool::class,
+		);
+		$closed         = in_array( get_class( $this ), $closed_readers, true );
+		$read_only      = $closed || in_array( get_class( $this ), $open_readers, true );
+
 		return array(
-			'readOnlyHint'    => true,
-			'destructiveHint' => false,
-			'idempotentHint'  => true,
-			'openWorldHint'   => true,
+			'readOnlyHint'    => $read_only,
+			'destructiveHint' => ! $read_only,
+			'idempotentHint'  => $read_only,
+			'openWorldHint'   => ! $closed,
 		);
 	}
 
@@ -107,15 +186,57 @@ abstract class Abstract_MCP_Tool implements MCP_Tool_Interface {
 	 */
 	public function execute( User_Context $user_context, array $params ) {
 		$this->require_authenticated_executor( $user_context );
-		Schema_Validator::validate_mcp_params( (array) $params, (array) $this->schema_definition() );
-		return $this->execute_tool( $user_context, $params );
+		Schema_Validator::validate_mcp_params( (array) $params, $this->get_normalized_input_schema() );
+
+		Ability_Switch_Guard::enter();
+		try {
+			$result = $this->execute_tool( $user_context, $params );
+		} catch ( Ability_Switched_Off_Exception $stopped ) {
+			$result = null;
+		} finally {
+			$stopped_abilities = Ability_Switch_Guard::leave();
+		}
+
+		// A switched-off ability was stopped somewhere in this call, perhaps
+		// inside another plugin's ability: the call answers with the stop.
+		if ( array() !== $stopped_abilities ) {
+			return Json_Rpc_Response::create_error_response(
+				Ability_Switch_Guard::message( $stopped_abilities ),
+				array(
+					'code'      => Ability_Switch_Guard::ERROR_CODE,
+					'abilities' => $stopped_abilities,
+				)
+			);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Normalize the shared advertised and enforced input contract.
+	 *
+	 * Keeping this policy in one method prevents tools/list and tools/call from
+	 * drifting when the default object restrictions change.
+	 *
+	 * @since 7.6.0
+	 *
+	 * @return array JSON Schema for tool input parameters.
+	 */
+	private function get_normalized_input_schema(): array {
+		$input_schema         = (array) $this->schema_definition();
+		$input_schema['type'] = 'object';
+		if ( ! array_key_exists( 'additionalProperties', $input_schema ) ) {
+			$input_schema['additionalProperties'] = false;
+		}
+
+		return $input_schema;
 	}
 
 	/**
 	 * Execute the tool with User_Context and typed parameters.
 	 *
-	 * This method should be implemented by each tool with proper parameter typing
-	 * and docblock annotations for automatic schema generation.
+	 * Each tool implements this method and provides its input contract separately
+	 * through schema_definition().
 	 *
 	 * @since 7.0.0
 	 *
@@ -188,5 +309,22 @@ abstract class Abstract_MCP_Tool implements MCP_Tool_Interface {
 			return ( json_last_error() === JSON_ERROR_NONE && is_array( $decoded ) ) ? $decoded : array();
 		}
 		return is_array( $param ) ? $param : array();
+	}
+
+	/**
+	 * A service error's message followed by the reasons a refusal carries
+	 * (`data.violations[].message`), so the caller knows what to fix.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param \WP_Error $error Service error.
+	 * @return string
+	 */
+	protected function error_with_reasons( \WP_Error $error ): string {
+		$data       = $error->get_error_data();
+		$violations = is_array( $data ) && is_array( $data['violations'] ?? null ) ? $data['violations'] : array();
+		$reasons    = array_filter( array_map( 'strval', array_column( $violations, 'message' ) ) );
+
+		return implode( ' ', array_merge( array( $error->get_error_message() ), $reasons ) );
 	}
 }

@@ -387,38 +387,36 @@ class Campaign_Monitor_App_Helpers extends App_Helpers {
 	}
 
 	/**
-	 * Maybe save action CLIENT meta value.
+	 * Fill an empty client on a saved Campaign Monitor action from the connected client account.
 	 *
-	 * @param  array $meta_value
-	 * @param  WP_Post $item
+	 * Listens to `automator_event_recipe_changed`, so it runs for builder, MCP and
+	 * automator_*() saves alike, on requests that load this integration. An agency
+	 * account has no single client, so it fills nothing.
 	 *
-	 * @return array
+	 * @param object $event The recipe_changed event.
+	 *
+	 * @return void
 	 */
-	public function maybe_save_action_client_meta( $meta_value, $item ) {
-
-		// Check action post type and CLIENT key.
-		if ( 'uo-action' !== $item->post_type || ! isset( $meta_value[ self::ACTION_CLIENT_META_KEY ] ) ) {
-			return $meta_value;
+	public function maybe_fill_action_client( $event ) {
+		if ( 'action' !== $event->item_type() || ! in_array( $event->operation(), array( 'created', 'updated' ), true ) ) {
+			return;
 		}
 
-		// Action meta keys.
-		$action_metas = array(
-			'CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER_META',
-			'CAMPAIGN_MONITOR_REMOVE_SUBSCRIBER_META',
-		);
-
-		// Check if $meta_value contains a key from $action_metas.
-		if ( ! array_intersect_key( $meta_value, array_flip( $action_metas ) ) ) {
-			return $meta_value;
+		$action_id = (int) $event->item_id();
+		$codes     = array( 'CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER_CODE', 'CAMPAIGN_MONITOR_REMOVE_SUBSCRIBER_CODE' );
+		if ( ! in_array( get_post_meta( $action_id, 'code', true ), $codes, true ) ) {
+			return;
 		}
 
-		// Check if CLIENT is empty.
-		if ( empty( $meta_value[ self::ACTION_CLIENT_META_KEY ] ) ) {
-			$account                                    = $this->get_account_details( false );
-			$meta_value[ self::ACTION_CLIENT_META_KEY ] = $account['client']['value'] ?? '';
+		if ( ! metadata_exists( 'post', $action_id, self::ACTION_CLIENT_META_KEY ) || '' !== (string) get_post_meta( $action_id, self::ACTION_CLIENT_META_KEY, true ) ) {
+			return;
 		}
 
-		return $meta_value;
+		$account = $this->get_account_details( false );
+		$client  = (string) ( $account['client']['value'] ?? '' );
+		if ( '' !== $client ) {
+			update_post_meta( $action_id, self::ACTION_CLIENT_META_KEY, $client );
+		}
 	}
 
 	/**

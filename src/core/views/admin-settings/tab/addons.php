@@ -1,7 +1,4 @@
 <?php
-
-namespace Uncanny_Automator;
-
 /**
  * Advanced
  * Settings > Addons
@@ -16,37 +13,52 @@ namespace Uncanny_Automator;
  * $layout_version  The UI version, either "default" or "focus"
  */
 
+namespace Uncanny_Automator;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
+
+// In "Focus" mode the tab strip is hidden, so the tabs component has no tab to resolve the active panel from; pass the selected tab's key as the controlled value so its panel still shows.
+$focus_active_value = '';
+if ( 'focus' === $layout_version ) {
+	foreach ( $this->addons_tabs as $focus_tab_key => $focus_tab ) {
+		if ( ! empty( $focus_tab->is_selected ) ) {
+			$focus_active_value = (string) $focus_tab_key;
+			break;
+		}
+	}
+}
+
 ?>
 
-<uo-tabs direction="column" parameter="addons">
+<uas-tabs orientation="vertical"<?php echo '' !== $focus_active_value ? ' value="' . esc_attr( $focus_active_value ) . '"' : ''; ?>>
 
 	<?php
 	if ( 'focus' !== $layout_version ) {
 
-		foreach ( $this->addons_tabs as $tab_key => $tab ) {
+		foreach ( $this->addons_tabs as $tab_key => $addons_tab ) {
 			?>
 
-			<uo-tab id="<?php echo esc_attr( $tab_key ); ?>" <?php echo $tab->is_selected ? 'active' : ''; ?>
+			<uas-tab value="<?php echo esc_attr( $tab_key ); ?>" <?php echo $addons_tab->is_selected ? 'active' : ''; ?>
 
-				<?php echo ! empty( $tab->status ) ? 'status="' . esc_attr( $tab->status ) . '"' : ''; ?>
+				<?php echo ! empty( $addons_tab->status ) ? 'status="' . esc_attr( $addons_tab->status ) . '"' : ''; ?>
 
-				<?php if ( ! $tab->is_selected && ! $tab->preload ) { ?>
+				href="<?php echo esc_url( Admin_Settings_Addons::utility_get_addons_page_link( $tab_key ) ); ?>"
 
-					href="<?php echo esc_url( Admin_Settings_Addons::utility_get_addons_page_link( $tab_key ) ); ?>"
+			>
 
-				<?php } ?>
+				<?php if ( isset( $addons_tab->icon ) ) { ?>
 
-			><!--uo-tab /> -->
-
-				<?php if ( isset( $tab->icon ) ) { ?>
-
-					<uo-icon id="<?php echo esc_attr( $tab->icon ); ?>"></uo-icon>
+					<uas-icon code="<?php echo esc_attr( $addons_tab->icon ); ?>"></uas-icon>
 
 					<?php } ?>
 
-				<?php echo esc_html( $tab->name ); ?>
+				<?php echo esc_html( $addons_tab->name ); ?>
 
-			</uo-tab>
+			</uas-tab>
 
 			<?php
 
@@ -54,19 +66,19 @@ namespace Uncanny_Automator;
 	}
 
 	// Add tab panels
-	foreach ( $this->addons_tabs as $tab_key => $tab ) {
+	foreach ( $this->addons_tabs as $tab_key => $addons_tab ) {
 
-		if ( $tab->is_selected || $tab->preload ) {
+		if ( $addons_tab->is_selected || $addons_tab->preload ) {
 			?>
 
-			<uo-tab-panel id="<?php echo esc_attr( $tab_key ); ?>"
+		<uas-tab-panel slot="panel" name="<?php echo esc_attr( $tab_key ); ?>"
 
-				<?php echo $tab->is_selected ? 'active' : ''; ?>
-			><!--uo-tab-panel />-->
+			<?php echo $addons_tab->is_selected ? 'active' : ''; ?>
+		>
 
 				<?php do_action( 'automator_settings_addons_' . $tab_key . '_tab' ); ?>
 
-			</uo-tab-panel>
+			</uas-tab-panel>
 
 			<?php
 
@@ -75,4 +87,4 @@ namespace Uncanny_Automator;
 
 	?>
 
-</uo-tabs>
+</uas-tabs>

@@ -94,6 +94,7 @@ class Mycred_Helpers {
 			'custom_value_description' => esc_attr__( 'Point type meta key', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_list_mycred_points_types', $option );
 	}
 
@@ -157,6 +158,7 @@ class Mycred_Helpers {
 			'custom_value_description' => esc_attr__( 'Rank ID', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_list_mycred_rank_types', $option );
 	}
 
@@ -213,6 +215,7 @@ class Mycred_Helpers {
 			'custom_value_description' => esc_attr__( 'Badge ID', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_list_mycred_badges', $option );
 	}
 

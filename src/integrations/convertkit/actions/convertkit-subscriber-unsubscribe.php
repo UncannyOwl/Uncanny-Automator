@@ -22,7 +22,7 @@ class CONVERTKIT_SUBSCRIBER_UNSUBSCRIBE extends \Uncanny_Automator\Recipe\App_Ac
 		$this->set_is_pro( false );
 		$this->set_requires_user( false );
 		$this->set_background_processing( true );
-		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/convertkit/' ) );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/kit-formerly-convertkit-installation/' ) );
 		$this->set_readable_sentence( esc_attr_x( 'Unsubscribe {{a subscriber}}', 'ConvertKit', 'uncanny-automator' ) );
 		$this->set_sentence(
 			sprintf(

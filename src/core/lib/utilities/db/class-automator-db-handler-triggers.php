@@ -36,24 +36,23 @@ class Automator_DB_Handler_Triggers {
 	 * @return int|null
 	 */
 	public function add( $user_id = null, $trigger_id = null, $recipe_id = null, $completed = false, $recipe_log_id = null ) {
-		if ( isset( Automator()->recipe_runner ) ) {
-			return Automator()->recipe_runner->log_store()->add_trigger( (int) $user_id, (int) $trigger_id, (int) $recipe_id, (bool) $completed, (int) $recipe_log_id );
+
+		// A trigger-log row is meaningless without a user, trigger and recipe. Guard
+		// before the recipe_runner delegation, which (int)-casts null to 0 and would
+		// otherwise insert an orphan (0,0,0) row instead of signalling the bad input.
+		if ( null === $user_id || null === $trigger_id || null === $recipe_id ) {
+			return null;
 		}
 
-		if ( null === $trigger_id ) {
-			return null;
-		}
-		if ( null === $user_id ) {
-			return null;
-		}
-		if ( null === $recipe_id ) {
-			return null;
+		if ( isset( Automator()->recipe_runner ) ) {
+			return Automator()->recipe_runner->log_store()->add_trigger( (int) $user_id, (int) $trigger_id, (int) $recipe_id, (bool) $completed, (int) $recipe_log_id );
 		}
 
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . Automator()->db->tables->trigger;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Write to Automator's own table.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -89,6 +88,7 @@ class Automator_DB_Handler_Triggers {
 		global $wpdb;
 		$table_name = isset( Automator()->db->tables->trigger ) ? Automator()->db->tables->trigger : 'uap_trigger_log';
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		return $wpdb->update(
 			$wpdb->prefix . $table_name,
 			$to_update,
@@ -107,6 +107,16 @@ class Automator_DB_Handler_Triggers {
 	 * @return bool|int|null
 	 */
 	public function add_meta( $trigger_id, $trigger_log_id, $run_number, $args ) {
+
+		// Guard before the recipe_runner delegation: it (int)-casts trigger_log_id, so a
+		// non-numeric value becomes 0 and would insert an orphan meta row. Signal the bad
+		// input instead (matches the legacy contract).
+		if ( ! is_numeric( $trigger_log_id ) ) {
+			Automator()->wp_error->add_error( 'insert_trigger_meta', 'ERROR: You are trying to insert trigger meta without providing valid trigger_log_id', $this );
+
+			return null;
+		}
+
 		if ( isset( Automator()->recipe_runner ) ) {
 			return Automator()->recipe_runner->log_store()->add_trigger_meta( (int) $trigger_id, (int) $trigger_log_id, (int) $run_number, (array) $args );
 		}
@@ -118,12 +128,6 @@ class Automator_DB_Handler_Triggers {
 		// Set user ID
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
-		}
-
-		if ( ! is_numeric( $trigger_log_id ) ) {
-			Automator()->wp_error->add_error( 'insert_trigger_meta', 'ERROR: You are trying to insert trigger meta without providing valid trigger_log_id', $this );
-
-			return null;
 		}
 
 		if ( null === $meta_key || ! is_string( $meta_key ) ) {
@@ -148,6 +152,7 @@ class Automator_DB_Handler_Triggers {
 		global $wpdb;
 		$table_name = isset( Automator()->db->tables->trigger_meta ) ? Automator()->db->tables->trigger_meta : 'uap_trigger_log_meta';
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Write to Automator's own table.
 		return $wpdb->insert(
 			$wpdb->prefix . $table_name,
 			array(
@@ -188,7 +193,8 @@ class Automator_DB_Handler_Triggers {
 			$user_id = get_current_user_id();
 		}
 
-		if ( null === $trigger_log_id || ! is_numeric( $trigger_log_id ) ) {
+		// The input parser answers 0 when the args name no trigger log, so 0 is a missing log too: a row on it is an orphan.
+		if ( ! is_numeric( $trigger_log_id ) || 0 === (int) $trigger_log_id ) {
 			Automator()->wp_error->add_error( 'insert_trigger_token_meta', 'ERROR: You are trying to insert trigger meta without providing valid trigger_log_id', $this );
 
 			return null;
@@ -200,7 +206,8 @@ class Automator_DB_Handler_Triggers {
 			return null;
 		}
 
-		if ( empty( $meta_value ) ) {
+		// Null, an empty string, false and an empty array are a missing value: 0 and "0" are real token values (an amount of 0).
+		if ( null === $meta_value || '' === $meta_value || false === $meta_value || array() === $meta_value ) {
 			Automator()->wp_error->add_error( 'insert_trigger_token_meta', 'ERROR: You are trying to insert trigger meta without providing a meta_value', $this );
 
 			return null;
@@ -226,6 +233,7 @@ class Automator_DB_Handler_Triggers {
 		global $wpdb;
 		$table_name = isset( Automator()->db->tables->trigger_meta ) ? Automator()->db->tables->trigger_meta : 'uap_trigger_log_meta';
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		return $wpdb->update(
 			$wpdb->prefix . $table_name,
 			$update,
@@ -247,15 +255,15 @@ class Automator_DB_Handler_Triggers {
 		global $wpdb;
 		$tbl = Automator()->db->tables->trigger_meta;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		return $wpdb->get_var(
 			$wpdb->prepare(
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				"SELECT meta_value FROM {$wpdb->prefix}{$tbl}
+				'SELECT meta_value FROM `' . esc_sql( $wpdb->prefix . $tbl ) . '`
 						WHERE 1=1
 						AND user_id = %d
 						AND automator_trigger_log_id = %d
 						AND run_number = %d
-						AND meta_key LIKE %s",
+						AND meta_key LIKE %s',
 				$user_id,
 				$trigger_log_id,
 				$run_number,
@@ -278,17 +286,17 @@ class Automator_DB_Handler_Triggers {
 		}
 
 		global $wpdb;
-		$tbl        = Automator()->db->tables->trigger_meta;
+		$tbl = Automator()->db->tables->trigger_meta;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$meta_value = $wpdb->get_var(
 			$wpdb->prepare(
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				"SELECT meta_value FROM {$wpdb->prefix}$tbl
+				'SELECT meta_value FROM `' . esc_sql( $wpdb->prefix . $tbl ) . '`
 						WHERE 1=1
 						AND user_id = %d
 						AND meta_key = %s
 						AND automator_trigger_id = %d
 						AND automator_trigger_log_id = %d
-						LIMIT 0,1",
+						LIMIT 0,1',
 				$user_id,
 				$meta_key,
 				$trigger_id,
@@ -296,7 +304,8 @@ class Automator_DB_Handler_Triggers {
 			)
 		);
 
-		if ( ! empty( $meta_value ) ) {
+		// A stored "0" is a value; get_var() answers null for a missing row and for an empty cell.
+		if ( null !== $meta_value && '' !== $meta_value ) {
 			return automator_safe_unserialize( $meta_value );
 		}
 
@@ -325,9 +334,10 @@ class Automator_DB_Handler_Triggers {
 
 		$tbl = Automator()->db->tables->trigger_meta;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$results = (array) $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT meta_value FROM {$wpdb->prefix}$tbl WHERE user_id = %d AND meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'SELECT meta_value FROM `' . esc_sql( $wpdb->prefix . $tbl ) . '` WHERE user_id = %d AND meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d',
 				$user_id,
 				$meta_key,
 				$trigger_id,
@@ -480,14 +490,14 @@ class Automator_DB_Handler_Triggers {
 		global $wpdb;
 		$table_name = $wpdb->prefix . Automator()->db->tables->trigger;
 		if ( $process_recipe ) {
-			$q = "SELECT completed FROM $table_name
+			$q = 'SELECT completed FROM `' . esc_sql( $table_name ) . '`
 						WHERE user_id = %d
 						AND automator_trigger_id = %d
 						AND automator_recipe_id = %d
-						AND automator_recipe_log_id = %d";
+						AND automator_recipe_log_id = %d';
 		} else {
-			$q = "SELECT t.completed AS trigger_completed
-							FROM $table_name t
+			$q = 'SELECT t.completed AS trigger_completed
+							FROM `' . esc_sql( $table_name ) . "` t
 							LEFT JOIN {$wpdb->prefix}uap_recipe_log r
 							ON t.automator_recipe_log_id = r.ID
 							LEFT JOIN {$wpdb->prefix}uap_action_log a
@@ -500,7 +510,8 @@ class Automator_DB_Handler_Triggers {
 							AND r.completed = 1
 							AND a.completed = 1";
 		}
-		$results = $wpdb->get_var( $wpdb->prepare( $q, $user_id, $trigger_id, $recipe_id, $recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Custom table; live state read. $q is one of the two fixed queries above.
+		$results = $wpdb->get_var( $wpdb->prepare( $q, $user_id, $trigger_id, $recipe_id, $recipe_log_id ) );
 
 		if ( ! empty( $results ) ) {
 			return true;
@@ -516,12 +527,14 @@ class Automator_DB_Handler_Triggers {
 		global $wpdb;
 
 		// delete from uap_trigger_log
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->delete(
 			$wpdb->prefix . Automator()->db->tables->trigger,
 			array( 'automator_trigger_id' => $trigger_id )
 		);
 
 		// delete from uap_trigger_log_meta
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->delete(
 			$wpdb->prefix . Automator()->db->tables->trigger_meta,
 			array( 'automator_trigger_id' => $trigger_id )
@@ -536,10 +549,12 @@ class Automator_DB_Handler_Triggers {
 		global $wpdb;
 		$trigger_tbl      = $wpdb->prefix . Automator()->db->tables->trigger;
 		$trigger_meta_tbl = $wpdb->prefix . Automator()->db->tables->trigger_meta;
-		$triggers         = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $trigger_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$triggers = $wpdb->get_col( $wpdb->prepare( 'SELECT `ID` FROM `' . esc_sql( $trigger_tbl ) . '` WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d', $recipe_id, $automator_recipe_log_id ) );
 		if ( $triggers ) {
 			foreach ( $triggers as $automator_trigger_log_id ) {
 				// delete from uap_trigger_log_meta
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 				$wpdb->delete(
 					$trigger_meta_tbl,
 					array( 'automator_trigger_log_id' => $automator_trigger_log_id )
@@ -548,6 +563,7 @@ class Automator_DB_Handler_Triggers {
 		}
 
 		// delete from uap_trigger_log
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->delete(
 			$trigger_tbl,
 			array(
@@ -566,10 +582,12 @@ class Automator_DB_Handler_Triggers {
 		global $wpdb;
 		$trigger_tbl      = $wpdb->prefix . Automator()->db->tables->trigger;
 		$trigger_meta_tbl = $wpdb->prefix . Automator()->db->tables->trigger_meta;
-		$triggers         = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $trigger_tbl WHERE automator_recipe_id=%d", $recipe_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$triggers = $wpdb->get_col( $wpdb->prepare( 'SELECT `ID` FROM `' . esc_sql( $trigger_tbl ) . '` WHERE automator_recipe_id=%d', $recipe_id ) );
 		if ( $triggers ) {
 			foreach ( $triggers as $automator_trigger_log_id ) {
 				// delete from uap_trigger_log_meta
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 				$wpdb->delete(
 					$trigger_meta_tbl,
 					array( 'automator_trigger_log_id' => $automator_trigger_log_id )
@@ -578,6 +596,7 @@ class Automator_DB_Handler_Triggers {
 		}
 
 		// delete from uap_trigger_log
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->delete(
 			$trigger_tbl,
 			array(
@@ -601,6 +620,7 @@ class Automator_DB_Handler_Triggers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		return $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT t.ID as trigger_log_id, t.automator_trigger_id

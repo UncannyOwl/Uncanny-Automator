@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Api;
 
+use UncannyPageBuilder\Application\Agent\SharedRestOperationRegistryInterface;
 use UncannyPageBuilder\Application\DesignStandardsService;
 use UncannyPageBuilder\Application\Filesystem\LocalFilesystemPortInterface;
 use UncannyPageBuilder\Domain\Binding\BindingRegistry;
 use UncannyPageBuilder\Infrastructure\WordPress\AdminBrandingPage;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 
 /**
  * Serves dynamic binding guides and design introspection for the agent.
@@ -22,6 +24,7 @@ final class AgentGuideController
         private readonly BindingRegistry $registry,
         private readonly DesignStandardsService $designStandards,
         private readonly LocalFilesystemPortInterface $filesystem,
+        private readonly ?SharedRestOperationRegistryInterface $sharedRest = null,
     ) {}
 
     public function registerRoutes(): void
@@ -45,12 +48,34 @@ final class AgentGuideController
                 ],
             ],
         ]);
+        try {
+            $this->sharedRest?->remember(
+                '/uncanny-page-builder/v1/agent/binding',
+                'GET',
+                [$this, 'manageBinding'],
+                [$this->permissions, 'canEdit'],
+                'manage_binding',
+            );
+        } catch (\Throwable $failure) {
+            DiagnosticLog::write(sprintf('[Uncanny Page Builder] Shared REST binding registration failed (%s).', $failure::class));
+        }
 
         register_rest_route('uncanny-page-builder/v1', '/agent/site-design', [
             'methods'             => 'GET',
             'callback'            => [$this, 'getSiteDesign'],
             'permission_callback' => [$this->permissions, 'canEdit'],
         ]);
+        try {
+            $this->sharedRest?->remember(
+                '/uncanny-page-builder/v1/agent/site-design',
+                'GET',
+                [$this, 'getSiteDesign'],
+                [$this->permissions, 'canEdit'],
+                'get_site_design',
+            );
+        } catch (\Throwable $failure) {
+            DiagnosticLog::write(sprintf('[Uncanny Page Builder] Shared REST site-design registration failed (%s).', $failure::class));
+        }
     }
 
     public function listBindings(\WP_REST_Request $request): \WP_REST_Response
@@ -124,7 +149,7 @@ final class AgentGuideController
                 return $this->getBindingGuide($request);
             }
         } catch (\Throwable $failure) {
-            error_log(sprintf('[Uncanny Page Builder] manage_binding "%s" failed (%s).', $operation, $failure::class));
+            DiagnosticLog::write(sprintf('[Uncanny Page Builder] manage_binding "%s" failed (%s).', $operation, $failure::class));
 
             return AgentTextResponse::error('manage_binding', 500, 'binding_read_failed', [
                 'OPERATION: ' . $operation,
@@ -305,7 +330,7 @@ final class AgentGuideController
         try {
             return $this->siteDesignText();
         } catch (\Throwable $failure) {
-            error_log(sprintf('[Uncanny Page Builder] get_site_design failed (%s).', $failure::class));
+            DiagnosticLog::write(sprintf('[Uncanny Page Builder] get_site_design failed (%s).', $failure::class));
 
             return AgentTextResponse::error('get_site_design', 500, 'site_design_read_failed', [
                 'NEXT STEP',

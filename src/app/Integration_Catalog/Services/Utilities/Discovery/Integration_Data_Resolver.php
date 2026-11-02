@@ -195,14 +195,14 @@ class Integration_Data_Resolver {
 			return $this->build_built_in_plugin_details( $integration_tier );
 		}
 
-		// Non-built-in integrations use standard resolution.
-		$required_plugins = $this->plugin_resolver->get_required_plugins( $plugin_data );
-
+		// plugin_required is the parent dependency's plugin file, paired with
+		// integration_required. WP's RequiresPlugins header is a different thing -
+		// a list of wp.org slugs for everything the plugin needs - so only the
+		// manifest can supply this.
 		$details = array(
 			'plugin_file'      => $plugin_file,
 			'developer_name'   => $manifest['developer_name'] ?? ( ! empty( $plugin_data ) ? ( $plugin_data['Author'] ?? '' ) : '' ),
-			'plugin_required'  => $manifest['plugin_required'] ?? $required_plugins,
-			'integration_type' => $integration_type,
+			'plugin_required'  => $manifest['plugin_required'] ?? '',
 		);
 
 		// Add manifest-only fields.
@@ -216,7 +216,7 @@ class Integration_Data_Resolver {
 			$details['plugin_variations'] = $manifest['plugin_variations'];
 		}
 
-		return array( $details );
+		return $details;
 	}
 
 	/**
@@ -273,7 +273,6 @@ class Integration_Data_Resolver {
 			'plugin_file'          => $file,
 			'developer_name'       => 'Uncanny Automator',
 			'plugin_required'      => null,
-			'integration_type'     => 'automator_core',
 			'distribution_type'    => $is_pro ? Distribution_Type::COMMERCIAL : Distribution_Type::WP_ORG,
 			'plugin_variations'    => array(),
 			'integration_required' => null,

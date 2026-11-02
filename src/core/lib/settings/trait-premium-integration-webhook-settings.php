@@ -1,6 +1,9 @@
 <?php
 namespace Uncanny_Automator\Settings;
 
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Local_Site_Status;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Platform_Failure_Message;
+
 /**
  * Trait for common premium integration webhook settings patterns.
  * Intended to be used in the settings view of premium integrations.
@@ -28,9 +31,13 @@ trait Premium_Integration_Webhook_Settings {
 	 * @return void
 	 */
 	public function output_enable_webhook_switch( $label = '', $id = '' ) {
-		$label   = $label ? $label : esc_attr_x( 'Enable triggers', 'Integration settings', 'uncanny-automator' );
-		$id      = $id ? $id : $this->webhooks->get_webhooks_enabled_option_name();
-		$checked = automator_get_option( $id, false );
+		$label       = $label ? $label : esc_attr_x( 'Enable triggers', 'Integration settings', 'uncanny-automator' );
+		$id          = $id ? $id : $this->webhooks->get_webhooks_enabled_option_name();
+		$unavailable = $this->platform_triggers_unavailable();
+
+		// L247 — triggers the platform delivers cannot be on at a local site:
+		// the switch is shown off and disabled, whatever is stored.
+		$checked = $unavailable ? false : automator_get_option( $id, false );
 
 		// Output the enable webhook switch.
 		$this->output_switch(
@@ -40,7 +47,54 @@ trait Premium_Integration_Webhook_Settings {
 				'label-on'           => esc_attr( $label ),
 				'label-off'          => esc_attr( $label ),
 				'checked'            => $checked,
+				'disabled'           => $unavailable,
 				'data-state-control' => 'webhook-enabled',
+			)
+		);
+
+		$this->output_platform_triggers_unavailable_notice();
+	}
+
+	/**
+	 * Whether this integration's triggers cannot be on here: the Automator
+	 * platform delivers them ({@see \Uncanny_Automator\App_Integrations\App_Webhooks::is_platform_delivered()})
+	 * and this site is LOCAL ({@see Local_Site_Status}, L247), so nothing it
+	 * subscribes to would ever reach it.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool
+	 */
+	protected function platform_triggers_unavailable() {
+
+		if ( ! isset( $this->webhooks ) || ! is_object( $this->webhooks ) || ! method_exists( $this->webhooks, 'is_platform_delivered' ) ) {
+			return false;
+		}
+
+		return $this->webhooks->is_platform_delivered() && ( new Local_Site_Status() )->is_local();
+	}
+
+	/**
+	 * The one sentence a local site's platform-delivered trigger controls show
+	 * ({@see Platform_Failure_Message::local_site()}) — beside the triggers
+	 * switch, and on any other screen where the admin turns an app's
+	 * subscription on (Facebook Lead Ads' connected pages). Renders nothing
+	 * unless {@see self::platform_triggers_unavailable()}.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return void
+	 */
+	public function output_platform_triggers_unavailable_notice() {
+
+		if ( ! $this->platform_triggers_unavailable() ) {
+			return;
+		}
+
+		$this->alert_html(
+			array(
+				'type'    => 'warning',
+				'content' => Platform_Failure_Message::local_site()->text(),
 			)
 		);
 	}
@@ -65,11 +119,11 @@ trait Premium_Integration_Webhook_Settings {
 		$config = wp_parse_args( $config, $defaults );
 
 		?>
-		<uo-alert heading="<?php echo esc_attr( $config['heading'] ); ?>" class="<?php echo esc_attr( $config['class'] ); ?>">
+		<uas-alert heading="<?php echo esc_attr( $config['heading'] ); ?>" class="<?php echo esc_attr( $config['class'] ); ?>">
 			<?php foreach ( $config['sections'] as $section ) : ?>
 				<?php $this->output_webhook_section( $section ); ?>
 			<?php endforeach; ?>
-		</uo-alert>
+		</uas-alert>
 		<?php
 	}
 

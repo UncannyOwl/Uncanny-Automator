@@ -36,6 +36,7 @@ final class AgentTextResponseServer
         }
 
         header('Content-Type: text/plain; charset=utf-8');
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain-text Agent response served with a text/plain Content-Type (REST already sends X-Content-Type-Options: nosniff), so it is never parsed as HTML.
         echo $data;
 
         return true;

@@ -85,6 +85,7 @@ class Wp_Courseware_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_wpcw_courses', $option );
 	}
 
@@ -128,6 +129,7 @@ class Wp_Courseware_Helpers {
 			'options'         => $options,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_wpcw_modules', $option );
 	}
 
@@ -169,6 +171,7 @@ class Wp_Courseware_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_wpcw_units', $option );
 	}
 }

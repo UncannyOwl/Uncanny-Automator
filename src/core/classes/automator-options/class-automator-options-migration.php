@@ -143,6 +143,7 @@ class Automator_Options_Migration extends Migration {
 	 */
 	public function option_already_migrated( $key ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Part of the options migration; checks the custom options table for a key, so the read must be live.
 		return (bool) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT option_name FROM {$wpdb->uap_options} WHERE option_name = %s",
@@ -159,6 +160,7 @@ class Automator_Options_Migration extends Migration {
 	 */
 	public function fetch_wp_option( $key ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Part of the options migration; reads the raw row, including autoload, which get_option() does not return.
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT option_value, autoload FROM {$wpdb->options} WHERE option_name = %s",

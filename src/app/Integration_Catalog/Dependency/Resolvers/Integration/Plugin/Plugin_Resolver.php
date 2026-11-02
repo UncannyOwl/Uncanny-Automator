@@ -17,6 +17,7 @@ use Uncanny_Automator\App\Integration_Catalog\Dependency\Dependency_Evaluatable;
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Resolvers\Abstract_Resolver;
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Store;
+use Uncanny_Automator\App\Recipe_Builder\Services\Availability\Integration_Plugin_Presence;
 
 /**
  * Resolves plugin installation/activation dependencies.
@@ -52,6 +53,22 @@ class Plugin_Resolver extends Abstract_Resolver {
 	private const MAX_DEPTH = 10;
 
 	/**
+	 * Whether an integration's plugin is on disk, active or not.
+	 *
+	 * @var Integration_Plugin_Presence
+	 */
+	private Integration_Plugin_Presence $presence;
+
+	/**
+	 * Build the plugin lookup.
+	 *
+	 * @return void
+	 */
+	protected function setup() {
+		$this->presence = new Integration_Plugin_Presence();
+	}
+
+	/**
 	 * Store context for evaluation.
 	 *
 	 * @param Dependency_Evaluatable $entity Entity object
@@ -72,8 +89,8 @@ class Plugin_Resolver extends Abstract_Resolver {
 	/**
 	 * Check if should be evaluated.
 	 *
-	 * Only evaluate for plugin-type integrations (not built-in or apps).
-	 * Returns false for non-Integration entities.
+	 * Evaluates for plugin-type integrations, and for any integration naming a
+	 * parent it needs installed. Returns false for non-Integration entities.
 	 *
 	 * @param Dependency_Evaluatable $entity Entity object (Integration, Block, etc)
 	 * @param array|null $item Item data (null for entity-level)
@@ -83,8 +100,16 @@ class Plugin_Resolver extends Abstract_Resolver {
 	public function should_evaluate( Dependency_Evaluatable $entity, $item = null ) {
 		$this->set_properties( $entity, $item );
 
-		// Only evaluate for Integration entities that are plugin type
-		return $this->is_integration() && $this->entity->is_plugin();
+		if ( ! $this->is_integration() ) {
+			return false;
+		}
+
+		// A plugin is itself installable; anything naming a parent needs that parent
+		// installed. Apps take the second route — the Elite integrations are apps
+		// whose code ships in a separate add-on — and is_plugin() is false for every
+		// one of them, so type alone cannot be the question.
+		return $this->entity->is_plugin()
+			|| ( $this->plugin && '' !== $this->plugin->get_integration_required() );
 	}
 
 	/**
@@ -104,7 +129,7 @@ class Plugin_Resolver extends Abstract_Resolver {
 
 		// Depth limit check.
 		if ( count( self::$resolution_stack ) >= self::MAX_DEPTH ) {
-			return array( $this->resolve_self() );
+			return $this->entity->is_plugin() ? array( $this->resolve_self() ) : array();
 		}
 
 		// Push current to stack.
@@ -120,8 +145,11 @@ class Plugin_Resolver extends Abstract_Resolver {
 				$dependencies        = array_merge( $dependencies, $parent_dependencies );
 			}
 
-			// 2. Then add self LAST.
-			$dependencies[] = $this->resolve_self();
+			// 2. Then add self LAST — only a plugin is something to install. An app is
+			// carried by one, so the row it needs is the parent's, already added above.
+			if ( $this->entity->is_plugin() ) {
+				$dependencies[] = $this->resolve_self();
+			}
 
 			return $dependencies;
 		} finally {
@@ -131,19 +159,24 @@ class Plugin_Resolver extends Abstract_Resolver {
 	}
 
 	/**
-	 * Resolve this plugin's own dependency.
+	 * Resolve this plugin's own dependency. A plugin that is on disk but not active is
+	 * offered for activation, not for installation.
 	 *
 	 * @return Dependency
 	 */
 	private function resolve_self() {
-		$is_installed     = $this->is_active_integration( $this->get_code() );
+		$is_active        = $this->is_active_integration( $this->get_code() );
+		$is_inactive      = ! $is_active && $this->presence->is_installed( $this->get_code() );
 		$developer        = $this->entity->get_details()->get_developer();
 		$integration_name = $this->get_name();
 		$scenario_id      = $this->get_scenario_id();
+		$blocked_by       = $this->blocking_parent_name();
 
-		// Check for sub-dependencies (e.g., WooCommerce Subscriptions requires WooCommerce)
+		// Check for sub-dependencies (e.g., WooCommerce Subscriptions requires WooCommerce).
+		// Only a parent the catalog knows holds the plugin back: one it does not know has no
+		// row to install and no name to give, and a disabled button with no reason reads as broken.
 		$dependency_ids = array();
-		if ( $this->plugin && ! empty( $this->plugin->get_integration_required() ) ) {
+		if ( null !== $this->catalog_parent() ) {
 			$dependency_ids[] = sprintf( 'installable-%s', $this->plugin->get_integration_required() );
 		}
 
@@ -152,11 +185,15 @@ class Plugin_Resolver extends Abstract_Resolver {
 				'type'         => 'installable',
 				'id'           => sprintf( 'installable-%s', $this->get_code() ),
 				'name'         => $integration_name,
-				'description'  => $this->scenario->get_description( $scenario_id, $integration_name ),
-				'is_met'       => $is_installed,
+				'description'  => $is_inactive
+					? $this->scenario->get_inactive_description( $integration_name, $blocked_by )
+					: $this->scenario->get_description( $scenario_id, $integration_name, $blocked_by ),
+				'is_met'       => $is_active,
 				'is_disabled'  => $this->calculate_is_disabled( $dependency_ids ),
 				'dependencies' => $dependency_ids,
-				'cta'          => $this->scenario->create_cta( $scenario_id, $integration_name, $developer->get_site() ),
+				'cta'          => $is_inactive
+					? $this->scenario->create_activate_cta( $integration_name )
+					: $this->scenario->create_cta( $scenario_id, $integration_name, $developer->get_site() ),
 				'scenario_id'  => $scenario_id,
 				'icon'         => $this->entity->get_details()->get_icon(),
 				'developer'    => $developer->to_array(),
@@ -207,9 +244,54 @@ class Plugin_Resolver extends Abstract_Resolver {
 					'icon'        => 'earth-americas',
 				);
 				break;
+			// Undeclared distribution carries no second pill — claiming either
+			// "Commercial" or "Open source" here would be a guess.
+			default:
+				break;
 		}
 
 		return $tags;
+	}
+
+	/**
+	 * Display name of the integration that must be installed first, if any.
+	 *
+	 * Only names a parent we can actually confirm: the plugin details have to
+	 * declare one, it has to be inactive, and it has to resolve to a known
+	 * integration. A disabled button with no stated reason reads as a broken
+	 * one, but naming a blocker we cannot verify would be worse than silence.
+	 *
+	 * @return string Parent integration name, empty when nothing blocks installing
+	 */
+	private function blocking_parent_name(): string {
+		$parent = $this->catalog_parent();
+
+		if ( null === $parent || $this->is_active_integration( $this->plugin->get_integration_required() ) ) {
+			return '';
+		}
+
+		return $parent->get_entity_name();
+	}
+
+	/**
+	 * The parent integration the plugin details declare, when the catalog knows it.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return Integration|null The parent, or null when none is declared or the catalog does not know it.
+	 */
+	private function catalog_parent(): ?Integration {
+		if ( ! $this->plugin ) {
+			return null;
+		}
+
+		$parent_code = $this->plugin->get_integration_required();
+
+		if ( '' === $parent_code ) {
+			return null;
+		}
+
+		return Integration_Store::get_instance()->get_by_code( $parent_code );
 	}
 
 	/**

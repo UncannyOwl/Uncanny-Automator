@@ -80,7 +80,7 @@ class Campaign_Monitor_Integration extends App_Integration {
 	}
 
 	/**
-	 * Register hooks for AJAX handlers (field loading only).
+	 * Register hooks: the AJAX handlers for field loading, and the saved-action client fill.
 	 *
 	 * @return void
 	 */
@@ -91,7 +91,7 @@ class Campaign_Monitor_Integration extends App_Integration {
 		add_action( 'wp_ajax_automator_campaign_monitor_get_lists', array( $this->helpers, 'get_lists_ajax' ) );
 		// Get Custom Fields handler.
 		add_action( 'wp_ajax_automator_campaign_monitor_get_custom_fields', array( $this->helpers, 'get_custom_fields_repeater_ajax' ) );
-		// Filter action field values before save.
-		add_filter( 'automator_field_values_before_save', array( $this->helpers, 'maybe_save_action_client_meta' ), 20, 2 );
+		// Fill an empty client on a saved action, for every save.
+		add_action( 'automator_event_recipe_changed', array( $this->helpers, 'maybe_fill_action_client' ) );
 	}
 }

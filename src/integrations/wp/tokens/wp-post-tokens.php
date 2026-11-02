@@ -570,6 +570,7 @@ class Wp_Post_Tokens {
 				break;
 			case 'POSTCONTENT_BEAUTIFIED':
 				$content = get_the_content( $comment->comment_post_ID );
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, applied as WordPress applies it.
 				$content = apply_filters( 'the_content', $content );
 				$content = str_replace( ']]>', ']]&gt;', $content ); // phpcs:ignore Generic.PHP.Syntax.PHPSyntax
 				$value   = $content;
@@ -744,6 +745,7 @@ class Wp_Post_Tokens {
 			case 'WPPAGE_CONTENT_BEAUTIFIED':
 			case 'WPPOSTTYPES_CONTENT_BEAUTIFIED':
 				$content = get_the_content( null, false, $post->ID );
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, applied as WordPress applies it.
 				$content = apply_filters( 'the_content', $content );
 				$content = str_replace( ']]>', ']]&gt;', $content ); // phpcs:ignore Generic.PHP.Syntax.PHPSyntax
 				$value   = $content;
@@ -831,8 +833,9 @@ class Wp_Post_Tokens {
 			default:
 				global $wpdb;
 				$trigger_id = absint( $pieces[0] );
-				$entry      = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key LIKE %s AND automator_trigger_id = %d ORDER BY ID DESC LIMIT 0,1", "%%$to_replace", $trigger_id ) );
-				$value      = automator_safe_unserialize( $entry );
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
+				$entry = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key LIKE %s AND automator_trigger_id = %d ORDER BY ID DESC LIMIT 0,1", "%%$to_replace", $trigger_id ) );
+				$value = automator_safe_unserialize( $entry );
 				break;
 		}
 

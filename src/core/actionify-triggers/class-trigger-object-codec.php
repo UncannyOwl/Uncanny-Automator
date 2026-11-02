@@ -365,6 +365,7 @@ class Trigger_Object_Codec {
 		 *
 		 * @param array<string, array{encode: callable, decode: callable}> $adapters Adapters keyed by class name.
 		 */
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- The hook name is a class constant that starts with the automator_ prefix.
 		$registered = apply_filters( self::ADAPTERS_FILTER, array() );
 
 		return $this->woocommerce_adapters() + $this->valid_adapters( is_array( $registered ) ? $registered : array() );

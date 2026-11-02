@@ -15,7 +15,7 @@ final class DeleteReusableUseCase
     {
         $reusable = $this->reusablePort->find($command->reusableId());
         if (!$reusable instanceof Reusable) {
-            throw new ReusableNotFoundException($command->reusableId());
+            throw new ReusableNotFoundException((int) $command->reusableId());
         }
 
         return $this->reusablePort->delete(

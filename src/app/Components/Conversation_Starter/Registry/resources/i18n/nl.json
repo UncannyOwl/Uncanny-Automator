@@ -17,7 +17,6 @@
         "All Subscriptions": "Alle abonnementen",
         "All Topics": "Alle onderwerpen",
         "All Users": "Alle gebruikers",
-        "All integrations": "Alle integraties",
         "All recipes": "Alle recepten",
         "App integrations": "App-integraties",
         "Assignments": "Opdrachten",
@@ -76,26 +75,6 @@
         "Automator.Addons.5": {
             "Starter": "Add-on-installatie plannen",
             "Prompt": "Help me met het plannen van de installatie en configuratie van een add-on. Vraag welke workflow ik wil automatiseren en stel vervolgens de volgende stappen voor."
-        },
-        "Automator.All integrations.1": {
-            "Starter": "Integraties aanbevelen",
-            "Prompt": "Bekijk mijn geïnstalleerde plugins en verbonden app-integraties en stel vervolgens Automator-integraties voor die het meest relevant zijn voor mijn site."
-        },
-        "Automator.All integrations.2": {
-            "Starter": "Automatiseringskansen vinden",
-            "Prompt": "Stel nuttige automatiseringsideeën voor op basis van mijn geïnstalleerde plugins en verbonden app-integraties."
-        },
-        "Automator.All integrations.3": {
-            "Starter": "Een integratie uitleggen",
-            "Prompt": "Vraag mij in welke integratie ik geïnteresseerd ben en leg vervolgens uit welke soorten recepten deze kan ontgrendelen."
-        },
-        "Automator.All integrations.4": {
-            "Starter": "Ontbrekende integraties vinden",
-            "Prompt": "Vergelijk mijn geïnstalleerde plugins en verbonden apps met beschikbare Automator-integraties en identificeer vervolgens wat ik mogelijk moet installeren, verbinden of upgraden."
-        },
-        "Automator.All integrations.5": {
-            "Starter": "Bouwen met een integratie",
-            "Prompt": "Help me een Automator-integratie te kiezen en deze om te zetten in een nuttig recept voor mijn site."
         },
         "Automator.All recipes.1": {
             "Starter": "Mijn drukste recepten tonen",

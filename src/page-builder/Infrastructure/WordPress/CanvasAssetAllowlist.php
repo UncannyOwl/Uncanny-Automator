@@ -127,7 +127,7 @@ final class CanvasAssetAllowlist
         } catch (\Throwable $failure) {
             // A failed allowlist decision must not strip queued assets or
             // terminate the shared request.
-            error_log('[Uncanny Page Builder] Canvas style allowlist enforcement failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Canvas style allowlist enforcement failed (' . $failure::class . ')');
         }
     }
 
@@ -152,7 +152,7 @@ final class CanvasAssetAllowlist
         } catch (\Throwable $failure) {
             // A failed allowlist decision must not strip queued assets or
             // terminate the shared request.
-            error_log('[Uncanny Page Builder] Canvas script allowlist enforcement failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Canvas script allowlist enforcement failed (' . $failure::class . ')');
         }
     }
 

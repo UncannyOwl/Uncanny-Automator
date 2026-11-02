@@ -211,6 +211,7 @@ class GF_SUBFORM_CODES extends \Uncanny_Automator\Recipe\Trigger {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uncanny Codes' own table; the plugin offers no API for this query.
 		$expiry_date      = $wpdb->get_var( $wpdb->prepare( "SELECT expire_date FROM `{$wpdb->prefix}uncanny_codes_groups` WHERE ID = %d", $batch_id ) );
 		$expiry_timestamp = strtotime( $expiry_date );
 
@@ -337,6 +338,7 @@ class GF_SUBFORM_CODES extends \Uncanny_Automator\Recipe\Trigger {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uncanny Codes' own table; the plugin offers no API for this query.
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->prefix}uncanny_codes_codes as tbl_codes

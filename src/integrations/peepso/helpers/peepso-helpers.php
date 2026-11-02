@@ -170,6 +170,7 @@ class PeepSo_Helpers {
 		}
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PeepSo's own table; the plugin offers no API for this query.
 		$users = $wpdb->get_results( "SELECT * FROM `{$wpdb->prefix}peepso_users`", ARRAY_A );
 
 		if ( count( $users ) > 0 ) {
@@ -196,6 +197,7 @@ class PeepSo_Helpers {
 			'relevant_tokens' => array(),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_peepso_all_users', $option );
 	}
 
@@ -229,6 +231,7 @@ class PeepSo_Helpers {
 			'relevant_tokens' => array(),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_peepso_users_profile_fields', $option );
 	}
 

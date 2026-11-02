@@ -109,8 +109,7 @@ class Trigger_Late_Resolver {
 		}
 
 		$integration = isset( $entry['integration'] ) ? (string) $entry['integration'] : '';
-		$helpers     = Integration::helpers_for( $integration, $fqcn );
-		$deps        = null !== $helpers ? array( $helpers ) : array();
+		$deps        = Integration::load_arguments_for( $integration, $fqcn );
 
 		try {
 			$candidate = $fqcn::late_construct( ...$deps );

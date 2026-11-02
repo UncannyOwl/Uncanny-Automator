@@ -61,6 +61,13 @@ class Recipe_Service {
 	 */
 	private $log_service;
 
+	/**
+	 * Resolves the recipe's terms; created on first use rather than at construction.
+	 *
+	 * @var Recipe_Taxonomy_Service|null
+	 */
+	private $taxonomy_service = null;
+
 
 	/**
 	 * Constructor.
@@ -102,6 +109,21 @@ class Recipe_Service {
 		}
 
 		return $this->crud_service;
+	}
+
+
+	/**
+	 * Get taxonomy service (lazy-loaded).
+	 *
+	 * @return Recipe_Taxonomy_Service
+	 */
+	private function get_taxonomy_service(): Recipe_Taxonomy_Service {
+
+		if ( null === $this->taxonomy_service ) {
+			$this->taxonomy_service = new Recipe_Taxonomy_Service( $this->recipe_store );
+		}
+
+		return $this->taxonomy_service;
 	}
 
 
@@ -204,7 +226,7 @@ class Recipe_Service {
 	 */
 	public function assign_taxonomies( int $recipe_id, ?array $categories, ?array $tags ): void {
 
-		$this->get_crud_service()->assign_taxonomies( $recipe_id, $categories, $tags );
+		$this->get_taxonomy_service()->assign_taxonomies( $recipe_id, $categories, $tags );
 	}
 
 
@@ -265,17 +287,13 @@ class Recipe_Service {
 
 
 	/**
-	 * Get recipes by field value.
+	 * Get site-wide recipe totals without paging through recipe objects.
 	 *
-	 * @param mixed $field_value        The field value to search for.
-	 * @param array $additional_filters Additional filters to apply.
-	 * @return array|\WP_Error Success response with recipes or error.
+	 * @return array<string, int> Published and drafted total; trash is separate.
 	 */
-	public function get_recipes_from_field_value( $field_value, array $additional_filters = array() ) {
-
-		return $this->get_query_service()->get_recipes_from_field_value( $field_value, $additional_filters );
+	public function get_recipe_totals(): array {
+		return $this->get_query_service()->get_recipe_totals();
 	}
-
 
 	/**
 	 * Get recipe count by status or type.
@@ -327,20 +345,5 @@ class Recipe_Service {
 	public function get_most_recent_recipe_log( array $filters = array() ) {
 
 		return $this->get_log_service()->get_most_recent_recipe_log( $filters );
-	}
-
-
-	/**
-	 * Get detailed recipe log entry using sophisticated logging system.
-	 *
-	 * @param int  $recipe_id        Recipe ID.
-	 * @param int  $run_number       Run number.
-	 * @param int  $recipe_log_id    Recipe log ID.
-	 * @param bool $enable_profiling Enable performance profiling.
-	 * @return array|\WP_Error Detailed log data or error.
-	 */
-	public function get_log( int $recipe_id, int $run_number, int $recipe_log_id, bool $enable_profiling = false ) {
-
-		return $this->get_log_service()->get_log( $recipe_id, $run_number, $recipe_log_id, $enable_profiling );
 	}
 }

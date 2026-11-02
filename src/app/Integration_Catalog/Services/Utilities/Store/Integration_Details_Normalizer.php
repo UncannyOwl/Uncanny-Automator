@@ -10,9 +10,15 @@
 
 namespace Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Store;
 
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Block_Modifier_Types;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
+use Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Discovery\Items\Action_Discoverer;
+use Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Discovery\Items\Filter_Condition_Discoverer;
+use Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Discovery\Items\Trigger_Discoverer;
 use Uncanny_Automator\App\Recipe_Builder\Shared\Polyfill\Str;
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
+use Uncanny_Automator\App\Recipe_Builder\Node_Tests\Registry\Node_Tests_Registry;
+use Uncanny_Automator\App\Recipe_Builder\Trigger\Services\Trigger_Registry_Service;
 
 /**
  * Handles normalization and extraction of integration details.
@@ -20,6 +26,49 @@ use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Serv
  * @since 7.0.0
  */
 class Integration_Details_Normalizer {
+
+	/**
+	 * Reads a registered action's requires_user_data.
+	 *
+	 * @since 8.0.0
+	 * @var Action_Discoverer
+	 */
+	private Action_Discoverer $actions;
+
+	/**
+	 * Reads a registered trigger's requires_user_data.
+	 *
+	 * @since 8.0.0
+	 * @var Trigger_Discoverer
+	 */
+	private Trigger_Discoverer $triggers;
+
+	/**
+	 * Reads a registered filter condition's requires_user_data.
+	 *
+	 * @since 8.0.0
+	 * @var Filter_Condition_Discoverer
+	 */
+	private Filter_Condition_Discoverer $conditions;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param Action_Discoverer|null           $actions    Optional action discoverer (lazy default: new instance).
+	 * @param Trigger_Discoverer|null          $triggers   Optional trigger discoverer (lazy default: new instance).
+	 * @param Filter_Condition_Discoverer|null $conditions Optional condition discoverer (lazy default: new instance).
+	 */
+	public function __construct(
+		?Action_Discoverer $actions = null,
+		?Trigger_Discoverer $triggers = null,
+		?Filter_Condition_Discoverer $conditions = null
+	) {
+		$this->actions    = $actions ?? new Action_Discoverer();
+		$this->triggers   = $triggers ?? new Trigger_Discoverer();
+		$this->conditions = $conditions ?? new Filter_Condition_Discoverer();
+	}
 
 	/**
 	 * Normalize details.
@@ -43,19 +92,25 @@ class Integration_Details_Normalizer {
 	 *
 	 * Also extracts the required_tier and flattens description object.
 	 *
-	 * @param array $items Array of items with 'code' key
+	 * @param array  $items Array of items with 'code' key
+	 * @param string $kind 'item' or 'block_modifier' — the Node_Tests_Registry kind for every row in this bucket.
+	 * @param string $integration_code Owning integration code.
 	 * @return array Keyed array of items
 	 */
-	public function normalize_items( array $items ) {
+	public function normalize_items( array $items, string $kind, string $integration_code ) {
 		if ( empty( $items ) ) {
 			return array();
 		}
 
 		$normalized = array();
 
-		foreach ( $items as $item ) {
+		foreach ( $items as $index => $item ) {
 			$code = $item['code'] ?? '';
 			if ( empty( $code ) ) {
+				// One codeless item must not take its integration down with it, but a
+				// developer reading the build report should know it was left out.
+				$label = $item['sentence']['short'] ?? $item['name'] ?? '';
+				Catalog_Build_Report::item_skipped( $integration_code, is_string( $label ) && '' !== $label ? $label : '#' . $index, 'missing code' );
 				continue;
 			}
 
@@ -71,9 +126,35 @@ class Integration_Details_Normalizer {
 				$item['description'] = $item['description']['readable'] ?? '';
 			}
 
-			// Normalize legacy type field: 'condition' → 'filter_condition'.
+			// Normalize legacy type field: feed sends 'condition', the canonical literal is 'filter_condition'.
 			if ( isset( $item['type'] ) && 'condition' === $item['type'] ) {
-				$item['type'] = Integration_Item_Types::FILTER_CONDITION;
+				$item['type'] = Block_Modifier_Types::FILTER_CONDITION;
+			}
+
+			// has_tests is a live registry projection stamped at the single
+			// point every item row passes through — including feed-sourced
+			// rows the merger keeps as-is (discovery never re-runs for them).
+			$item['has_tests'] = Node_Tests_Registry::has_tests( $kind, $integration_code, $code );
+
+			// Block-modifier rows carry no toggle on the wire.
+			if ( 'item' === $kind ) {
+				$item['has_status_toggle'] = 'trigger' !== ( $item['type'] ?? '' )
+					|| Trigger_Registry_Service::instance()->has_status_toggle( $code );
+			}
+
+			// requires_user_data is a live projection too, through the discoverers'
+			// derivation. An unregistered item keeps the feed's value; loop filters always do.
+			$type       = $item['type'] ?? '';
+			$registered = null;
+			if ( Integration_Item_Types::ACTION === $type ) {
+				$registered = $this->actions->registered_requires_user_data( $code );
+			} elseif ( Integration_Item_Types::TRIGGER === $type ) {
+				$registered = $this->triggers->registered_requires_user_data( $code );
+			} elseif ( Block_Modifier_Types::FILTER_CONDITION === $type ) {
+				$registered = $this->conditions->registered_requires_user_data( $integration_code, $code );
+			}
+			if ( null !== $registered ) {
+				$item['requires_user_data'] = $registered;
 			}
 
 			$normalized[ $code ] = $item;
@@ -120,16 +201,19 @@ class Integration_Details_Normalizer {
 	private function extract_plugin_details( array $data ) {
 		// Get original integration_type from raw JSON
 		$integration_type = $data['integration_type'] ?? 'plugin';
+		$plugin_details   = $data['plugin_details'] ?? array();
+		$is_plugin_type   = in_array( $integration_type, array( 'plugin', 'addon', 'third_party' ), true );
 
-		// Only return plugin data for plugin-related types
-		if ( ! in_array( $integration_type, array( 'plugin', 'addon', 'third_party' ), true ) ) {
+		// An app is not a plugin, but it can still need one installed: the Elite
+		// integrations are apps whose code ships in a separate add-on. Gating on
+		// type alone dropped integration_required for exactly those integrations,
+		// leaving nothing to resolve the add-on's own row from.
+		if ( ! $is_plugin_type && empty( $plugin_details['integration_required'] ) ) {
 			return null;
 		}
 
-		$plugin_details = $data['plugin_details'] ?? array();
-
 		return array(
-			'type'                 => $integration_type,
+			'type'                 => $is_plugin_type ? $integration_type : '',
 			'plugin_file'          => $plugin_details['plugin_file'] ?? '',
 			'plugin_required'      => $plugin_details['plugin_required'] ?? '',
 			'plugin_variations'    => $plugin_details['plugin_variations'] ?? array(),

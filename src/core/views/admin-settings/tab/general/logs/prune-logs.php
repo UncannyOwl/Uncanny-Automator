@@ -19,6 +19,10 @@ namespace Uncanny_Automator;
  * @var  bool   $user_just_pruned_logs   TRUE if the user JUST pruned the logs.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 
 <form method="POST" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>">
@@ -30,21 +34,21 @@ namespace Uncanny_Automator;
 	</div>
 
 	<?php if ( $user_just_pruned_logs && ! automator_filter_has_var( 'error_message' ) ) { ?>
-		<uo-alert
+		<uas-alert
 			type="success"
 			heading="<?php esc_attr_e( 'Activity logs successfully pruned', 'uncanny-automator' ); ?>"
 			class="uap-spacing-top"
-		></uo-alert>
+		></uas-alert>
 	<?php } ?>
 
 	<?php if ( automator_filter_has_var( 'error_message' ) ) { ?>
-		<uo-alert
+		<uas-alert
 			type="error"
 			heading="<?php esc_attr_e( 'An error has occured while pruning logs', 'uncanny-automator' ); ?>"
 			class="uap-spacing-top"
 		>
 			<?php echo esc_html( rawurldecode( automator_filter_input( 'error_message' ) ) ); ?>
-		</uo-alert>
+		</uas-alert>
 	<?php } ?>
 
 	<?php
@@ -54,12 +58,12 @@ namespace Uncanny_Automator;
 	if ( $user_pruned_before ) {
 		?>
 
-		<uo-alert
+		<uas-alert
 			heading="<?php esc_attr_e( 'Action last performed on:', 'uncanny-automator' ); ?>"
 			class="uap-spacing-top"
 		>
 			<?php echo esc_html( gmdate( get_option( 'date_format' ), $last_manual_prune_date ) ); ?>
-		</uo-alert>
+		</uas-alert>
 
 	<?php } ?>
 
@@ -77,11 +81,11 @@ namespace Uncanny_Automator;
 		class="uap-spacing-top"
 	></uo-text-field>
 
-	<uo-button
+	<uas-button
 		type="submit"
 		class="uap-spacing-top"
 	>
 		<?php esc_html_e( 'Delete logs', 'uncanny-automator' ); ?>
-	</uo-button>
+	</uas-button>
 
 </form>

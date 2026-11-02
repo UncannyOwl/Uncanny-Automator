@@ -123,6 +123,7 @@ class SAVETO_WISHLIST_REMOVE_PRODUCT extends Action {
 			// "remove from all" branch below because the trigger expects a
 			// concrete wishlist ID; firing with `collection_id = 0` would
 			// hydrate to all-empty wishlist tokens.
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- SaveTo Wishlist's own hook.
 			do_action( 'stwlite_after_product_removed_from_wishlist', $product_id, $collection_id, array() );
 		} else {
 			// Remove this product from every wishlist the user owns. The

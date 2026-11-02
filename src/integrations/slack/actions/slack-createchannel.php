@@ -68,6 +68,7 @@ class SLACK_CREATECHANNEL extends \Uncanny_Automator\Recipe\App_Action {
 			array(
 				'input_type'      => 'text',
 				'option_code'     => 'SLACKCHANNELHIDDEN',
+				'label'           => esc_attr_x( 'Channel name (hidden)', 'Slack', 'uncanny-automator' ),
 				'is_hidden'       => true,
 				'relevant_tokens' => array(),
 			),

@@ -35,7 +35,8 @@ final class PublishPage implements PublishPageInterface
 
             return $this->publisher->publish($candidate);
         } catch (StaleSourceGenerationException $exception) {
-            throw PagePublicationFailed::staleSource($exception->scope(), $exception);
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- $exception is the previous exception, not message text.
+            throw PagePublicationFailed::staleSource(esc_html($exception->scope()), $exception);
         }
     }
 }

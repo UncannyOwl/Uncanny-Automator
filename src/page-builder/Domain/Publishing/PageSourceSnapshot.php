@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Domain\Publishing;
 
+use UncannyPageBuilder\Domain\ArrayShape;
+
 /**
  * Immutable, editable page-owned source captured by one publication.
  *
@@ -171,18 +173,19 @@ final class PageSourceSnapshot
     /** @param array<string, mixed> $source */
     private function assertSource(array $source): void
     {
-        if (!is_array($source['sections'] ?? null) || !array_is_list($source['sections'])) {
+        if (!is_array($source['sections'] ?? null) || !ArrayShape::isList($source['sections'])) {
             throw new \InvalidArgumentException('Page source snapshot sections must be a list.');
         }
         if (
             !is_array($source['page_design_overrides'] ?? null)
-            || (($source['page_design_overrides'] ?? []) !== [] && array_is_list($source['page_design_overrides']))
+            || (($source['page_design_overrides'] ?? []) !== [] && ArrayShape::isList($source['page_design_overrides']))
         ) {
             throw new \InvalidArgumentException('Page source snapshot design overrides must be an object.');
         }
 
         foreach (['custom_javascript', 'title', 'slug', 'shell_mode'] as $key) {
             if (!is_string($source[$key] ?? null)) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
                 throw new \InvalidArgumentException(sprintf('Page source snapshot %s is invalid.', $key));
             }
         }
@@ -193,6 +196,7 @@ final class PageSourceSnapshot
         foreach (['header_override_id', 'footer_override_id'] as $key) {
             $value = $source[$key] ?? null;
             if ($value !== null && (!is_int($value) || ($value !== -1 && $value <= 0))) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
                 throw new \InvalidArgumentException(sprintf('Page source snapshot %s is invalid.', $key));
             }
         }
@@ -212,7 +216,7 @@ final class PageSourceSnapshot
         if (!is_array($value)) {
             return $value;
         }
-        if (array_is_list($value)) {
+        if (ArrayShape::isList($value)) {
             return array_map(self::canonicalize(...), $value);
         }
 

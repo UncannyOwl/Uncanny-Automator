@@ -12,7 +12,7 @@ namespace Uncanny_Automator\App\Components\Conversation_Starter\Registry;
 
 use InvalidArgumentException;
 use Uncanny_Automator\App\Components\Conversation_Starter\Domain\Conversation_Starter;
-use Uncanny_Automator\App\Components\Conversation_Starter\Translation\Locale_Resolver;
+use Uncanny_Automator\App\Components\Translation\Locale_Resolver;
 use Uncanny_Automator\App\Components\Conversation_Starter\Translation\Translation_Loader;
 
 /**

@@ -34,6 +34,10 @@ class Edd_Integration extends Integration {
 	 * @return void
 	 */
 	protected function load_shared_hooks() {
+		// Recipes saved before EDD Recurring split out still say EDD on their
+		// recurring items. Runs once per site, from whichever request first needs EDD.
+		new \Uncanny_Automator\Integrations\Edd_Recurring_Integration\EDD_To_EDDR_Migration();
+
 		// Load tokens
 		new EDD_Tokens();
 

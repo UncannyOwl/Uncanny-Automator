@@ -13,9 +13,13 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Recipe_Builder\User_Selector\Services;
 
+use Uncanny_Automator\App\Bridge\Action_Definition_Bridge;
+use Uncanny_Automator\App\Bridge\Automator_Action_Definition_Bridge;
 use Uncanny_Automator\App\Recipe_Builder\Token\Services\Common_Token_Registry;
 use Uncanny_Automator\App\Recipe_Builder\Token\Integration\Registry\WP_Integration_Token_Registry;
-use Uncanny_Automator\App\Events\Dispatcher;
+use Uncanny_Automator\App\Infrastructure\Database\Database;
+use Uncanny_Automator\App\Recipe_Builder\Action\Enums\Action_Status;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Settings\Services\Recipe_Settings_Service;
 
 /**
  * User_Selector_Advisor
@@ -44,6 +48,24 @@ class User_Selector_Advisor {
 	private $user_token_patterns = null;
 
 	/**
+	 * Every registered action definition, whichever framework registered it.
+	 *
+	 * @var Action_Definition_Bridge
+	 */
+	private Action_Definition_Bridge $action_definitions;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param Action_Definition_Bridge|null $action_definitions Registered action definitions; defaults to Automator's registry.
+	 */
+	public function __construct( ?Action_Definition_Bridge $action_definitions = null ) {
+		$this->action_definitions = $action_definitions ?? new Automator_Action_Definition_Bridge();
+	}
+
+	/**
 	 * Check after adding an action to an anonymous recipe.
 	 *
 	 * Returns a warning string (non-blocking) so the action still saves,
@@ -57,7 +79,7 @@ class User_Selector_Advisor {
 	 */
 	public function check_after_action_add( int $recipe_id, string $action_code, array $fields = array() ): ?string {
 
-		$recipe_type = get_post_meta( $recipe_id, 'uap_recipe_type', true );
+		$recipe_type = Recipe_Settings_Service::instance()->get_recipe_type( $recipe_id );
 		if ( 'anonymous' !== $recipe_type ) {
 			return null;
 		}
@@ -102,7 +124,7 @@ class User_Selector_Advisor {
 	 */
 	public function check_on_publish( int $recipe_id ): ?string {
 
-		$recipe_type = get_post_meta( $recipe_id, 'uap_recipe_type', true );
+		$recipe_type = Recipe_Settings_Service::instance()->get_recipe_type( $recipe_id );
 		if ( 'anonymous' !== $recipe_type ) {
 			return null;
 		}
@@ -153,11 +175,13 @@ class User_Selector_Advisor {
 	 */
 	private function get_user_requiring_action_codes( int $recipe_id ): array {
 
-		$action_ids = $this->get_all_action_ids( $recipe_id );
+		$codes = Database::get_action_store()->get_recipe_action_codes(
+			$recipe_id,
+			array( Action_Status::DRAFT, Action_Status::PUBLISH )
+		);
 
 		$user_requiring_codes = array();
-		foreach ( $action_ids as $action_id ) {
-			$code = get_post_meta( $action_id, 'code', true );
+		foreach ( $codes as $code ) {
 			if ( ! empty( $code ) && $this->action_requires_user( $code ) ) {
 				$user_requiring_codes[] = $code;
 			}
@@ -177,20 +201,12 @@ class User_Selector_Advisor {
 
 		$action_ids = $this->get_all_action_ids( $recipe_id );
 		$found      = array();
+		$store      = Database::get_action_store();
 
 		foreach ( $action_ids as $action_id ) {
-			$meta = get_post_meta( $action_id );
-			if ( empty( $meta ) ) {
+			$field_values = $store->get_action_field_values( $action_id );
+			if ( empty( $field_values ) ) {
 				continue;
-			}
-
-			$field_values = array();
-			foreach ( $meta as $key => $values ) {
-				// Skip internal meta keys.
-				if ( 0 === strpos( $key, '_' ) ) {
-					continue;
-				}
-				$field_values[ $key ] = $values[0] ?? '';
 			}
 
 			$found = array_merge( $found, $this->find_user_tokens_in_fields( $field_values ) );
@@ -207,41 +223,10 @@ class User_Selector_Advisor {
 	 * @return int[] Action post IDs.
 	 */
 	private function get_all_action_ids( int $recipe_id ): array {
-
-		$actions = get_posts(
-			array(
-				'post_type'   => 'uo-action',
-				'post_parent' => $recipe_id,
-				'post_status' => array( 'draft', 'publish' ),
-				'numberposts' => 100,
-				'fields'      => 'ids',
-			)
+		return Database::get_action_store()->get_recipe_action_ids(
+			$recipe_id,
+			array( Action_Status::DRAFT, Action_Status::PUBLISH )
 		);
-
-		$loops = get_posts(
-			array(
-				'post_type'   => 'uo-loop',
-				'post_parent' => $recipe_id,
-				'post_status' => array( 'draft', 'publish' ),
-				'numberposts' => 10,
-				'fields'      => 'ids',
-			)
-		);
-
-		foreach ( $loops as $loop_id ) {
-			$loop_actions = get_posts(
-				array(
-					'post_type'   => 'uo-action',
-					'post_parent' => $loop_id,
-					'post_status' => array( 'draft', 'publish' ),
-					'numberposts' => 100,
-					'fields'      => 'ids',
-				)
-			);
-			$actions      = array_merge( $actions, $loop_actions );
-		}
-
-		return $actions;
 	}
 
 	/**
@@ -256,7 +241,7 @@ class User_Selector_Advisor {
 	 */
 	private function find_user_tokens_in_fields( array $fields ): array {
 
-		$all_values = implode( ' ', array_map( 'strval', array_values( $fields ) ) );
+		$all_values = implode( ' ', $this->field_text( $fields ) );
 
 		// No tokens in any field value — skip the lookup entirely.
 		if ( false === strpos( $all_values, '{{' ) ) {
@@ -275,6 +260,36 @@ class User_Selector_Advisor {
 		}
 
 		return array_unique( $found );
+	}
+
+	/**
+	 * The text of every field value, reading each repeater row's cells as values too.
+	 *
+	 * A repeater field arrives as an array of rows. The publish check reads the same rows
+	 * saved as text, so a token in a row's cell counts at save and at publish alike.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param array $values Field key => value pairs, or one repeater row.
+	 *
+	 * @return string[] Each scalar value as text.
+	 */
+	private function field_text( array $values ): array {
+
+		$text = array();
+
+		foreach ( $values as $value ) {
+			if ( is_array( $value ) ) {
+				$text = array_merge( $text, $this->field_text( $value ) );
+				continue;
+			}
+
+			if ( is_scalar( $value ) ) {
+				$text[] = (string) $value;
+			}
+		}
+
+		return $text;
 	}
 
 	/**
@@ -314,6 +329,7 @@ class User_Selector_Advisor {
 				}
 			} catch ( \Exception $e ) {
 				// Registry unavailable -- common tokens still checked.
+				unset( $e );
 			}
 		}
 
@@ -331,15 +347,11 @@ class User_Selector_Advisor {
 	 */
 	private function action_requires_user( string $action_code ): bool {
 
-		$registered = Dispatcher::filter( 'automator_actions', array() );
+		// Read the registry itself: trait-based actions such as SENDEMAIL
+		// register directly, never through the automator_actions filter.
+		$definition = $this->action_definitions->get_action_definition( $action_code );
 
-		foreach ( $registered as $action ) {
-			if ( isset( $action['code'] ) && $action['code'] === $action_code ) {
-				return 'anonymous' !== ( $action['action_type'] ?? 'user' );
-			}
-		}
-
-		return true;
+		return null === $definition || (bool) ( $definition['requires_user'] ?? true );
 	}
 
 	/**
@@ -350,7 +362,6 @@ class User_Selector_Advisor {
 	 * @return bool True if configured.
 	 */
 	private function recipe_has_user_selector( int $recipe_id ): bool {
-		$source = get_post_meta( $recipe_id, 'source', true );
-		return ! empty( $source );
+		return Database::get_user_selector_store()->exists_for_recipe( $recipe_id );
 	}
 }

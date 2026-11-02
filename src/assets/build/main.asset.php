@@ -1,1 +1,11 @@
-<?php return array('dependencies' => array('jquery', 'regenerator-runtime', 'wp-api-fetch', 'wp-dom-ready', 'wp-escape-html', 'wp-i18n'), 'version' => '5ac8c0d8ca22ebdc344a');
+<?php return array(
+	'dependencies' => array(
+		'jquery',
+		'wp-api-fetch',
+		'wp-date',
+		'wp-dom-ready',
+		'wp-escape-html',
+		'wp-i18n'
+	),
+	'version' => '55f91573f50a2cfea8c8'
+);

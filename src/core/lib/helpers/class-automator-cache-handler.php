@@ -2,6 +2,7 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\App\Presentation\Admin\Cache_Flushed_Notice;
 use Uncanny_Automator\App\Transient\Application\Delete_Core_Transients;
 use Uncanny_Automator\App\Transient\Domain\Core_Transient_Keys;
 use Uncanny_Automator\App\Transient\Domain\License_Transient_Keys;
@@ -31,26 +32,47 @@ class Automator_Cache_Handler {
 	);
 
 	/**
-	 *
+	 * Settings option key for the Automator object-cache toggle.
 	 */
 	const OPTION_NAME = 'uncanny_automator_advanced_automator_cache';
+
 	/**
+	 * Network-wide cache group that holds the version of the builder's user list.
+	 *
+	 * Every site lists the users of the shared users table, so one change of a user
+	 * outdates every site's copy. Each site caches its copy under a key that carries
+	 * this version, and one change of the version clears them all.
+	 *
+	 * @since 8.0.0
+	 */
+	const USERS_LIST_VERSION_GROUP = 'automator_users';
+	/**
+	 * Shared singleton instance.
+	 *
 	 * @var Automator_Cache_Handler
 	 */
 	public static $instance;
 	/**
+	 * Default cache TTL in seconds (filterable).
+	 *
 	 * @var mixed|void
 	 */
 	public $expires;
 	/**
-	 * @var
+	 * Long cache TTL in seconds (filterable, 24h default).
+	 *
+	 * @var mixed|void
 	 */
 	public $long_expires;
 	/**
+	 * Cache key for the recipes data blob.
+	 *
 	 * @var string
 	 */
 	public $recipes_data = 'automator_recipes_data';
 	/**
+	 * Cache key for the recipes list.
+	 *
 	 * @var string
 	 */
 	public $recipes = 'automator_recipes';
@@ -85,6 +107,9 @@ class Automator_Cache_Handler {
 	 * Cache_Handler constructor.
 	 */
 	public function __construct() {
+		// The user list's version is shared by every site of the network.
+		wp_cache_add_global_groups( array( self::USERS_LIST_VERSION_GROUP ) );
+
 		// Load the cleanup classes before a plugin update can replace their files.
 		$transients = new WP_Transient_Adapter();
 
@@ -109,12 +134,13 @@ class Automator_Cache_Handler {
 			)
 		);
 
-		// Integration condition popularity cache management (always active).
-		add_action( 'updated_post_meta', array( $this, 'handle_condition_meta_update' ), 10, 4 );
-		add_action( 'added_post_meta', array( $this, 'handle_condition_meta_update' ), 10, 4 );
-		add_action( 'deleted_post_meta', array( $this, 'handle_condition_meta_delete' ), 10, 4 );
-		add_action( 'automator_recipe_status_updated', array( $this, 'handle_condition_status_update' ), 10, 4 );
-		add_action( 'automator_cache_recipe_post_status_changed', array( $this, 'handle_condition_status_update_legacy' ), 10, 1 );
+		// Entity popularity cache invalidation (always active — independent of object cache setting).
+		// Refresh = mark stale + rebuild on this request's shutdown; stored counts keep serving.
+		foreach ( array_keys( $this->entity_popularity_scope_map() ) as $entity_post_type ) {
+			add_action( 'save_post_' . $entity_post_type, array( $this, 'refresh_entity_popularity_scope_for_post' ), 10, 2 );
+		}
+		add_action( 'deleted_post', array( $this, 'refresh_entity_popularity_cache_on_delete' ), 10, 2 );
+		add_action( 'transition_post_status', array( $this, 'refresh_entity_popularity_cache_on_recipe_status_change' ), 10, 3 );
 
 		// Integration directory reset must always run on plugin activation/deactivation.
 		add_action(
@@ -185,6 +211,22 @@ class Automator_Cache_Handler {
 			99999
 		);
 		add_action(
+			'profile_update',
+			array(
+				$this,
+				'maybe_clear_user_cache',
+			),
+			99999
+		);
+		add_action(
+			'deleted_user',
+			array(
+				$this,
+				'maybe_clear_user_cache',
+			),
+			99999
+		);
+		add_action(
 			'automator_recipe_completed',
 			array(
 				$this,
@@ -211,30 +253,6 @@ class Automator_Cache_Handler {
 			),
 			99999,
 			3
-		);
-		add_action(
-			'automator_recipe_action_created',
-			array(
-				$this,
-				'recipe_post_status_changed',
-			),
-			99999
-		);
-		add_action(
-			'automator_recipe_trigger_created',
-			array(
-				$this,
-				'recipe_post_status_changed',
-			),
-			99999
-		);
-		add_action(
-			'automator_recipe_closure_created',
-			array(
-				$this,
-				'recipe_post_status_changed',
-			),
-			99999
 		);
 
 		add_action( 'admin_init', array( $this, 'remove_all_cache' ) );
@@ -295,6 +313,8 @@ class Automator_Cache_Handler {
 	}
 
 	/**
+	 * Return the shared instance, constructing it on first use.
+	 *
 	 * @return Automator_Cache_Handler
 	 */
 	public static function get_instance() {
@@ -307,6 +327,8 @@ class Automator_Cache_Handler {
 	}
 
 	/**
+	 * Clear the per-post-type transient when a non-Automator post is created.
+	 *
 	 * @param $post_id
 	 * @param $post
 	 * @param $update
@@ -336,6 +358,8 @@ class Automator_Cache_Handler {
 	}
 
 	/**
+	 * Clear the recipes-data caches when an Automator post type is saved.
+	 *
 	 * @param $post_id
 	 * @param $post
 	 * @param $update
@@ -353,19 +377,41 @@ class Automator_Cache_Handler {
 		// Clear recipes data cache
 		$this->remove( $this->recipes_data );
 		$this->remove( 'automator_actionified_triggers' );
+		$this->clear_recipe_data_of( $post );
+		if ( $post_before instanceof \WP_Post && (int) $post_before->post_parent !== (int) $post->post_parent ) {
+			$this->clear_recipe_data_of( $post_before );
+		}
 		do_action( 'automator_cache_maybe_clear_cache_for_recipes', $post_id, $post, $update, $post_before );
 	}
 
 	/**
+	 * The key every site caches the builder's user list under.
 	 *
+	 * It carries the network-wide version, so a cleared list is never served
+	 * again on any site of the network.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return string
+	 */
+	public function users_list_key() {
+		return 'automator_transient_users:' . wp_cache_get_last_changed( self::USERS_LIST_VERSION_GROUP );
+	}
+
+	/**
+	 * Clear every site's user list when a user registers, is updated or is deleted.
+	 *
+	 * Dropping the version moves every site to a new key, so each site
+	 * queries its list again on its next read.
 	 */
 	public function maybe_clear_user_cache() {
-		$transient_key = 'automator_transient_users';
-		$this->remove( $transient_key );
+		wp_cache_delete( 'last_changed', self::USERS_LIST_VERSION_GROUP );
 		do_action( 'automator_cache_maybe_clear_user_cache' );
 	}
 
 	/**
+	 * Clear the completed recipe's data caches after a run finishes.
+	 *
 	 * @param $recipe_id
 	 * @param $user_id
 	 * @param $recipe_log_id
@@ -381,6 +427,8 @@ class Automator_Cache_Handler {
 	}
 
 	/**
+	 * Clear the integration-directory caches on plugin (de)activation.
+	 *
 	 * @param $plugin
 	 * @param $network_wide
 	 */
@@ -388,6 +436,7 @@ class Automator_Cache_Handler {
 		$this->remove( 'automator_integration_directories_loaded' );
 		$this->remove( 'automator_get_all_integrations' );
 		$this->remove( 'automator_actionified_triggers' );
+		automator_clear_integration_discovery_cache();
 		do_action( 'automator_cache_reset_integrations_directory', $plugin, $network_wide );
 	}
 
@@ -408,6 +457,8 @@ class Automator_Cache_Handler {
 	}
 
 	/**
+	 * Clear the caches tied to one recipe and the shared recipes-data blob.
+	 *
 	 * @param $post_id
 	 */
 	public function clear_automator_recipe_part_cache( $post_id ) {
@@ -422,16 +473,19 @@ class Automator_Cache_Handler {
 	}
 
 	/**
+	 * Clear recipe caches when a recipe part changes status.
+	 *
+	 * Only Automator's recipe post types count: a status change on any other post (a published
+	 * blog post, the revision WordPress saves on every update, a trashed page) leaves the recipe
+	 * data and the 24-hour integration caches in place.
+	 *
 	 * @param mixed ...$args
 	 */
 	public function recipe_post_status_changed( ...$args ) {
-		if ( 1 === count( $args ) ) {
-			return;
-		}
 		$new_status = $args[0];
 		$old_status = $args[1];
 		$post       = $args[2];
-		if ( ! $post instanceof \WP_Post ) {
+		if ( ! $post instanceof \WP_Post || ! $this->is_recipe_part( $post ) ) {
 			return;
 		}
 		// prepare transient key.
@@ -447,11 +501,16 @@ class Automator_Cache_Handler {
 		$this->remove( 'automator_integration_directories_loaded' );
 		$this->remove( 'automator_get_all_integrations' );
 		$this->remove( 'get_recipe_type' );
+		$this->clear_recipe_data_of( $post );
 
 		do_action( 'automator_cache_recipe_post_status_changed', $args );
 	}
 
 	/**
+	 * Clear recipe caches when a recipe part is deleted.
+	 *
+	 * Deleting any other post leaves the recipe data in place.
+	 *
 	 * @param mixed ...$args
 	 */
 	public function recipe_post_deleted( ...$args ) {
@@ -465,7 +524,7 @@ class Automator_Cache_Handler {
 		}
 		$post = isset( $args[1] ) ? $args[1] : get_post( $post_id );
 
-		if ( ! $post instanceof \WP_Post ) {
+		if ( ! $post instanceof \WP_Post || ! $this->is_recipe_part( $post ) ) {
 			return;
 		}
 		// prepare transient key.
@@ -478,10 +537,75 @@ class Automator_Cache_Handler {
 		// Clear recipes data cache
 		$this->remove( $this->recipes_data );
 		$this->remove( 'automator_actionified_triggers' );
+		$this->clear_recipe_data_of( $post );
 		do_action( 'automator_cache_recipe_post_deleted', $args );
 	}
 
 	/**
+	 * Clear the per-recipe data cache of the recipe a post belongs to.
+	 *
+	 * The post is the recipe itself, or a trigger, action, loop, loop filter, block or block modifier
+	 * somewhere under it. Any other post leaves the cache alone.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param \WP_Post $post The saved, changed or deleted post.
+	 *
+	 * @return void
+	 */
+	private function clear_recipe_data_of( \WP_Post $post ) {
+
+		if ( ! in_array( $post->post_type, \automator_get_recipe_post_types(), true ) ) {
+			return;
+		}
+
+		$recipe_id = $this->owning_recipe_id( $post );
+
+		if ( 0 < $recipe_id ) {
+			$this->remove( 'automator_recipe_data_of_' . $recipe_id );
+		}
+	}
+
+	/**
+	 * The recipe a recipe post belongs to: itself, or the nearest recipe above it.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param \WP_Post $post A recipe, or a part of one.
+	 *
+	 * @return int The recipe ID, or 0 when no recipe holds the post.
+	 */
+	private function owning_recipe_id( \WP_Post $post ) {
+
+		if ( AUTOMATOR_POST_TYPE_RECIPE === $post->post_type ) {
+			return (int) $post->ID;
+		}
+
+		foreach ( get_post_ancestors( $post ) as $ancestor_id ) {
+			if ( AUTOMATOR_POST_TYPE_RECIPE === get_post_type( $ancestor_id ) ) {
+				return (int) $ancestor_id;
+			}
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Whether the post is one of Automator's recipe post types, as the save-time clear decides.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param \WP_Post $post The post that changed.
+	 *
+	 * @return bool
+	 */
+	private function is_recipe_part( \WP_Post $post ) {
+		return in_array( $post->post_type, \automator_get_recipe_post_types(), true );
+	}
+
+	/**
+	 * Write a value to the object cache with the default or supplied TTL.
+	 *
 	 * @param string $key
 	 * @param mixed $data
 	 * @param string $group
@@ -500,8 +624,11 @@ class Automator_Cache_Handler {
 	}
 
 	/**
+	 * Read a value from the object cache; empty array when caching is disabled.
+	 *
 	 * @param string $key
 	 * @param string $group
+	 * @param bool   $force Read even when the cache setting is disabled.
 	 *
 	 * @return bool|mixed
 	 */
@@ -515,6 +642,8 @@ class Automator_Cache_Handler {
 	}
 
 	/**
+	 * Delete a value from the object cache and its matching transient.
+	 *
 	 * @param string $key
 	 * @param string $group
 	 */
@@ -525,7 +654,7 @@ class Automator_Cache_Handler {
 	}
 
 	/**
-	 *
+	 * Flush every Automator cache surface and rebuild the recipe manifest.
 	 */
 	public function remove_all() {
 
@@ -539,12 +668,14 @@ class Automator_Cache_Handler {
 		Recipe_Manifest::reset();
 
 		automator_cache_delete_group( 'automator' );
+		automator_clear_integration_discovery_cache();
+		automator_clear_integration_feed_cache();
 
 		do_action( 'automator_cache_remove_all' );
 	}
 
 	/**
-	 *
+	 * Handle the nonce-guarded admin-bar "Flush cache" request.
 	 */
 	public function remove_all_cache() {
 		if ( ! automator_filter_has_var( 'automator_flush_all' ) ) {
@@ -554,20 +685,9 @@ class Automator_Cache_Handler {
 			return;
 		}
 		$this->remove_all();
-		add_action(
-			'automator_show_internal_admin_notice',
-			function () {
-				?>
 
-				<div class="uap notice">
-					<uo-alert type="success">
-						Automator cache flushed!
-					</uo-alert>
-				</div>
-
-				<?php
-			}
-		);
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- The hook name is a class constant that starts with the automator_ prefix.
+		do_action( Cache_Flushed_Notice::FLUSHED_ACTION );
 	}
 
 	/**
@@ -585,7 +705,7 @@ class Automator_Cache_Handler {
 			return;
 		}
 
-		if ( ! current_user_can( automator_get_capability() ) ) {
+		if ( ! current_user_can( automator_get_capability() ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- The capability comes from automator_get_capability().
 			return;
 		}
 
@@ -609,6 +729,7 @@ class Automator_Cache_Handler {
 	}
 
 	/**
+	 * Reset integration-directory caches after a plugin/theme/core update.
 	 */
 	public function upgrader_process_completed( $upgrader = null, $options = array() ) {
 		$this->reset_integrations_directory( null, null );
@@ -685,6 +806,8 @@ class Automator_Cache_Handler {
 	private function delete_core_automator_transients() {
 		// TODO: Add deferred network-wide cleanup for multisite lifecycle events.
 		$this->delete_core_transients->execute();
+		// Core_Transient_Keys drops the English feed copy; the language copies go with it.
+		automator_clear_integration_feed_cache();
 	}
 
 	/**
@@ -720,6 +843,8 @@ class Automator_Cache_Handler {
 	}
 
 	/**
+	 * Register the object-cache toggle with the WordPress settings API.
+	 *
 	 * @return void
 	 */
 	public function register_setting() {
@@ -733,6 +858,8 @@ class Automator_Cache_Handler {
 	}
 
 	/**
+	 * Render the object-cache toggle on the advanced settings tab.
+	 *
 	 * @param $settings_group
 	 *
 	 * @return void
@@ -759,6 +886,8 @@ class Automator_Cache_Handler {
 	}
 
 	/**
+	 * Sanitize the cache-toggle setting and flush everything when it flips off.
+	 *
 	 * @param $value
 	 *
 	 * @return string
@@ -775,87 +904,109 @@ class Automator_Cache_Handler {
 	}
 
 	/**
-	 * Handle condition popularity cache clearing on meta update.
+	 * Entity post type => the popularity (kind, scope) bucket its saves affect.
 	 *
-	 * @param int $meta_id Meta ID
-	 * @param int $post_id Post ID
-	 * @param string $meta_key Meta key
-	 * @param mixed $meta_value Meta value
+	 * Drives both the save_post_{type} hook registration and the per-type
+	 * targeted clears, so the two surfaces cannot drift apart.
 	 *
-	 * @return void
+	 * A null scope means every scope in that kind. `uo-block-modifier` carries
+	 * both modifier discriminators — a loop filter is a modifier whose parent
+	 * block is a loop — and the discriminator lives in post meta owned by
+	 * src/app, which this layer must not read. Refreshing the whole kind keeps
+	 * the seam clean; the cost is one extra aggregate on the shutdown rebuild,
+	 * against counts going stale if the wrong scope is picked.
+	 *
+	 * The retired `uo-loop-filter` post type is deliberately absent: the loop
+	 * fold-in renamed every row to `uo-block-modifier`, so its save hook can
+	 * never fire again. The `loop_filter` SCOPE is still live and still
+	 * counted — only the post type died.
+	 *
+	 * @return array<string,array{0:string,1:string|null}>
 	 */
-	public function handle_condition_meta_update( $meta_id, $post_id, $meta_key, $meta_value ) {
-		$tracker = automator_get_condition_popularity_tracker();
-		if ( null === $tracker ) {
-			return;
-		}
-		$tracker->handle_meta_update( $meta_id, $post_id, $meta_key, $meta_value );
+	private function entity_popularity_scope_map() {
+		return array(
+			AUTOMATOR_POST_TYPE_TRIGGER        => array( 'item', 'trigger' ),
+			AUTOMATOR_POST_TYPE_ACTION         => array( 'item', 'action' ),
+			AUTOMATOR_POST_TYPE_BLOCK_MODIFIER => array( 'block_modifier', null ),
+		);
 	}
 
 	/**
-	 * Handle condition popularity cache clearing on meta deletion.
+	 * Refresh only the popularity bucket(s) the saved entity belongs to —
+	 * an item save cannot change any modifier count and vice versa, and
+	 * recipe-builder sessions fire these hooks constantly (reorder saves
+	 * every child).
 	 *
-	 * @param array $meta_ids Meta IDs
-	 * @param int $post_id Post ID
-	 * @param string $meta_key Meta key
-	 * @param mixed $meta_value Meta value
-	 *
+	 * @param int           $post_id Saved post id (unused; the hook supplies it).
+	 * @param \WP_Post|null $post    Saved post.
 	 * @return void
 	 */
-	public function handle_condition_meta_delete( $meta_ids, $post_id, $meta_key, $meta_value ) {
-		$tracker = automator_get_condition_popularity_tracker();
-		if ( null === $tracker ) {
-			return;
-		}
-		$tracker->handle_meta_delete( $meta_ids, $post_id, $meta_key, $meta_value );
-	}
-
-	/**
-	 * Handle condition popularity cache clearing on recipe status change.
-	 *
-	 * @param int $post_id Post ID
-	 * @param int $recipe_id Recipe ID
-	 * @param string $post_status Post status
-	 * @param array $return_data Return data
-	 *
-	 * @return void
-	 */
-	public function handle_condition_status_update( $post_id, $recipe_id, $post_status, $return_data ) {
-		$tracker = automator_get_condition_popularity_tracker();
-		if ( null === $tracker ) {
-			return;
-		}
-		$tracker->handle_status_change( $post_id, $recipe_id, $post_status );
-	}
-
-	/**
-	 * Handle condition popularity cache clearing on recipe status change (legacy hook).
-	 *
-	 * @param array $args Arguments array: [new_status, old_status, post]
-	 *
-	 * @return void
-	 */
-	public function handle_condition_status_update_legacy( $args ) {
-
-		if ( empty( $args ) || count( $args ) < 3 ) {
-			return;
-		}
-
-		$new_status = $args[0];
-		$post       = $args[2];
-
+	public function refresh_entity_popularity_scope_for_post( $post_id, $post = null ) {
 		if ( ! $post instanceof \WP_Post ) {
 			return;
 		}
 
-		if ( AUTOMATOR_POST_TYPE_RECIPE !== $post->post_type ) {
+		$map = $this->entity_popularity_scope_map();
+		if ( ! isset( $map[ $post->post_type ] ) ) {
 			return;
 		}
 
-		$tracker = automator_get_condition_popularity_tracker();
-		if ( null === $tracker ) {
+		automator_refresh_entity_popularity_cache( $map[ $post->post_type ][0], $map[ $post->post_type ][1] );
+	}
+
+	/**
+	 * Refresh popularity caches on deletion: the matching bucket for an entity
+	 * post, everything for a recipe (the census counts by recipe, so a recipe
+	 * delete changes every count under it).
+	 *
+	 * Reads the post type from the WP_Post object `deleted_post` passes. The
+	 * row is already gone by this point, so there is nothing to look up if it
+	 * is absent — `deleted_post` has passed the object since WP 5.5 and the
+	 * plugin requires 5.8, so it never is.
+	 *
+	 * @param int           $post_id Deleted post id.
+	 * @param \WP_Post|null $post    Deleted post object.
+	 * @return void
+	 */
+	public function refresh_entity_popularity_cache_on_delete( $post_id, $post = null ) {
+		if ( ! $post instanceof \WP_Post ) {
 			return;
 		}
-		$tracker->handle_status_change( $post->ID, $post->ID, $new_status );
+
+		$post_type = $post->post_type;
+
+		if ( AUTOMATOR_POST_TYPE_RECIPE === $post_type ) {
+			automator_refresh_entity_popularity_cache();
+			return;
+		}
+
+		$map = $this->entity_popularity_scope_map();
+		if ( ! is_string( $post_type ) || ! isset( $map[ $post_type ] ) ) {
+			return;
+		}
+
+		automator_refresh_entity_popularity_cache( $map[ $post_type ][0], $map[ $post_type ][1] );
+	}
+
+	/**
+	 * Refresh the stored usage census on any recipe status change. The census
+	 * counts draft recipes as well as published ones and leaves trashed ones
+	 * out, so every transition can move a count, but a status flip saves only
+	 * the recipe post, so the save_post_{entity} hooks never fire.
+	 *
+	 * @param string   $new_status New post status.
+	 * @param string   $old_status Old post status.
+	 * @param \WP_Post $post       Post being transitioned.
+	 * @return void
+	 */
+	public function refresh_entity_popularity_cache_on_recipe_status_change( $new_status, $old_status, $post ) {
+		if ( ! $post instanceof \WP_Post || AUTOMATOR_POST_TYPE_RECIPE !== $post->post_type ) {
+			return;
+		}
+		if ( $new_status === $old_status ) {
+			return;
+		}
+
+		automator_refresh_entity_popularity_cache();
 	}
 }

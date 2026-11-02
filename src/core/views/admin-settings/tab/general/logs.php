@@ -1,7 +1,5 @@
 <?php
 
-namespace Uncanny_Automator;
-
 /**
  * Logs
  * Settings > General > Logs
@@ -11,6 +9,12 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  * @author  Daniela R. & Agustin B.
  */
+
+namespace Uncanny_Automator;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 ?>
 

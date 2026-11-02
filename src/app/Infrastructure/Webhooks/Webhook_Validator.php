@@ -23,9 +23,13 @@ class Webhook_Validator {
 	 * @param string $secret    The shared secret key.
 	 * @param string $algo      The hash algorithm. Default 'sha256'.
 	 *
-	 * @return bool
+	 * @return bool False when the secret or signature is empty: anyone can compute an HMAC under an empty secret.
 	 */
 	public static function validate_hmac( string $payload, string $signature, string $secret, string $algo = 'sha256' ): bool {
+		if ( '' === $secret || '' === $signature ) {
+			return false;
+		}
+
 		$expected = hash_hmac( $algo, $payload, $secret );
 
 		return hash_equals( $expected, $signature );

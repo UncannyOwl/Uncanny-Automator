@@ -53,6 +53,9 @@ class Divi_Integration extends \Uncanny_Automator\Integration {
 
 		new DIVI_SUBMIT_FORM( $this->helpers );
 		new ANON_DIVI_SUBMIT_FORM( $this->helpers );
+
+		// MCP requests load every active integration in full, so this runs before them.
+		( new Divi_Mcp_Rest_Operations() )->register();
 	}
 
 	/**

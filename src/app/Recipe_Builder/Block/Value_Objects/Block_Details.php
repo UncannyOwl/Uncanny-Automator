@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects;
 
@@ -171,7 +170,7 @@ class Block_Details {
 		}
 
 		if ( empty( $data['primary_color'] ) || ! Block_Colors::is_valid( $data['primary_color'] ) ) {
-			throw new InvalidArgumentException( 'Primary color must be one of: ' . implode( ', ', Block_Colors::get_all() ) );
+			throw new InvalidArgumentException( 'Primary color must be one of: ' . esc_html( implode( ', ', Block_Colors::get_all() ) ) );
 		}
 
 		if ( empty( $data['description'] ) || ! is_string( $data['description'] ) ) {

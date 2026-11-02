@@ -2,7 +2,9 @@
 
 namespace Uncanny_Automator;
 
-use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Class Admin_Settings_General_Improve_Automator
@@ -27,7 +29,6 @@ class Admin_Settings_General_Improve_Automator {
 		// Add the feedback and review sections
 		$this->send_feedback_section();
 		$this->add_review_section();
-
 	}
 
 	/**
@@ -37,7 +38,7 @@ class Admin_Settings_General_Improve_Automator {
 		// Add the tab using the filter
 		add_filter(
 			'automator_settings_general_tabs',
-			function( $tabs ) {
+			function ( $tabs ) {
 				// General
 				$tabs['improve-automator'] = (object) array(
 					'name'     => esc_html__( 'Improve Automator', 'uncanny-automator' ),
@@ -68,20 +69,13 @@ class Admin_Settings_General_Improve_Automator {
 	 */
 	private function allow_usage_tracking_setting() {
 
-		// Check if we should add it first
-		// We will show only this to Free users that don't have an automatorplugin.com account connected
-		if (
-			// Has Free
-			! is_automator_pro_active()
-
-			// Make sure it's NOT connected
-			// Connected sites have this enabled by default
-			&& '' === automator_license_manager()->get_type()
-		) {
+		// Only Free sites with no account connected have the switch. The
+		// connect screens link here under the same check.
+		if ( Usage_Reports::has_opt_out_switch() ) {
 			// Register the setting
 			add_action(
 				'admin_init',
-				function() {
+				function () {
 					// Allow usage tracking switch
 					register_setting(
 						'uncanny_automator_improve_automator_usage_tracking',
@@ -96,7 +90,7 @@ class Admin_Settings_General_Improve_Automator {
 			// Add the switch
 			add_action(
 				'automator_settings_general_improve_automator_content',
-				function() {
+				function () {
 					// Check if the setting is enabled
 					$is_usage_tracking_enabled = automator_get_option( 'automator_reporting', false );
 
@@ -163,7 +157,7 @@ class Admin_Settings_General_Improve_Automator {
 		// Add the section
 		add_action(
 			'automator_settings_general_improve_automator_content',
-			function() {
+			function () {
 				// Load the view
 				include Utilities::automator_get_view( 'admin-settings/tab/general/improve-automator/feedback.php' );
 			},
@@ -180,7 +174,7 @@ class Admin_Settings_General_Improve_Automator {
 		// Add the section
 		add_action(
 			'automator_settings_general_improve_automator_content',
-			function() {
+			function () {
 				// Load the view
 				include Utilities::automator_get_view( 'admin-settings/tab/general/improve-automator/review.php' );
 			},

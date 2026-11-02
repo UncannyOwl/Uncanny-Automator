@@ -1,8 +1,7 @@
 <?php
 namespace Uncanny_Automator\Services\Email\Attachment;
 
-use Exception;
-use Uncanny_Automator\Services\File\Remote_File_Extension_Identifier;
+use Uncanny_Automator\App\Infrastructure\Remote_File\Remote_File_Client;
 use WP_Error;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,6 +16,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package UncannyAutomator
  */
 class Handler {
+
+	/**
+	 * Seconds the download may take: download_url()'s default, which the download used before.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var int
+	 */
+	const DOWNLOAD_TIMEOUT = 300;
 
 	/**
 	 * @var string The URL of the file.
@@ -54,7 +62,6 @@ class Handler {
 		$dir         = trailingslashit( $uploads_dir['basedir'] ?? '' ) . 'uncanny-automator';
 
 		$this->uploads_dir = $dir;
-
 	}
 
 	/**
@@ -92,13 +99,15 @@ class Handler {
 			return $media_path;
 		}
 
-		require_once ABSPATH . 'wp-admin/includes/file.php';
+		// One GET that follows no redirect, as the check before it: a public URL
+		// must not hand the download on to an address the check refused.
+		$download = ( new Remote_File_Client() )->download( $this->file_url, self::DOWNLOAD_TIMEOUT );
 
-		$this->temp_file_path = download_url( $this->file_url );
-
-		if ( is_wp_error( $this->temp_file_path ) ) {
+		if ( is_wp_error( $download ) ) {
 			return new WP_Error( 'download_failed', sprintf( 'We were unable to download the file from the provided URL: %s.', esc_url( $this->file_url ) ) );
 		}
+
+		$this->temp_file_path = $download->path();
 
 		if ( ! file_exists( $this->temp_file_path ) ) {
 			return new WP_Error( 'file_not_found', 'The downloaded file could not be found. Please check that the URL is correct and ends with a valid file extension, such as .pdf, .png, or .doc, and try again.' );
@@ -285,35 +294,6 @@ class Handler {
 	}
 
 	/**
-	 * Handles the file names. If there is an extension, use that, otherwise try to detect.
-	 *
-	 * @param string $file_path The file path.
-	 *
-	 * @return string|false The file path with extension or false on failure.
-	 */
-	public function handle_file_name( $file_path ) {
-		$extension = $this->get_file_extension( $file_path );
-
-		if ( $extension ) {
-			return $file_path;
-		}
-
-		try {
-			$remote_file_ext_identifier = new Remote_File_Extension_Identifier();
-			$extension                  = $remote_file_ext_identifier->get_file_extension( $this->file_url );
-
-			if ( $extension ) {
-				return $file_path . '.' . $extension;
-			}
-
-			return false;
-		} catch ( Exception $e ) {
-			automator_log( 'Error: cannot identify file extension from url: ' . $e->getMessage(), __CLASS__ );
-			return false;
-		}
-	}
-
-	/**
 	 * Returns the url from the field value.
 	 *
 	 * @param string $field_value The JSON string of the field value.
@@ -329,7 +309,6 @@ class Handler {
 		}
 
 		return '';
-
 	}
 
 	/**
@@ -355,5 +334,4 @@ class Handler {
 		// Return false if the file is not found in the Media Library
 		return false;
 	}
-
 }

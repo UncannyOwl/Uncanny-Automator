@@ -158,6 +158,7 @@ class Eventin_Order_Dispatcher {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- A plain ID lookup on Eventin's attendee posts; OrderModel::get_attendees() hydrates a model per row and needs Eventin classes the dispatcher avoids.
 		$ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT p.ID

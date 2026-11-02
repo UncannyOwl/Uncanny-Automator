@@ -18,13 +18,22 @@ class User_Selector {
 	public $unique_field       = '';
 	public $unique_field_value = '';
 
+	/**
+	 * Take legacy selector meta and hydrate this object from it.
+	 *
+	 * Marks the instance legacy so downstream readers know the values came
+	 * from the pre-8.0.0 meta shape rather than the canonical store.
+	 *
+	 * @param mixed $meta Legacy user-selector meta payload.
+	 *
+	 * @return void
+	 */
 	public function accept( $meta ) {
 
 		$this->is_legacy   = true;
 		$this->data_source = $meta;
 
 		$this->hydrate();
-
 	}
 
 	/**
@@ -76,14 +85,28 @@ class User_Selector {
 			)
 		);
 
-		if ( 'existingUser' === $this->source ) {
+		// Normalise the branch decision through the canonical VO so this reader
+		// stays in sync with the single source of truth for source literals.
+		// The emitted 'source' value in the returned structure is still $this->source
+		// (raw stored value) — only the branch selection goes through the normalizer.
+		// Recipes without user-selector meta hydrate source as array() — skip
+		// normalization for non-strings (neither branch matches, as before).
+		$canonical = $this->source;
+		if ( is_string( $this->source ) && class_exists( '\Uncanny_Automator\App\Recipe_Builder\User_Selector\Value_Objects\User_Selector_Source' ) ) {
+			try {
+				$canonical = ( new \Uncanny_Automator\App\Recipe_Builder\User_Selector\Value_Objects\User_Selector_Source( (string) $this->source ) )->get_value();
+			} catch ( \InvalidArgumentException $e ) {
+				$canonical = $this->source;
+			}
+		}
+
+		if ( 'existing-user' === $canonical || 'existingUser' === $canonical ) {
 			return $this->existing_user_structure( $fields );
 		}
 
-		if ( 'newUser' === $this->source ) {
+		if ( 'new-user' === $canonical || 'newUser' === $canonical ) {
 			return $this->new_user_structure( $fields );
 		}
-
 	}
 
 	/**

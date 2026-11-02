@@ -62,28 +62,6 @@ class Addons {
 	}
 
 	/**
-	 * Get the addon details by addon ID.
-	 *
-	 * @param int $addon_id The addon ID.
-	 *
-	 * @return array|false The addon details or false if not found.
-	 */
-	public static function get_addon_details( $addon_id ) {
-		// Get addons data.
-		$addons_data = self::get_addon_feed();
-
-		// Extract the addon details from the addons data.
-		$addon = false;
-		foreach ( $addons_data as $addon_data ) {
-			if ( absint( $addon_data['id'] ) === absint( $addon_id ) ) {
-				$addon = $addon_data;
-				break;
-			}
-		}
-		return $addon;
-	}
-
-	/**
 	 * Get the addon admin URL.
 	 *
 	 * @param array $args The query arguments.
@@ -100,19 +78,6 @@ class Addons {
 		$args = wp_parse_args( $args, $defaults );
 
 		return add_query_arg( $args, admin_url( 'edit.php' ) );
-	}
-
-	/**
-	 * Get the addon feed.
-	 *
-	 * @return array The addon feed.
-	 */
-	public static function get_addon_feed() {
-		static $addons_data = null;
-		if ( null === $addons_data ) {
-			$addons_data = ( new Services\Addons\Data\External_Feed() )->get_feed();
-		}
-		return $addons_data;
 	}
 
 	/**

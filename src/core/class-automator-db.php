@@ -19,6 +19,39 @@ class Automator_DB {
 	private static $instance;
 
 	/**
+	 * Seconds a request waits for another request that is changing Automator's tables.
+	 *
+	 * An upgrade takes well under a second. A request still waiting after this long changes no
+	 * table and carries on, so two requests never run the same CREATE or ALTER at once.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var int
+	 */
+	const SCHEMA_LOCK_WAIT = 10;
+
+	/**
+	 * How many table changes this request is running inside one another under the schema lock.
+	 *
+	 * activation() holds the lock while it calls create_tables(), which takes it too.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var int
+	 */
+	private static $schema_lock_depth = 0;
+
+	/**
+	 * Whether this request holds the database server's named lock. False while the depth is
+	 * above zero only on a server that can't take named locks.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var bool
+	 */
+	private static $schema_lock_held = false;
+
+	/**
 	 *
 	 */
 	public function __construct() {
@@ -113,10 +146,6 @@ class Automator_DB {
 		$tbl_action_log = $wpdb->prefix . 'uap_action_log';
 		// Automator action meta data log
 		$tbl_action_log_meta = $wpdb->prefix . 'uap_action_log_meta';
-		// Automator Closure Log
-		$tbl_closure_log = $wpdb->prefix . 'uap_closure_log';
-		// Automator closure meta data log
-		$tbl_closure_log_meta = $wpdb->prefix . 'uap_closure_log_meta';
 		// Tokens log
 		$tbl_tokens_log = $wpdb->prefix . 'uap_tokens_log';
 		// API retries log
@@ -133,6 +162,17 @@ class Automator_DB {
 		$tbl_error_log = $wpdb->prefix . 'uap_error_log';
 		// Automator run snapshots
 		$tbl_run_snapshots = $wpdb->prefix . 'uap_run_snapshots';
+		// Async job tracking — platform 202-async dispatches awaiting callback.
+		$tbl_async_jobs = $wpdb->prefix . 'uap_async_jobs';
+		// Connections registry for /v3/* integrations (coexists with legacy
+		// per-integration uap_options entries; see automator-platform-alignment
+		// Task 2 + platform Plan 02b coexistence ADR).
+		$tbl_connections = $wpdb->prefix . 'uap_connections';
+		// Durable ingress inbox — platform callback batches (async
+		// completions + vendor events) land here BEFORE processing; the
+		// drain consumes rows so a mid-request fatal is retried instead
+		// of lost. Mirrors the platform's callback_outbox.
+		$tbl_platform_inbox = $wpdb->prefix . 'uap_platform_inbox';
 
 		return "CREATE TABLE {$tbl_recipe_log} (
 `ID` bigint unsigned NOT NULL auto_increment,
@@ -241,32 +281,6 @@ KEY automator_action_log_id (`automator_action_log_id`),
 KEY automator_action_id (`automator_action_id`),
 KEY meta_key (meta_key(20))
 ) ENGINE=InnoDB {$charset_collate};
-CREATE TABLE {$tbl_closure_log} (
-`ID` bigint unsigned NOT NULL auto_increment,
-`date_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-`user_id` bigint unsigned NOT NULL,
-`automator_closure_id` bigint unsigned NOT NULL,
-`automator_recipe_id` bigint unsigned NOT NULL,
-`automator_recipe_log_id` bigint unsigned NOT NULL,
-`completed` tinyint(1) unsigned NOT NULL,
-PRIMARY KEY  (`ID`),
-KEY user_id (`user_id`),
-KEY automator_recipe_id (`automator_recipe_id`),
-KEY automator_closure_id (`automator_closure_id`),
-KEY completed (`completed`)
-) ENGINE=InnoDB {$charset_collate};
-CREATE TABLE {$tbl_closure_log_meta} (
-`ID` bigint unsigned NOT NULL auto_increment,
-`user_id` bigint unsigned NOT NULL,
-`automator_closure_id` bigint unsigned NOT NULL,
-`automator_closure_log_id` bigint unsigned NOT NULL,
-`meta_key` varchar(255) DEFAULT '' NOT NULL,
-`meta_value` longtext NULL,
-PRIMARY KEY  (`ID`),
-KEY user_id (`user_id`),
-KEY automator_closure_id (`automator_closure_id`),
-KEY meta_key (meta_key(15))
-) ENGINE=InnoDB {$charset_collate};
 CREATE TABLE {$tbl_api_log} (
 `ID` bigint unsigned NOT NULL auto_increment,
 `date_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -343,6 +357,74 @@ UNIQUE KEY recipe_log_id (`recipe_log_id`),
 KEY expires_at (`expires_at`),
 KEY recipe_user (`recipe_id`, `user_id`)
 ) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_async_jobs} (
+`ID` bigint unsigned NOT NULL auto_increment,
+`job_id` varchar(191) NOT NULL,
+`idempotency_key` varchar(64) NOT NULL DEFAULT '',
+`action_log_id` bigint unsigned NOT NULL,
+`action_id` bigint unsigned NOT NULL DEFAULT 0,
+`recipe_log_id` bigint unsigned NULL,
+`recipe_id` bigint unsigned NULL,
+`user_id` bigint unsigned NULL,
+`integration_code` varchar(64) NOT NULL DEFAULT '',
+`parsed` longtext NULL,
+`remembered` longtext NULL,
+`status` varchar(16) NOT NULL DEFAULT 'open',
+`source` varchar(16) NOT NULL DEFAULT '',
+`dispatched_at` datetime NULL,
+`claimed_at` datetime NULL,
+`redrives` smallint unsigned NOT NULL DEFAULT 0,
+`finished_at` datetime NULL,
+`origin` varchar(16) NOT NULL DEFAULT 'platform',
+`connection_id` varchar(64) NOT NULL DEFAULT '',
+PRIMARY KEY  (`ID`),
+UNIQUE KEY job_id (`job_id`),
+KEY idempotency_key (`idempotency_key`),
+KEY action_log_id (`action_log_id`),
+KEY run_action (`recipe_log_id`, `action_id`),
+KEY status_dispatched (`status`, `dispatched_at`),
+KEY status_claimed (`status`, `claimed_at`)
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_connections} (
+`id` bigint unsigned NOT NULL auto_increment,
+`connection_id` varchar(64) NOT NULL,
+`connection_signature` varchar(255) DEFAULT NULL,
+`identity_id` varchar(64) DEFAULT NULL,
+`integration` varchar(64) NOT NULL,
+`label` varchar(255) DEFAULT NULL,
+`platform_version` varchar(8) NOT NULL DEFAULT 'v2',
+`metadata` longtext DEFAULT NULL,
+`status` varchar(16) NOT NULL DEFAULT 'active',
+`is_default` tinyint(1) NOT NULL DEFAULT 0,
+`created_at` datetime NOT NULL,
+`updated_at` datetime NOT NULL,
+`last_used_at` datetime DEFAULT NULL,
+PRIMARY KEY (`id`),
+UNIQUE KEY uq_connection_id (`connection_id`),
+UNIQUE KEY uq_integration_identity (`integration`, `identity_id`),
+KEY idx_integration_status (`integration`, `status`)
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_platform_inbox} (
+`ID` bigint unsigned NOT NULL auto_increment,
+`payload_type` varchar(64) NOT NULL,
+`recipe_log_id` bigint unsigned NOT NULL DEFAULT 0,
+`run_node_id` bigint unsigned NULL,
+`job_id` varchar(191) NOT NULL,
+`payload` longtext NOT NULL,
+`status` varchar(16) NOT NULL DEFAULT 'pending',
+`claim_token` varchar(64) NOT NULL DEFAULT '',
+`attempts` smallint unsigned NOT NULL DEFAULT 0,
+`platform_received_at` DATETIME NULL,
+`received_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+`last_attempt_at` TIMESTAMP NULL,
+`error_message` longtext NULL,
+PRIMARY KEY  (`ID`),
+UNIQUE KEY uniq_event (`job_id`, `payload_type`),
+KEY pending_drain (`recipe_log_id`, `status`, `platform_received_at`),
+KEY recovery_scan (`status`, `last_attempt_at`),
+KEY retention_scan (`received_at`),
+KEY claim_token (`claim_token`)
+) ENGINE=InnoDB {$charset_collate};
 ";
 	}
 
@@ -360,7 +442,7 @@ KEY recipe_user (`recipe_id`, `user_id`)
 
 		do_action( 'automator_activation_before' );
 
-		automator_update_option( 'automator_over_time', array( 'installed_date' => time() ) );
+		self::record_installed_date();
 
 		$db_version = automator_get_option( 'uap_database_version', null );
 
@@ -371,21 +453,175 @@ KEY recipe_user (`recipe_id`, `user_id`)
 			return;
 		}
 
-		// 7.3.0: Deduplicate uap_recipe_count rows before adding UNIQUE KEY.
-		// dbDelta will fail to upgrade KEY→UNIQUE KEY if duplicates exist.
-		self::deduplicate_recipe_count();
-
-		// 7.3.0: Upgrade the legacy non-unique index in place. dbDelta NEVER
-		// drops indexes, so on upgraded sites it emits ADD UNIQUE KEY while
-		// the old KEY of the same name still exists — MySQL rejects it with
-		// "Duplicate key name 'recipe_id'" on every DB-version bump, and the
-		// unique key (which insert_recipe_count()'s INSERT IGNORE relies on
-		// to dedupe) never lands.
-		self::upgrade_recipe_count_unique_key();
-
-		self::create_tables();
+		if ( ! self::upgrade_schema() ) {
+			return;
+		}
 
 		do_action( 'automator_activation_after' );
+	}
+
+	/**
+	 * Record when Automator was first installed, once.
+	 *
+	 * activation() runs on every reactivation and every database version bump; the date the
+	 * notifications and the create-recipe reminder count from must stay the first install's.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return void
+	 */
+	private static function record_installed_date() {
+
+		$over_time = automator_get_option( 'automator_over_time', array() );
+
+		if ( is_array( $over_time ) && ! empty( $over_time['installed_date'] ) ) {
+			return;
+		}
+
+		$over_time                   = is_array( $over_time ) ? $over_time : array();
+		$over_time['installed_date'] = time();
+
+		automator_update_option( 'automator_over_time', $over_time );
+	}
+
+	/**
+	 * Bring the tables to this version's schema, one request at a time.
+	 *
+	 * On the first request after the files change, several requests can find the old database
+	 * version at once. Each one takes the schema lock first; a request that finds another one
+	 * upgrading waits for it, then reads the version again and finds nothing left to do. So one
+	 * request runs the CREATE and ALTER statements, and the others log no "already exists" or
+	 * "Duplicate key name" error.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool Whether this request upgraded the tables.
+	 */
+	private static function upgrade_schema() {
+
+		if ( ! self::acquire_schema_lock() ) {
+			return false;
+		}
+
+		try {
+			// Another request finished the upgrade while this one waited for the lock.
+			if ( (string) AUTOMATOR_DATABASE_VERSION === (string) automator_get_option( 'uap_database_version', null, true ) ) {
+				return false;
+			}
+
+			// 7.3.0: Deduplicate uap_recipe_count rows before adding UNIQUE KEY.
+			// dbDelta will fail to upgrade KEY→UNIQUE KEY if duplicates exist.
+			self::deduplicate_recipe_count();
+
+			// 7.3.0: Upgrade the legacy non-unique index in place. dbDelta NEVER
+			// drops indexes, so on upgraded sites it emits ADD UNIQUE KEY while
+			// the old KEY of the same name still exists — MySQL rejects it with
+			// "Duplicate key name 'recipe_id'" on every DB-version bump, and the
+			// unique key (which insert_recipe_count()'s INSERT IGNORE relies on
+			// to dedupe) never lands.
+			self::upgrade_recipe_count_unique_key();
+
+			// 8.0.0: closures are gone; their log tables go with them.
+			self::drop_closure_log_tables();
+
+			// 8.0.0: run the loop fold again on the next init. A site that went back to 7.x and
+			// upgraded again holds loops 7.x wrote after the first fold.
+			\Uncanny_Automator\App\Recipe_Builder\Block\Migration\Loop_Fold_Bulk_Migration::rearm();
+
+			self::create_tables();
+
+			return true;
+		} finally {
+			self::release_schema_lock();
+		}
+	}
+
+	/**
+	 * Take the schema lock, waiting up to SCHEMA_LOCK_WAIT seconds for a request that holds it.
+	 *
+	 * The lock is the database server's named lock, so it holds across PHP processes and web
+	 * servers, and the server frees it if the request dies. A server that can't take named locks
+	 * answers NULL; the change then runs without the lock, as it did before the lock existed.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool False when another request still holds the lock after the wait.
+	 */
+	private static function acquire_schema_lock() {
+
+		if ( 0 < self::$schema_lock_depth ) {
+			++self::$schema_lock_depth;
+
+			return true;
+		}
+
+		global $wpdb;
+
+		$suppressed = $wpdb->suppress_errors();
+		$acquired   = $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK( %s, %d )', self::schema_lock_name(), self::SCHEMA_LOCK_WAIT ) );
+		$wpdb->suppress_errors( $suppressed );
+
+		if ( '0' === (string) $acquired ) {
+			return false;
+		}
+
+		self::$schema_lock_held  = ( '1' === (string) $acquired );
+		self::$schema_lock_depth = 1;
+
+		return true;
+	}
+
+	/**
+	 * Give the schema lock back once the outermost table change that took it is done.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return void
+	 */
+	private static function release_schema_lock() {
+
+		--self::$schema_lock_depth;
+
+		if ( 0 < self::$schema_lock_depth || ! self::$schema_lock_held ) {
+			return;
+		}
+
+		global $wpdb;
+
+		$wpdb->query( $wpdb->prepare( 'SELECT RELEASE_LOCK( %s )', self::schema_lock_name() ) );
+
+		self::$schema_lock_held = false;
+	}
+
+	/**
+	 * The name of the lock that lets one request at a time change this site's Automator tables.
+	 *
+	 * Named locks are shared by every database on the server, so the name carries this site's
+	 * database and table prefix. MySQL allows 64 characters.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return string
+	 */
+	private static function schema_lock_name() {
+		global $wpdb;
+
+		return 'automator_schema_' . md5( DB_NAME . '|' . $wpdb->prefix );
+	}
+
+	/**
+	 * Drop the closure log tables the 8.0.0 closure retirement orphaned.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return void
+	 */
+	public static function drop_closure_log_tables() {
+		global $wpdb;
+		foreach ( array( 'uap_closure_log_meta', 'uap_closure_log' ) as $table ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Schema migration.
+			$wpdb->query( 'DROP TABLE IF EXISTS `' . esc_sql( $wpdb->prefix . $table ) . '`' );
+		}
 	}
 
 	/**
@@ -419,23 +655,23 @@ KEY recipe_user (`recipe_id`, `user_id`)
 		// Delete all rows except the one with the highest `runs` per recipe_id.
 		// Uses a subquery to find the ID of the row with MAX(runs) — not MAX(ID),
 		// which would keep the newest row regardless of its run count.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off schema migration on a custom table.
 		$wpdb->query(
-			"DELETE rc FROM {$table} rc
-			INNER JOIN (
-				SELECT recipe_id, (
-					SELECT ID FROM {$table} rc2
-					WHERE rc2.recipe_id = grouped.recipe_id
-					ORDER BY rc2.runs DESC, rc2.ID DESC
-					LIMIT 1
-				) AS keep_id
-				FROM (
-					SELECT recipe_id
-					FROM {$table}
-					GROUP BY recipe_id
-					HAVING COUNT(*) > 1
-				) grouped
-			) dup ON rc.recipe_id = dup.recipe_id AND rc.ID != dup.keep_id"
+			'DELETE rc FROM `' . esc_sql( $table ) . '` rc
+				INNER JOIN (
+					SELECT recipe_id, (
+						SELECT ID FROM `' . esc_sql( $table ) . '` rc2
+						WHERE rc2.recipe_id = grouped.recipe_id
+						ORDER BY rc2.runs DESC, rc2.ID DESC
+						LIMIT 1
+					) AS keep_id
+					FROM (
+						SELECT recipe_id
+						FROM `' . esc_sql( $table ) . '`
+						GROUP BY recipe_id
+						HAVING COUNT(*) > 1
+					) grouped
+				) dup ON rc.recipe_id = dup.recipe_id AND rc.ID != dup.keep_id'
 		);
 	}
 
@@ -476,8 +712,8 @@ KEY recipe_user (`recipe_id`, `user_id`)
 			return;
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$index = $wpdb->get_row( "SHOW INDEX FROM {$table} WHERE Key_name = 'recipe_id'" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off schema migration; reads live index state.
+		$index = $wpdb->get_row( 'SHOW INDEX FROM `' . esc_sql( $table ) . "` WHERE Key_name = 'recipe_id'" );
 
 		// No index of that name — dbDelta can ADD the unique key cleanly.
 		if ( null === $index ) {
@@ -485,26 +721,40 @@ KEY recipe_user (`recipe_id`, `user_id`)
 		}
 
 		// Already unique — nothing to upgrade.
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- Column name returned by SHOW INDEX.
 		if ( 0 === (int) $index->Non_unique ) {
 			return;
 		}
 
 		// One statement so the name is never left dangling between queries.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$wpdb->query( "ALTER TABLE {$table} DROP INDEX `recipe_id`, ADD UNIQUE KEY `recipe_id` (`recipe_id`)" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Schema migration.
+		$wpdb->query( 'ALTER TABLE `' . esc_sql( $table ) . '` DROP INDEX `recipe_id`, ADD UNIQUE KEY `recipe_id` (`recipe_id`)' );
 	}
 
 	/**
 	 * Create tables
 	 *
+	 * Runs under the schema lock, so a request that creates the tables while another one is
+	 * creating them waits, and then finds them in place. A request still waiting after
+	 * SCHEMA_LOCK_WAIT seconds creates nothing.
+	 *
 	 * @since 3.0
 	 */
 	public static function create_tables() {
-		$sql = self::get_schema();
 
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-		dbDelta( $sql );
-		automator_update_option( 'uap_database_version', AUTOMATOR_DATABASE_VERSION );
+		if ( ! self::acquire_schema_lock() ) {
+			return;
+		}
+
+		try {
+			$sql = self::get_schema();
+
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+			dbDelta( $sql );
+			automator_update_option( 'uap_database_version', AUTOMATOR_DATABASE_VERSION );
+		} finally {
+			self::release_schema_lock();
+		}
 	}
 
 	/**
@@ -520,8 +770,6 @@ KEY recipe_user (`recipe_id`, `user_id`)
 		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_recipe_log`;" );
 		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_action_log`;" );
 		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_action_log_meta`;" );
-		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_closure_log`;" );
-		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_closure_log_meta`;" );
 		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_trigger_log`;" );
 		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_trigger_log_meta`;" );
 		$wpdb->query( "ANALYZE TABLE `{$wpdb->prefix}uap_api_log`;" );
@@ -560,22 +808,26 @@ KEY recipe_user (`recipe_id`, `user_id`)
 
 		$recipe_view       = "{$wpdb->prefix}uap_recipe_logs_view";
 		$recipe_view_query = self::recipe_log_view_query();
-		$wpdb->query( "CREATE OR REPLACE SQL SECURITY INVOKER VIEW $recipe_view AS $recipe_view_query" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Schema migration; the view body is built from Automator's own table names, with no user input.
+		$wpdb->query( "CREATE OR REPLACE SQL SECURITY INVOKER VIEW $recipe_view AS $recipe_view_query" );
 
 		$trigger_view       = "{$wpdb->prefix}uap_trigger_logs_view";
 		$trigger_view_query = self::trigger_log_view_query();
 
-		$wpdb->query( "CREATE OR REPLACE SQL SECURITY INVOKER VIEW $trigger_view AS $trigger_view_query" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Schema migration; the view body is built from Automator's own table names, with no user input.
+		$wpdb->query( "CREATE OR REPLACE SQL SECURITY INVOKER VIEW $trigger_view AS $trigger_view_query" );
 
 		$action_view       = "{$wpdb->prefix}uap_action_logs_view";
 		$action_view_query = self::action_log_view_query();
 
-		$wpdb->query( "CREATE OR REPLACE SQL SECURITY INVOKER VIEW $action_view AS $action_view_query" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Schema migration; the view body is built from Automator's own table names, with no user input.
+		$wpdb->query( "CREATE OR REPLACE SQL SECURITY INVOKER VIEW $action_view AS $action_view_query" );
 
 		$api_view       = "{$wpdb->prefix}uap_api_logs_view";
 		$api_view_query = self::api_log_view_query();
 
-		$wpdb->query( "CREATE OR REPLACE SQL SECURITY INVOKER VIEW $api_view AS $api_view_query" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Schema migration; the view body is built from Automator's own table names, with no user input.
+		$wpdb->query( "CREATE OR REPLACE SQL SECURITY INVOKER VIEW $api_view AS $api_view_query" );
 		automator_update_option( 'uap_database_views_version', AUTOMATOR_DATABASE_VIEWS_VERSION );
 	}
 
@@ -906,7 +1158,7 @@ KEY recipe_user (`recipe_id`, `user_id`)
 
 		$prefixed_tb_name = $wpdb->prefix . $table_name;
 
-		return $wpdb->query( "TRUNCATE `$prefixed_tb_name`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		return $wpdb->query( 'TRUNCATE `' . esc_sql( $prefixed_tb_name ) . '`' );
 	}
 
 	/**
@@ -927,17 +1179,7 @@ KEY recipe_user (`recipe_id`, `user_id`)
 		// Only allow dropping of view owned by Automator.
 		if ( in_array( $view_name, array_keys( $views ), true ) ) {
 
-			$dropped = $wpdb->query(
-			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-				str_replace(
-					"'",
-					'',
-					$wpdb->prepare(
-						'DROP VIEW IF EXISTS `%s`',
-						esc_sql( filter_var( $views[ $view_name ], FILTER_SANITIZE_FULL_SPECIAL_CHARS ) )
-					)
-				)
-			);
+			$dropped = $wpdb->query( 'DROP VIEW IF EXISTS `' . esc_sql( $views[ $view_name ] ) . '`' );
 
 		}
 
@@ -955,8 +1197,6 @@ KEY recipe_user (`recipe_id`, `user_id`)
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_recipe_log_meta`;" );
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_action_log`;" );
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_action_log_meta`;" );
-		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_closure_log`;" );
-		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_closure_log_meta`;" );
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_trigger_log`;" );
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_trigger_log_meta`;" );
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_api_log`;" );
@@ -1039,61 +1279,80 @@ ON DUPLICATE KEY UPDATE
 	                   autoload = VALUES(autoload)";
 
 		// Execute the query
-		$wpdb->query( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Each LIKE condition is prepared above; the rest is Automator's and WordPress's own table names.
+		$wpdb->query( $sql_query );
 
-		$async_actions = self::get_automator_async_run_with_hash();
-
-		if ( ! empty( $async_actions ) ) {
-			foreach ( $async_actions as $hash ) {
-				$action = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->options} WHERE option_name = %s", $hash['hash'] ) );
-				$wpdb->insert(
-					$wpdb->prefix . 'uap_options',
-					array(
-						'option_name'  => $action->option_name,
-						'option_value' => $action->option_value,
-						'autoload'     => $action->autoload,
-					),
-					array(
-						'%s',
-						'%s',
-						'%s',
-					)
-				);
-			}
+		foreach ( self::get_automator_async_run_with_hash() as $async_action ) {
+			self::copy_async_payload( $async_action['hash'] );
 		}
 
 		add_option( 'uncanny_automator_v6_options_migrated', time() );
 	}
 
 	/**
+	 * Copy one pending async job's payload from wp_options into uap_options, once.
+	 *
+	 * A payload already in uap_options (moved by the copy above, as Pro's automator_async_* payloads
+	 * are, or by an earlier run) is left as it is. A job without a payload has nothing to copy.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param mixed $hash The payload's option name, the job's first argument.
+	 *
+	 * @return void
+	 */
+	private static function copy_async_payload( $hash ) {
+		global $wpdb;
+
+		if ( ! is_string( $hash ) || '' === $hash ) {
+			return;
+		}
+
+		$copied = $wpdb->get_var( $wpdb->prepare( "SELECT 1 FROM {$wpdb->prefix}uap_options WHERE option_name = %s", $hash ) );
+
+		if ( null !== $copied ) {
+			return;
+		}
+
+		$payload = $wpdb->get_row( $wpdb->prepare( "SELECT option_value, autoload FROM {$wpdb->options} WHERE option_name = %s", $hash ) );
+
+		if ( null === $payload ) {
+			return;
+		}
+
+		$wpdb->insert(
+			$wpdb->prefix . 'uap_options',
+			array(
+				'option_name'  => $hash,
+				'option_value' => $payload->option_value,
+				'autoload'     => $payload->autoload,
+			),
+			array(
+				'%s',
+				'%s',
+				'%s',
+			)
+		);
+	}
+
+	/**
 	 * @return array
 	 */
 	public static function get_automator_async_run_with_hash() {
-		// Ensure the Action Scheduler library is available.
-		if ( ! class_exists( 'ActionScheduler' ) ) {
-			return array();
-		}
-
 		$query_args = array(
 			'hook'     => 'automator_async_run_with_hash',
-			'status'   => \ActionScheduler_Store::STATUS_PENDING, // Change if needed: 'complete', 'failed', 'canceled'
-			'per_page' => -1, // Retrieve all actions
+			'status'   => Services\Action_Scheduler::STATUS_PENDING,
+			'per_page' => -1,
 		);
-
-		$store   = \ActionScheduler::store();
-		$actions = $store->query_actions( $query_args );
 
 		$results = array();
 
-		if ( ! empty( $actions ) ) {
-			foreach ( $actions as $action_id ) {
-				$args      = $store->fetch_action( $action_id )->get_args();
-				$first_arg = ! empty( $args ) ? $args[0] : null; // Get the first argument
+		foreach ( Services\Action_Scheduler::get_scheduled_actions( $query_args ) as $action ) {
+			$args = $action->get_args();
 
-				$results[] = array(
-					'hash' => $first_arg,
-				);
-			}
+			$results[] = array(
+				'hash' => ! empty( $args ) ? $args[0] : null,
+			);
 		}
 
 		return $results;

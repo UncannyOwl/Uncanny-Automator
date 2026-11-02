@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects;
 
@@ -190,7 +189,7 @@ class Recipe_Triggers {
 			$trigger_type = $trigger->get_trigger_type()->get_value();
 			if ( $trigger_type !== $recipe_type ) {
 				throw new \InvalidArgumentException(
-					"Trigger type '{$trigger_type}' does not match recipe type '{$recipe_type}'"
+					sprintf( "Trigger type '%s' does not match recipe type '%s'", esc_html( $trigger_type ), esc_html( $recipe_type ) )
 				);
 			}
 		}

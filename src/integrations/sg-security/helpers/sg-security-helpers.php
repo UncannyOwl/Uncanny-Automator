@@ -28,6 +28,7 @@ class Sg_Security_Helpers {
 	 */
 	public function get_visitor_by_ip( $ip ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- SiteGround Security's own table; the plugin offers no API for this query. Table name comes from get_table_name(), which is $wpdb->prefix plus a fixed table name.
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				'SELECT * FROM `' . $this->get_table_name() . '` WHERE `ip` = %s LIMIT 1', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -45,6 +46,7 @@ class Sg_Security_Helpers {
 	 */
 	public function get_visitor_by_user_id( $user_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- SiteGround Security's own table; the plugin offers no API for this query. Table name comes from get_table_name(), which is $wpdb->prefix plus a fixed table name.
 		return $wpdb->get_row(
 			$wpdb->prepare(
 				'SELECT * FROM `' . $this->get_table_name() . '` WHERE `user_id` = %d LIMIT 1', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -72,6 +74,7 @@ class Sg_Security_Helpers {
 			'blocked_on' => time(),
 		);
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- SiteGround Security's own table; write; the plugin offers no API for this query.
 		$result = $wpdb->insert( $this->get_table_name(), $data );
 
 		if ( false === $result ) {
@@ -98,6 +101,7 @@ class Sg_Security_Helpers {
 			$data['blocked_on'] = time();
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- SiteGround Security's own table; write; the plugin offers no API for this query.
 		return $wpdb->update(
 			$this->get_table_name(),
 			$data,

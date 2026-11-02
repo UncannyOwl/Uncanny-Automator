@@ -13,6 +13,7 @@ class AUDIENCE_UNSUBSCRIBEAUSER extends \Uncanny_Automator\Recipe\App_Action {
 	use Mailchimp_Audience_Fields;
 	use Mailchimp_Email_Fields;
 	use Mailchimp_Subscriber_Fields;
+	use \Uncanny_Automator\Recipe\Background_Job_Without_Tokens;
 
 	/**
 	 * Setup action.
@@ -64,12 +65,14 @@ class AUDIENCE_UNSUBSCRIBEAUSER extends \Uncanny_Automator\Recipe\App_Action {
 		$list_id    = $this->get_audience_from_parsed();
 		$user_email = $this->get_email_from_user( $user_id );
 
-		if ( $this->should_delete_member() ) {
-			$this->api->delete_subscriber( $list_id, $user_email );
-		} else {
-			$this->api->unsubscribe_contact( $list_id, $user_email );
+		$response = $this->should_delete_member()
+			? $this->api->delete_subscriber( $list_id, $user_email, $action_data )
+			: $this->api->unsubscribe_contact( $list_id, $user_email, $action_data );
+
+		if ( $this->deferred( $response ) ) {
+			return true;
 		}
 
-		return true;
+		return $this->process_job( $response, $parsed, $action_data );
 	}
 }

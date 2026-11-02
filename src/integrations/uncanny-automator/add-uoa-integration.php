@@ -15,6 +15,8 @@ class Add_Uoa_Integration {
 	 */
 	public function __construct() {
 		$this->maybe_migrate_numtimes();
+		// The UOA actions' target field moved from RECIPE_ID, which shared the structural recipe_id row, to UOA_RECIPE_ID.
+		new Integrations\Uncanny_Automator\Uoa_Recipe_Id_Field_Migration( 'uoa_recipe_id_field' );
 		$this->setup();
 	}
 
@@ -50,6 +52,7 @@ class Add_Uoa_Integration {
 		}
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API rewrites a meta key or value across posts.
 		$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_key = %s WHERE meta_key = %s", 'NUMTIMES', 'RECIPENUMTIMES' ) );
 
 		automator_update_option( 'uoa_recipenumtimes_changed_to_numtimes', 'yes' );

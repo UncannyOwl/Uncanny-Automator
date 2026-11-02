@@ -24,11 +24,11 @@ final class Feature_State_Policy {
 	/**
 	 * Snapshot compatibility revision.
 	 *
-	 * Bump this value whenever evaluate() changes the policy-to-visibility mapping.
+	 * Bump this value when the resolver or evaluator changes feature visibility.
 	 * Stored snapshots from another revision are rejected instead of carrying an old
 	 * policy decision across the change.
 	 */
-	public const REVISION = '7.5.1.1';
+	public const REVISION = '7.5.1.1-hosted-lite-enrollment';
 
 	/**
 	 * Resolve the Release 7.5.1.1 feature state.

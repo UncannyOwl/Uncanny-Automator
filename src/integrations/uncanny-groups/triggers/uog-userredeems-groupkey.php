@@ -28,9 +28,9 @@ class UOG_USERREDEEMS_GROUPKEY extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 	protected function setup_trigger() {
 		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
-		// translators: %1$s is the group.
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Group */
 				esc_html_x( 'A user redeems {{a group:%1$s}} key', 'Uncanny Groups', 'uncanny-automator' ),
 				$this->get_trigger_meta()
 			)

@@ -214,12 +214,12 @@ final class WordPressReusablePort implements ReusablePortInterface
         $remaining = get_post($reusableId);
         if ($forceDelete && $remaining instanceof \WP_Post) {
             throw new WordPressWriteVerificationException(
-                "WordPress returned from deleting reusable {$reusableId}, but the post still exists.",
+                sprintf('WordPress returned from deleting reusable %d, but the post still exists.', (int) $reusableId),
             );
         }
         if (!$forceDelete && (!$remaining instanceof \WP_Post || $remaining->post_status !== 'trash')) {
             throw new WordPressWriteVerificationException(
-                "WordPress returned from trashing reusable {$reusableId}, but the post is not in Trash.",
+                sprintf('WordPress returned from trashing reusable %d, but the post is not in Trash.', (int) $reusableId),
             );
         }
 
@@ -251,10 +251,12 @@ final class WordPressReusablePort implements ReusablePortInterface
         global $wpdb;
 
         $postmetaTable = isset($wpdb->postmeta) ? (string) $wpdb->postmeta : (string) $wpdb->prefix . 'postmeta';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Live state read; must not be cached.
         $stored = $wpdb->get_var($wpdb->prepare(
-            "SELECT meta_value FROM {$postmetaTable}
+            "SELECT meta_value FROM %i
              WHERE post_id = %d AND meta_key = %s
              ORDER BY meta_id DESC LIMIT 1",
+            $postmetaTable,
             $postId,
             $metaKey,
         ));
@@ -291,9 +293,11 @@ final class WordPressReusablePort implements ReusablePortInterface
         global $wpdb;
         $table = SchemaManager::globalSectionsTableName();
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
         $row = $wpdb->get_row(
             $wpdb->prepare(
-                "SELECT id FROM {$table} WHERE global_part_id = %d ORDER BY position ASC, id ASC LIMIT 1",
+                "SELECT id FROM %i WHERE global_part_id = %d ORDER BY position ASC, id ASC LIMIT 1",
+                $table,
                 $reusableId,
             )
         );
@@ -344,19 +348,21 @@ final class WordPressReusablePort implements ReusablePortInterface
                 }
             }
         } catch (\Throwable $cleanupFailure) {
-            throw new GlobalPartCreationUncertainException(
+            $uncertain = new GlobalPartCreationUncertainException(
                 $reusableId,
                 $failure,
                 $cleanupFailure,
             );
+            throw $uncertain;
         }
 
         if ($deleted === false || $deleted instanceof \WP_Error) {
-            throw new GlobalPartCreationUncertainException(
+            $uncertain = new GlobalPartCreationUncertainException(
                 $reusableId,
                 $failure,
                 new \RuntimeException('The incomplete reusable post could not be removed.'),
             );
+            throw $uncertain;
         }
 
         throw $failure;
@@ -379,6 +385,7 @@ final class WordPressReusablePort implements ReusablePortInterface
     {
         global $wpdb;
         $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write; wp_update_post() would run save_post hooks.
         $updated = $wpdb->update(
             $postsTable,
             ['post_title' => $title],

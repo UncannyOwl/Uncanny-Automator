@@ -59,7 +59,7 @@ class List_Recipes_Tool extends Abstract_MCP_Tool {
 	 * @return string Tool description.
 	 */
 	public function get_description() {
-		return 'List recipes with optional filters for status, type, or title. Returns recipe IDs, titles, and status for selecting or presenting to users.';
+		return 'List recipes with optional filters for status, type, or title. Returns recipe IDs, titles, status, and site-wide published, drafted and trashed counts. For site-wide count questions, use the total_* fields (limit 1 is sufficient); do not paginate to count. Totals ignore filters.';
 	}
 
 	/**
@@ -93,10 +93,16 @@ class List_Recipes_Tool extends Abstract_MCP_Tool {
 				),
 				'limit'  => array(
 					'type'        => 'integer',
-					'description' => 'Maximum number of recipes to return in the response. Use for pagination and performance optimization.',
+					'description' => 'Maximum recipes per page (default 50). Results are ordered by newest creation date, then ID. Continue with next_offset while has_more is true; keep filters unchanged.',
 					'minimum'     => 1,
 					'maximum'     => 100,
 					'default'     => 50,
+				),
+				'offset' => array(
+					'type'        => 'integer',
+					'description' => 'Number of matching recipes to skip. Use next_offset from the previous response.',
+					'minimum'     => 0,
+					'default'     => 0,
 				),
 			),
 			'required'   => array(),
@@ -116,7 +122,30 @@ class List_Recipes_Tool extends Abstract_MCP_Tool {
 			'properties' => array(
 				'success'      => array( 'type' => 'boolean' ),
 				'message'      => array( 'type' => 'string' ),
-				'recipe_count' => array( 'type' => 'integer' ),
+				'recipe_count' => array(
+					'type'        => 'integer',
+					'description' => 'Number of recipes returned on this page, not a site-wide total.',
+				),
+				'total_recipes' => array(
+					'type'        => 'integer',
+					'description' => 'Site-wide published plus drafted recipes. Excludes trash and other statuses. Independent of filters and pagination.',
+				),
+				'total_published_recipes' => array(
+					'type'        => 'integer',
+					'description' => 'Site-wide published recipes, independent of filters and pagination.',
+				),
+				'total_drafted_recipes' => array(
+					'type'        => 'integer',
+					'description' => 'Site-wide drafted recipes, independent of filters and pagination. Excludes auto-drafts.',
+				),
+				'total_trashed_recipes' => array(
+					'type'        => 'integer',
+					'description' => 'Site-wide trashed recipes, reported separately from total_recipes. Independent of filters and pagination.',
+				),
+				'limit'        => array( 'type' => 'integer' ),
+				'offset'       => array( 'type' => 'integer' ),
+				'has_more'     => array( 'type' => 'boolean' ),
+				'next_offset'  => array( 'type' => array( 'integer', 'null' ) ),
 				'recipes'      => array(
 					'type'  => 'array',
 					'items' => array(
@@ -129,7 +158,7 @@ class List_Recipes_Tool extends Abstract_MCP_Tool {
 					),
 				),
 			),
-			'required'   => array( 'success', 'recipes', 'recipe_count' ),
+			'required'   => array( 'success', 'recipes', 'recipe_count', 'total_recipes', 'total_published_recipes', 'total_drafted_recipes', 'total_trashed_recipes' ),
 		);
 	}
 
@@ -142,13 +171,21 @@ class List_Recipes_Tool extends Abstract_MCP_Tool {
 	 * @return array Tool execution result.
 	 */
 	protected function execute_tool( User_Context $user_context, array $params ): array {
-		// Prepare filters, defaulting status to 'publish' as before
+		$limit  = isset( $params['limit'] ) ? min( 100, max( 1, (int) $params['limit'] ) ) : 50;
+		$offset = isset( $params['offset'] ) ? max( 0, (int) $params['offset'] ) : 0;
+
+		// Fetch one extra matching recipe to distinguish a full final page.
 		$filters = array_filter(
 			array(
-				'status' => isset( $params['status'] ) ? strtolower( $params['status'] ) : null,
-				'type'   => isset( $params['type'] ) ? strtolower( $params['type'] ) : null,
-				'title'  => isset( $params['title'] ) ? trim( (string) $params['title'] ) : null,
-				'limit'  => isset( $params['limit'] ) ? max( 1, (int) $params['limit'] ) : null,
+				'status'  => isset( $params['status'] ) ? strtolower( $params['status'] ) : null,
+				'type'    => isset( $params['type'] ) ? strtolower( $params['type'] ) : null,
+				'title'   => isset( $params['title'] ) ? trim( (string) $params['title'] ) : null,
+				'limit'   => $limit + 1,
+				'offset'  => $offset,
+				'orderby' => array(
+					'date' => 'DESC',
+					'ID'   => 'DESC',
+				),
 			),
 			function ( $value ) {
 				return null !== $value && '' !== $value;
@@ -162,6 +199,18 @@ class List_Recipes_Tool extends Abstract_MCP_Tool {
 		if ( is_wp_error( $result ) ) {
 			return Json_Rpc_Response::create_error_response( $result->get_error_message() );
 		}
+
+		$has_more               = count( $result['recipes'] ) > $limit;
+		$result['recipes']      = array_slice( $result['recipes'], 0, $limit );
+		$result['recipe_count'] = count( $result['recipes'] );
+		$result['limit']        = $limit;
+		$result['offset']       = $offset;
+		$result['has_more']     = $has_more;
+		$result['next_offset']  = $has_more ? $offset + $limit : null;
+
+		// Counting must not require an AI to retrieve every page on a large site.
+		// Keep recipe_count page-local for existing clients; totals are site-wide.
+		$result = array_merge( $result, $this->recipe_service->get_recipe_totals() );
 
 		return Json_Rpc_Response::create_success_response( 'Recipes retrieved successfully', $result );
 	}

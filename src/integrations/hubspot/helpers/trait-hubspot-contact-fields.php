@@ -550,8 +550,8 @@ trait HubSpot_Contact_Fields {
 	private function add_field_error( $value, $field_type, $field_name ) {
 		$value_str = is_array( $value ) ? implode( ', ', $value ) : (string) $value;
 
-		// translators: %1$s: field type, %2$s: field value, %3$s: field name.
 		$this->field_errors[] = sprintf(
+			/* translators: %1$s: Field type, %2$s: Field value, %3$s: Field name */
 			esc_html_x( 'Invalid %1$s value "%2$s" for field "%3$s"', 'HubSpot', 'uncanny-automator' ),
 			$field_type,
 			$value_str,

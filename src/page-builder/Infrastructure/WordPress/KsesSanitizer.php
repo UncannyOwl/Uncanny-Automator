@@ -134,7 +134,7 @@ final class KsesSanitizer
         } catch (\Throwable $failure) {
             // wp_kses_allowed_html decides sanitization for the whole site.
             // A Page Builder failure must leave the allowed tags unchanged.
-            error_log('[Uncanny Page Builder] Kses allowlist extension failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Kses allowlist extension failed (' . $failure::class . ')');
 
             return $original;
         }

@@ -85,6 +85,7 @@ class Sg_Block_User extends \Uncanny_Automator\Recipe\Action {
 		$user = get_userdata( $target_user_id );
 
 		if ( false === $user ) {
+			/* translators: %d: User ID */
 			$this->add_log_error( sprintf( esc_html_x( 'User with ID %d does not exist.', 'Security Optimizer', 'uncanny-automator' ), $target_user_id ) );
 			return false;
 		}
@@ -100,6 +101,7 @@ class Sg_Block_User extends \Uncanny_Automator\Recipe\Action {
 		} else {
 			$inserted = $this->get_item_helpers()->insert_visitor( '', $target_user_id, 1 );
 			if ( false === $inserted ) {
+				/* translators: %d: User ID */
 				error_log( sprintf( esc_html_x( 'Uncanny Automator SG_BLOCK_USER: Could not insert visitor record for user %d.', 'Security Optimizer', 'uncanny-automator' ), $target_user_id ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			}
 		}

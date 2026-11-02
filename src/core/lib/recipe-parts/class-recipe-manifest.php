@@ -5,7 +5,7 @@
  * Maintains a cached manifest of which recipe part codes are active in published recipes.
  * Used by the demand-driven integration loading system to skip unused triggers/actions.
  *
- * The manifest is rebuilt via WordPress hooks (transition_post_status, before_delete_post)
+ * The manifest is rebuilt via WordPress hooks (transition_post_status, after_delete_post)
  * and stored in uap_options. Zero queries at runtime — just isset() lookups.
  *
  * @package Uncanny_Automator
@@ -97,14 +97,13 @@ class Recipe_Manifest {
 	 */
 	public function register_hooks() {
 		add_action( 'transition_post_status', array( $this, 'on_status_change' ), 10, 3 );
-		add_action( 'before_delete_post', array( $this, 'on_post_deleted' ), 10, 2 );
+		// After the row is gone: a rebuild before it would still count the deleted recipe or trigger.
+		add_action( 'after_delete_post', array( $this, 'on_post_deleted' ), 10, 2 );
 		add_action( 'activated_plugin', array( $this, 'on_plugin_change' ) );
 		add_action( 'deactivated_plugin', array( $this, 'on_plugin_change' ) );
 
-		// Trigger/action meta saved via the recipe editor REST API.
-		add_action( 'automator_recipe_option_updated', array( $this, 'on_recipe_option_updated' ) );
-		// Recipe status change via the recipe editor REST API.
-		add_action( 'automator_recipe_status_updated', array( $this, 'on_recipe_option_updated' ) );
+		// Any recipe or item save, from the builder, MCP or an automator_*() helper.
+		add_action( 'automator_event_recipe_changed', array( $this, 'on_recipe_changed' ) );
 	}
 
 	/**
@@ -273,11 +272,16 @@ class Recipe_Manifest {
 			'escape_hatch'         => $this->is_escape_hatch_enabled(),
 			'first_deploy'         => $this->is_first_deploy(),
 			'recipe_edit_page'     => $this->is_recipe_edit_page(),
+			'recipe_portability'   => $this->is_recipe_portability_request(),
 			'premium_integrations' => $this->is_premium_integrations_page(),
+			'app_platform_status'  => $this->is_app_platform_status_page(),
 			'options_php_submit'   => $this->is_automator_options_php_submit(),
 			'automator_ajax'       => $this->is_automator_ajax(),
 			'automator_rest'       => $this->is_automator_rest(),
 			'mcp_rest'             => $this->is_mcp_rest(),
+			'as_runner'            => $this->is_action_scheduler_runner(),
+			'platform_webhook'     => $this->is_automator_platform_webhook(),
+			'notice_review'        => $this->is_notice_review(),
 		);
 
 		$this->should_load_all = false;
@@ -297,6 +301,42 @@ class Recipe_Manifest {
 	}
 
 	/**
+	 * Settings > Advanced > App Platform status: it lists every app whose
+	 * connections the Automator App Platform holds, so every integration loads,
+	 * as on the App integrations tab.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool
+	 */
+	private function is_app_platform_status_page() {
+
+		if ( ! is_admin() ) {
+			return false;
+		}
+
+		// Nonce verification intentionally skipped — routing decision during bootstrap.
+		return 'uncanny-automator-config' === \automator_request_input( 'page' )
+			&& 'advanced' === \automator_request_input( 'tab' )
+			&& 'app_platform_status' === \automator_request_input( 'advanced' );
+	}
+
+	/**
+	 * A wp-admin request while every notice is shown for review
+	 * (`automator_admin_notices_show_all`, staging sites only): an
+	 * integration adds its notices when it loads, so every integration loads.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool
+	 */
+	private function is_notice_review() {
+
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- The hook name is a class constant that starts with the automator_ prefix.
+		return is_admin() && true === (bool) apply_filters( \Uncanny_Automator\App\Presentation\Admin\Notices\Notice_Center::SHOW_ALL_FILTER, false );
+	}
+
+	/**
 	 * Constant or filter escape hatch.
 	 *
 	 * @return bool
@@ -304,6 +344,32 @@ class Recipe_Manifest {
 	private function is_escape_hatch_enabled() {
 		return ( defined( 'AUTOMATOR_LOAD_ALL_INTEGRATIONS' ) && AUTOMATOR_LOAD_ALL_INTEGRATIONS )
 			|| apply_filters( 'automator_should_load_all_integrations', false );
+	}
+
+	/**
+	 * Admin recipe-portability requests — the duplicate row action and the
+	 * import upload. Both replay recipes through the portability engine's
+	 * CRUD services, which validate trigger/action codes against the LIVE
+	 * registries and enrich triggers from them — under demand-driven loading
+	 * a recipe using a not-currently-loaded integration would fail with
+	 * "Trigger code does not exist".
+	 *
+	 * @return bool
+	 */
+	private function is_recipe_portability_request() {
+
+		if ( ! is_admin() ) {
+			return false;
+		}
+
+		// Nonce verification intentionally skipped — routing decision during
+		// bootstrap; the handlers verify their own nonces.
+		if ( 'copy_recipe_parts' === \automator_request_input( 'action' ) ) {
+			return true;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- presence probe only; the upload handler verifies the nonce.
+		return isset( $_POST['import-recipe-submit'] );
 	}
 
 	/**
@@ -421,7 +487,6 @@ class Recipe_Manifest {
 				'facebook_lead',        // Facebook Lead Ads.
 				'webhook_url_',         // Pro webhooks: webhook_url_get_webhook_url.
 				'get_samples_',         // Pro webhooks: get_samples_get_webhook_url.
-				'cancel_async_run',     // Pro async actions.
 				'auto_plugin_install',  // Pro auto-installer.
 				'recipe-triggers',      // Activity log.
 				'recipe-actions',       // Activity log.
@@ -468,6 +533,83 @@ class Recipe_Manifest {
 		return \is_mcp_rest_request();
 	}
 
+	/**
+	 * Action Scheduler is firing in this request — wp-cron, the queue
+	 * runner, or any explicit AS dispatch via WP-CLI.
+	 *
+	 * AS resumes scheduled Automator actions (delay/schedule wrappers,
+	 * deferred dispatches) here. If targeted-mode loading skipped the
+	 * integrations those actions belong to — which it does by default for
+	 * App_Integrations whose `is_app_connected()` returns false — the
+	 * action class is never instantiated, `action_execution_function_from_action_code`
+	 * returns null, and `Action_Run_Stage::verify_execution_function` throws
+	 * `Pipeline_Exception('action-function-not-exist')`. Full load on this
+	 * request type guarantees the action class is registered before the AS
+	 * callback fires.
+	 *
+	 * Two signals, OR'd together:
+	 *  - `wp_doing_cron()` covers the wp-cron.php request that AS uses by
+	 *    default (`AS_Store_DB::DEFAULT_DATA_STORE` falls through to cron
+	 *    when the runner is unreachable).
+	 *  - `as_async_request_queue_runner` admin-ajax action — the queue
+	 *    runner's preferred async fire path. The action prefix doesn't
+	 *    match `is_automator_ajax`'s allow-list, so we recognise it
+	 *    explicitly here.
+	 *
+	 * Cost — read honestly: the gate is `wp_doing_cron()` (plus the one AS
+	 * ajax action), so EVERY wp-cron request full-loads every Automator
+	 * integration, not just the AS ticks that actually resume an Automator
+	 * action. We don't cheaply tell the two apart — knowing "AS is about to
+	 * run an automator_* hook" needs a DB probe. Frequency tracks the site's
+	 * cron: default pseudo-cron fires a loopback wp-cron.php request whenever
+	 * any due event exists (can be frequent on an active site), a system cron
+	 * fires each configured tick. Accepted because cron requests are
+	 * background / non-user-facing, whereas the alternative — introspect
+	 * `wp_actionscheduler_actions` for a pending automator_* hook at init:1 —
+	 * adds a per-request DB round-trip on EVERY request for a check that's
+	 * negative most of the time.
+	 *
+	 * @return bool
+	 */
+	private function is_action_scheduler_runner() {
+		if ( function_exists( 'wp_doing_cron' ) && wp_doing_cron() ) {
+			return true;
+		}
+
+		if ( ! wp_doing_ajax() ) {
+			return false;
+		}
+
+		// Nonce check intentionally skipped — bootstrap-time routing decision.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) : '';
+
+		return 'as_async_request_queue_runner' === $action;
+	}
+
+	/**
+	 * Automator Platform inbound webhook — `/wp-json/automator/platform/v1/...`
+	 * (and forward-compatibly any `automator/platform/vN` namespace).
+	 *
+	 * Matches the same execution-context shape as `is_action_scheduler_runner()`:
+	 * a webhook delivery resumes deferred async-app actions via
+	 * `automator_platform_async_completed` → `Async_App_Action_Resume_Stage`,
+	 * and the post-resume scheduler repump dispatches downstream actions whose
+	 * token deps just cleared. Any of those downstream actions belonging to a
+	 * targeted-mode-skipped App_Integration would hit the same `null
+	 * execution_function` → `Pipeline_Exception('action-function-not-exist')`
+	 * failure as the AS-resume path. Full load this request type so the action
+	 * classes are registered when the resume-driven repump dispatches them.
+	 *
+	 * Pattern matches `automator/platform/v` to forward-cover future v2/v3
+	 * webhook namespaces without per-version churn.
+	 *
+	 * @return bool
+	 */
+	private function is_automator_platform_webhook() {
+		return automator_request_contains( 'automator/platform/v' );
+	}
+
 	// ──────────────────────────────────────────────
 	// Event handlers — keep manifest in sync
 	// ──────────────────────────────────────────────
@@ -486,10 +628,13 @@ class Recipe_Manifest {
 	}
 
 	/**
-	 * When a recipe part is deleted.
+	 * When a recipe part has been deleted.
+	 *
+	 * Runs on after_delete_post, once the post and its meta are gone, so the
+	 * rebuild no longer finds the deleted recipe or trigger.
 	 *
 	 * @param int      $post_id Post ID.
-	 * @param \WP_Post $post    Post object.
+	 * @param \WP_Post $post    Post object, as it was before the delete.
 	 *
 	 * @return void
 	 */
@@ -526,14 +671,14 @@ class Recipe_Manifest {
 	}
 
 	/**
-	 * On recipe option or status update via the recipe editor REST API.
+	 * On any recipe or item save (`automator_event_recipe_changed`).
 	 *
 	 * Rebuilds both manifest and trigger index so meta changes
 	 * (e.g. changing a form selection) are reflected immediately.
 	 *
 	 * @return void
 	 */
-	public function on_recipe_option_updated() {
+	public function on_recipe_changed() {
 
 		if ( $this->is_rebuilding ) {
 			return;
@@ -584,9 +729,9 @@ class Recipe_Manifest {
 	 */
 	private function wrap( array $manifest ) {
 		return array(
-			'version'    => (int) AUTOMATOR_MANIFEST_SCHEMA_VERSION,
-			'built_at'   => time(),
-			'data'       => $manifest,
+			'version'  => (int) AUTOMATOR_MANIFEST_SCHEMA_VERSION,
+			'built_at' => time(),
+			'data'     => $manifest,
 		);
 	}
 
@@ -659,42 +804,52 @@ class Recipe_Manifest {
 	/**
 	 * One-time full rebuild — queries DB for all active codes.
 	 *
-	 * Uses UNION because loop-filters are grandchildren of recipes:
-	 * uo-recipe → uo-loop → uo-loop-filter (two hops, not one).
+	 * Post-fold (8.0.0) storage model, one query per source shape:
+	 * - Direct recipe children (uo-trigger/uo-action) join on
+	 *   post_parent — pre-8.0.0 rows carry no `recipe_id` meta, so the
+	 *   parent join is the only recipe link that covers every era.
+	 * - Unified block-modifier rows and items nested under uo-block rows
+	 *   resolve to their recipe through the `recipe_id` meta stamp every
+	 *   unified row carries, so block nesting depth doesn't matter.
+	 * - Legacy uo-loop/uo-loop-filter shapes are NOT queried: the atomic
+	 *   loops→blocks migration on 8.0.0 load folds them to unified rows
+	 *   before any recipe can run.
+	 * - Legacy action conditions live in a recipe-meta blob —
+	 *   merge_conditions_into_manifest() owns that outlier.
 	 *
 	 * @return array Composite key => integration code.
 	 */
 	private function full_rebuild() {
 
+		$results = array_merge(
+			$this->query_direct_child_codes(),
+			$this->query_block_modifier_codes(),
+			$this->query_block_nested_item_codes()
+		);
+
+		$manifest = $this->build_manifest_from_results( $results );
+
+		$this->merge_conditions_into_manifest( $manifest );
+
+		return $manifest;
+	}
+
+	/**
+	 * Item codes from direct children of published recipes
+	 * (uo-trigger / uo-action via post_parent).
+	 *
+	 * @return object[] Rows with item_code and integration_code.
+	 */
+	private function query_direct_child_codes() {
+
 		global $wpdb;
 
 		$direct_types = \automator_get_direct_recipe_child_types();
-		$loop_types   = \automator_get_loop_child_types();
+		$placeholders = implode( ', ', array_fill( 0, count( $direct_types ), '%s' ) );
 
-		// Build safe IN() placeholders for both type arrays.
-		$direct_placeholders = implode( ', ', array_fill( 0, count( $direct_types ), '%s' ) );
-		$loop_placeholders   = implode( ', ', array_fill( 0, count( $loop_types ), '%s' ) );
-
-		// Flatten all values for $wpdb->prepare() in order of appearance.
-		$prepare_values = array_merge(
-			array( 'publish' ),       // part.post_status (query 1).
-			$direct_types,            // part.post_type IN (...) (query 1).
-			array(
-				'publish',            // recipe.post_status (query 1).
-				AUTOMATOR_POST_TYPE_RECIPE, // recipe.post_type (query 1).
-				'publish',            // loop_child.post_status (query 2).
-			),
-			$loop_types,              // loop_child.post_type IN (...) (query 2).
-			array(
-				'publish',                  // loop_post.post_status (query 2).
-				AUTOMATOR_POST_TYPE_LOOP,   // loop_post.post_type (query 2).
-				'publish',            // recipe.post_status (query 2).
-				AUTOMATOR_POST_TYPE_RECIPE, // recipe.post_type (query 2).
-			)
-		);
-
-		// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- dynamic IN() clauses built from array_fill('%s').
-		$results = $wpdb->get_results(
+		// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- dynamic IN() clause built from array_fill('%s').
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Joins core posts and postmeta; no WordPress API returns this.
+		return (array) $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT DISTINCT
 					code_meta.meta_value AS item_code,
@@ -705,47 +860,111 @@ class Recipe_Manifest {
 					AND int_meta.meta_key = 'integration'
 				INNER JOIN {$wpdb->posts} part
 					ON part.ID = code_meta.post_id
-					AND part.post_status = %s
-					AND part.post_type IN ({$direct_placeholders})
+					AND part.post_status = 'publish'
+					AND part.post_type IN ({$placeholders})
 				INNER JOIN {$wpdb->posts} recipe
 					ON recipe.ID = part.post_parent
-					AND recipe.post_status = %s
+					AND recipe.post_status = 'publish'
 					AND recipe.post_type = %s
-				WHERE code_meta.meta_key = 'code'
+				WHERE code_meta.meta_key = 'code'",
+				array_merge( $direct_types, array( AUTOMATOR_POST_TYPE_RECIPE ) )
+			),
+			OBJECT
+		);
+		// phpcs:enable WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+	}
 
-				UNION
+	/**
+	 * Item codes from unified block-modifier rows (loop filters today).
+	 * The recipe resolves via the row's own `recipe_id` meta stamp.
+	 * Unified rows store the integration under `integration_code` only;
+	 * `integration` is accepted for migrated rows that carry both.
+	 *
+	 * @return object[] Rows with item_code and integration_code.
+	 */
+	private function query_block_modifier_codes() {
 
-				SELECT DISTINCT
+		global $wpdb;
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table names from $wpdb.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Joins core posts and postmeta; no WordPress API returns this.
+		return (array) $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT DISTINCT
+					code_meta.meta_value AS item_code,
+					int_meta.meta_value AS integration_code
+				FROM {$wpdb->postmeta} code_meta
+				INNER JOIN {$wpdb->postmeta} int_meta
+					ON int_meta.post_id = code_meta.post_id
+					AND int_meta.meta_key IN ( 'integration', 'integration_code' )
+				INNER JOIN {$wpdb->posts} modifier
+					ON modifier.ID = code_meta.post_id
+					AND modifier.post_status = 'publish'
+					AND modifier.post_type = %s
+				INNER JOIN {$wpdb->postmeta} modifier_recipe
+					ON modifier_recipe.post_id = modifier.ID
+					AND modifier_recipe.meta_key = 'recipe_id'
+				INNER JOIN {$wpdb->posts} recipe
+					ON recipe.ID = modifier_recipe.meta_value
+					AND recipe.post_status = 'publish'
+					AND recipe.post_type = %s
+				WHERE code_meta.meta_key = 'code'",
+				AUTOMATOR_POST_TYPE_BLOCK_MODIFIER,
+				AUTOMATOR_POST_TYPE_RECIPE
+			),
+			OBJECT
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	}
+
+	/**
+	 * Item codes from items nested under unified uo-block rows (loop and
+	 * filter blocks re-parent their actions under the block).
+	 * The recipe resolves via the parent block's `recipe_id` meta stamp —
+	 * folded loop actions carry no `recipe_id` of their own, and the stamp
+	 * makes block nesting depth irrelevant.
+	 *
+	 * @return object[] Rows with item_code and integration_code.
+	 */
+	private function query_block_nested_item_codes() {
+
+		global $wpdb;
+
+		$child_types  = array( AUTOMATOR_POST_TYPE_ACTION );
+		$placeholders = implode( ', ', array_fill( 0, count( $child_types ), '%s' ) );
+
+		// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- dynamic IN() clause built from array_fill('%s').
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Joins core posts and postmeta; no WordPress API returns this.
+		return (array) $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT DISTINCT
 					code_meta.meta_value AS item_code,
 					int_meta.meta_value AS integration_code
 				FROM {$wpdb->postmeta} code_meta
 				INNER JOIN {$wpdb->postmeta} int_meta
 					ON int_meta.post_id = code_meta.post_id
 					AND int_meta.meta_key = 'integration'
-				INNER JOIN {$wpdb->posts} loop_child
-					ON loop_child.ID = code_meta.post_id
-					AND loop_child.post_status = %s
-					AND loop_child.post_type IN ({$loop_placeholders})
-				INNER JOIN {$wpdb->posts} loop_post
-					ON loop_post.ID = loop_child.post_parent
-					AND loop_post.post_status = %s
-					AND loop_post.post_type = %s
+				INNER JOIN {$wpdb->posts} block_child
+					ON block_child.ID = code_meta.post_id
+					AND block_child.post_status = 'publish'
+					AND block_child.post_type IN ({$placeholders})
+				INNER JOIN {$wpdb->posts} block
+					ON block.ID = block_child.post_parent
+					AND block.post_status = 'publish'
+					AND block.post_type = %s
+				INNER JOIN {$wpdb->postmeta} block_recipe
+					ON block_recipe.post_id = block.ID
+					AND block_recipe.meta_key = 'recipe_id'
 				INNER JOIN {$wpdb->posts} recipe
-					ON recipe.ID = loop_post.post_parent
-					AND recipe.post_status = %s
+					ON recipe.ID = block_recipe.meta_value
+					AND recipe.post_status = 'publish'
 					AND recipe.post_type = %s
 				WHERE code_meta.meta_key = 'code'",
-				...$prepare_values
+				array_merge( $child_types, array( AUTOMATOR_POST_TYPE_BLOCK, AUTOMATOR_POST_TYPE_RECIPE ) )
 			),
 			OBJECT
 		);
 		// phpcs:enable WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
-
-		$manifest = $this->build_manifest_from_results( $results );
-
-		$this->merge_conditions_into_manifest( $manifest );
-
-		return $manifest;
 	}
 
 	/**
@@ -778,6 +997,7 @@ class Recipe_Manifest {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Joins core posts and postmeta; no WordPress API returns this.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT DISTINCT pm.meta_value AS conditions_json

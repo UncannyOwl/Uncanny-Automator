@@ -90,8 +90,8 @@ class Trigger_Logs_Resources {
 				$result['trigger_completed']
 			);
 
-			// Format the trigger run sentence.
-			$has_api_log = null !== $this->automator_factory->db_api()->get_by_log_id( 'trigger', $params['recipe_log_id'] );
+			// A trigger's API log row is keyed by its trigger log (Api_Server::maybe_log_trigger()).
+			$has_api_log = null !== $this->automator_factory->db_api()->get_by_log_id( 'trigger', absint( $params['trigger_log_id'] ) );
 
 			$properties = Automator()->db->trigger->get_meta_multiple(
 				'properties',
@@ -223,7 +223,7 @@ class Trigger_Logs_Resources {
 				'_raw_end_date'     => $raw_end_date,
 				'code'              => $trigger_meta['code'],
 				'title_html'        => htmlspecialchars( $this->resolve_trigger_title( $trigger_meta ), ENT_QUOTES ),
-				'title_custom_name' => sanitize_text_field( $trigger_meta[ \Uncanny_Automator\Global_Custom_Name_Field::FIELD_CODE ] ?? '' ),
+				'title_custom_name' => sanitize_text_field( $trigger_meta[ AUTOMATOR_META_KEY_ITEM_CUSTOM_NAME ] ?? '' ),
 				'fields'            => $fields,
 				'runs'              => $trigger_runs,
 			);

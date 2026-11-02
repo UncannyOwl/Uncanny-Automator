@@ -581,6 +581,36 @@ return array(
 			$baseDir . '/src/integrations/drip/helpers/drip-app-helpers.php',
 		),
 	),
+	'dropbox' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/dropbox/actions/dropbox-add-file-member.php',
+			$baseDir . '/src/integrations/dropbox/actions/dropbox-add-folder-member.php',
+			$baseDir . '/src/integrations/dropbox/actions/dropbox-copy-file.php',
+			$baseDir . '/src/integrations/dropbox/actions/dropbox-create-folder.php',
+			$baseDir . '/src/integrations/dropbox/actions/dropbox-delete-item.php',
+			$baseDir . '/src/integrations/dropbox/actions/dropbox-get-shareable-link.php',
+			$baseDir . '/src/integrations/dropbox/actions/dropbox-move-file.php',
+			$baseDir . '/src/integrations/dropbox/actions/dropbox-share-folder.php',
+			$baseDir . '/src/integrations/dropbox/actions/dropbox-upload-file.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/dropbox/helpers/dropbox-api-caller.php',
+			$baseDir . '/src/integrations/dropbox/helpers/dropbox-app-helpers.php',
+			$baseDir . '/src/integrations/dropbox/helpers/dropbox-event-fanout.php',
+			$baseDir . '/src/integrations/dropbox/helpers/dropbox-trigger-subscription.php',
+			$baseDir . '/src/integrations/dropbox/helpers/dropbox-webhooks.php',
+		),
+		'tokens' => array(
+			$baseDir . '/src/integrations/dropbox/tokens/dropbox-item-tokens.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/dropbox/triggers/dropbox-file-folder-created.php',
+			$baseDir . '/src/integrations/dropbox/triggers/dropbox-file-folder-deleted.php',
+			$baseDir . '/src/integrations/dropbox/triggers/dropbox-file-folder-moved.php',
+			$baseDir . '/src/integrations/dropbox/triggers/dropbox-file-folder-renamed.php',
+			$baseDir . '/src/integrations/dropbox/triggers/dropbox-file-updated.php',
+		),
+	),
 	'duplicator' => array(
 		'actions' => array(
 			$baseDir . '/src/integrations/duplicator/actions/initiate-a-backup.php',
@@ -735,6 +765,11 @@ return array(
 		'helpers' => array(
 			$baseDir . '/src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-api-caller.php',
 			$baseDir . '/src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-app-helpers.php',
+			$baseDir . '/src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-event-fanout.php',
+			$baseDir . '/src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-lead-dedup.php',
+			$baseDir . '/src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-page-adoption.php',
+			$baseDir . '/src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-page-connections.php',
+			$baseDir . '/src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-page-subscription.php',
 			$baseDir . '/src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-webhooks.php',
 		),
 		'triggers' => array(
@@ -1316,6 +1351,7 @@ return array(
 			$baseDir . '/src/integrations/linkedin/helpers/linkedin-api-caller.php',
 			$baseDir . '/src/integrations/linkedin/helpers/linkedin-app-helpers.php',
 			$baseDir . '/src/integrations/linkedin/helpers/linkedin-scheduled-posts-manager.php',
+			$baseDir . '/src/integrations/linkedin/helpers/linkedin-token-notice.php',
 		),
 	),
 	'litespeed-cache' => array(
@@ -1743,6 +1779,14 @@ return array(
 	'really-simple-ssl' => array(
 		'triggers' => array(
 			$baseDir . '/src/integrations/really-simple-ssl/triggers/rsssl-vulnerability-scan-completed.php',
+		),
+	),
+	'redirect' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/redirect/actions/redirect-to-url.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/redirect/helpers/redirect-helpers.php',
 		),
 	),
 	'redirection' => array(
@@ -2542,9 +2586,6 @@ return array(
 			$baseDir . '/src/integrations/wp/triggers/wordpress-user-views-custom-post.php',
 			$baseDir . '/src/integrations/wp/triggers/wordpress-user-views-page.php',
 			$baseDir . '/src/integrations/wp/triggers/wordpress-user-views-post.php',
-		),
-		'closures' => array(
-			$baseDir . '/src/integrations/wp/closures/closure-redirect.php',
 		),
 	),
 	'wp-activity-log' => array(

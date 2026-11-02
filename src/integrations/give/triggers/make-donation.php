@@ -118,6 +118,7 @@ class MAKE_DONATION {
 
 		if ( give_is_donor_comment_field_enabled( $give_form_id ) ) {
 			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- GiveWP's own table; the plugin offers no API for this query.
 			$payment_data['give_comment'] = $wpdb->get_var( $wpdb->prepare( "SELECT comment_content  FROM {$wpdb->prefix}give_comments WHERE comment_type LIKE %s AND comment_parent=%d", '%%donor_donation%%', $payment_id ) );
 		}
 

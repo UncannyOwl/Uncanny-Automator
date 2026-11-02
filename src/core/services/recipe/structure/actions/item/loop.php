@@ -22,7 +22,7 @@ final class Loop implements \JsonSerializable {
 	 */
 	protected $type = 'loop';
 
-	 /**
+	/**
 	 * @var int|null The unique ID of the loop.
 	 */
 	protected $id = null;
@@ -30,7 +30,7 @@ final class Loop implements \JsonSerializable {
 	/**
 	 * @var int UI order of loop items.
 	 *
-	 * 0 = normal actions; 1 = closures; 2 = loop; 5 = Delays
+	 * 0 = normal actions; 2 = loop; 5 = Delays
 	 */
 	protected $_ui_order = 2; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
@@ -38,11 +38,6 @@ final class Loop implements \JsonSerializable {
 	 * @var array The loopable expression for the loop.
 	 */
 	protected $iterable_expression = array();
-
-	/**
-	 * @var mixed|null The 'run on' condition for the loop.
-	 */
-	protected $run_on = null;
 
 	/**
 	 * @var array Filters applied to the loop.
@@ -77,9 +72,9 @@ final class Loop implements \JsonSerializable {
 	/**
 	 * Initializes the Loop object.
 	 *
-	 * @param \Uncanny_Automator\Services\Recipe\Structure $recipe The recipe object.
+	 * @param \Uncanny_Automator\Services\Recipe\Structure                 $recipe The recipe object.
 	 * @param \Uncanny_Automator\Services\Recipe\Structure\Actions\Actions $actions The actions collection.
-	 * @param int $loop_id The ID of the loop.
+	 * @param int                                                          $loop_id The ID of the loop.
 	 */
 	public function __construct( $recipe, $actions, $loop_id ) {
 
@@ -129,13 +124,18 @@ final class Loop implements \JsonSerializable {
 			$fields    = (string) get_post_meta( $filter_id, 'fields', true );
 			$backup    = (string) get_post_meta( $filter_id, 'backup', true );
 
+			// Decode fields and ensure empty result is stdClass for {} serialization.
+			$decoded_fields = json_decode( $fields, true );
+			$decoded_fields = is_array( $decoded_fields ) && empty( $decoded_fields ) ? new \stdClass() : (array) $decoded_fields;
+
 			$loop_filters[] = array(
-				'type'             => 'loop-filter',
+				'type'             => 'loop_filter',
+				'entity_type'      => 'item',
 				'id'               => absint( $filter_id ),
 				'code'             => strtoupper( (string) get_post_meta( $filter_id, 'code', true ) ),
 				'integration_code' => strtoupper( (string) get_post_meta( $filter_id, 'integration_code', true ) ),
 				'backup'           => (array) json_decode( $backup, true ),
-				'fields'           => (array) json_decode( $fields, true ),
+				'fields'           => $decoded_fields,
 			);
 
 		}

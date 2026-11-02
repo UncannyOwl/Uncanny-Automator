@@ -17,7 +17,6 @@
         "All Subscriptions": "All Subscriptions",
         "All Topics": "All Topics",
         "All Users": "All Users",
-        "All integrations": "All integrations",
         "All recipes": "All recipes",
         "App integrations": "App integrations",
         "Assignments": "Assignments",
@@ -76,26 +75,6 @@
         "Automator.Addons.5": {
             "Starter": "Plan addon setup",
             "Prompt": "Help me plan installing and configuring an addon. Ask what workflow I want to automate, then suggest the next steps."
-        },
-        "Automator.All integrations.1": {
-            "Starter": "Recommend integrations",
-            "Prompt": "Review my installed plugins and connected app integrations, then suggest Automator integrations that are most relevant to my site."
-        },
-        "Automator.All integrations.2": {
-            "Starter": "Find automation opportunities",
-            "Prompt": "Suggest useful automation ideas based on my installed plugins and connected app integrations."
-        },
-        "Automator.All integrations.3": {
-            "Starter": "Explain an integration",
-            "Prompt": "Ask me which integration I am interested in, then explain what kinds of recipes it can unlock."
-        },
-        "Automator.All integrations.4": {
-            "Starter": "Find missing integrations",
-            "Prompt": "Compare my installed plugins and connected apps with available Automator integrations, then identify anything I may need to install, connect, or upgrade."
-        },
-        "Automator.All integrations.5": {
-            "Starter": "Build with an integration",
-            "Prompt": "Help me choose an Automator integration and turn it into a useful recipe idea for my site."
         },
         "Automator.All recipes.1": {
             "Starter": "Show my busiest recipes",

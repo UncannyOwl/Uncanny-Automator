@@ -57,8 +57,9 @@ final class AdminPersonalizationPage
             )
             && $this->allowedCapabilities->currentUserHasAllowedCapability()
         ) {
-            $rawInstructions = $_POST[self::FIELD_CUSTOM_INSTRUCTIONS] ?? '';
-            $instructions = is_string($rawInstructions) ? wp_unslash($rawInstructions) : '';
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Free text sent to the Agent as plain text; SiteCustomInstructions::fromString() normalizes and limits it.
+            $rawInstructions = wp_unslash($_POST[self::FIELD_CUSTOM_INSTRUCTIONS] ?? '');
+            $instructions = is_string($rawInstructions) ? $rawInstructions : '';
             ($this->saveDesignDirection)(
                 new DesignDirectionSettings(SiteCustomInstructions::fromString($instructions)),
             );

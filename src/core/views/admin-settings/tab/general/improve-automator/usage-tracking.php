@@ -15,6 +15,10 @@ namespace Uncanny_Automator;
  * $is_usage_tracking_enabled TRUE is usage tracking is enabled
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 
 <form method="POST">
@@ -45,12 +49,12 @@ namespace Uncanny_Automator;
 
 	</div>
 
-	<uo-button
+	<uas-button
 		type="submit"
 		class="uap-spacing-top"
 	>
 		<?php esc_html_e( 'Save', 'uncanny-automator' ); ?>
-	</uo-button>
+	</uas-button>
 
 </form>
 

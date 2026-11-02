@@ -10,6 +10,8 @@ use UncannyPageBuilder\Application\Filesystem\LocalFileReaderInterface;
 
 final class AgentToolRegistryAdapter
 {
+    public const SCHEMA_VERSION = '1';
+
     public function __construct(
         private readonly ControlRegistry $registry,
         private readonly string $toolsDir,
@@ -19,7 +21,7 @@ final class AgentToolRegistryAdapter
     /**
      * @return array{schema_version: string, tools: list<array<string, mixed>>}
      */
-    public function contract(string $schemaVersion): array
+    public function contract(string $schemaVersion = self::SCHEMA_VERSION): array
     {
         $manifestTools = $this->manifestToolsByName();
         $registryTools = $this->registryToolsByName($manifestTools);

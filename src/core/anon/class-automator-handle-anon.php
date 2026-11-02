@@ -13,23 +13,8 @@ class Automator_Handle_Anon {
 	 * Automator_Handle_Anon constructor.
 	 */
 	public function __construct() {
-		add_filter( 'uap_meta_box_title', array( $this, 'uap_meta_box_title_func' ), 10, 2 );
 		add_filter( 'automator_recipe_types', array( $this, 'uap_recipe_types_func' ), 10 );
 		add_filter( 'uap_error_messages', array( $this, 'uap_error_messages_func' ), 10 );
-	}
-
-	/**
-	 * @param $default
-	 * @param $recipe_type
-	 *
-	 * @return string|void
-	 */
-	public function uap_meta_box_title_func( $default, $recipe_type ) {
-		if ( 'anonymous' === (string) $recipe_type ) {
-			return esc_html__( 'Trigger', 'uncanny-automator' );
-		}
-
-		return $default;
 	}
 
 	/**

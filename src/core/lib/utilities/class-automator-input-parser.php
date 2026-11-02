@@ -511,6 +511,7 @@ class Automator_Input_Parser {
 					'{{trigger_code}}' => strtolower( $trigger['meta']['code'] ),
 				)
 			);
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- The hook name is built from the automator_parse_token_for_trigger_ prefix.
 			$retval = apply_filters( $filter, $retval, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args );
 		}
 
@@ -1130,13 +1131,17 @@ class Automator_Input_Parser {
 		$code = isset( $action['args']['code'] ) ? $action['args']['code'] : '';
 
 		if ( empty( $code ) ) {
-			return;
+			// This is a filter callback — must return the value untouched even
+			// when there's nothing to wire up. A bare `return;` (returning null)
+			// nukes `$action` for every downstream listener and breaks the
+			// AS-resume path that drives delayed action execution.
+			return $action;
 		}
 
 		$filter = strtr(
 			'automator_parse_token_for_trigger_{{integration}}_{{trigger_code}}',
 			array(
-				'{{integration}}'  => strtolower( Automator()->get->value_from_trigger_meta( $code, 'integration' ) ),
+				'{{integration}}'  => strtolower( (string) Automator()->get->value_from_trigger_meta( $code, 'integration' ) ),
 				'{{trigger_code}}' => strtolower( $code ),
 			)
 		);

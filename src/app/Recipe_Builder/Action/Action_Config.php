@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Action;
 
@@ -22,6 +21,11 @@ class Action_Config {
 	private $id;
 	private $recipe_id;
 	private $parent_id;
+
+	/**
+	 * Which branch of the parent block the action sits in, or null at the recipe level.
+	 */
+	private $path_code;
 	private $integration_code;
 	private $code;
 	private $meta_code;
@@ -83,6 +87,17 @@ class Action_Config {
 	 */
 	public function parent_id( $parent_id ): self {
 		$this->parent_id = $parent_id;
+		return $this;
+	}
+
+	/**
+	 * Set the action's block path code (which branch of its parent block).
+	 *
+	 * @param string|null $path_code A known Block_Path_Code value, or null.
+	 * @return self
+	 */
+	public function path_code( ?string $path_code ): self {
+		$this->path_code = $path_code;
 		return $this;
 	}
 
@@ -191,6 +206,15 @@ class Action_Config {
 	}
 
 	/**
+	 * Get the action's block path code.
+	 *
+	 * @return string|null
+	 */
+	public function get_path_code(): ?string {
+		return $this->path_code;
+	}
+
+	/**
 	 * Get action integration code.
 	 *
 	 * @return string|null
@@ -274,7 +298,7 @@ class Action_Config {
 		// Set parent_id - defaults to recipe_id as Recipe_Id for backward compatibility
 		if ( isset( $data['action_parent_id'] ) && $data['action_parent_id'] instanceof Parent_Id ) {
 			$config->parent_id( $data['action_parent_id'] );
-		} elseif ( null !== $data['action_recipe_id'] ?? null ) {
+		} elseif ( null !== ( $data['action_recipe_id'] ?? null ) ) {
 			$config->parent_id( new Recipe_Id( $data['action_recipe_id'] ) );
 		}
 

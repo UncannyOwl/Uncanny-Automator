@@ -93,6 +93,7 @@ class Mailpoet_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_get_all_mailpoet_lists', $option );
 	}
 
@@ -113,6 +114,7 @@ class Mailpoet_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- MailPoet's own table; the plugin offers no API for this query.
 		$subscribers = $wpdb->get_results( "SELECT id,email FROM {$wpdb->prefix}mailpoet_subscribers  ORDER BY id DESC", ARRAY_A );
 
 		foreach ( $subscribers as $subscriber ) {
@@ -131,6 +133,7 @@ class Mailpoet_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_get_all_mailpoet_subscribers', $option );
 	}
 
@@ -156,6 +159,7 @@ class Mailpoet_Helpers {
 		$options      = array();
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- MailPoet's own table; the plugin offers no API for this query.
 			$forms = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}mailpoet_forms WHERE `deleted_at` IS NULL AND `status` = %s ORDER BY `id` LIMIT %d", 'enabled', 9999 ) );
 			if ( ! empty( $forms ) ) {
 				foreach ( $forms as $form ) {
@@ -184,6 +188,7 @@ class Mailpoet_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_list_mailpoet_forms', $option );
 	}
 

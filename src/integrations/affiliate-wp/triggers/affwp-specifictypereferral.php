@@ -31,6 +31,7 @@ class AFFWP_SPECIFICTYPEREFERRAL {
 					return;
 				}
 				global $wpdb;
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API rewrites a meta key or value across posts.
 				$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %s WHERE meta_value = %s AND meta_key LIKE %s", 'affwp_insert_referral', 'affwp_complete_referral', 'add_action' ) );
 				automator_update_option( 'affwp_insert_referral_migrated', 'yes' );
 			},

@@ -13,6 +13,7 @@ class MC_EVERYONE_CONTACT_REMOVE extends \Uncanny_Automator\Recipe\App_Action {
 	use Mailchimp_Audience_Fields;
 	use Mailchimp_Email_Fields;
 	use Mailchimp_Subscriber_Fields;
+	use \Uncanny_Automator\Recipe\Background_Job_Without_Tokens;
 
 	/**
 	 * Setup action.
@@ -72,12 +73,14 @@ class MC_EVERYONE_CONTACT_REMOVE extends \Uncanny_Automator\Recipe\App_Action {
 		$email   = $this->get_email_from_parsed( $this->get_action_meta() . '_EMAIL' );
 		$list_id = $this->get_audience_from_parsed();
 
-		if ( $this->should_delete_member() ) {
-			$this->api->delete_subscriber( $list_id, $email );
-		} else {
-			$this->api->unsubscribe_contact( $list_id, $email );
+		$response = $this->should_delete_member()
+			? $this->api->delete_subscriber( $list_id, $email, $action_data )
+			: $this->api->unsubscribe_contact( $list_id, $email, $action_data );
+
+		if ( $this->deferred( $response ) ) {
+			return true;
 		}
 
-		return true;
+		return $this->process_job( $response, $parsed, $action_data );
 	}
 }

@@ -12,7 +12,9 @@ namespace Uncanny_Automator\App\Integration_Catalog\Services;
 
 use Uncanny_Automator\App\Integration_Catalog\Integration\Integration;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integration_Item;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integration_Block_Modifier;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Block_Modifier_Types;
 use Uncanny_Automator\Traits\Singleton;
 
 /**
@@ -37,13 +39,6 @@ class Integration_Query_Service {
 	private ?Integration_Store $store = null;
 
 	/**
-	 * Feed service instance.
-	 *
-	 * @var Integration_Feed_Service|null
-	 */
-	private ?Integration_Feed_Service $feed_service = null;
-
-	/**
 	 * Scope resolver instance.
 	 *
 	 * @var Integration_Scope_Resolver|null
@@ -60,7 +55,6 @@ class Integration_Query_Service {
 	private function init(): void {
 		if ( null === $this->store ) {
 			$this->store          = Integration_Store::get_instance();
-			$this->feed_service   = Integration_Feed_Service::get_instance();
 			$this->scope_resolver = new Integration_Scope_Resolver();
 		}
 	}
@@ -138,17 +132,18 @@ class Integration_Query_Service {
 	 *
 	 * Returns integrations filtered and enriched for the specified scope:
 	 * - Filters out integrations without items for the scope
-	 * - Adds popularity scores
+	 * - Adds usage (count + last used)
 	 * - Adds resolved dependencies
 	 * - Adds scope tags
 	 *
-	 * @param string $scope The scope: 'trigger', 'action', 'loop_filter', or 'filter_condition'
+	 * @param string $scope    The scope: 'trigger', 'action', 'loop_filter', or 'filter_condition'
+	 * @param bool   $for_rest Whether to use REST format (excludes backend-only properties).
 	 *
 	 * @return array<string, array> Scoped integration data keyed by code
 	 */
-	public function get_scoped_integrations( string $scope ): array {
+	public function get_scoped_integrations( string $scope, bool $for_rest = false ): array {
 		$this->init();
-		return $this->scope_resolver->resolve_scoped_integrations( $scope );
+		return $this->scope_resolver->resolve_scoped_integrations( $scope, $for_rest );
 	}
 
 	/**
@@ -156,14 +151,15 @@ class Integration_Query_Service {
 	 *
 	 * Returns enriched integration data for a specific integration and scope.
 	 *
-	 * @param string $code  Integration code
-	 * @param string $scope The scope
+	 * @param string $code     Integration code
+	 * @param string $scope    The scope
+	 * @param bool   $for_rest Whether to use REST format (excludes backend-only properties).
 	 *
 	 * @return array|null Scoped integration data or null if not found/no items for scope
 	 */
-	public function get_scoped_integration( string $code, string $scope ): ?array {
+	public function get_scoped_integration( string $code, string $scope, bool $for_rest = false ): ?array {
 		$this->init();
-		return $this->scope_resolver->resolve_scoped_integration( $code, $scope );
+		return $this->scope_resolver->resolve_scoped_integration( $code, $scope, $for_rest );
 	}
 
 	// =========================================================================
@@ -178,7 +174,7 @@ class Integration_Query_Service {
 	 *
 	 * @param string      $integration_code Integration code (e.g., 'WC', 'ACTIVE_CAMPAIGN').
 	 * @param string      $item_code        Item code (e.g., 'WCPURCHASESPRODUCT', 'AC_ADD_TAG').
-	 * @param string|null $item_type        Optional scope to search (trigger, action, filter_condition, loop_filter, closure).
+	 * @param string|null $item_type        Optional scope to search (trigger, action, filter_condition, loop_filter).
 	 *
 	 * @return Integration_Item|null Integration_Item object or null if not found.
 	 */
@@ -213,6 +209,40 @@ class Integration_Query_Service {
 	}
 
 	/**
+	 * Get a single block modifier by integration code, modifier code and type.
+	 *
+	 * The modifier sibling of {@see self::get_item()}. The type is required
+	 * because the same code may legitimately exist under two slots — GEN
+	 * registers TOKEN_MEETS_CONDITION as both a filter condition and a loop
+	 * filter — so a type-less lookup could return the wrong row's rules.
+	 *
+	 * @param string $integration_code Integration code (e.g., 'GEN', 'WP').
+	 * @param string $modifier_code    Modifier code (e.g., 'ITEM_NOT_EMPTY').
+	 * @param string $modifier_type    Block_Modifier_Types literal.
+	 *
+	 * @return Integration_Block_Modifier|null Modifier object, or null when the
+	 *                                         type is invalid or nothing matches.
+	 */
+	public function get_block_modifier( string $integration_code, string $modifier_code, string $modifier_type ): ?Integration_Block_Modifier {
+		if ( ! Block_Modifier_Types::is_valid( $modifier_type ) ) {
+			return null;
+		}
+
+		$this->init();
+
+		$integration = $this->store->get_by_code( $integration_code );
+
+		if ( null === $integration ) {
+			return null;
+		}
+
+		$getter    = $this->scope_to_getter( $modifier_type );
+		$modifiers = $integration->get_block_modifiers()->$getter();
+
+		return $modifiers[ $modifier_code ] ?? null;
+	}
+
+	/**
 	 * Convert a scope constant to its corresponding getter method name.
 	 *
 	 * @param string $scope Scope constant (e.g., 'trigger', 'action').
@@ -221,74 +251,5 @@ class Integration_Query_Service {
 	 */
 	private function scope_to_getter( string $scope ): string {
 		return 'get_' . $scope . 's';
-	}
-
-	// =========================================================================
-	// Collection Queries
-	// =========================================================================
-
-	/**
-	 * Get all collections with their associated integration codes.
-	 *
-	 * Collections group integrations by category (e.g., "E-commerce", "CRM").
-	 *
-	 * @return array Array of collections with id, name, description, integration_codes
-	 */
-	public function get_collections(): array {
-		$this->init();
-
-		$json_data = $this->feed_service->fetch_raw();
-
-		if ( empty( $json_data ) ) {
-			return array();
-		}
-
-		return $this->build_collections_list( $json_data );
-	}
-
-	/**
-	 * Build collections list from JSON data.
-	 *
-	 * Loops through all integrations and accumulates unique collections
-	 * with their associated integration codes.
-	 *
-	 * @param array $json_data Raw data from complete.json
-	 *
-	 * @return array Array of unique collections with integration_codes
-	 */
-	private function build_collections_list( array $json_data ): array {
-		$collections = array();
-
-		foreach ( $json_data as $item ) {
-			$code             = $item['integration_id'] ?? '';
-			$item_collections = $item['collections'] ?? array();
-
-			if ( empty( $code ) || empty( $item_collections ) || ! is_array( $item_collections ) ) {
-				continue;
-			}
-
-			foreach ( $item_collections as $collection ) {
-				$slug = $collection['slug'] ?? '';
-
-				if ( empty( $slug ) ) {
-					continue;
-				}
-
-				if ( ! isset( $collections[ $slug ] ) ) {
-					$collections[ $slug ] = array(
-						'id'                => $slug,
-						'name'              => $collection['name'] ?? '',
-						'description'       => $collection['description'] ?? '',
-						'integration_codes' => array(),
-					);
-				}
-
-				if ( ! in_array( $code, $collections[ $slug ]['integration_codes'], true ) ) {
-					$collections[ $slug ]['integration_codes'][] = $code;
-				}
-			}
-		}
-
-		return array_values( $collections );
 	}
 }

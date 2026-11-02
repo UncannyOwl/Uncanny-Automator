@@ -183,7 +183,11 @@ class Wpjm_Token_Manager {
 			foreach ( $form_fields as $key => $field ) {
 				$common_tokens[] = array(
 					'tokenId' => 'WPJMAPPLICATIONFIELD_' . $key,
-					'tokenName' => esc_html_x( 'Application field: ' . ucfirst( strtolower( $field['label'] ) ), 'WP Job Manager', 'uncanny-automator' ),
+					'tokenName' => sprintf(
+						/* translators: %s: Application form field label */
+						esc_html_x( 'Application field: %s', 'WP Job Manager', 'uncanny-automator' ),
+						esc_html( ucfirst( strtolower( $field['label'] ) ) )
+					),
 					'tokenType' => 'text',
 					'tokenIdentifier' => $token_identifier,
 				);

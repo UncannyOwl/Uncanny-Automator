@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Domain\Export;
 
+use UncannyPageBuilder\Domain\ArrayShape;
 use UncannyPageBuilder\Domain\Publishing\PageDeactivationFallback;
 
 /**
@@ -33,7 +34,7 @@ final class StaticPageExport
         if ($entryPath === '') {
             throw new \InvalidArgumentException('Static export entry path is required.');
         }
-        if ($dependencies !== [] && array_is_list($dependencies)) {
+        if ($dependencies !== [] && ArrayShape::isList($dependencies)) {
             throw new \InvalidArgumentException('Static export dependencies must be an associative array.');
         }
 

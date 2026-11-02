@@ -103,6 +103,27 @@ class Filter_Registry_Service {
 	}
 
 	/**
+	 * Get the raw flat field-config list for a loop filter.
+	 *
+	 * Reads `raw_fields` preserved by WP_Registry::normalize_filter_definition().
+	 * Returns an empty array if the filter is not registered or has no fields.
+	 * Consumed by Field_Registry_Service for the loop_filter arm of
+	 * get_block_modifier_fields().
+	 *
+	 * @param string $code Filter code.
+	 * @return array Flat list of raw field configs (legacy option-config shape).
+	 */
+	public function get_filter_fields( string $code ): array {
+		$definition = $this->get_filter_definition( $code );
+
+		if ( ! is_array( $definition ) ) {
+			return array();
+		}
+
+		return $definition['raw_fields'] ?? array();
+	}
+
+	/**
 	 * Get loop filters by integration code.
 	 *
 	 * @since 7.0.0

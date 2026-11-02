@@ -134,14 +134,16 @@ class Microsoft_Teams_Settings extends App_Integration_Settings {
 	}
 
 	/**
-	 * Before disconnect - clean up.
+	 * Once the platform confirmed the disconnect (handoff R8): ask the API
+	 * proxy to remove the vault credentials. Errors are ignored, so it is safe
+	 * to run twice.
 	 *
 	 * @param array $response The response array.
 	 * @param array $data     The request data.
 	 *
 	 * @return array
 	 */
-	protected function before_disconnect( $response = array(), $data = array() ) {
+	protected function after_platform_disconnect( $response = array(), $data = array() ) {
 
 		try {
 			// Request API proxy to remove vault credentials.

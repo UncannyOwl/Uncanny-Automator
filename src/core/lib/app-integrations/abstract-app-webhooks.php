@@ -3,6 +3,7 @@
 namespace Uncanny_Automator\App_Integrations;
 
 use Exception;
+use Uncanny_Automator\App\Infrastructure\Webhooks\Webhook_Validator;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -378,6 +379,25 @@ abstract class App_Webhooks {
 	////////////////////////////////////////////////////////////
 
 	/**
+	 * Whether this integration's triggers are delivered by the Automator
+	 * platform (a vendor event the platform receives and delivers, signed, to
+	 * the site) rather than by a webhook the vendor sends to the site itself.
+	 *
+	 * Nothing is delivered by the platform to a LOCAL site (L247), so on such a
+	 * site the shared settings switch shows these triggers off and disabled,
+	 * with the one sentence that says why
+	 * ({@see \Uncanny_Automator\Settings\Premium_Integration_Webhook_Settings::output_platform_triggers_unavailable_notice()}).
+	 * An integration whose triggers the platform delivers answers true.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_platform_delivered() {
+		return false;
+	}
+
+	/**
 	 * Get the webhooks enabled status from WordPress options.
 	 * - Checks the stored option value for webhooks enabled.
 	 * - Supports both 'on' and 1 values for backwards compatibility.
@@ -500,6 +520,8 @@ abstract class App_Webhooks {
 	 * @param WP_REST_Request $request The WP_REST_Request object.
 	 *
 	 * @return WP_REST_Response
+	 *
+	 * @throws Exception If the request is invalid or fails validation.
 	 */
 	public function handle_webhook_request( $request ) {
 		// Validate the request object.
@@ -523,6 +545,13 @@ abstract class App_Webhooks {
 			return $result;
 		}
 
+		// Fail closed: only an explicit true lets the request through. The
+		// route is public, so a false, null or WP_Error from an override must
+		// never reach the callback that fires the integration's triggers.
+		if ( true !== $result ) {
+			throw new Exception( 'Webhook validation failed' );
+		}
+
 		// Process the webhook.
 		return $this->process_webhook_callback( $request );
 	}
@@ -531,10 +560,13 @@ abstract class App_Webhooks {
 	 * Validate the incoming webhook.
 	 * - Validates webhook authorization.
 	 * - Override in child classes for additional validation logic.
+	 * - Return true to process the request, or a WP_REST_Response to answer
+	 *   without processing (e.g. a handshake). Throw an Exception to reject it.
+	 *   Any other return value is treated as a rejection.
 	 *
 	 * @param WP_REST_Request $request The request object.
 	 *
-	 * @return bool|WP_REST_Response
+	 * @return true|WP_REST_Response
 	 *
 	 * @throws Exception If the webhook authorization is invalid.
 	 */
@@ -564,23 +596,30 @@ abstract class App_Webhooks {
 
 	/**
 	 * Validate if a given key matches the webhook key.
+	 * - An empty stored key or an empty supplied key never matches, so a site
+	 *   with no key stored does not accept a request that sends no key.
 	 *
 	 * @param string $key The key to validate.
 	 *
 	 * @return bool
 	 */
 	protected function is_valid_webhook_key( $key ) {
-		return hash_equals( (string) $this->get_webhook_key( false ), (string) $key );
+		return Webhook_Validator::validate_key(
+			is_string( $key ) ? $key : '',
+			(string) $this->get_webhook_key( false )
+		);
 	}
 
 	/**
 	 * Validate the webhook request.
 	 * - Override in child classes for additional validation logic.
 	 * - This method is called after authorization validation.
+	 * - Same return contract as validate_webhook(): true, a WP_REST_Response,
+	 *   or throw. Anything else rejects the request.
 	 *
 	 * @param WP_REST_Request $request The request object.
 	 *
-	 * @return bool|WP_REST_Response
+	 * @return true|WP_REST_Response
 	 */
 	protected function validate_webhook_request( $request ) {
 		// Default implementation - always return true.

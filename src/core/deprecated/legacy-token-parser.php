@@ -681,6 +681,7 @@ class Legacy_Token_Parser {
 			);
 
 			$return = apply_filters(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- The hook name is built from the automator_parse_token_for_trigger_ prefix.
 				$filter,
 				$return,
 				$pieces,
@@ -1096,7 +1097,11 @@ class Legacy_Token_Parser {
 		$code = isset( $action['args']['code'] ) ? $action['args']['code'] : '';
 
 		if ( empty( $code ) ) {
-			return;
+			// This is a filter callback — must return the value untouched even
+			// when there's nothing to wire up. A bare `return;` (returning null)
+			// nukes `$action` for every downstream listener and breaks the
+			// AS-resume path that drives delayed action execution.
+			return $action;
 		}
 
 		$filter = strtr(

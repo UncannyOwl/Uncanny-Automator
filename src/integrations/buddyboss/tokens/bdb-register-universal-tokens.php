@@ -72,7 +72,8 @@ class BDB_Register_Universal_Tokens {
 	public function set_cache() {
 
 		global $wpdb;
-		$fields_table    = $wpdb->base_prefix . 'bp_xprofile_fields';
+		$fields_table = $wpdb->base_prefix . 'bp_xprofile_fields';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- BuddyBoss's own table; the plugin offers no API for this query. Table name is $wpdb->base_prefix plus a fixed table name.
 		$xprofile_fields = $wpdb->get_results( "SELECT * FROM {$fields_table} WHERE parent_id = 0 ORDER BY field_order ASC" );
 		$fields          = array();
 		if ( ! empty( $xprofile_fields ) ) {

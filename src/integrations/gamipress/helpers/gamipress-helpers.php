@@ -81,6 +81,7 @@ class Gamipress_Helpers {
 			}
 
 			// $posts = Automator()->helpers->recipe->options->wp_query( [ 'post_type' => 'achievement-type' ] );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Option list: reads only the ID and title columns; get_posts() would load every full post.
 			$posts = $wpdb->get_results(
 				"SELECT ID, post_name, post_title, post_type
 											FROM $wpdb->posts
@@ -113,6 +114,7 @@ class Gamipress_Helpers {
 			'custom_value_description' => _x( 'Achievement type slug', 'GamiPress', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_list_gp_award_types', $option );
 	}
 
@@ -145,6 +147,7 @@ class Gamipress_Helpers {
 		if ( Automator()->helpers->recipe->load_helpers ) {
 
 			// $posts = Automator()->helpers->recipe->options->wp_query( [ 'post_type' => 'points-type' ] );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Option list: reads only the ID and title columns; get_posts() would load every full post.
 			$posts = $wpdb->get_results(
 				"SELECT ID, post_name, post_title, post_type
 											FROM $wpdb->posts
@@ -171,6 +174,7 @@ class Gamipress_Helpers {
 			'custom_value_description' => _x( 'Point type slug', 'GamiPress', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_list_gp_points_types', $option );
 	}
 
@@ -197,6 +201,7 @@ class Gamipress_Helpers {
 		if ( Automator()->helpers->recipe->load_helpers ) {
 
 			// $posts = Automator()->helpers->recipe->options->wp_query( [ 'post_type' => 'rank-type' ] );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Option list: reads only the ID and title columns; get_posts() would load every full post.
 			$posts = $wpdb->get_results(
 				"SELECT ID, post_name, post_title, post_type
 											FROM $wpdb->posts
@@ -223,6 +228,7 @@ class Gamipress_Helpers {
 			'custom_value_description' => _x( 'Rank type slug', 'GamiPress', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_list_gp_rank_types', $option );
 	}
 

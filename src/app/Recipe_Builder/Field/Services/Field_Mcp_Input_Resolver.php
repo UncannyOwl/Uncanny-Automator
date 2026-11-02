@@ -2,13 +2,16 @@
 /**
  * Field MCP Input Resolver.
  *
- * Resolves raw field values from MCP tool calls into the format
+ * Resolves raw field values from MCP tool uses into the format
  * the recipe builder expects. Mirrors the frontend's valueLegacyMeta
  * and getReadableValue() behavior.
  *
  * Responsibilities:
  * - Multi-select: JSON-encode array values, generate comma-joined _readable
  * - Single select: resolve _readable from option labels
+ * - Checkbox: store a boolean answer as 'true' / 'false', as the builder does, on actions,
+ *   triggers, loop filters and filter conditions
+ * - Repeater checkbox cell: store a yes/no answer as a JSON boolean, as the builder does
  * - Validate values against option lists when supports_custom_value=false
  *
  * @package Uncanny_Automator\App\Recipe_Builder\Field\Services
@@ -19,7 +22,8 @@ declare( strict_types=1 );
 
 namespace Uncanny_Automator\App\Recipe_Builder\Field\Services;
 
-use Uncanny_Automator\Services\Integrations\Fields;
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Field_Registry_Service;
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Utilities\Field_Value_Normalizer;
 
 /**
  * Resolves AI-provided field values into the storage format the recipe builder expects.
@@ -83,7 +87,7 @@ class Field_Mcp_Input_Resolver {
 				if ( is_string( $repeater_value ) ) {
 					$decoded = json_decode( $repeater_value, true );
 					if ( is_array( $decoded ) ) {
-						$repeater_value = $decoded;
+						$repeater_value        = $decoded;
 						$fields[ $field_code ] = $repeater_value;
 					} else {
 						// Non-JSON string is invalid for a repeater field.
@@ -103,8 +107,16 @@ class Field_Mcp_Input_Resolver {
 				$error = $this->validate_repeater_row_keys( $repeater_value, $def['fields'] ?? array(), $field_code );
 				if ( null !== $error ) {
 					$fields['__validation_error'] = $error;
+					continue;
 				}
 
+				$fields[ $field_code ] = $this->normalize_repeater_checkboxes( $repeater_value, $def['fields'] ?? array() );
+
+				continue;
+			}
+
+			if ( 'checkbox' === $input_type ) {
+				$fields[ $field_code ] = $this->normalize_checkbox( $fields[ $field_code ] );
 				continue;
 			}
 
@@ -125,6 +137,112 @@ class Field_Mcp_Input_Resolver {
 		}
 
 		return $fields;
+	}
+
+	/**
+	 * Normalize the fields of a block modifier, a loop filter or a filter condition.
+	 *
+	 * Turns a boolean answer for each checkbox field into 'true' or 'false', as normalize()
+	 * does for an action or trigger: the builder saves a block modifier through the same field
+	 * encoding. The field definitions come from Field_Registry_Service::get_block_modifier_fields(),
+	 * the source the builder's save reads. A modifier that is not registered is left as sent,
+	 * for the caller's own validation to refuse.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $block_modifier_type Block_Modifier_Types::LOOP_FILTER or Block_Modifier_Types::FILTER_CONDITION.
+	 * @param string $integration_code    Integration code.
+	 * @param string $modifier_code       Loop filter or condition code.
+	 * @param array  $fields              Flat fields: option code => value, plus any _readable keys.
+	 *
+	 * @return array The fields, each checkbox's boolean answer as 'true' or 'false'.
+	 */
+	public function normalize_block_modifier( string $block_modifier_type, string $integration_code, string $modifier_code, array $fields ): array {
+
+		$definitions = Field_Registry_Service::instance()->get_block_modifier_fields( $integration_code, $block_modifier_type, $modifier_code );
+
+		if ( is_wp_error( $definitions ) ) {
+			return $fields;
+		}
+
+		foreach ( $definitions as $def ) {
+
+			if ( ! is_array( $def ) || 'checkbox' !== ( $def['input_type'] ?? '' ) ) {
+				continue;
+			}
+
+			$field_code = (string) ( $def['option_code'] ?? '' );
+
+			if ( '' === $field_code || ! array_key_exists( $field_code, $fields ) ) {
+				continue;
+			}
+
+			$fields[ $field_code ] = $this->normalize_checkbox( $fields[ $field_code ] );
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * Normalize a checkbox field to the value the builder stores.
+	 *
+	 * The builder stores a checkbox as the text 'true' or 'false' (its encodeFieldOutputValue()
+	 * turns the checkbox's boolean into that text), and recipe parts compare against it, such
+	 * as Pro's CSV import reading `'false' === $has_header`. An agent sends a JSON boolean, which
+	 * WordPress would store as '1' or ''. Field_Value_Normalizer::to_wire_string() is the
+	 * server's copy of that encoding. A value that is not a boolean answer, such as a token,
+	 * is left as sent.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param mixed $value Raw value.
+	 *
+	 * @return mixed 'true' or 'false' for a boolean answer; the value as sent otherwise.
+	 */
+	private function normalize_checkbox( $value ) {
+		return Field_Value_Normalizer::is_boolish( $value ) ? Field_Value_Normalizer::to_wire_string( $value ) : $value;
+	}
+
+	/**
+	 * Normalize the checkbox cells of a repeater's rows to the value the builder stores.
+	 *
+	 * Inside a repeater row the builder keeps a checkbox's boolean and JSON-encodes the rows, so
+	 * a row holds JSON true or false, not the 'true' / 'false' text of a top-level checkbox.
+	 * Recipe parts read the cell that way, such as Google Sheets "Update a row" updating a column
+	 * only when `true === $field['COLUMN_UPDATE']`. A yes/no answer in a checkbox cell becomes a
+	 * boolean through Field_Value_Normalizer::to_bool(); a value that is not one, such as a token,
+	 * is left as sent.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param array $rows       Repeater rows, each an array of sub-field code => value.
+	 * @param array $sub_fields Repeater sub-field definitions.
+	 *
+	 * @return array The rows, each checkbox cell's yes/no answer as a boolean.
+	 */
+	private function normalize_repeater_checkboxes( array $rows, array $sub_fields ): array {
+
+		$checkbox_codes = array();
+
+		foreach ( $sub_fields as $sub_field ) {
+			if ( is_array( $sub_field ) && 'checkbox' === ( $sub_field['input_type'] ?? '' ) && '' !== (string) ( $sub_field['option_code'] ?? '' ) ) {
+				$checkbox_codes[] = (string) $sub_field['option_code'];
+			}
+		}
+
+		foreach ( $rows as $index => $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
+			}
+
+			foreach ( $checkbox_codes as $checkbox_code ) {
+				if ( array_key_exists( $checkbox_code, $row ) && Field_Value_Normalizer::is_boolish( $row[ $checkbox_code ] ) ) {
+					$rows[ $index ][ $checkbox_code ] = Field_Value_Normalizer::to_bool( $row[ $checkbox_code ] );
+				}
+			}
+		}
+
+		return $rows;
 	}
 
 	/**
@@ -425,9 +543,9 @@ class Field_Mcp_Input_Resolver {
 				continue;
 			}
 
-			$option_code     = (string) $sub_field['option_code'];
-			$allowed_keys[]  = $option_code;
-			$allowed_keys[]  = $option_code . '_readable';
+			$option_code    = (string) $sub_field['option_code'];
+			$allowed_keys[] = $option_code;
+			$allowed_keys[] = $option_code . '_readable';
 
 			if ( ! empty( $sub_field['supports_custom_value'] ) ) {
 				$allowed_keys[] = $option_code . '_custom';
@@ -477,34 +595,15 @@ class Field_Mcp_Input_Resolver {
 	 */
 	private function load_field_definitions( string $object_type, string $code ): array {
 
-		$fields_service = new Fields();
-		$fields_service->set_config(
-			array(
-				'object_type' => $object_type,
-				'code'        => $code,
-			)
-		);
+		// Service expects singular item_type; strip trailing 's' if caller passed plural.
+		$item_type = rtrim( $object_type, 's' );
 
-		$groups = $fields_service->get();
+		// get_item_fields() returns the flat list directly — manual flatten
+		// loop is no longer needed (the service's flatten_grouped helper
+		// does the same walk internally).
+		$flat = Field_Registry_Service::instance()->get_item_fields( '', $item_type, $code );
 
-		if ( ! is_array( $groups ) ) {
-			return array();
-		}
-
-		// Flatten grouped fields into a single array.
-		$flat = array();
-		foreach ( $groups as $group ) {
-			if ( ! is_array( $group ) ) {
-				continue;
-			}
-			foreach ( $group as $field ) {
-				if ( is_array( $field ) && isset( $field['option_code'] ) ) {
-					$flat[] = $field;
-				}
-			}
-		}
-
-		return $flat;
+		return is_wp_error( $flat ) ? array() : $flat;
 	}
 
 	/**
@@ -532,8 +631,8 @@ class Field_Mcp_Input_Resolver {
 			}
 
 			if ( is_array( $value ) && isset( $value['value'] ) ) {
-				$display                      = (string) ( $value['readable'] ?? $value['label'] ?? $value['value'] );
-				$normalized[ $key ]           = (string) $value['value'];
+				$display                          = (string) ( $value['readable'] ?? $value['label'] ?? $value['value'] );
+				$normalized[ $key ]               = (string) $value['value'];
 				$normalized[ $key . '_readable' ] = $display;
 				continue;
 			}

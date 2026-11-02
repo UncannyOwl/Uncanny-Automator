@@ -75,6 +75,7 @@ class Wp_Rocket_Purge_Url extends \Uncanny_Automator\Recipe\Action {
 		}
 
 		if ( false === filter_var( $url, FILTER_VALIDATE_URL ) ) {
+			/* translators: %s: URL */
 			$this->add_log_error( sprintf( esc_html_x( 'Invalid URL provided: %s', 'WP Rocket', 'uncanny-automator' ), $url ) );
 			return false;
 		}

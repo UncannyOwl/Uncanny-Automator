@@ -39,6 +39,7 @@ class Automator_DB_Handler_Api {
 
 		$date_time = isset( $args['date_time'] ) ? $args['date_time'] : current_time( 'mysql' );
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Write to Automator's own table.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -55,23 +56,25 @@ class Automator_DB_Handler_Api {
 				'balance'       => isset( $args['balance'] ) ? absint( $args['balance'] ) : null,
 				'time_spent'    => isset( $args['time_spent'] ) ? absint( $args['time_spent'] ) : null,
 			),
+			// One format per column, in column order. `status` is a varchar: a
+			// transport failure's status is its WP_Error code, not a number.
 			array(
-				'%s',
-				'%s',
-				'%d',
-				'%s',
-				'%s',
-				'%s',
-				'%s',
-				'%s',
-				'%d',
-				'%d',
-				'%d',
+				'%s', // date_time.
+				'%s', // type.
+				'%d', // recipe_log_id.
+				'%d', // item_log_id.
+				'%s', // endpoint.
+				'%s', // params.
+				'%s', // request.
+				'%s', // response.
+				'%s', // status.
+				'%d', // price.
+				'%d', // balance.
+				'%d', // time_spent.
 			)
 		);
 
 		return $wpdb->insert_id;
-
 	}
 
 	/**
@@ -91,6 +94,7 @@ class Automator_DB_Handler_Api {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Write to Automator's own table.
 		$wpdb->insert(
 			$wpdb->prefix . 'uap_api_log_response',
 			array(
@@ -107,7 +111,6 @@ class Automator_DB_Handler_Api {
 		);
 
 		return $wpdb->insert_id;
-
 	}
 
 	/**
@@ -119,7 +122,8 @@ class Automator_DB_Handler_Api {
 	public function get_by_id( $id ) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . Automator()->db->tables->api;
-		$result     = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE ID =%s", $id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$result = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `' . esc_sql( $table_name ) . '` WHERE ID =%s', $id ) );
 
 		return $result;
 	}
@@ -133,7 +137,8 @@ class Automator_DB_Handler_Api {
 	public function get_by_log_id( $type, $item_log_id ) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . Automator()->db->tables->api;
-		$result     = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE type=%s AND item_log_id =%d", $type, $item_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$result = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `' . esc_sql( $table_name ) . '` WHERE type=%s AND item_log_id =%d', $type, $item_log_id ) );
 
 		return $result;
 	}
@@ -155,15 +160,17 @@ class Automator_DB_Handler_Api {
 		$triggers_tbl = $wpdb->prefix . Automator()->db->tables->trigger;
 
 		// Delete the corresponding response.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$item_log_ids = $wpdb->get_col(
 			$wpdb->prepare(
-				"SELECT item_log_id FROM $api_tbl WHERE recipe_log_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'SELECT item_log_id FROM `' . esc_sql( $api_tbl ) . '` WHERE recipe_log_id = %d',
 				$automator_recipe_log_id
 			)
 		);
 
 		if ( $item_log_ids ) {
 			foreach ( $item_log_ids as $item_log_id ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 				$wpdb->delete(
 					$api_response_tbl,
 					array(
@@ -175,10 +182,12 @@ class Automator_DB_Handler_Api {
 		}
 
 		// Delete the corresponding actions.
-		$actions = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $action_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$actions = $wpdb->get_col( $wpdb->prepare( 'SELECT `ID` FROM `' . esc_sql( $action_tbl ) . '` WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d', $recipe_id, $automator_recipe_log_id ) );
 
 		if ( $actions ) {
 			foreach ( $actions as $item_log_id ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 				$wpdb->delete(
 					$api_tbl,
 					array(
@@ -191,10 +200,12 @@ class Automator_DB_Handler_Api {
 
 		// -- Delete the corresponding trigger entries.
 
-		$triggers = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $triggers_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$triggers = $wpdb->get_col( $wpdb->prepare( 'SELECT `ID` FROM `' . esc_sql( $triggers_tbl ) . '` WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d', $recipe_id, $automator_recipe_log_id ) );
 
 		if ( $triggers ) {
 			foreach ( $triggers as $item_log_id ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 				$wpdb->delete(
 					$api_tbl,
 					array(
@@ -204,7 +215,56 @@ class Automator_DB_Handler_Api {
 				);
 			}
 		}
-
 	}
 
+	/**
+	 * Deletes the API log of every run of a recipe, with the resend results recorded for its actions.
+	 *
+	 * Each row is found through the recipe's run, action and trigger logs, so this runs before those are deleted.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $recipe_id The recipe ID.
+	 *
+	 * @return void
+	 */
+	public function delete_by_recipe_id( $recipe_id ) {
+
+		global $wpdb;
+
+		// Resend results, by the action log each one was recorded for.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE response FROM {$wpdb->prefix}uap_api_log_response response INNER JOIN {$wpdb->prefix}uap_action_log a ON response.item_log_id = a.ID WHERE a.automator_recipe_id = %d",
+				$recipe_id
+			)
+		);
+
+		// The API calls of the recipe's actions and triggers, found as a single run's purge finds them.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE api FROM {$wpdb->prefix}uap_api_log api INNER JOIN {$wpdb->prefix}uap_action_log a ON api.item_log_id = a.ID WHERE api.type = 'action' AND a.automator_recipe_id = %d",
+				$recipe_id
+			)
+		);
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE api FROM {$wpdb->prefix}uap_api_log api INNER JOIN {$wpdb->prefix}uap_trigger_log t ON api.item_log_id = t.ID WHERE api.type = 'trigger' AND t.automator_recipe_id = %d",
+				$recipe_id
+			)
+		);
+
+		// Any other API call recorded on one of the recipe's runs.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE api FROM {$wpdb->prefix}uap_api_log api INNER JOIN {$wpdb->prefix}uap_recipe_log r ON api.recipe_log_id = r.ID WHERE r.automator_recipe_id = %d",
+				$recipe_id
+			)
+		);
+	}
 }

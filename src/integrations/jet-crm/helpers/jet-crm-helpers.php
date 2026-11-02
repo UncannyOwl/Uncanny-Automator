@@ -51,6 +51,7 @@ class Jet_Crm_Helpers {
 			'options'         => $options,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_contact_statuses', $option );
 	}
 
@@ -65,6 +66,7 @@ class Jet_Crm_Helpers {
 	public function get_all_jetpack_tags( $option_code, $is_any = false, $tokens = array(), $tag_type = ZBS_TYPE_CONTACT, $empty_val = false ) {
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Jetpack CRM's own table; the plugin offers no API for this query.
 		$all_tags = $wpdb->get_results( $wpdb->prepare( "SELECT `ID`,`zbstag_name` FROM `{$wpdb->prefix}zbs_tags` WHERE zbstag_objtype = %d", $tag_type ) );
 		$tags     = array();
 
@@ -93,6 +95,7 @@ class Jet_Crm_Helpers {
 			'supports_custom_value' => true,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_get_all_jetpack_tags', $option );
 	}
 
@@ -105,6 +108,7 @@ class Jet_Crm_Helpers {
 	public function get_all_jetpack_companies( $option_code, $is_any = false, $supports_custom_value = false, $empty_val = false ) {
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Jetpack CRM's own table; the plugin offers no API for this query.
 		$all_companies = $wpdb->get_results( "SELECT `ID`,`zbsco_name` FROM `{$wpdb->prefix}zbs_companies`" );
 		$companies     = array();
 
@@ -133,6 +137,7 @@ class Jet_Crm_Helpers {
 			'supports_custom_value' => $supports_custom_value,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_get_all_jetpack_companies', $option );
 	}
 
@@ -144,9 +149,11 @@ class Jet_Crm_Helpers {
 	 */
 	public function check_if_tag_exists( $tag, $tag_type ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Jetpack CRM's own table; the plugin offers no API for this query.
 		$check_tag = $wpdb->get_var( $wpdb->prepare( "SELECT `ID` FROM `{$wpdb->prefix}zbs_tags` WHERE zbstag_objtype = %d AND (zbstag_name LIKE %s OR ID=%d)", $tag_type, $tag, $tag ) );
 		if ( empty( $check_tag ) ) {
 			$slug = preg_replace( '#[^\\pL\d]+#u', '-', strtolower( $tag ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Jetpack CRM's own table; write; the plugin offers no API for this query.
 			$wpdb->insert(
 				"{$wpdb->prefix}zbs_tags",
 				array(
@@ -176,6 +183,7 @@ class Jet_Crm_Helpers {
 	 */
 	public function link_tag_with_object( $tag, $object_id, $object_type ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Jetpack CRM's own table; write; the plugin offers no API for this query.
 		$wpdb->replace(
 			"{$wpdb->prefix}zbs_tags_links",
 			array(

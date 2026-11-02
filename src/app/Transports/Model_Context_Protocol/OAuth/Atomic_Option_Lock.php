@@ -110,9 +110,11 @@ final class Atomic_Option_Lock {
 	 */
 	private function insert( string $lock_name, array $lock ): bool {
 
+		$wpdb = $this->wpdb;
+
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$query = $this->wpdb->prepare(
-			"INSERT IGNORE INTO {$this->wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, %s)",
+		$query = $wpdb->prepare(
+			"INSERT IGNORE INTO `{$wpdb->options}` (option_name, option_value, autoload) VALUES (%s, %s, %s)",
 			$lock_name,
 			maybe_serialize( $lock ),
 			'no'
@@ -138,9 +140,11 @@ final class Atomic_Option_Lock {
 	 */
 	private function read_stored_value( string $lock_name ) {
 
+		$wpdb = $this->wpdb;
+
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$query = $this->wpdb->prepare(
-			"SELECT option_value FROM {$this->wpdb->options} WHERE option_name = %s LIMIT 1",
+		$query = $wpdb->prepare(
+			"SELECT option_value FROM `{$wpdb->options}` WHERE option_name = %s LIMIT 1",
 			$lock_name
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -164,9 +168,11 @@ final class Atomic_Option_Lock {
 	 */
 	private function delete_if_unchanged( string $lock_name, string $stored_value ): bool {
 
+		$wpdb = $this->wpdb;
+
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$query = $this->wpdb->prepare(
-			"DELETE FROM {$this->wpdb->options} WHERE option_name = %s AND BINARY option_value = %s",
+		$query = $wpdb->prepare(
+			"DELETE FROM `{$wpdb->options}` WHERE option_name = %s AND BINARY option_value = %s",
 			$lock_name,
 			$stored_value
 		);
@@ -252,13 +258,19 @@ final class Atomic_Option_Lock {
 	/**
 	 * Invalidate WordPress option caches after direct persistence.
 	 *
+	 * Lock rows are inserted with autoload off and read straight from the
+	 * database, so `alloptions` never holds them and must not be evicted here:
+	 * doing so forced every concurrent request on an object-cache site to
+	 * reload the whole autoloaded option set twice per tool use. The small
+	 * "known missing" list is still dropped, because callers that persist
+	 * their own non-autoloaded rows under this lock rely on that reset.
+	 *
 	 * @param string $lock_name Lock option name.
 	 * @return void
 	 */
 	private function clear_option_cache( string $lock_name ): void {
 
 		wp_cache_delete( $lock_name, 'options' );
-		wp_cache_delete( 'alloptions', 'options' );
 		wp_cache_delete( 'notoptions', 'options' );
 
 	}

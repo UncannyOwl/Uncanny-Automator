@@ -17,14 +17,14 @@ class Fields_Resolver {
 	/**
 	 * The type of the object where the fields are loaded.
 	 *
-	 * @var string $object_type E.g. 'trigger', 'action', 'closure'.
+	 * @var string $object_type E.g. 'trigger', 'action'.
 	 */
 	protected $object_type = 'trigger';
 
 	/**
 	 * The object ID.
 	 *
-	 * @var int $object_id The Trigger ID, Action ID, or Closure ID.
+	 * @var int $object_id The Trigger ID or Action ID.
 	 */
 	protected $object_id = 0;
 
@@ -470,7 +470,17 @@ class Fields_Resolver {
 			return null;
 		}
 
-		$response = apply_filters( 'automator_options_callback_response', $response, $callback, array(), array(), $callable_type );
+		// The item in the shape the 7.x builder passed (Automator_Functions::load_extra_options()),
+		// with its integration and code under `meta`; add-ons read it to pick the items they
+		// change. The cache is per integration and code, so no recipe stands behind it.
+		$item = array(
+			'meta' => array(
+				'integration' => $integration_code,
+				'code'        => $object_code,
+			),
+		);
+
+		$response = apply_filters( 'automator_options_callback_response', $response, $callback, $item, array(), $callable_type );
 
 		automator_update_option( $cache_key, $response, false );
 
@@ -527,16 +537,22 @@ class Fields_Resolver {
 	 * @return mixed[] Returns an array with keys 'options' and 'options_group'.
 	 */
 	public function resolve_object_fields() {
-
-		$options_fields       = array();
-		$options_group_fields = array();
-
 		$object_meta = get_post_meta( $this->get_object_id() );
 
-		// The function get_post_meta return a mixed data.
-		if ( ! is_array( $object_meta ) ) {
-			$object_meta = array();
-		}
+		return $this->resolve_saved_object_fields( is_array( $object_meta ) ? $object_meta : array() );
+	}
+
+	/**
+	 * Resolve fields from saved metadata, using the registered field definitions for labels and types.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param array $object_meta Saved metadata in get_post_meta() shape.
+	 * @return mixed[] Fields grouped under options and options_group.
+	 */
+	public function resolve_saved_object_fields( array $object_meta ) {
+		$options_fields       = array();
+		$options_group_fields = array();
 
 		$object_meta_flattended = $this->flatten_post_meta_array( $object_meta );
 
@@ -547,6 +563,9 @@ class Fields_Resolver {
 		if ( $object_code ) {
 			$object_type      = $this->get_object_type();
 			$integration_code = $this->resolve_integration_code( $object_code, $object_type );
+			if ( '' === $integration_code && isset( $object_meta['integration'][0] ) ) {
+				$integration_code = (string) $object_meta['integration'][0];
+			}
 
 			if ( $integration_code ) {
 				// Note: cached data has 'options' choices stripped from options_group items

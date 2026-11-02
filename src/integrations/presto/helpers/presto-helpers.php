@@ -4,6 +4,10 @@ namespace Uncanny_Automator\Integrations\Presto;
 
 use Uncanny_Automator_Pro\Presto_Pro_Helpers;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Presto_Helpers
  *
@@ -135,6 +139,7 @@ class Presto_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_list_presto_videos', $option );
 	}
 

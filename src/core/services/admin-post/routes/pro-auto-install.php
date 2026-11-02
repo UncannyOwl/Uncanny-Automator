@@ -293,6 +293,7 @@ class Pro_Auto_Install {
 	private function configure_environment() {
 		$time_limit = apply_filters( 'uncanny_automator_pro_auto_install_time_limit', absint( self::ALLOWED_TIME_LIMIT ) );
 		$time_limit = max( 1, min( 300, $time_limit ) ); // Ensure the time limit is between 1 and 300 seconds.
+		// phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- Gives a large plugin download more time; the value is clamped to 300 seconds above.
 		set_time_limit( $time_limit );
 	}
 

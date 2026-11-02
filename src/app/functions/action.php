@@ -12,7 +12,7 @@
 declare(strict_types=1);
 
 // Prevent direct access
-if ( ! defined( 'ABSPATH' ) && ! defined( 'PHPUNIT_COMPOSER_INSTALL' ) && ! defined( 'WP_TESTS_DIR' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
@@ -20,6 +20,8 @@ if ( ! defined( 'ABSPATH' ) && ! defined( 'PHPUNIT_COMPOSER_INSTALL' ) && ! defi
 use Uncanny_Automator\App\Bridge\Automator_Action_Definition_Bridge;
 use Uncanny_Automator\App\Recipe_Builder\Action\Action as Action_Component;
 use Uncanny_Automator\App\Recipe_Builder\Action\Action_Config;
+use Uncanny_Automator\App\Recipe_Builder\Action\Enums\Action_Status;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Id;
 use Uncanny_Automator\App\Recipe_Builder\Action\Services\Action_CRUD_Service;
 use Uncanny_Automator\App\Recipe_Builder\Action\Services\Action_Registry_Service;
 
@@ -278,43 +280,32 @@ function automator_validate_action_configuration( string $action_code, array $co
 		);
 	}
 
-	// Use the legacy Fields service for validation
-	try {
-		$fields = new \Uncanny_Automator\Services\Integrations\Fields();
-		$fields->set_config(
-			array(
-				'object_type' => 'actions',
-				'code'        => $action_code,
-			)
-		);
-		$configuration_fields = $fields->get();
+	// Materialize the grouped field shape via the central service.
+	$configuration_fields = \Uncanny_Automator\App\Recipe_Builder\Field\Services\Field_Registry_Service::instance()->get_item_fields_grouped(
+		'',
+		'action',
+		$action_code
+	);
 
-		$required_fields = automator_get_required_fields_from_schema( $configuration_fields );
-		$missing_fields  = array_diff( $required_fields, array_keys( $config ) );
+	if ( is_wp_error( $configuration_fields ) ) {
+		return $configuration_fields;
+	}
 
-		if ( $missing_fields ) {
-			return new WP_Error(
-				'missing_required_fields',
-				sprintf(
-					/* translators: %s Comma-separated field list. */
-					esc_html_x( 'Missing required configuration fields: %s', 'Action helper error', 'uncanny-automator' ),
-					implode( ', ', $missing_fields )
-				)
-			);
-		}
+	$required_fields = automator_get_required_fields_from_schema( $configuration_fields );
+	$missing_fields  = array_diff( $required_fields, array_keys( $config ) );
 
-		return array( 'valid' => true );
-
-	} catch ( \Exception $e ) {
+	if ( $missing_fields ) {
 		return new WP_Error(
-			'validation_error',
+			'missing_required_fields',
 			sprintf(
-				/* translators: %s Error message. */
-				esc_html_x( 'Action configuration validation failed: %s', 'Action helper error', 'uncanny-automator' ),
-				$e->getMessage()
+				/* translators: %s Comma-separated field list. */
+				esc_html_x( 'Missing required configuration fields: %s', 'Action helper error', 'uncanny-automator' ),
+				implode( ', ', $missing_fields )
 			)
 		);
 	}
+
+	return array( 'valid' => true );
 }
 
 /**
@@ -359,8 +350,17 @@ function automator_get_required_fields_from_schema( array $configuration_fields 
  */
 function automator_create_action_instance( int $recipe_id, array $params, array $action_definition ) {
 	try {
-		$integration_code             = $action_definition['integration'] ?? '';
-		$action_type                  = $action_definition['type'] ?? 'user';
+		$integration_code = $action_definition['integration'] ?? '';
+		// WP_Action_Registry names these action_meta_code and action_type; the
+		// meta_code, user_type and type spellings other callers pass still count.
+		$meta_code   = $action_definition['action_meta_code'] ?? $action_definition['meta_code'] ?? '';
+		$action_type = 'user';
+		foreach ( array( 'action_type', 'user_type', 'type' ) as $key ) {
+			if ( in_array( $action_definition[ $key ] ?? '', array( 'user', 'anonymous' ), true ) ) {
+				$action_type = $action_definition[ $key ];
+				break;
+			}
+		}
 		$sentence_human_readable      = $action_definition['sentence_human_readable'] ?? $action_definition['sentence'] ?? '';
 		$sentence_human_readable_html = $action_definition['sentence_human_readable_html'] ?? $action_definition['sentence_html'] ?? '';
 
@@ -374,16 +374,21 @@ function automator_create_action_instance( int $recipe_id, array $params, array 
 			$meta = array_merge( $meta, $params['config'] );
 		}
 
+		// The same fields Action_Builder::create() sets for a new action.
 		$config = ( new Action_Config() )
 			->id( null )
 			->integration_code( $integration_code )
+			->recipe_id( $recipe_id )
+			->parent_id( new Recipe_Id( $recipe_id ) )
 			->code( $params['action_code'] )
-			->type( $action_type )
+			->meta_code( $meta_code )
+			->user_type( $action_type )
+			->status( Action_Status::DRAFT )
 			->meta( $meta );
 
 		return new Action_Component( $config );
 
-	} catch ( \Exception $e ) {
+	} catch ( \Throwable $e ) {
 		return new WP_Error(
 			'action_creation_error',
 			sprintf(
@@ -406,12 +411,23 @@ function automator_update_action_instance( $existing_action, array $new_config )
 	$current_meta = $existing_action->get_action_meta()->to_array();
 	$updated_meta = array_merge( $current_meta, $new_config );
 
+	// Keep every field of the existing action, as Action::with_parent_id() does; only the meta changes.
 	$config = ( new Action_Config() )
 		->id( $existing_action->get_action_id()->get_value() )
+		->recipe_id( $existing_action->get_action_recipe_id()->get_value() )
 		->integration_code( $existing_action->get_action_integration_code()->get_value() )
 		->code( $existing_action->get_action_code()->get_value() )
-		->type( $existing_action->get_action_type()->get_value() )
-		->meta( $updated_meta );
+		->meta_code( $existing_action->get_action_meta_code()->get_value() )
+		->user_type( $existing_action->get_action_type()->get_value() )
+		->meta( $updated_meta )
+		->is_deprecated( $existing_action->get_deprecated()->get_value() );
+
+	if ( null !== $existing_action->get_parent_id() ) {
+		$config->parent_id( $existing_action->get_parent_id()->get_parent() );
+	}
+	if ( null !== $existing_action->get_status() ) {
+		$config->status( $existing_action->get_status()->get_value() );
+	}
 
 	return new Action_Component( $config );
 }

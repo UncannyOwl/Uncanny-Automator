@@ -249,8 +249,8 @@ final class SchemaManager
             }
 
             throw new SourceTransactionsUnavailableException(
-                $table,
-                $engine !== '' ? $engine : 'unknown',
+                esc_html($table),
+                esc_html($engine !== '' ? $engine : 'unknown'),
             );
         }
     }
@@ -292,8 +292,8 @@ final class SchemaManager
         ];
 
         foreach ($requiredColumns as $table => $columns) {
-            $quotedTable = '`' . str_replace('`', '``', $table) . '`';
-            $actualColumns = $wpdb->get_col("SHOW COLUMNS FROM {$quotedTable}", 0);
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Schema read; must not be cached.
+            $actualColumns = $wpdb->get_col($wpdb->prepare('SHOW COLUMNS FROM %i', $table), 0);
             if (!is_array($actualColumns)) {
                 return false;
             }
@@ -321,20 +321,26 @@ final class SchemaManager
         $sections = self::tableName();
         $operations = self::operationsTableName();
 
-        $sectionsDeleted = $wpdb->query(
-            "DELETE sections FROM {$sections} AS sections
-             LEFT JOIN {$posts} AS posts ON posts.ID = sections.page_id
-             WHERE posts.ID IS NULL"
-        );
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration.
+        $sectionsDeleted = $wpdb->query($wpdb->prepare(
+            'DELETE sections FROM %i AS sections
+             LEFT JOIN %i AS posts ON posts.ID = sections.page_id
+             WHERE posts.ID IS NULL',
+            $sections,
+            $posts,
+        ));
         if ($sectionsDeleted === false) {
             return false;
         }
 
-        return $wpdb->query(
-            "DELETE operations FROM {$operations} AS operations
-             LEFT JOIN {$posts} AS posts ON posts.ID = operations.scope_id
-             WHERE operations.scope_type = 'page' AND posts.ID IS NULL"
-        ) !== false;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration.
+        return $wpdb->query($wpdb->prepare(
+            "DELETE operations FROM %i AS operations
+             LEFT JOIN %i AS posts ON posts.ID = operations.scope_id
+             WHERE operations.scope_type = 'page' AND posts.ID IS NULL",
+            $operations,
+            $posts,
+        )) !== false;
     }
 
     /**
@@ -351,8 +357,8 @@ final class SchemaManager
                 continue;
             }
 
-            $quotedTable = '`' . str_replace('`', '``', $table) . '`';
-            $wpdb->query("ALTER TABLE {$quotedTable} ENGINE=InnoDB");
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Schema migration.
+            $wpdb->query($wpdb->prepare('ALTER TABLE %i ENGINE=InnoDB', $table));
             // The ALTER can fail without throwing. Force the verification
             // read to observe the database instead of this request cache.
             unset(self::$tableEngines[$table]);
@@ -385,17 +391,22 @@ final class SchemaManager
         $sectionsTable = self::tableName();
         $pageStateTable = self::pageStateTableName();
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration.
         $initialized = $wpdb->query($wpdb->prepare(
-            "INSERT IGNORE INTO {$pageStateTable}
+            "INSERT IGNORE INTO %i
                 (page_id, draft_title, draft_slug, published_artifact_id, published_source_snapshot_id, draft_resume_policy, updated_by, updated_at, published_by, published_at)
              SELECT DISTINCT posts.ID, posts.post_title, posts.post_name, NULL, NULL, 'active', 0, CURRENT_TIMESTAMP, NULL, NULL
-             FROM {$postsTable} AS posts
-             LEFT JOIN {$postmetaTable} AS owned
+             FROM %i AS posts
+             LEFT JOIN %i AS owned
                ON owned.post_id = posts.ID AND owned.meta_key = %s AND owned.meta_value = '1'
-             LEFT JOIN {$sectionsTable} AS sections ON sections.page_id = posts.ID
+             LEFT JOIN %i AS sections ON sections.page_id = posts.ID
              WHERE posts.post_type = 'page'
                AND (owned.post_id IS NOT NULL OR sections.page_id IS NOT NULL)",
+            $pageStateTable,
+            $postsTable,
+            $postmetaTable,
             WpPageOwnershipRepository::META_OWNED,
+            $sectionsTable,
         ));
 
         return $initialized !== false;
@@ -409,6 +420,7 @@ final class SchemaManager
             return self::$tableEngines[$table];
         }
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Schema read; must not be cached.
         $status = $wpdb->get_row($wpdb->prepare('SHOW TABLE STATUS WHERE Name = %s', $table));
 
         $engine = is_object($status) && isset($status->Engine) ? (string) $status->Engine : '';

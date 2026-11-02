@@ -185,7 +185,7 @@ class Active_Campaign_Settings extends App_Integration_Settings {
 							array(
 								'type' => 'icon',
 								'data' => array(
-									'id' => $item['icon'],
+									'code' => $item['icon'],
 								),
 							),
 						),
@@ -211,7 +211,7 @@ class Active_Campaign_Settings extends App_Integration_Settings {
 									'color'          => 'secondary',
 									'size'           => 'extra-small',
 									'icon'           => array(
-										'id' => 'rotate',
+										'code' => 'rotate',
 									),
 								),
 							),
@@ -418,9 +418,10 @@ class Active_Campaign_Settings extends App_Integration_Settings {
 					array(
 						'type'   => 'field',
 						'config' => array(
-							'value'    => $this->webhooks->get_authorized_url(),
-							'label'    => esc_attr_x( 'Webhook URL', 'Active Campaign', 'uncanny-automator' ),
-							'disabled' => true,
+							'value'             => $this->webhooks->get_authorized_url(),
+							'label'             => esc_attr_x( 'Webhook URL', 'Active Campaign', 'uncanny-automator' ),
+							'disabled'          => true,
+							'copy-to-clipboard' => true,
 						),
 					),
 					$this->get_webhook_regeneration_button(),

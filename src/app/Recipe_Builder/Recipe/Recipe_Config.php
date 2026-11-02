@@ -1,9 +1,9 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Recipe;
 
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Trigger_Logic;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Throttle;
 
 /**
  * Recipe Configuration - Dumb Data Container.
@@ -70,8 +70,9 @@ class Recipe_Config {
 	/**
 	 * Raw recipe notes - no validation.
 	 *
-	 * Default empty string. Passed to Recipe_Notes value object for length validation.
-	 * Can exceed limits - domain will enforce 10,000 char max.
+	 * Default empty string. Wrapped by the Recipe_Notes value object, which
+	 * imposes no length limit — the column is longtext and template libraries
+	 * legitimately exceed any figure worth picking.
 	 *
 	 * @var string
 	 */
@@ -87,8 +88,8 @@ class Recipe_Config {
 	 */
 	private $throttle = array(
 		'enabled'  => false,
-		'duration' => 1,
-		'unit'     => 'hours',
+		'duration' => Recipe_Throttle::DEFAULT_DURATION,
+		'unit'     => Recipe_Throttle::DEFAULT_UNIT,
 	);
 
 	/**
@@ -121,15 +122,6 @@ class Recipe_Config {
 	 */
 	private $triggers = array();
 
-	/**
-	 * Raw action conditions array - no validation.
-	 *
-	 * Default empty array. Passed to Recipe_Action_Conditions value object.
-	 * Can have malformed condition data - Recipe aggregate validates structure.
-	 *
-	 * @var array
-	 */
-	private $action_conditions = array();
 
 	/**
 	 * Raw trigger logic - no validation.
@@ -140,17 +132,6 @@ class Recipe_Config {
 	 * @var string
 	 */
 	private $trigger_logic = null;
-
-	/**
-	 * Redirect URL for closure - no validation.
-	 *
-	 * Optional URL where users are redirected when recipe completes.
-	 * When set, automatically creates/updates a REDIRECT closure.
-	 * Validation handled by Closure_Service.
-	 *
-	 * @var string|null
-	 */
-	private $redirect_url = null;
 
 	/**
 	 * Set recipe title - fluent interface.
@@ -230,8 +211,9 @@ class Recipe_Config {
 	/**
 	 * Set recipe notes - fluent interface.
 	 *
-	 * Accepts any value without validation. Recipe_Notes will enforce length limits.
-	 * Part of builder pattern for constructing configuration objects.
+	 * Accepts any value without validation; Recipe_Notes imposes no length
+	 * limit either. Part of builder pattern for constructing configuration
+	 * objects.
 	 *
 	 * @since 7.0.0
 	 * @param mixed $notes Raw notes data - can exceed limits.
@@ -302,36 +284,6 @@ class Recipe_Config {
 		return $this;
 	}
 
-	/**
-	 * Set action conditions configuration - fluent interface.
-	 *
-	 * Accepts any array without validation. Recipe_Action_Conditions validates structure.
-	 * Part of builder pattern for constructing configuration objects.
-	 *
-	 * @since 7.0.0
-	 * @param array $action_conditions Raw action conditions data - can have malformed structure.
-	 * @return self For method chaining.
-	 */
-	public function action_conditions( array $action_conditions ): self {
-		$this->action_conditions = $action_conditions;
-		return $this;
-	}
-
-	/**
-	 * Set redirect URL for closure - fluent interface.
-	 *
-	 * Accepts any value without validation. Closure_Service validates URL format.
-	 * Optional field for specifying completion redirect target.
-	 * Part of builder pattern for constructing configuration objects.
-	 *
-	 * @since 7.0.0
-	 * @param mixed $redirect_url Raw URL data - can be null or invalid format.
-	 * @return self For method chaining.
-	 */
-	public function redirect_url( $redirect_url ): self {
-		$this->redirect_url = $redirect_url;
-		return $this;
-	}
 
 	/**
 	 * Get raw title data.
@@ -421,11 +373,11 @@ class Recipe_Config {
 	 * @return int Raw limit data - may be invalid number.
 	 */
 	public function get_times_per_user(): ?int {
-		if ( empty( $this->times_per_user ) ) {
+		if ( ! is_numeric( $this->times_per_user ) ) {
 			return null;
 		}
 
-		return $this->times_per_user;
+		return (int) $this->times_per_user;
 	}
 
 	/**
@@ -438,11 +390,11 @@ class Recipe_Config {
 	 * @return null|int Raw limit data - may be invalid number.
 	 */
 	public function get_total_times(): ?int {
-		if ( empty( $this->total_times ) ) {
+		if ( ! is_numeric( $this->total_times ) ) {
 			return null;
 		}
 
-		return $this->total_times;
+		return (int) $this->total_times;
 	}
 
 	/**
@@ -458,18 +410,6 @@ class Recipe_Config {
 		return $this->triggers;
 	}
 
-	/**
-	 * Get raw action conditions data.
-	 *
-	 * Returns unvalidated action conditions data exactly as stored.
-	 * Used by Recipe aggregate for creating Recipe_Action_Conditions value object.
-	 *
-	 * @since 7.0.0
-	 * @return array Raw action conditions data - may have malformed structure.
-	 */
-	public function get_action_conditions(): array {
-		return $this->action_conditions;
-	}
 
 	/**
 	 * Get raw trigger logic data.
@@ -493,19 +433,6 @@ class Recipe_Config {
 		}
 
 		return $logic;
-	}
-
-	/**
-	 * Get raw redirect URL data.
-	 *
-	 * Returns unvalidated redirect URL data exactly as stored.
-	 * Used by Recipe_CRUD_Service for managing closure redirects.
-	 *
-	 * @since 7.0.0
-	 * @return string|null Raw redirect URL data - may be null or invalid format.
-	 */
-	public function get_redirect_url(): ?string {
-		return ! empty( $this->redirect_url ) ? (string) $this->redirect_url : null;
 	}
 
 	/**

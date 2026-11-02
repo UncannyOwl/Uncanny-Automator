@@ -281,8 +281,10 @@ class Wpai_Tokens {
 
 		if ( in_array( $pieces[1], $trigger_code_validations, true ) ) {
 			global $wpdb;
-			$import_id      = Automator()->db->token->get( 'import_id', $replace_args );
-			$import         = $wpdb->get_row( $wpdb->prepare( "SELECT `name`,last_activity from {$wpdb->prefix}pmxi_imports WHERE id = %d", $import_id ) );
+			$import_id = Automator()->db->token->get( 'import_id', $replace_args );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WP All Import's own table; the plugin offers no API for this query.
+			$import = $wpdb->get_row( $wpdb->prepare( "SELECT `name`,last_activity from {$wpdb->prefix}pmxi_imports WHERE id = %d", $import_id ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WP All Import's own table; the plugin offers no API for this query.
 			$import_history = $wpdb->get_row( $wpdb->prepare( "SELECT `type`,`time_run`,`summary` from {$wpdb->prefix}pmxi_history WHERE import_id = %d", $import_id ) );
 		} elseif ( in_array( $pieces[1], $trigger_meta_validations, true ) ) {
 			$post_id = Automator()->db->token->get( 'post_id', $replace_args );
@@ -307,6 +309,7 @@ class Wpai_Tokens {
 				break;
 			case 'POSTCONTENT_BEAUTIFIED':
 				$content = get_the_content( $post->ID );
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, applied as WordPress applies it.
 				$content = apply_filters( 'the_content', $content );
 				$content = str_replace( ']]>', ']]&gt;', $content ); // phpcs:ignore Generic.PHP.Syntax.PHPSyntax
 				$value   = $content;

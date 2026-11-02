@@ -2,6 +2,10 @@
 
 namespace Uncanny_Automator\Integrations\SureCart;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class SureCart_Tokens
  *

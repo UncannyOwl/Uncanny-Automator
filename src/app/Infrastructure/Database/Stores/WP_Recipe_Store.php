@@ -8,22 +8,18 @@ use Uncanny_Automator\App\Recipe_Builder\Recipe\Recipe;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Recipe_Config;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_User_Type;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Status;
-use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Action_Conditions;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Id;
-use Uncanny_Automator\App\Recipe_Builder\Condition\Value_Objects\Condition_Group;
-use Uncanny_Automator\App\Recipe_Builder\Condition\Value_Objects\Condition_Group_Id;
-use Uncanny_Automator\App\Recipe_Builder\Condition\Value_Objects\Condition_Group_Mode;
-use Uncanny_Automator\App\Recipe_Builder\Condition\Value_Objects\Individual_Condition;
-use Uncanny_Automator\App\Recipe_Builder\Condition\Value_Objects\Condition_Fields;
-use Uncanny_Automator\App\Recipe_Builder\Condition\Dtos\Condition_Backup_Info;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Store;
 use Uncanny_Automator\App\Infrastructure\Cache\Recipe_Cache;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Settings\Enums\Recipe_Setting_Id;
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Utilities\Field_Value_Normalizer;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Throttle;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Trigger_Logic;
 use WP_Post;
 use Uncanny_Automator\App\Events\Dispatcher;
 use wpdb;
 
-class WP_Recipe_Store implements Recipe_Store {
+class WP_Recipe_Store extends WP_Post_Store implements Recipe_Store {
 
 	const POST_TYPE                   = AUTOMATOR_POST_TYPE_RECIPE;
 	const _META_RECIPE_TYPE           = 'uap_recipe_type';
@@ -31,8 +27,22 @@ class WP_Recipe_Store implements Recipe_Store {
 	const _META_RECIPE_THROTTLE       = 'field_recipe_throttle';
 	const _META_RECIPE_TIMES_PER_USER = 'field_recipe_times_per_user';
 	const _META_RECIPE_TOTAL_TIMES    = 'field_recipe_total_times';
-	const _META_ACTION_CONDITIONS     = 'actions_conditions';
-	const _META_RECIPE_TRIGGER_LOGIC  = 'automator_trigger_logic';
+
+	/**
+	 * Pre-rename meta key for the recipe-wide run cap; still read so older recipes keep their limit.
+	 *
+	 * @var string
+	 */
+	const _LEGACY_META_RECIPE_TOTAL_TIMES = 'recipe_max_completions_allowed';
+
+	/**
+	 * Pre-rename meta key for the per-user run cap; still read so older recipes keep their limit.
+	 *
+	 * @var string
+	 */
+	const _LEGACY_META_RECIPE_TIMES_PER_USER = 'recipe_completions_allowed';
+
+	const _META_RECIPE_TRIGGER_LOGIC = 'automator_trigger_logic';
 
 	private static $recipe_version_key = 'uap_recipe_version';
 
@@ -43,6 +53,68 @@ class WP_Recipe_Store implements Recipe_Store {
 	 */
 	public function __construct() {
 		// WordPress functions automatically use global $wpdb
+	}
+
+	/**
+	 * Count recipe posts without hydrating every recipe on large sites.
+	 *
+	 * WordPress caches this grouped count and invalidates it on post changes.
+	 *
+	 * @return array<string, int> Site-wide counts keyed by post status.
+	 */
+	public function count_by_status(): array {
+		return array_map( 'intval', (array) wp_count_posts( self::POST_TYPE ) );
+	}
+
+	/**
+	 * Whether an author holds a recipe in one of the given statuses, leaving
+	 * out the given recipes.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int      $user_id       The author; 0 or less holds none.
+	 * @param string[] $statuses      Recipe statuses that count (`Recipe_Status`: publish, draft, trash); at least one.
+	 * @param int[]    $excluding_ids Recipes to leave out.
+	 *
+	 * @return bool
+	 *
+	 * @throws InvalidArgumentException When no status is given, or one is not a recipe status.
+	 */
+	public function author_has_recipe( int $user_id, array $statuses, array $excluding_ids = array() ): bool {
+
+		// WP_Query reads an empty status list as "publish" only.
+		if ( array() === $statuses ) {
+			throw new InvalidArgumentException( 'Name at least one recipe status.' );
+		}
+
+		foreach ( $statuses as $status ) {
+			if ( ! Recipe_Status::is_valid( $status ) ) {
+				throw new InvalidArgumentException(
+					sprintf( 'Unknown recipe status "%s"; expected publish, draft or trash.', esc_html( $status ) )
+				);
+			}
+		}
+
+		// WP_Query reads author 0 as "any author".
+		if ( $user_id <= 0 ) {
+			return false;
+		}
+
+		$query = new \WP_Query(
+			array(
+				'post_type'              => self::POST_TYPE,
+				'post_status'            => $statuses,
+				'author'                 => $user_id,
+				'post__not_in'           => array_map( 'intval', $excluding_ids ),
+				'fields'                 => 'ids',
+				'posts_per_page'         => 1,
+				'no_found_rows'          => true,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+			)
+		);
+
+		return array() !== $query->posts;
 	}
 
 	/**
@@ -64,6 +136,10 @@ class WP_Recipe_Store implements Recipe_Store {
 		if ( null === $recipe_id ) {
 			$recipe_id = $this->create_recipe_post( $recipe, $meta_input );
 		} else {
+			// The version is the legacy storage migration's watermark. Moving it on
+			// an edit would mark an unmigrated recipe migrated and strand its
+			// conditions and delays.
+			unset( $meta_input[ self::$recipe_version_key ] );
 			$this->update_recipe_post( $recipe_id, $recipe );
 			$this->persist_recipe_meta( $recipe_id, $meta_input );
 		}
@@ -71,6 +147,261 @@ class WP_Recipe_Store implements Recipe_Store {
 		Recipe_Cache::invalidate( $recipe_id );
 
 		return $this->get( $recipe_id );
+	}
+
+	/**
+	 * Targeted writer — set the recipe's post status.
+	 *
+	 * Wraps `wp_update_post` then invalidates the recipe's caches.
+	 *
+	 * @inheritDoc
+	 */
+	public function update_status( int $recipe_id, string $status ): void {
+		if ( ! in_array( $status, array( Recipe_Status::PUBLISH, Recipe_Status::DRAFT ), true ) ) {
+			throw new InvalidArgumentException(
+				sprintf(
+					// translators: %s is the invalid status value that was passed.
+					esc_html_x( "Status must be 'publish' or 'draft', got '%s'", 'Recipe store setting update error', 'uncanny-automator' ),
+					esc_html( $status )
+				)
+			);
+		}
+
+		if ( ! $this->is_recipe_post( $recipe_id ) ) {
+			// translators: %d is the post ID.
+			throw new RuntimeException( sprintf( esc_html_x( 'Failed to update recipe status: post %d is not a recipe.', 'Recipe store status update error', 'uncanny-automator' ), absint( $recipe_id ) ) );
+		}
+
+		$result = wp_update_post(
+			array(
+				'ID'          => $recipe_id,
+				'post_status' => $status,
+			),
+			true
+		);
+
+		if ( is_wp_error( $result ) ) {
+			// translators: %s is the error message.
+			throw new RuntimeException( sprintf( esc_html_x( 'Failed to update recipe status: %s', 'Recipe store status update error', 'uncanny-automator' ), esc_html( $result->get_error_message() ) ) );
+		}
+
+		Recipe_Cache::invalidate( $recipe_id );
+	}
+
+	/**
+	 * Targeted writer — set the recipe's free-text notes.
+	 *
+	 * @inheritDoc
+	 */
+	public function update_notes( int $recipe_id, string $notes ): void {
+		if ( ! $this->is_recipe_post( $recipe_id ) ) {
+			// translators: %d is the post ID.
+			throw new RuntimeException( sprintf( esc_html_x( 'Failed to update recipe notes: post %d is not a recipe.', 'Recipe store notes update error', 'uncanny-automator' ), absint( $recipe_id ) ) );
+		}
+
+		if ( '' === $notes ) {
+			delete_post_meta( $recipe_id, self::_META_RECIPE_NOTES );
+		} else {
+			update_post_meta( $recipe_id, self::_META_RECIPE_NOTES, $notes );
+		}
+
+		Recipe_Cache::invalidate( $recipe_id );
+	}
+
+	/**
+	 * Targeted reader — the recipe's free-text notes ('' when unset).
+	 *
+	 * @inheritDoc
+	 */
+	public function get_notes( int $recipe_id ): string {
+		return (string) get_post_meta( $recipe_id, self::_META_RECIPE_NOTES, true );
+	}
+
+	/**
+	 * Raw stored recipe type, or null when no type has been chosen.
+	 *
+	 * @inheritDoc
+	 */
+	public function get_recipe_type_raw( int $recipe_id ): ?string {
+		$value = get_post_meta( $recipe_id, self::_META_RECIPE_TYPE, true );
+		return in_array( $value, array( 'user', 'anonymous' ), true ) ? (string) $value : null;
+	}
+
+	/**
+	 * Targeted writer — set the recipe's post title.
+	 *
+	 * @inheritDoc
+	 */
+	public function update_title( int $recipe_id, string $title ): void {
+		if ( ! $this->is_recipe_post( $recipe_id ) ) {
+			// translators: %d is the post ID.
+			throw new RuntimeException( sprintf( esc_html_x( 'Failed to update recipe title: post %d is not a recipe.', 'Recipe store title update error', 'uncanny-automator' ), absint( $recipe_id ) ) );
+		}
+
+		$result = wp_update_post(
+			array(
+				'ID'         => $recipe_id,
+				'post_title' => $title,
+			),
+			true
+		);
+
+		if ( is_wp_error( $result ) ) {
+			// translators: %s is the error message.
+			throw new RuntimeException( sprintf( esc_html_x( 'Failed to update recipe title: %s', 'Recipe store title update error', 'uncanny-automator' ), esc_html( $result->get_error_message() ) ) );
+		}
+
+		Recipe_Cache::invalidate( $recipe_id );
+	}
+
+	/**
+	 * Whether an id names a recipe post, so a targeted writer never changes another post.
+	 *
+	 * `get_post( 0 )` answers the global post, so a non-positive id is refused before the lookup.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $recipe_id Post id the caller names as a recipe.
+	 * @return bool
+	 */
+	private function is_recipe_post( int $recipe_id ): bool {
+		return 0 < $recipe_id && null !== $this->get_wp_post( $recipe_id );
+	}
+
+	/**
+	 * Targeted writer — set the recipe's user type.
+	 *
+	 * @inheritDoc
+	 */
+	public function set_recipe_type( int $recipe_id, string $recipe_type ): bool {
+		// update_post_meta() returns false for an unchanged value as well as for a
+		// failed write, so a no-op is treated as success here.
+		if ( (string) get_post_meta( $recipe_id, self::_META_RECIPE_TYPE, true ) === $recipe_type ) {
+			Recipe_Cache::invalidate( $recipe_id );
+
+			return true;
+		}
+
+		$result = update_post_meta( $recipe_id, self::_META_RECIPE_TYPE, $recipe_type );
+		Recipe_Cache::invalidate( $recipe_id );
+
+		return false !== $result;
+	}
+
+	/**
+	 * Targeted writer — replace the recipe's recipe_category terms.
+	 *
+	 * @inheritDoc
+	 */
+	public function update_categories( int $recipe_id, array $slugs ): void {
+		wp_set_object_terms( $recipe_id, array_map( 'sanitize_title', $slugs ), 'recipe_category' );
+		Recipe_Cache::invalidate( $recipe_id );
+	}
+
+	/**
+	 * Targeted writer — replace the recipe's recipe_tag terms.
+	 *
+	 * @inheritDoc
+	 */
+	public function update_tags( int $recipe_id, array $slugs ): void {
+		wp_set_object_terms( $recipe_id, array_map( 'sanitize_title', $slugs ), 'recipe_tag' );
+		Recipe_Cache::invalidate( $recipe_id );
+	}
+
+	/**
+	 * The recipe's assigned terms in a taxonomy.
+	 *
+	 * @inheritDoc
+	 */
+	public function get_assigned_terms( int $recipe_id, string $taxonomy ): array {
+		$terms = wp_get_object_terms( $recipe_id, $taxonomy );
+
+		return is_wp_error( $terms ) ? array() : $terms;
+	}
+
+	/**
+	 * Every term in a taxonomy (incl. unused).
+	 *
+	 * @inheritDoc
+	 */
+	public function get_all_terms( string $taxonomy ): array {
+		$terms = get_terms(
+			array(
+				'taxonomy'   => $taxonomy,
+				'hide_empty' => false,
+			)
+		);
+
+		return is_wp_error( $terms ) ? array() : $terms;
+	}
+
+	/**
+	 * Replace the recipe's terms in a taxonomy by term id.
+	 *
+	 * @inheritDoc
+	 */
+	public function assign_terms( int $recipe_id, array $term_ids, string $taxonomy ): void {
+		wp_set_object_terms( $recipe_id, array_map( 'intval', $term_ids ), $taxonomy, false );
+		Recipe_Cache::invalidate( $recipe_id );
+	}
+
+	/**
+	 * Create a term by name; resolve `term_exists` to the existing id.
+	 *
+	 * @inheritDoc
+	 */
+	public function create_term( string $name, string $taxonomy, int $parent = 0 ) {
+		$args   = $parent > 0 ? array( 'parent' => $parent ) : array();
+		$result = wp_insert_term( $name, $taxonomy, $args );
+
+		if ( is_wp_error( $result ) ) {
+			if ( 'term_exists' === $result->get_error_code() ) {
+				return array( 'term_id' => (int) $result->get_error_data() );
+			}
+			return $result;
+		}
+
+		return array( 'term_id' => (int) $result['term_id'] );
+	}
+
+	/**
+	 * Targeted writer — set one editable recipe-level setting.
+	 *
+	 * Resolves the meta key via `Recipe_Setting_Id::meta_key()`, converts
+	 * the wire-shape FieldsOutput to the legacy on-disk format using the
+	 * store's existing formatters, writes the meta, then flushes the
+	 * caches.
+	 *
+	 * @inheritDoc
+	 */
+	public function update_setting( int $recipe_id, string $setting_id, array $fields ): void {
+		if ( ! Recipe_Setting_Id::is_editable( $setting_id ) ) {
+			throw new InvalidArgumentException(
+				sprintf(
+					// translators: %s is the recipe-setting ID that was rejected.
+					esc_html_x( "Setting id '%s' is not editable", 'Recipe store setting update error', 'uncanny-automator' ),
+					esc_html( $setting_id )
+				)
+			);
+		}
+
+		$meta_key = Recipe_Setting_Id::meta_key( $setting_id );
+		if ( null === $meta_key ) {
+			// Defensive — is_editable should have guaranteed a key.
+			throw new InvalidArgumentException(
+				sprintf(
+					// translators: %s is the recipe-setting ID that was rejected.
+					esc_html_x( "No meta key resolved for editable setting '%s'", 'Recipe store setting update error', 'uncanny-automator' ),
+					esc_html( $setting_id )
+				)
+			);
+		}
+
+		$legacy = $this->convert_setting_fields_to_legacy( $setting_id, $fields, $recipe_id );
+
+		update_post_meta( $recipe_id, $meta_key, $legacy );
+
+		Recipe_Cache::invalidate( $recipe_id );
 	}
 
 	/**
@@ -96,10 +427,6 @@ class WP_Recipe_Store implements Recipe_Store {
 			self::_META_RECIPE_NOTES         => $recipe->get_recipe_notes()->get_value(),
 			self::_META_RECIPE_THROTTLE      => $throttle,
 			self::_META_RECIPE_TRIGGER_LOGIC => $recipe_trigger_logic,
-			self::_META_ACTION_CONDITIONS    => $this->convert_action_conditions_to_legacy(
-				$recipe->get_recipe_action_conditions(),
-				$recipe_id
-			),
 		);
 
 		/** Add type-specific execution limit meta fields */
@@ -173,13 +500,15 @@ class WP_Recipe_Store implements Recipe_Store {
 	 */
 	private function create_recipe_post( Recipe $recipe, array $meta_input ): int {
 
+		// Request WordPress errors: a refused insert otherwise answers 0, and get( 0 ) reads the global post.
 		$post_id = wp_insert_post(
 			array(
 				'post_type'   => self::POST_TYPE,
 				'post_title'  => $recipe->get_recipe_title()->get_value(),
 				'post_status' => $recipe->get_recipe_status()->get_value(),
 				'meta_input'  => $meta_input,
-			)
+			),
+			true
 		);
 
 		if ( is_wp_error( $post_id ) ) {
@@ -202,12 +531,14 @@ class WP_Recipe_Store implements Recipe_Store {
 	 */
 	private function update_recipe_post( int $recipe_id, Recipe $recipe ): void {
 
+		// Request WordPress errors so a rejected status write cannot emit a save event.
 		$result = wp_update_post(
 			array(
 				'ID'          => $recipe_id,
 				'post_title'  => $recipe->get_recipe_title()->get_value(),
 				'post_status' => $recipe->get_recipe_status()->get_value(),
-			)
+			),
+			true
 		);
 
 		if ( is_wp_error( $result ) ) {
@@ -252,22 +583,6 @@ class WP_Recipe_Store implements Recipe_Store {
 	}
 
 	/**
-	 * Get WP_Post object for recipe.
-	 *
-	 * @param int $id Recipe ID.
-	 * @return WP_Post|null WP_Post object or null if not found.
-	 */
-	public function get_wp_post( int $id ): ?WP_Post {
-		$post = get_post( $id );
-
-		if ( ! $post || self::POST_TYPE !== $post->post_type ) {
-			return null;
-		}
-
-		return $post;
-	}
-
-	/**
 	 * Permanently remove recipe from WordPress database.
 	 *
 	 * @param Recipe $recipe Domain recipe object to delete.
@@ -294,16 +609,16 @@ class WP_Recipe_Store implements Recipe_Store {
 	/**
 	 * Retrieve all recipes with optional filtering and sorting.
 	 *
-	 * Supports filtering by status, type, integration, title search, and meta queries.
-	 * Type and integration filters are applied post-hydration due to meta storage requirements.
+	 * Supports filtering by status, type, title search, and meta queries.
+	 * Type is filtered before pagination.
 	 *
 	 * @param array $filters {
 	 *     Optional filtering parameters.
 	 *     @type string $status Recipe status ('draft', 'publish', 'trash').
 	 *     @type string $type Recipe type ('user', 'anonymous').
-	 *     @type string $integration Integration code to filter by.
 	 *     @type string $title Text search in recipe titles.
 	 *     @type int    $limit Maximum results to return.
+	 *     @type int    $offset Number of matching results to skip.
 	 *     @type string $orderby WordPress orderby parameter.
 	 *     @type string $order Sort order ('ASC', 'DESC').
 	 *     @type string $meta_key Custom meta key to filter by.
@@ -325,9 +640,6 @@ class WP_Recipe_Store implements Recipe_Store {
 		$posts      = get_posts( $query_args );
 		$recipes    = array_map( array( $this, 'hydrate_recipe_from_post' ), $posts );
 
-		$recipes = $this->apply_post_hydration_filters( $recipes, $filters );
-
-		/** Reindex array to maintain consistent numeric keys after filtering */
 		return array_values( $recipes );
 	}
 
@@ -358,6 +670,10 @@ class WP_Recipe_Store implements Recipe_Store {
 			$query_args['posts_per_page'] = intval( $filters['limit'] );
 		}
 
+		if ( isset( $filters['offset'] ) ) {
+			$query_args['offset'] = max( 0, (int) $filters['offset'] );
+		}
+
 		if ( isset( $filters['orderby'] ) ) {
 			$query_args['orderby'] = $filters['orderby'];
 		}
@@ -381,127 +697,31 @@ class WP_Recipe_Store implements Recipe_Store {
 			);
 		}
 
+		// Apply type before pagination; legacy empty or missing type means user.
+		if ( ! empty( $filters['type'] ) ) {
+			$type       = ( new Recipe_User_Type( $filters['type'] ) )->get_value();
+			$type_query = array(
+				'key'   => self::_META_RECIPE_TYPE,
+				'value' => $type,
+			);
+			if ( 'user' === $type ) {
+				$type_query = array(
+					'relation' => 'OR',
+					array(
+						'key'     => self::_META_RECIPE_TYPE,
+						'value'   => array( 'user', '', '0' ),
+						'compare' => 'IN',
+					),
+					array(
+						'key'     => self::_META_RECIPE_TYPE,
+						'compare' => 'NOT EXISTS',
+					),
+				);
+			}
+			$query_args['meta_query'][] = $type_query;
+		}
+
 		return $query_args;
-	}
-
-	/**
-	 * Apply filters that require hydrated recipe objects.
-	 *
-	 * Type and integration filters need domain objects since they rely
-	 * on meta data and child post relationships not available in WP_Query.
-	 *
-	 * @param array $recipes Array of Recipe domain objects.
-	 * @param array $filters Filter parameters from all() method.
-	 * @return array Filtered array of Recipe objects.
-	 * @since 7.0.0
-	 */
-	private function apply_post_hydration_filters( array $recipes, array $filters ): array {
-
-		if ( isset( $filters['type'] ) && ! empty( $filters['type'] ) ) {
-			$recipes = $this->filter_recipes_by_type( $recipes, $filters['type'] );
-		}
-
-		if ( isset( $filters['integration'] ) && ! empty( $filters['integration'] ) ) {
-			$recipes = $this->filter_recipes_by_integration( $recipes, $filters['integration'] );
-		}
-
-		return $recipes;
-	}
-
-	/**
-	 * Filter recipes by type value.
-	 *
-	 * Type filtering requires post-hydration since recipe type is stored in meta.
-	 * Domain validation ensures type integrity at the boundary.
-	 *
-	 * @param array  $recipes Array of Recipe domain objects.
-	 * @param string $type_value Recipe type to filter by ('user' or 'anonymous').
-	 * @return array Filtered array of Recipe objects matching type.
-	 * @since 7.0.0
-	 */
-	private function filter_recipes_by_type( array $recipes, string $type_value ): array {
-
-		$type_filter = new Recipe_User_Type( $type_value );
-
-		return array_filter(
-			$recipes,
-			function ( $recipe ) use ( $type_filter ) {
-				if ( $recipe instanceof Recipe ) {
-					return $recipe->get_recipe_type()->get_value() === $type_filter->get_value();
-				}
-				return false;
-			}
-		);
-	}
-
-	/**
-	 * Filter recipes by integration code.
-	 *
-	 * Integration filtering requires examining child triggers/actions,
-	 * necessitating post-hydration filtering approach.
-	 *
-	 * @param array  $recipes Array of Recipe domain objects.
-	 * @param string $integration Integration code to filter by.
-	 * @return array Filtered array of Recipe objects containing integration.
-	 * @since 7.0.0
-	 */
-	private function filter_recipes_by_integration( array $recipes, string $integration ): array {
-
-		return array_filter(
-			$recipes,
-			function ( $recipe ) use ( $integration ) {
-				if ( ! $recipe instanceof Recipe ) {
-					return false;
-				}
-				return $this->recipe_has_integration( $recipe, $integration );
-			}
-		);
-	}
-
-	/**
-	 * Query recipes by trigger/action field values with universal matching support.
-	 *
-	 * Searches postmeta for exact matches, universal (-1) values, and serialized arrays.
-	 * Essential for finding recipes that should execute based on dynamic field values
-	 * from external systems (e.g., WooCommerce product purchases, form submissions).
-	 *
-	 * @param mixed $field_value Field value to match against trigger/action configurations.
-	 * @return array Recipe IDs that contain matching triggers or actions.
-	 * @since 7.0.0
-	 */
-	public function get_recipe_ids_from_field_value( $field_value ): array {
-		global $wpdb;
-
-		$field_value_str = (string) $field_value;
-
-		/**
-		 * Query pattern handles three matching scenarios:
-		 * 1. Exact value matches (meta_value = '330')
-		 * 2. Universal triggers (meta_value = '-1')
-		 * 3. Multi-select serialized arrays containing the value
-		 *
-		 * The LIKE pattern matches JSON-serialized arrays where the value
-		 * appears as a string element within the array structure.
-		 */
-		$query = $wpdb->prepare(
-			"SELECT DISTINCT p.post_parent
-			FROM {$wpdb->postmeta} pm
-			INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
-			WHERE (
-				pm.meta_value = %s
-				OR pm.meta_value = '-1'
-				OR pm.meta_value LIKE %s
-			)
-			AND p.post_parent > 0
-			AND p.post_type IN ('" . AUTOMATOR_POST_TYPE_TRIGGER . "', '" . AUTOMATOR_POST_TYPE_ACTION . "')",
-			$field_value_str,
-			'%"' . $field_value_str . '"%'
-		);
-
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- False positive: $query is already prepared on line 455
-		$recipe_ids = $wpdb->get_col( $query );
-
-		return array_map( 'intval', $recipe_ids );
 	}
 
 	/**
@@ -525,7 +745,6 @@ class WP_Recipe_Store implements Recipe_Store {
 
 		$config = $this->build_base_config( $post, $meta );
 		$config = $this->add_type_specific_config( $config, $post->ID, $recipe_type );
-		$config = $this->add_action_conditions_to_config( $config, $post->ID );
 
 		return new Recipe( $config );
 	}
@@ -613,18 +832,9 @@ class WP_Recipe_Store implements Recipe_Store {
 	 * @since 7.0.0
 	 */
 	private function add_user_execution_limits( Recipe_Config $config, int $post_id ): Recipe_Config {
-
-		$times_per_user_legacy = get_post_meta( $post_id, self::_META_RECIPE_TIMES_PER_USER, true );
-		$times_per_user_legacy = ! empty( $times_per_user_legacy ) ? $times_per_user_legacy : '';
-		$times_per_user        = $this->convert_legacy_to_times_per_user( $times_per_user_legacy );
-
-		$total_times_legacy = get_post_meta( $post_id, self::_META_RECIPE_TOTAL_TIMES, true );
-		$total_times_legacy = ! empty( $total_times_legacy ) ? $total_times_legacy : '';
-		$total_times        = $this->convert_legacy_to_total_times( $total_times_legacy );
-
 		return $config
-			->times_per_user( $times_per_user )
-			->total_times( $total_times );
+			->times_per_user( $this->read_limit( $post_id, self::_META_RECIPE_TIMES_PER_USER, self::_LEGACY_META_RECIPE_TIMES_PER_USER ) )
+			->total_times( $this->read_limit( $post_id, self::_META_RECIPE_TOTAL_TIMES, self::_LEGACY_META_RECIPE_TOTAL_TIMES ) );
 	}
 
 	/**
@@ -638,102 +848,60 @@ class WP_Recipe_Store implements Recipe_Store {
 	 * @since 7.0.0
 	 */
 	private function add_anonymous_execution_limits( Recipe_Config $config, int $post_id ): Recipe_Config {
-
-		$total_times_legacy = get_post_meta( $post_id, self::_META_RECIPE_TOTAL_TIMES, true );
-		$total_times_legacy = ! empty( $total_times_legacy ) ? $total_times_legacy : '';
-		$total_times        = $this->convert_legacy_to_total_times( $total_times_legacy );
-
-		return $config->total_times( $total_times );
+		return $config->total_times(
+			$this->read_limit( $post_id, self::_META_RECIPE_TOTAL_TIMES, self::_LEGACY_META_RECIPE_TOTAL_TIMES )
+		);
 	}
 
 	/**
-	 * Add action conditions to recipe configuration.
+	 * Resolve a completion limit to a canonical int|null.
 	 *
-	 * Action conditions handling accounts for WordPress meta serialization quirks.
-	 * Data may arrive as JSON string or pre-decoded array depending on cache state.
+	 * Present-vs-absent invariant: when the new field meta was NEVER written
+	 * (get_post_meta returns ''), fall back to the legacy-shaped meta (one-way
+	 * read for old/duplicated/imported recipes). When the field is present —
+	 * including a cleared empty array — coerce it and never consult the legacy
+	 * key, so duplication can't resurrect a deliberately-cleared limit.
 	 *
-	 * @param Recipe_Config $config Base configuration object.
-	 * @param int           $post_id WordPress post ID.
-	 * @return Recipe_Config Updated configuration with action conditions.
-	 * @since 7.0.0
+	 * @param int    $post_id WordPress post ID.
+	 * @param string $meta_key New-field meta key.
+	 * @param string $legacy_meta_key Legacy-shaped meta key.
+	 * @return int|null Positive limit, or null for unlimited.
 	 */
-	private function add_action_conditions_to_config( Recipe_Config $config, int $post_id ): Recipe_Config {
+	private function read_limit( int $post_id, string $meta_key, string $legacy_meta_key ): ?int {
+		// Read the raw meta directly here — do NOT route limits through the
+		// throttle path's extract_meta_fields()/`! empty()` collapse, which
+		// flattens an empty array to '' and would erase the cleared-vs-absent
+		// distinction this invariant depends on.
+		$raw = get_post_meta( $post_id, $meta_key, true );
 
-		$action_conditions_legacy = get_post_meta( $post_id, self::_META_ACTION_CONDITIONS, true );
-
-		if ( empty( $action_conditions_legacy ) ) {
-			return $config;
+		if ( '' === $raw ) {
+			return $this->coerce_limit_meta(
+				get_post_meta( $post_id, $legacy_meta_key, true )
+			);
 		}
 
-		$legacy_data = is_string( $action_conditions_legacy )
-			? json_decode( $action_conditions_legacy, true )
-			: $action_conditions_legacy;
-
-		if ( ! is_array( $legacy_data ) || empty( $legacy_data ) ) {
-			return $config;
-		}
-
-		$action_conditions = $this->convert_legacy_to_action_conditions( $legacy_data, $post_id );
-
-		/** Recipe_Config requires array format for fluent interface compatibility */
-		return $config->action_conditions( $action_conditions->to_array() );
+		return $this->coerce_limit_meta( $raw );
 	}
 
 	/**
-	 * Determine if recipe contains triggers or actions from specified integration.
+	 * Extract the limit scalar from the new-field storage shape
+	 * ({type,value,backup} or []) — or a bare legacy scalar — and coerce it
+	 * to a canonical int|null. 0 is a real (blocking) limit; negative / -1 /
+	 * empty / non-numeric → null (unset).
 	 *
-	 * Queries child posts (triggers/actions) to check integration meta values.
-	 * Used for integration-specific recipe filtering where meta queries alone
-	 * are insufficient due to the parent-child post relationship.
-	 *
-	 * @param Recipe $recipe Recipe domain object to examine.
-	 * @param string $integration Integration code to match against.
-	 * @return bool Whether recipe contains components from the integration.
-	 * @since 7.0.0
+	 * @param mixed $stored New-field meta value or bare legacy scalar.
+	 * @return int|null
 	 */
-	private function recipe_has_integration( Recipe $recipe, string $integration ): bool {
-		$recipe_id = $recipe->get_recipe_id()->get_value();
-
-		if ( null === $recipe_id ) {
-			return false;
+	private function coerce_limit_meta( $stored ): ?int {
+		$unserialized = is_array( $stored ) ? $stored : automator_safe_unserialize( $stored );
+		$scalar       = is_array( $unserialized ) ? ( $unserialized['value'] ?? null ) : $unserialized;
+		if ( ! is_numeric( $scalar ) ) {
+			return null;
 		}
-
-		/** Query all triggers for this recipe */
-		$triggers = get_posts(
-			array(
-				'post_type'      => AUTOMATOR_POST_TYPE_TRIGGER,
-				'post_parent'    => $recipe_id,
-				'posts_per_page' => -1,
-				'post_status'    => array( Recipe_Status::DRAFT, Recipe_Status::PUBLISH ),
-			)
-		);
-
-		foreach ( $triggers as $trigger_post ) {
-			$trigger_integration = get_post_meta( $trigger_post->ID, 'integration', true );
-			if ( $trigger_integration === $integration ) {
-				return true;
-			}
-		}
-
-		/** Query all actions for this recipe */
-		$actions = get_posts(
-			array(
-				'post_type'      => AUTOMATOR_POST_TYPE_ACTION,
-				'post_parent'    => $recipe_id,
-				'posts_per_page' => -1,
-				'post_status'    => array( Recipe_Status::DRAFT, Recipe_Status::PUBLISH ),
-			)
-		);
-
-		foreach ( $actions as $action_post ) {
-			$action_integration = get_post_meta( $action_post->ID, 'integration', true );
-			if ( $action_integration === $integration ) {
-				return true;
-			}
-		}
-
-		return false;
+		$int = (int) $scalar;
+		return $int < 0 ? null : $int; // 0 is a real limit; negative/-1 => unset.
 	}
+
 
 	/**
 	 * Transform domain throttle settings into WordPress-compatible legacy format.
@@ -799,6 +967,95 @@ class WP_Recipe_Store implements Recipe_Store {
 	}
 
 	/**
+	 * Branch on setting_id and produce the on-disk legacy format from
+	 * wire FieldsOutput input. Reuses the existing private formatters so
+	 * the on-disk shape matches what a full aggregate save() would write.
+	 *
+	 * @return array Legacy on-disk format for the meta value.
+	 */
+	private function convert_setting_fields_to_legacy( string $setting_id, array $fields, int $recipe_id ): array {
+		switch ( $setting_id ) {
+			case Recipe_Setting_Id::RECIPE_THROTTLE:
+				$recipe_type = $this->resolve_recipe_type_for_write( $recipe_id );
+				$domain      = $this->fields_to_throttle_domain( $fields, $recipe_type );
+				return $this->format_throttle( $domain, $recipe_type );
+
+			case Recipe_Setting_Id::RECIPE_TOTAL_TIMES:
+				return $this->convert_total_times_to_legacy( $this->fields_to_times_value( $fields ) );
+
+			case Recipe_Setting_Id::RECIPE_TIMES_PER_USER:
+				return $this->convert_times_per_user_to_legacy( $this->fields_to_times_value( $fields ) );
+		}
+		throw new InvalidArgumentException(
+			sprintf(
+				// translators: %s is the recipe-setting ID that was unhandled.
+				esc_html_x( "Unhandled editable setting '%s'", 'Recipe store setting update error', 'uncanny-automator' ),
+				esc_html( $setting_id )
+			)
+		);
+	}
+
+	/**
+	 * Extract a clean throttle domain shape from wire FieldsOutput input.
+	 *
+	 * @return array{enabled: bool, duration: int|null, unit: string|null, scope?: string|null}
+	 */
+	private function fields_to_throttle_domain( array $fields, string $recipe_type ): array {
+		$enabled = isset( $fields['ENABLED']['value'] ) ? Field_Value_Normalizer::to_bool( $fields['ENABLED']['value'] ) : false;
+		if ( ! $enabled ) {
+			$shape = array(
+				'enabled'  => false,
+				'duration' => null,
+				'unit'     => null,
+			);
+			if ( 'user' === $recipe_type ) {
+				$shape['scope'] = null;
+			}
+			return $shape;
+		}
+
+		$duration = isset( $fields['NUMBER']['value'] ) ? (int) $fields['NUMBER']['value'] : Recipe_Throttle::DEFAULT_DURATION;
+		$unit     = isset( $fields['UNIT']['value'] ) ? (string) $fields['UNIT']['value'] : Recipe_Throttle::DEFAULT_UNIT;
+
+		$shape = array(
+			'enabled'  => true,
+			'duration' => max( Recipe_Throttle::DEFAULT_DURATION, $duration ),
+			'unit'     => Recipe_Throttle::coerce_unit( $unit ),
+		);
+
+		if ( 'user' === $recipe_type ) {
+			$scope          = isset( $fields['PER_RECIPE_OR_USER']['value'] ) ? (string) $fields['PER_RECIPE_OR_USER']['value'] : Recipe_Throttle::DEFAULT_SCOPE;
+			$shape['scope'] = Recipe_Throttle::coerce_scope( $scope );
+		}
+
+		return $shape;
+	}
+
+	/**
+	 * Extract a nullable int from wire FieldsOutput's TIMES envelope.
+	 *
+	 * Plain extraction only: a missing TIMES value → null, otherwise the int.
+	 * The "non-positive means no limit" clamp lives once in limit_to_legacy_meta()
+	 * so every write path applies it identically.
+	 *
+	 * @param array $fields Wire FieldsOutput for the limit setting.
+	 * @return int|null
+	 */
+	private function fields_to_times_value( array $fields ): ?int {
+		return isset( $fields['TIMES']['value'] ) ? (int) $fields['TIMES']['value'] : null;
+	}
+
+	/**
+	 * Read the recipe_type meta directly (used by update_setting to know
+	 * whether throttle gets a scope field). Cheap single-meta read; the
+	 * full hydration in get() is unnecessary here.
+	 */
+	private function resolve_recipe_type_for_write( int $recipe_id ): string {
+		$type = get_post_meta( $recipe_id, self::_META_RECIPE_TYPE, true );
+		return ! empty( $type ) ? (string) $type : 'user';
+	}
+
+	/**
 	 * Parse legacy WordPress format into clean domain throttle configuration.
 	 *
 	 * Handles WordPress serialization variations and provides sensible defaults
@@ -813,13 +1070,13 @@ class WP_Recipe_Store implements Recipe_Store {
 	private function convert_legacy_to_throttle( $legacy_data, string $recipe_type ): array {
 		$defaults = array(
 			'enabled'  => false,
-			'duration' => 1,
-			'unit'     => 'hours',
+			'duration' => Recipe_Throttle::DEFAULT_DURATION,
+			'unit'     => Recipe_Throttle::DEFAULT_UNIT,
 		);
 
 		/** User recipes require scope configuration for throttling context */
 		if ( 'user' === $recipe_type ) {
-			$defaults['scope'] = 'recipe';
+			$defaults['scope'] = Recipe_Throttle::DEFAULT_SCOPE;
 		}
 
 		if ( is_null( $legacy_data ) ) {
@@ -832,20 +1089,20 @@ class WP_Recipe_Store implements Recipe_Store {
 			return $defaults;
 		}
 
-		$enabled  = isset( $unserialized['ENABLED']['value'] ) ? (bool) $unserialized['ENABLED']['value'] : false;
-		$duration = isset( $unserialized['NUMBER']['value'] ) ? (int) $unserialized['NUMBER']['value'] : 1;
-		$unit     = isset( $unserialized['UNIT']['value'] ) ? $unserialized['UNIT']['value'] : 'hours';
+		$enabled  = isset( $unserialized['ENABLED']['value'] ) ? Field_Value_Normalizer::to_bool( $unserialized['ENABLED']['value'] ) : false;
+		$duration = isset( $unserialized['NUMBER']['value'] ) ? (int) $unserialized['NUMBER']['value'] : Recipe_Throttle::DEFAULT_DURATION;
+		$unit     = isset( $unserialized['UNIT']['value'] ) ? $unserialized['UNIT']['value'] : Recipe_Throttle::DEFAULT_UNIT;
 
 		$result = array(
 			'enabled'  => $enabled,
-			'duration' => max( 1, $duration ),
-			'unit'     => in_array( $unit, array( 'minutes', 'hours', 'days' ), true ) ? $unit : 'hours',
+			'duration' => max( Recipe_Throttle::DEFAULT_DURATION, $duration ),
+			'unit'     => Recipe_Throttle::coerce_unit( $unit ),
 		);
 
 		/** Scope validation ensures only valid throttling contexts are persisted */
 		if ( 'user' === $recipe_type ) {
-			$scope           = isset( $unserialized['PER_RECIPE_OR_USER']['value'] ) ? $unserialized['PER_RECIPE_OR_USER']['value'] : 'recipe';
-			$result['scope'] = in_array( $scope, array( 'recipe', 'user' ), true ) ? $scope : 'recipe';
+			$scope           = isset( $unserialized['PER_RECIPE_OR_USER']['value'] ) ? $unserialized['PER_RECIPE_OR_USER']['value'] : Recipe_Throttle::DEFAULT_SCOPE;
+			$result['scope'] = Recipe_Throttle::coerce_scope( $scope );
 		}
 
 		return $result;
@@ -854,417 +1111,173 @@ class WP_Recipe_Store implements Recipe_Store {
 	/**
 	 * Format per-user execution limit for WordPress meta storage.
 	 *
-	 * Wraps simple integer value in legacy structure containing backup
-	 * information for UI reconstruction and form field labeling.
-	 *
 	 * @param int|null $times_per_user Maximum executions allowed per user.
 	 * @return array Legacy format with backup metadata for UI compatibility.
 	 * @since 7.0.0
 	 */
 	private function convert_times_per_user_to_legacy( ?int $times_per_user ): array {
-
-		if ( is_null( $times_per_user ) ) {
-			return array();
-		}
-
-		return array(
-			'type'   => 'string',
-			'value'  => (string) $times_per_user,
-			'backup' => array(
-				'label'                  => esc_html_x( 'Allowed runs per user', 'Recipe times per user configuration label', 'uncanny-automator' ),
-				'show_label_in_sentence' => true,
-			),
+		return $this->limit_to_legacy_meta(
+			$times_per_user,
+			esc_html_x( 'Allowed runs per user', 'Recipe times per user configuration label', 'uncanny-automator' )
 		);
 	}
 
 	/**
-	 * Extract per-user execution limit from WordPress meta format.
-	 *
-	 * Provides graceful fallback to sensible default when legacy data
-	 * is missing or malformed. Zero values are permitted for unlimited executions.
-	 *
-	 * @param mixed $legacy_data WordPress meta value containing execution limit.
-	 * @return int|null Per-user execution limit (0 = unlimited).
-	 * @since 7.0.0
-	 */
-	private function convert_legacy_to_times_per_user( $legacy_data ): ?int {
-		if ( is_null( $legacy_data ) ) {
-			return null;
-		}
-
-		/** Handle WordPress meta serialization inconsistencies */
-		$unserialized = is_array( $legacy_data ) ? $legacy_data : automator_safe_unserialize( $legacy_data );
-		if ( ! is_array( $unserialized ) ) {
-			return null;
-		}
-
-		$value = isset( $unserialized['value'] ) ? (int) $unserialized['value'] : 1;
-		return max( 0, $value );
-	}
-
-	/**
 	 * Format global execution limit for WordPress meta storage.
-	 *
-	 * Handles nullable values by returning empty array when no limit is set.
-	 * Non-empty values are wrapped in legacy structure for UI compatibility.
 	 *
 	 * @param int|null $total_times Maximum total executions across all users.
 	 * @return array Legacy format or empty array for unlimited executions.
 	 * @since 7.0.0
 	 */
 	private function convert_total_times_to_legacy( ?int $total_times ): array {
-		if ( is_null( $total_times ) ) {
+		return $this->limit_to_legacy_meta(
+			$total_times,
+			esc_html_x( 'Total allowed runs', 'Recipe total times configuration label', 'uncanny-automator' )
+		);
+	}
+
+	/**
+	 * Build the legacy post-meta shape for a completion limit. A null or
+	 * non-positive value (no limit) → empty array (the on-disk "unset"
+	 * sentinel); a positive value → the legacy `{type,value,backup}` shape.
+	 * The `backup` block is retained for UI/sentence compatibility.
+	 *
+	 * @param int|null $value Limit value (positive = a limit; <= 0 / null = no limit).
+	 * @param string   $label Field label for the backup block.
+	 * @return array
+	 */
+	private function limit_to_legacy_meta( ?int $value, string $label ): array {
+		// The single write-clamp every write path converges on (settings-update
+		// AND full CRUD/create): a non-positive (or null) limit means "no limit"
+		// → persist the empty-array sentinel. New writes therefore never store a
+		// real 0. A stored 0 can only be pre-existing legacy data (there is no
+		// blanket migration), which the read path (coerce_limit_meta) resolves
+		// as a real, blocking limit — matching released enforcement.
+		if ( is_null( $value ) || $value <= 0 ) {
 			return array();
 		}
 
 		return array(
 			'type'   => 'string',
-			'value'  => (string) $total_times,
+			'value'  => (string) $value,
 			'backup' => array(
-				'label'                  => esc_html_x( 'Total allowed runs', 'Recipe total times configuration label', 'uncanny-automator' ),
+				'label'                  => $label,
 				'show_label_in_sentence' => true,
 			),
 		);
 	}
 
-	/**
-	 * Extract global execution limit from WordPress meta format.
-	 *
-	 * Returns null for unlimited executions, maintaining distinction between
-	 * "no limit set" (null) and "zero allowed" (0) for business logic clarity.
-	 *
-	 * @param mixed $legacy_data WordPress meta value containing total limit.
-	 * @return int|null Total execution limit or null for unlimited.
-	 * @since 7.0.0
-	 */
-	private function convert_legacy_to_total_times( $legacy_data ): ?int {
-		if ( is_null( $legacy_data ) ) {
-			return null;
-		}
-
-		/** Handle WordPress serialization variations gracefully */
-		$unserialized = is_array( $legacy_data ) ? $legacy_data : automator_safe_unserialize( $legacy_data );
-		if ( ! is_array( $unserialized ) ) {
-			return null;
-		}
-
-		$value = isset( $unserialized['value'] ) ? (int) $unserialized['value'] : 1;
-		return max( 0, $value );
-	}
 
 	/**
-	 * Convert action conditions object to legacy or storage format.
+	 * The plugin version a recipe was last written by.
 	 *
-	 * @param Recipe_Action_Conditions $action_conditions Action conditions.
-	 * @param int|null                 $recipe_id Recipe ID.
-	 * @return string Legacy format.
+	 * @param int $recipe_id Recipe post ID.
+	 *
+	 * @return string Version string, or empty when never stamped.
 	 */
-	private function convert_action_conditions_to_legacy(
-		Recipe_Action_Conditions $action_conditions,
-		?int $recipe_id = null
-	): string {
-
-		$legacy_format = array();
-
-		foreach ( $action_conditions->get_all() as $group ) {
-
-			$conditions_array = array();
-
-			foreach ( $group->get_conditions() as $condition ) {
-				// Get field definitions to generate _readable fields
-				$enhanced_fields = $this->enhance_fields_with_readable_values(
-					$condition->get_fields()->to_array(),
-					$condition->get_integration(),
-					$condition->get_condition_code()
-				);
-
-				$conditions_array[] = array(
-					'id'          => $condition->get_condition_id()->get_value(),
-					'integration' => $condition->get_integration(),
-					'condition'   => $condition->get_condition_code(),
-					'fields'      => $enhanced_fields,
-					'backup'      => array(
-						'nameDynamic'     => $condition->get_backup_info()->get_name_dynamic(),
-						'titleHTML'       => htmlspecialchars( $condition->get_backup_info()->get_title_html(), ENT_QUOTES, 'UTF-8' ),
-						'integrationName' => $condition->get_backup_info()->get_integration_name(),
-					),
-				);
-			}
-
-			$legacy_format[] = array(
-				'id'         => $group->get_group_id()->get_value(),
-				'priority'   => $group->get_priority(),
-				'actions'    => $group->get_action_ids(), // Already an array of integers
-				'mode'       => $group->get_mode()->get_value(),
-				'parent_id'  => $group->get_parent_id()->get_value() ?? $recipe_id,
-				'conditions' => $conditions_array,
-			);
-		}
-
-		$encoded = wp_json_encode( $legacy_format );
-
-		if ( false === $encoded ) {
+	public function get_version( int $recipe_id ): string {
+		if ( $recipe_id < 1 ) {
 			return '';
 		}
 
-		// wp_slash: both wp_insert_post (create) and update_post_meta (update) call wp_unslash,
-		// which strips backslash escapes from JSON strings. Pre-slash to preserve valid JSON.
-		return wp_slash( $encoded );
-	}
-
-
-	/**
-	 * Parse legacy WordPress format into domain action conditions.
-	 *
-	 * Reconstructs domain objects from WordPress meta storage, handling missing
-	 * or invalid data gracefully. Generates new IDs for condition groups when
-	 * legacy data lacks proper identifiers.
-	 *
-	 * @param array $legacy_data WordPress meta array containing condition groups.
-	 * @param int   $recipe_id Recipe identifier for parent relationships.
-	 * @return Recipe_Action_Conditions Reconstructed domain action conditions.
-	 * @since 7.0.0
-	 */
-	private function convert_legacy_to_action_conditions(
-		array $legacy_data,
-		int $recipe_id
-	): Recipe_Action_Conditions {
-
-		$condition_groups = array();
-
-		foreach ( $legacy_data as $group_data ) {
-			if ( ! is_array( $group_data ) ) {
-				continue;
-			}
-
-			$group = $this->build_condition_group_from_legacy( $group_data, $recipe_id );
-			if ( null !== $group ) {
-				$condition_groups[] = $group;
-			}
-		}
-
-		return new Recipe_Action_Conditions( $condition_groups );
+		return (string) get_post_meta( $recipe_id, self::$recipe_version_key, true );
 	}
 
 	/**
-	 * Build single condition group from legacy data.
+	 * Read the recipe vintage straight from the table, bypassing the per-request meta cache.
 	 *
-	 * @param array $group_data Legacy group data.
-	 * @param int   $recipe_id Recipe ID.
-	 * @return Condition_Group|null Group object or null if invalid.
+	 * @param int $recipe_id Recipe post ID.
+	 *
+	 * @return string The stored version, '' when none.
 	 */
-	private function build_condition_group_from_legacy( array $group_data, int $recipe_id ): ?Condition_Group {
-		$action_ids = $this->extract_action_ids( $group_data );
-		$mode       = $this->parse_group_mode( $group_data );
-
-		if ( null === $mode ) {
-			return null;
+	public function get_version_uncached( int $recipe_id ): string {
+		if ( $recipe_id < 1 ) {
+			return '';
 		}
 
-		$individual_conditions = $this->build_individual_conditions( $group_data );
-		$group_id_obj          = $this->parse_group_id( $group_data );
-		$priority              = $this->parse_priority( $group_data );
+		global $wpdb;
 
-		// Use the group's own parent_id from storage; fall back to recipe_id for legacy data.
-		$parent_id = isset( $group_data['parent_id'] ) && (int) $group_data['parent_id'] > 0
-			? (int) $group_data['parent_id']
-			: $recipe_id;
-
-		try {
-			return new Condition_Group(
-				$group_id_obj,
-				$priority,
-				$action_ids,
-				$mode,
-				new Recipe_Id( $parent_id ),
-				$individual_conditions
-			);
-		} catch ( \Throwable $exception ) {
-			// Skip invalid condition group.
-			return null;
-		}
-	}
-
-	/**
-	 * Extract valid action IDs from group data.
-	 *
-	 * @param array $group_data Group data.
-	 * @return array Valid action IDs.
-	 */
-	private function extract_action_ids( array $group_data ): array {
-		return array_values(
-			array_filter(
-				array_map( 'intval', $group_data['actions'] ?? array() ),
-				function ( $id ) {
-					return $id > 0;
-				}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$version = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = %s LIMIT 1",
+				$recipe_id,
+				self::$recipe_version_key
 			)
 		);
+
+		return (string) $version;
 	}
 
 	/**
-	 * Parse and validate group mode.
-	 *
-	 * @param array $group_data Group data.
-	 * @return Condition_Group_Mode|null Mode object or null if invalid.
+	 * {@inheritDoc}
 	 */
-	private function parse_group_mode( array $group_data ): ?Condition_Group_Mode {
-		$mode_value = is_string( $group_data['mode'] ?? null ) ? strtolower( $group_data['mode'] ) : 'all';
-		if ( ! in_array( $mode_value, array( 'any', 'all' ), true ) ) {
-			$mode_value = 'all';
-		}
+	public function census_rows(): array {
+		global $wpdb;
 
-		try {
-			return new Condition_Group_Mode( $mode_value );
-		} catch ( \Throwable $exception ) {
-			// Skip group due to invalid mode.
-			return null;
-		}
-	}
+		$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare(
+				"SELECT p.ID AS id,
+				        p.post_status,
+				        COALESCE( NULLIF( t.meta_value, '' ), 'user' ) AS recipe_type,
+				        COALESCE( v.meta_value, '' ) AS version
+				 FROM {$wpdb->posts} p
+				 LEFT JOIN {$wpdb->postmeta} t ON t.post_id = p.ID AND t.meta_key = %s
+				 LEFT JOIN {$wpdb->postmeta} v ON v.post_id = p.ID AND v.meta_key = %s
+				 WHERE p.post_type = %s
+				   AND p.post_status != 'trash'
+				 ORDER BY p.ID ASC, t.meta_id ASC, v.meta_id ASC",
+				self::_META_RECIPE_TYPE,
+				self::$recipe_version_key,
+				self::POST_TYPE
+			),
+			ARRAY_A
+		);
 
-	/**
-	 * Build individual conditions from group data.
-	 *
-	 * @param array $group_data Group data.
-	 * @return array Array of Individual_Condition objects.
-	 */
-	private function build_individual_conditions( array $group_data ): array {
-		$individual_conditions = array();
-		$items                 = is_array( $group_data['conditions'] ?? null ) ? $group_data['conditions'] : array();
-
-		foreach ( $items as $condition_data ) {
-			if ( ! is_array( $condition_data ) ) {
+		// One row per recipe: the first joined meta row by meta_id is the stored value.
+		$output = array();
+		$seen   = array();
+		foreach ( (array) $rows as $row ) {
+			$id = (int) $row['id'];
+			if ( isset( $seen[ $id ] ) ) {
 				continue;
 			}
-
-			$condition = $this->build_single_condition( $condition_data );
-			if ( null !== $condition ) {
-				$individual_conditions[] = $condition;
-			}
-		}
-
-		return $individual_conditions;
-	}
-
-	/**
-	 * Build single condition from legacy data.
-	 *
-	 * @param array $condition_data Condition data.
-	 * @return Individual_Condition|null Condition object or null if invalid.
-	 */
-	private function build_single_condition( array $condition_data ): ?Individual_Condition {
-		try {
-			$backup_info_data = $condition_data['backup_info'] ?? ( $condition_data['backup'] ?? array() );
-			$backup_info      = new Condition_Backup_Info(
-				$backup_info_data['nameDynamic'] ?? ( $backup_info_data['name_dynamic'] ?? ( $backup_info_data['sentence'] ?? '' ) ),
-				$backup_info_data['titleHTML'] ?? ( $backup_info_data['title_html'] ?? '' ),
-				$backup_info_data['integrationName'] ?? ( $backup_info_data['integration_name'] ?? '' )
+			$seen[ $id ] = true;
+			$output[]    = array(
+				'id'          => $id,
+				'post_status' => (string) $row['post_status'],
+				'recipe_type' => (string) $row['recipe_type'],
+				'version'     => (string) $row['version'],
 			);
-
-			$condition_fields = new Condition_Fields( $condition_data['fields'] ?? array() );
-
-			return Individual_Condition::create(
-				(string) ( $condition_data['integration'] ?? '' ),
-				(string) ( $condition_data['condition'] ?? '' ),
-				$condition_fields,
-				$backup_info,
-				isset( $condition_data['id'] ) ? (string) $condition_data['id'] : null
-			);
-		} catch ( \Throwable $exception ) {
-			// Skip invalid condition.
-			return null;
-		}
-	}
-
-	/**
-	 * Parse group ID from data.
-	 *
-	 * @param array $group_data Group data.
-	 * @return Condition_Group_Id Group ID object.
-	 */
-	private function parse_group_id( array $group_data ): Condition_Group_Id {
-		$group_id = isset( $group_data['id'] ) ? (string) $group_data['id'] : '';
-
-		return empty( $group_id ) || strlen( $group_id ) < 10 ?
-			Condition_Group_Id::generate() :
-			new Condition_Group_Id( $group_id );
-	}
-
-	/**
-	 * Parse priority from data.
-	 *
-	 * @param array $group_data Group data.
-	 * @return int Priority value (default 20).
-	 */
-	private function parse_priority( array $group_data ): int {
-		$priority = isset( $group_data['priority'] ) && is_numeric( $group_data['priority'] ) ? (int) $group_data['priority'] : 20;
-		return $priority <= 0 ? 20 : $priority;
-	}
-
-	/**
-	 * Generate human-readable field values using WordPress filter system.
-	 *
-	 * Queries field definitions from the condition registry to transform raw
-	 * field values (IDs, codes) into displayable text for administrative interfaces.
-	 * Essential for maintaining usable condition displays in the WordPress admin.
-	 *
-	 * @param array  $fields Raw field values from condition storage.
-	 * @param string $integration_code Integration identifier for field lookup.
-	 * @param string $condition_code Condition identifier for field definitions.
-	 * @return array Enhanced fields with _readable and _label suffixed variants.
-	 * @since 7.0.0
-	 */
-	private function enhance_fields_with_readable_values( array $fields, string $integration_code, string $condition_code ): array {
-		/** Query field definitions through WordPress filter system */
-		$field_definitions = Dispatcher::filter( 'automator_pro_actions_conditions_fields', array(), $integration_code, $condition_code );
-
-		if ( empty( $field_definitions ) ) {
-			return $fields;
 		}
 
-		$enhanced_fields = $fields;
-
-		/** Transform field values using definition metadata */
-		foreach ( $field_definitions as $field_def ) {
-			$field_code = $field_def['option_code'] ?? '';
-
-			if ( empty( $field_code ) || ! isset( $fields[ $field_code ] ) ) {
-				continue;
-			}
-
-			$field_value  = $fields[ $field_code ];
-			$readable_key = $field_code . '_readable';
-
-			/** Select/dropdown fields require option lookup for readable text */
-			if ( isset( $field_def['input_type'] ) && in_array( $field_def['input_type'], array( 'select', 'dropdown' ), true ) ) {
-				if ( isset( $field_def['options'] ) && is_array( $field_def['options'] ) ) {
-					foreach ( $field_def['options'] as $option ) {
-						if ( isset( $option['value'] ) && $option['value'] === $field_value ) {
-							$enhanced_fields[ $readable_key ] = $option['text'] ?? $field_value;
-							break;
-						}
-					}
-				}
-			}
-
-			/** Fallback to raw value when no readable option is found */
-			if ( ! isset( $enhanced_fields[ $readable_key ] ) ) {
-				$enhanced_fields[ $readable_key ] = $field_value;
-			}
-
-			/** Include field labels for complete UI reconstruction */
-			if ( isset( $field_def['label'] ) ) {
-				$enhanced_fields[ $field_code . '_label' ] = $field_def['label'];
-			}
-		}
-
-		return $enhanced_fields;
+		return $output;
 	}
 
 	/**
-	 * Get post type.
+	 * Stamp the recipe with a plugin version, exactly as a save would.
 	 *
-	 * @return string Post type.
+	 * @param int    $recipe_id Recipe post ID.
+	 * @param string $version   Version to record.
+	 *
+	 * @return void
+	 */
+	public function set_version( int $recipe_id, string $version ): void {
+		if ( $recipe_id < 1 ) {
+			return;
+		}
+
+		update_post_meta( $recipe_id, self::$recipe_version_key, $version );
+	}
+
+	/**
+	 * Deprecated one-line accessor retained for 8.0.0.
+	 *
+	 * Its callers (the recipe-item REST classes) move off it in a later PR;
+	 * deleting it here would break them in the interim. Removed in the
+	 * post-8.0.0 cleanup pass together with those callers.
+	 *
+	 * @deprecated 8.0.0
 	 */
 	public function get_post_type(): string {
 		return self::POST_TYPE;

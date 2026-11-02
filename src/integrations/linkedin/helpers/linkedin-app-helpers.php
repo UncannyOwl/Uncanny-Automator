@@ -327,23 +327,19 @@ class Linkedin_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpe
 	////////////////////////////////////////////////////////////
 
 	/**
-	 * Check refresh token expiration and show admin notice if needed.
+	 * Whether the admin must reauthorize: LinkedIn is connected, its refresh
+	 * token expired or expires within the notice window, and LinkedIn actions
+	 * are live.
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function check_refresh_token_expiration() {
+	public function is_reauthorize_due() {
 		$credentials = $this->get_credentials();
-		if ( empty( $credentials ) ) {
-			return;
+		if ( empty( $credentials ) || ! $this->is_refresh_token_expiring( $credentials ) ) {
+			return false;
 		}
 
-		if ( ! $this->is_refresh_token_expiring( $credentials ) ) {
-			return;
-		}
-
-		if ( ! empty( Automator()->utilities->fetch_live_integration_actions( 'LINKEDIN' ) ) ) {
-			add_action( 'automator_show_internal_admin_notice', array( $this, 'admin_notice_show_reminder' ) );
-		}
+		return ! empty( Automator()->utilities->fetch_live_integration_actions( 'LINKEDIN' ) );
 	}
 
 	/**
@@ -371,49 +367,5 @@ class Linkedin_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpe
 		$days_remaining    = floor( $seconds_remaining / DAY_IN_SECONDS );
 
 		return (int) apply_filters( 'automator_linkedin_get_refresh_token_remaining_days', $days_remaining, $this );
-	}
-
-	/**
-	 * Show admin notice for refresh token expiration.
-	 *
-	 * @return void
-	 */
-	public function admin_notice_show_reminder() {
-		$days = $this->get_refresh_token_remaining_days();
-		if ( $days <= 0 ) {
-
-			printf(
-				'<div class="notice notice-error"><p>%1$s <a href="%2$s">%3$s</a> %4$s</p></div>',
-				esc_html_x(
-					'Your LinkedIn access and refresh tokens have expired.',
-					'Linkedin',
-					'uncanny-automator'
-				),
-				esc_url( $this->get_settings_page_url() ),
-				esc_html_x( 'Click here', 'Linkedin', 'uncanny-automator' ),
-				esc_html_x( 'to reauthorize Uncanny Automator and continue using LinkedIn actions in your recipes.', 'Linkedin', 'uncanny-automator' )
-			);
-
-			return;
-		}
-
-		printf(
-			'<div class="notice notice-warning"><p>%1$s <a href="%2$s">%3$s</a> %4$s</p></div>',
-			esc_html(
-				sprintf(
-					/* Translators: Admin notice */
-					_n(
-						'Your LinkedIn access and refresh tokens will expire in %s day.',
-						'Your LinkedIn access and refresh tokens will expire in %s days.',
-						$days,
-						'uncanny-automator'
-					),
-					number_format_i18n( $days )
-				)
-			),
-			esc_url( $this->get_settings_page_url() ),
-			esc_html_x( 'Click here to reauthorize', 'Linkedin', 'uncanny-automator' ),
-			esc_html_x( 'to continue using your LinkedIn account in your recipes.', 'Linkedin', 'uncanny-automator' )
-		);
 	}
 }

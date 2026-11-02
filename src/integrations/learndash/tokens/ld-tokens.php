@@ -426,8 +426,9 @@ class Ld_Tokens {
 					// For other tokens.
 					global $wpdb;
 
-					$table_name   = $wpdb->prefix . Database::TABLE_REPORTING;
-					$tin_can_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE user_id = %d AND module LIKE %s ORDER BY xstored DESC LIMIT 0,1", $user_id, '%%/uncanny-snc/' . $module_id . '/%%' ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$table_name = $wpdb->prefix . Database::TABLE_REPORTING;
+					// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Tin Canny's own table; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
+					$tin_can_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE user_id = %d AND module LIKE %s ORDER BY xstored DESC LIMIT 0,1", $user_id, '%%/uncanny-snc/' . $module_id . '/%%' ) );
 
 					if ( ! empty( $tin_can_data ) ) {
 						if ( in_array( 'TCMODULEINTERACTION_maybe_course', $pieces, true ) && ! empty( $tin_can_data->course_id ) ) {
@@ -1266,6 +1267,7 @@ class Ld_Tokens {
 		$question_cloze_data = learndash_question_cloze_fetch_data( $answer_text );
 		$answer_data_check   = array_map( 'trim', $answer_data );
 		/** This filter is documented in includes/lib/wp-pro-quiz/wp-pro-quiz.php */
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- LearnDash's own hook.
 		if ( apply_filters( 'learndash_quiz_question_cloze_answers_to_lowercase', true ) ) {
 			$lower_function    = function_exists( 'mb_strtolower' ) ? 'mb_strtolower' : 'strtolower';
 			$answer_data_check = array_map( $lower_function, $answer_data_check );
@@ -1316,6 +1318,7 @@ class Ld_Tokens {
 			$assessment['data'][ $replace_key ] = $answer;
 			$assessment                         = learndash_question_assessment_prepare_output( $assessment );
 			/** This filter is documented in includes/lib/wp-pro-quiz/wp-pro-quiz.php */
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- LearnDash's own hook.
 			$assessment = apply_filters( 'learndash_quiz_question_answer_postprocess', $assessment, 'assessment' );
 
 			return do_shortcode( $assessment );
@@ -1352,6 +1355,7 @@ class Ld_Tokens {
 
 									// Once we have the correct post_id we update the quiz statistics for next time.
 									global $wpdb;
+									// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- LearnDash's own table; write; the plugin offers no API for this query.
 									$update_ref = $wpdb->update(
 										\LDLMS_DB::get_table_name( 'quiz_statistic' ),
 										array( 'answer_data' => wp_json_encode( $answer_data ) ),

@@ -11,8 +11,8 @@
 
 declare(strict_types=1);
 
-// Prevent direct access (skip in test environment)
-if ( ! defined( 'ABSPATH' ) && ! defined( 'PHPUNIT_COMPOSER_INSTALL' ) && ! defined( 'WP_TESTS_DIR' ) ) {
+// Prevent direct access
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
@@ -41,6 +41,11 @@ require_once __DIR__ . '/Infrastructure/functions.php';
  */
 require_once __DIR__ . '/functions/core.php';
 
+/**
+ * Load field helper functions (value normalization).
+ */
+require_once __DIR__ . '/functions/fields.php';
+
 // =============================================================================
 // 2. DOMAIN FUNCTIONS
 // =============================================================================
@@ -60,6 +65,11 @@ require_once __DIR__ . '/functions/trigger.php';
  */
 require_once __DIR__ . '/functions/action.php';
 
+/**
+ * Load loop functions (unified loop block creation).
+ */
+require_once __DIR__ . '/functions/loop.php';
+
 // =============================================================================
 // 3. NEW SERVICES
 // =============================================================================
@@ -73,6 +83,31 @@ require_once __DIR__ . '/functions/condition.php';
  * Load plan functions (access, features, tiers).
  */
 require_once __DIR__ . '/functions/plan.php';
+
+/**
+ * Load block-storage helpers (legacy-translator kill switch).
+ */
+require_once __DIR__ . '/functions/blocks.php';
+
+/**
+ * Load integration-catalog helpers (popularity cache, entity discovery).
+ */
+require_once __DIR__ . '/functions/integration-catalog.php';
+
+/**
+ * Load platform functions (App Integration Platform connection status).
+ */
+require_once __DIR__ . '/functions/platform.php';
+
+/**
+ * Load background app-action helpers (setting, dispatch policy, job record).
+ */
+require_once __DIR__ . '/functions/background.php';
+
+/**
+ * Load recipe-runner helpers (detach request).
+ */
+require_once __DIR__ . '/functions/runner.php';
 
 // =============================================================================
 // INITIALIZATION

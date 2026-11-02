@@ -84,9 +84,10 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 			return $field_text;
 		}
 
-		$field_text = Automator()->db->token->get( 'LOOPABLE_' . $this->get_id(), $process_args );
+		$list = Automator()->db->token->get( 'LOOPABLE_' . $this->get_id(), $process_args );
 
-		if ( ! is_string( $field_text ) || '' === $field_text ) {
+		// No loop saved the list for this run: leave the field for the parser to finish.
+		if ( ! is_string( $list ) || '' === $list ) {
 			return $field_text;
 		}
 
@@ -100,10 +101,13 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 		// the loop. Doubling the backslashes lets stripcslashes restore the
 		// original JSON intact (\\ → \), so a downstream json_decode sees
 		// valid escapes again. The DB value is left untouched so the
-		// hydrate_tokens_children() fallback at line 130, which json_decodes
+		// hydrate_tokens_children() fallback, which json_decodes
 		// the same row directly without going through the parser, keeps
 		// working with the un-doubled form it expects.
-		return str_replace( '\\', '\\\\', $field_text );
+		//
+		// The list takes the token's place only: a text field that holds the
+		// token among other content keeps that content.
+		return str_replace( '{{' . $match_value . '}}', str_replace( '\\', '\\\\', $list ), $field_text );
 	}
 
 	/**

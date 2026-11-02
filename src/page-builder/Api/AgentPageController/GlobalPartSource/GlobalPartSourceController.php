@@ -141,6 +141,9 @@ final class GlobalPartSourceController
             'This is a full global part rewrite. Prefer edit_part kind=global_part mode=source_patch for surgical changes.',
             '',
         ];
+        if (isset($result['source_generation'])) {
+            $lines[] = 'SOURCE_GENERATION: ' . $result['source_generation'];
+        }
         $this->appendWarningLines($lines, $result['warnings'] ?? []);
         $this->appendDiffLines($lines, 'HTML DIFF', $this->sourceDiffer->diff('HTML DIFF', $oldHtml, (string) ($result['html'] ?? $html)));
         $this->appendDiffLines($lines, 'CSS DIFF', $this->sourceDiffer->diff('CSS DIFF', $oldCss, (string) ($result['css'] ?? $css)));
@@ -311,6 +314,9 @@ final class GlobalPartSourceController
             '',
         ];
         $this->appendCssDeclarationReport($lines, $cssDeclarationReport);
+        if (isset($result['source_generation'])) {
+            $lines[] = 'SOURCE_GENERATION: ' . $result['source_generation'];
+        }
         $this->appendWarningLines($lines, $result['warnings'] ?? []);
         $this->appendDiffLines($lines, 'HTML DIFF', $this->sourceDiffer->diff(
             'HTML DIFF',

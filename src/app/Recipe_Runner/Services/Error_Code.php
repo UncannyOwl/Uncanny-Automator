@@ -33,6 +33,8 @@ class Error_Code {
 	const RECIPE_STUCK         = 'recipe_stuck';
 	const RECIPE_RECURSION     = 'recipe_recursion';
 	const SYSTEM_ERROR         = 'system_error';
+	const BACKGROUND_JOB_LOST  = 'background_job_lost';
+	const BLOCK_NOT_RUN        = 'block_not_run';
 
 	// ── Non-actionable errors — informational, don't escalate ──
 
@@ -55,6 +57,20 @@ class Error_Code {
 		self::USER_FOUND           => true,
 		self::USER_NOT_FOUND       => true,
 		self::ACTION_SKIPPED       => true,
+	);
+
+	/**
+	 * HTTP statuses that say on their own what went wrong.
+	 *
+	 * @var array<int,string>
+	 */
+	private const HTTP_STATUSES = array(
+		401 => self::AUTH_FAILED,
+		403 => self::PERMISSION_DENIED,
+		404 => self::NOT_FOUND,
+		408 => self::API_TIMEOUT,
+		429 => self::RATE_LIMITED,
+		504 => self::API_TIMEOUT,
 	);
 
 	/**
@@ -215,6 +231,29 @@ class Error_Code {
 		}
 
 		return self::UNKNOWN;
+	}
+
+	/**
+	 * The error code for a failed API request.
+	 *
+	 * Taken from the HTTP status where the status alone says what went wrong;
+	 * otherwise inferred from the message; API_ERROR when neither does.
+	 *
+	 * @param int    $status  The HTTP status, or 0 when no response arrived.
+	 * @param string $message The error message.
+	 *
+	 * @return string Error code constant.
+	 * @since 8.0.0
+	 */
+	public static function from_http_status( int $status, string $message = '' ): string {
+
+		if ( isset( self::HTTP_STATUSES[ $status ] ) ) {
+			return self::HTTP_STATUSES[ $status ];
+		}
+
+		$inferred = self::infer_from_message( $message );
+
+		return self::UNKNOWN === $inferred ? self::API_ERROR : $inferred;
 	}
 
 	/**

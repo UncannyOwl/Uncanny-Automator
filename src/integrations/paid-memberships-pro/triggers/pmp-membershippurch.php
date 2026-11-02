@@ -141,6 +141,7 @@ class PMP_MEMBERSHIPPURCH {
 			if ( $result ) {
 				foreach ( $result as $r ) {
 					if ( true === $r['result'] ) {
+						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 						do_action( 'uap_save_pmp_membership_level', $membership_id, $r['args'], $user_id, $this->trigger_meta );
 						Automator()->maybe_trigger_complete( $r['args'] );
 					}

@@ -103,6 +103,7 @@ class EC_ASSIGN_VENUE extends \Uncanny_Automator\Recipe\Action {
 				->set( 'venue', $venue_id )
 				->save();
 		} catch ( \Throwable $e ) {
+			/* translators: %s: Error message */
 			$this->add_log_error( sprintf( esc_html_x( 'Failed to assign venue: %s', 'The Events Calendar', 'uncanny-automator' ), $e->getMessage() ) );
 			return false;
 		}

@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Trigger\Enums;
 
@@ -45,5 +44,14 @@ class Trigger_Status {
 	 */
 	public static function get_all(): array {
 		return array( self::DRAFT, self::PUBLISH );
+	}
+
+	/**
+	 * Whether the given status means the trigger is "on" — i.e. published
+	 * and eligible to fire. Single semantic home for the
+	 * `'publish' === $status` check so consumers don't hard-code it.
+	 */
+	public static function is_item_on( string $status ): bool {
+		return self::PUBLISH === $status;
 	}
 }

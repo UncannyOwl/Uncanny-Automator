@@ -1296,32 +1296,6 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'CUSTOMUSERFIELDS' => array(
-			'name'       => 'Custom User Fields',
-			'pro_only'   => 'no',
-			'elite_only' => 'no',
-			'triggers'   => array(
-				array(
-					'name'     => esc_html_x( "A user's {{custom user field}} is updated to {{a value}}", 'Automator Pro item', 'uncanny-automator' ),
-					'type'     => 'logged-in',
-					'is_pro'   => false,
-					'is_elite' => false,
-				),
-				array(
-					'name'     => esc_html_x( "A user's {{custom user field}} is updated", 'Automator Pro item', 'uncanny-automator' ),
-					'type'     => 'logged-in',
-					'is_pro'   => false,
-					'is_elite' => false,
-				),
-			),
-			'actions'    => array(
-				array(
-					'name'     => esc_html_x( "Update the user's {{custom user field}} to {{a value}}", 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => false,
-				),
-			),
-		),
 		'DATETIME' => array(
 			'name'       => 'Date and time',
 			'pro_only'   => 'no',
@@ -1393,39 +1367,6 @@ function automator_pro_items_list() {
 					'name'     => esc_html_x( 'Call {{a do_action hook}}', 'Automator Pro item', 'uncanny-automator' ),
 					'is_pro'   => true,
 					'is_elite' => false,
-				),
-			),
-		),
-		'DYNAMIC_CONTENT' => array(
-			'name'       => 'Dynamic content',
-			'pro_only'   => 'no',
-			'elite_only' => 'yes',
-			'triggers'   => array(),
-			'actions'    => array(
-				array(
-					'name'     => esc_html_x( 'Clear {{a dynamic content block}} for {{a specific user}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
-				),
-				array(
-					'name'     => esc_html_x( 'Clear {{a dynamic content block}} for the user', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
-				),
-				array(
-					'name'     => esc_html_x( 'Update {{a dynamic content block}} for {{a specific user}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
-				),
-				array(
-					'name'     => esc_html_x( 'Update {{a global dynamic content block}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
-				),
-				array(
-					'name'     => esc_html_x( 'Update {{a dynamic content block}} for the user', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
 				),
 			),
 		),
@@ -3872,39 +3813,6 @@ function automator_pro_items_list() {
 			),
 			'actions'    => array(),
 		),
-		'QUICKBOOKS' => array(
-			'name'       => 'QuickBooks Online',
-			'pro_only'   => 'no',
-			'elite_only' => 'yes',
-			'triggers'   => array(),
-			'actions'    => array(
-				array(
-					'name'     => esc_html_x( 'Create {{an expense}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
-				),
-				array(
-					'name'     => esc_html_x( 'Create {{an invoice}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
-				),
-				array(
-					'name'     => esc_html_x( 'Create {{a payment}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
-				),
-				array(
-					'name'     => esc_html_x( 'Create {{a product}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
-				),
-				array(
-					'name'     => esc_html_x( 'Create or update {{a customer}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
-				),
-			),
-		),
 		'RAFFLE_PRESS' => array(
 			'name'       => 'RafflePress',
 			'pro_only'   => 'no',
@@ -4023,49 +3931,6 @@ function automator_pro_items_list() {
 				),
 			),
 			'actions'    => array(),
-		),
-		'SALESFORCE' => array(
-			'name'       => 'Salesforce',
-			'pro_only'   => 'no',
-			'elite_only' => 'yes',
-			'triggers'   => array(),
-			'actions'    => array(
-				array(
-					'name'     => esc_html_x( 'Add {{a contact}} to {{a campaign}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
-				),
-				array(
-					'name'     => esc_html_x( 'Add {{a lead}} to {{a campaign}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
-				),
-				array(
-					'name'     => esc_html_x( 'Create {{a contact}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
-				),
-				array(
-					'name'     => esc_html_x( 'Create {{a lead}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
-				),
-				array(
-					'name'     => esc_html_x( 'Delete {{a contact}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
-				),
-				array(
-					'name'     => esc_html_x( 'Update {{a contact}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
-				),
-				array(
-					'name'     => esc_html_x( 'Update {{a lead}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => true,
-				),
-			),
 		),
 		'SAVETO_WISHLIST' => array(
 			'name'       => 'SaveTo Wishlist',
@@ -4450,73 +4315,6 @@ function automator_pro_items_list() {
 				),
 			),
 			'actions'    => array(),
-		),
-		'UARESTRICTCONTENT' => array(
-			'name'       => 'Restrict Content',
-			'pro_only'   => 'no',
-			'elite_only' => 'no',
-			'triggers'   => array(
-				array(
-					'name'     => esc_html_x( 'A user is added to {{an access level}}', 'Automator Pro item', 'uncanny-automator' ),
-					'type'     => 'logged-in',
-					'is_pro'   => false,
-					'is_elite' => false,
-				),
-				array(
-					'name'     => esc_html_x( 'A user is removed from {{an access level}}', 'Automator Pro item', 'uncanny-automator' ),
-					'type'     => 'logged-in',
-					'is_pro'   => false,
-					'is_elite' => false,
-				),
-			),
-			'actions'    => array(
-				array(
-					'name'     => esc_html_x( 'Add the user to {{an access level}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => false,
-				),
-				array(
-					'name'     => esc_html_x( 'Remove the user from {{an access level}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => false,
-				),
-			),
-		),
-		'UAUSERLISTS' => array(
-			'name'       => 'User Lists',
-			'pro_only'   => 'no',
-			'elite_only' => 'no',
-			'triggers'   => array(
-				array(
-					'name'     => esc_html_x( 'A user is added to {{a list}}', 'Automator Pro item', 'uncanny-automator' ),
-					'type'     => 'logged-in',
-					'is_pro'   => false,
-					'is_elite' => false,
-				),
-				array(
-					'name'     => esc_html_x( 'A user is removed from {{a list}}', 'Automator Pro item', 'uncanny-automator' ),
-					'type'     => 'logged-in',
-					'is_pro'   => false,
-					'is_elite' => false,
-				),
-			),
-			'actions'    => array(
-				array(
-					'name'     => esc_html_x( 'Add the user to {{a list}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => false,
-				),
-				array(
-					'name'     => esc_html_x( 'Create {{a list}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => false,
-				),
-				array(
-					'name'     => esc_html_x( 'Remove the user from {{a list}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => false,
-					'is_elite' => false,
-				),
-			),
 		),
 		'UM' => array(
 			'name'       => 'Ultimate Member',

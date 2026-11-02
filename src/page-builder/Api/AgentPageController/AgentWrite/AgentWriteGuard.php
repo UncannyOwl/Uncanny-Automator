@@ -260,6 +260,7 @@ final class AgentWriteGuard
             'create_section', 'edit_part', 'edit_runtime', 'manage_sections' => true,
             'manage_binding' => in_array($operation, ['update_query', 'update_template'], true),
             'manage_reusable' => $operation !== 'list',
+            'manage_page_parts' => $operation === 'assign',
             'manage_canvas' => in_array($operation, ['create', 'update', 'attach_reusable'], true),
             default => false,
         };

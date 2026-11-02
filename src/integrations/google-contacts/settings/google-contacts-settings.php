@@ -78,7 +78,7 @@ class Google_Contacts_Settings extends App_Integration_Settings {
 
 		// Prepare main info with Google icon
 		$main_info  = ! empty( $account['name'] ) ? $account['name'] : $account['email'];
-		$main_info .= ' <uo-icon id="google"></uo-icon>';
+		$main_info .= ' <uas-icon brand="google"></uas-icon>';
 
 		return array(
 			'avatar_type'  => ! empty( $account['avatar_uri'] ) ? 'image' : 'icon',
@@ -121,7 +121,7 @@ class Google_Contacts_Settings extends App_Integration_Settings {
 			esc_html_x( 'Sign in with Google', 'Google Contacts', 'uncanny-automator' ),
 			array(
 				'class' => 'uap-settings-button-google',
-				'icon'  => 'google',
+				'brand' => 'google',
 			)
 		);
 	}

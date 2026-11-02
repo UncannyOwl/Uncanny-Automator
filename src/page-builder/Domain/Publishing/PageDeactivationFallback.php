@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Domain\Publishing;
 
+use UncannyPageBuilder\Domain\ArrayShape;
 use UncannyPageBuilder\Domain\Exception\DeactivationFallbackCompilationFailed;
 
 /**
@@ -26,11 +27,11 @@ final class PageDeactivationFallback
         private readonly array $assetsManifest,
         private readonly array $omissions,
     ) {
-        if ($assetsManifest !== [] && array_is_list($assetsManifest)) {
+        if ($assetsManifest !== [] && ArrayShape::isList($assetsManifest)) {
             throw new \InvalidArgumentException('Page deactivation fallback asset manifest must be an associative array.');
         }
         $this->assertSafeHtml($html);
-        if (!array_is_list($omissions)) {
+        if (!ArrayShape::isList($omissions)) {
             throw new \InvalidArgumentException('Page deactivation fallback omission report must be a list.');
         }
         foreach ($omissions as $record) {
@@ -137,7 +138,7 @@ final class PageDeactivationFallback
         }
         unset($child);
 
-        if (!array_is_list($value)) {
+        if (!ArrayShape::isList($value)) {
             ksort($value);
         }
     }

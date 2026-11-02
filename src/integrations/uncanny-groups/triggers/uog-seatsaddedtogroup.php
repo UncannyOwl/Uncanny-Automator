@@ -31,9 +31,9 @@ class UOG_SEATSADDEDTOGROUP extends \Uncanny_Automator\Recipe\Trigger {
 		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 		$this->set_is_login_required( false );
 
-		// translators: %1$s is the condition, %2$s is the number of seats, %3$s is the group.
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Comparison, %2$s: Number of seats, %3$s: Uncanny group */
 				esc_html_x(
 					'A number of seats {{greater than, less than, equal to, not equal to:%1$s}}{{a specific number:%2$s}} are added to {{an Uncanny group:%3$s}}',
 					'Uncanny Groups',

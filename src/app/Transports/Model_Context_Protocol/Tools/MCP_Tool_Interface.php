@@ -7,7 +7,7 @@ use Uncanny_Automator\App\Recipe_Builder\Shared\User\Value_Objects\User_Context;
 /**
  * MCP Tool Interface.
  *
- * Defines the contract for MCP tools with automatic schema generation.
+ * Defines the contract for MCP tools that provide explicit schemas.
  *
  * @since 7.0.0
  */
@@ -43,7 +43,7 @@ interface MCP_Tool_Interface {
 	public function execute( User_Context $user_context, array $params );
 
 	/**
-	 * Get tool schema (auto-generated from method reflection).
+	 * Get the explicitly defined MCP tool schema.
 	 *
 	 * @since 7.0.0
 	 *

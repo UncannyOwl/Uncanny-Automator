@@ -13,11 +13,13 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Recipe_Builder\Shared\Sentence_Html;
 
-use Uncanny_Automator\App\Bridge\Automator_Recipe_Object_Bridge;
-use Uncanny_Automator\App\Bridge\Recipe_Object_Bridge;
+use Uncanny_Automator\App\Recipe_Builder\Block\Migration\Legacy_Storage_Migration_Exception;
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Field_Registry_Service;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Wire_Key;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Flow_Walker;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Recipe_Wire_Service;
 use Uncanny_Automator\App\Recipe_Builder\Shared\Polyfill\Str;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Standalone\Dropdown_Controller;
-use Uncanny_Automator\Services\Integrations\Fields;
 
 /**
  * Class Field_Label_Resolver
@@ -27,37 +29,41 @@ use Uncanny_Automator\Services\Integrations\Fields;
 class Field_Label_Resolver {
 
 	/**
-	 * Bridge to the legacy recipe-object lookups.
+	 * The recipe wire projection; token names are read off its nodes.
 	 *
-	 * @var Recipe_Object_Bridge
+	 * @var Recipe_Wire_Service
 	 */
-	private Recipe_Object_Bridge $recipes;
+	private Recipe_Wire_Service $wire;
 
 	/**
-	 * @param Recipe_Object_Bridge|null $recipes Optional bridge override (tests).
+	 * @param Recipe_Wire_Service|null $wire Optional wire service override (tests).
 	 */
-	public function __construct( ?Recipe_Object_Bridge $recipes = null ) {
-		$this->recipes = $recipes ?? new Automator_Recipe_Object_Bridge();
+	public function __construct( ?Recipe_Wire_Service $wire = null ) {
+		$this->wire = $wire ?? Recipe_Wire_Service::instance();
 	}
 
 	/**
 	 * Get configuration fields for a given code.
 	 *
 	 * @param string $code        The trigger/action code.
-	 * @param string $object_type Either 'triggers' or 'actions'.
+	 * @param string $object_type Either 'triggers' or 'actions' (legacy plural)
+	 *                            OR 'trigger'/'action' (singular). Both accepted
+	 *                            to preserve back-compat with existing callers.
 	 *
-	 * @return array Configuration fields.
+	 * @return array Configuration fields in legacy-mixed-key shape; empty array
+	 *               when the item is not registered or has no fields.
 	 */
 	public function get_configuration_fields( string $code, string $object_type ): array {
-		$fields = new Fields();
-		$fields->set_config(
-			array(
-				'code'        => $code,
-				'object_type' => $object_type,
-			)
+		// Service expects singular item_type; strip trailing 's' if caller passed plural.
+		$item_type = rtrim( $object_type, 's' );
+
+		$grouped = Field_Registry_Service::instance()->get_item_fields_grouped(
+			'',
+			$item_type,
+			$code
 		);
 
-		return $fields->get();
+		return is_wp_error( $grouped ) ? array() : $grouped;
 	}
 
 	/**
@@ -399,7 +405,8 @@ class Field_Label_Resolver {
 	 * Resolve token name from a value that may contain a token pattern.
 	 *
 	 * If the value is a token like {{2152:WPFFORMS:1820|3}}, this method will
-	 * look up the token's human-readable name from the recipe context.
+	 * look up the token's human-readable name from the recipe wire, where every
+	 * node at any depth carries the tokens it publishes.
 	 *
 	 * @param string $value         The value that may be a token.
 	 * @param array  $configuration The full configuration (may contain recipe_id).
@@ -421,8 +428,9 @@ class Field_Label_Resolver {
 			return $value;
 		}
 
-		$trigger_id   = (int) $token_parts[1];
-		$trigger_code = $token_parts[2];
+		// The leading id only locates the recipe when the configuration carries
+		// none; the match below is on the full token id, which embeds the node.
+		$trigger_id = (int) $token_parts[1];
 
 		// Get the recipe_id from configuration if available.
 		$recipe_id = $configuration['recipe_id'] ?? 0;
@@ -438,37 +446,23 @@ class Field_Label_Resolver {
 			return $value;
 		}
 
-		// Get recipe object to find the token name.
-		$recipe_object = $this->recipes->get_recipe_as_array( (int) $recipe_id );
-		if ( null === $recipe_object || ! isset( $recipe_object['triggers']['items'] ) ) {
+		// A label is best effort: an unreadable recipe keeps the raw value.
+		try {
+			$wire = $this->wire->get_wire_array( (int) $recipe_id );
+		} catch ( Legacy_Storage_Migration_Exception $e ) {
 			return $value;
 		}
 
-		// Find the trigger and its tokens.
-		foreach ( $recipe_object['triggers']['items'] as $trigger ) {
-			if ( (int) ( $trigger['id'] ?? 0 ) !== $trigger_id ) {
-				continue;
-			}
-
-			$tokens = $trigger['tokens'] ?? array();
-			foreach ( $tokens as $token ) {
-				// Match by the full token ID pattern.
-				$token_id = $token['id'] ?? '';
-				if ( $token_id === $token_content ) {
-					return $token['name'] ?? $value;
-				}
-			}
+		if ( null === $wire ) {
+			return $value;
 		}
 
-		// Also check action tokens.
-		if ( isset( $recipe_object['actions']['items'] ) ) {
-			foreach ( $recipe_object['actions']['items'] as $action ) {
-				$tokens = $action['tokens'] ?? array();
-				foreach ( $tokens as $token ) {
-					$token_id = $token['id'] ?? '';
-					if ( $token_id === $token_content ) {
-						return $token['name'] ?? $value;
-					}
+		// Match by the full token ID; a token published by an action nested in a
+		// loop inside a filter path is as reachable as a trigger's.
+		foreach ( Flow_Walker::nodes( $wire[ Wire_Key::FLOW ] ?? array() ) as $entry ) {
+			foreach ( (array) ( $entry['node'][ Wire_Key::TOKENS ] ?? array() ) as $token ) {
+				if ( ( $token[ Wire_Key::ID ] ?? '' ) === $token_content ) {
+					return (string) ( $token[ Wire_Key::NAME ] ?? $value );
 				}
 			}
 		}

@@ -22,6 +22,8 @@ use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abstract_MCP_T
  */
 class Get_Posts_Tool extends Abstract_MCP_Tool {
 
+	use Id_List_Arguments;
+
 	/**
 	 * Get tool name.
 	 *
@@ -37,7 +39,7 @@ class Get_Posts_Tool extends Abstract_MCP_Tool {
 	 * @return string
 	 */
 	public function get_description() {
-		return 'Query WordPress posts using WP_Query. Supports post_parent for hierarchical content (variations, child pages), meta_key/meta_value for custom fields, date filtering (published/updated date ranges), search, and standard WP_Query parameters.';
+		return 'Query WordPress posts. Use the listed fields to filter by parent, custom fields, published or updated date, and search text, and to order or paginate results.';
 	}
 
 	/**
@@ -107,29 +109,29 @@ class Get_Posts_Tool extends Abstract_MCP_Tool {
 					'type'        => 'string',
 					'description' => 'Comma-separated post IDs to include.',
 				),
-				'exclude'             => array(
+				'exclude'             => array( // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- A tool input name in a schema, not a query argument.
 					'type'        => 'string',
 					'description' => 'Comma-separated post IDs to exclude.',
 				),
 				'date_published_from' => array(
 					'type'        => 'string',
 					'format'      => 'date',
-					'description' => 'Filter posts published on or after this date. Accepts formats: Y-m-d, Y-m-d H:i:s, or ISO 8601.',
+					'description' => 'Filter posts published on or after this date. Use YYYY-MM-DD in the site timezone.',
 				),
 				'date_published_to'   => array(
 					'type'        => 'string',
 					'format'      => 'date',
-					'description' => 'Filter posts published on or before this date. Accepts formats: Y-m-d, Y-m-d H:i:s, or ISO 8601.',
+					'description' => 'Filter posts published on or before this date. Use YYYY-MM-DD in the site timezone.',
 				),
 				'date_updated_from'   => array(
 					'type'        => 'string',
 					'format'      => 'date',
-					'description' => 'Filter posts modified on or after this date. Accepts formats: Y-m-d, Y-m-d H:i:s, or ISO 8601.',
+					'description' => 'Filter posts modified on or after this date. Use YYYY-MM-DD in the site timezone.',
 				),
 				'date_updated_to'     => array(
 					'type'        => 'string',
 					'format'      => 'date',
-					'description' => 'Filter posts modified on or before this date. Accepts formats: Y-m-d, Y-m-d H:i:s, or ISO 8601.',
+					'description' => 'Filter posts modified on or before this date. Use YYYY-MM-DD in the site timezone.',
 				),
 			),
 			'required'   => array( 'post_type' ),
@@ -182,15 +184,22 @@ class Get_Posts_Tool extends Abstract_MCP_Tool {
 			? sanitize_key( $params['post_status'] )
 			: array( 'publish', 'draft' );
 		$orderby     = sanitize_key( $params['orderby'] ?? 'date' );
-		$order       = strtoupper( $params['order'] ?? 'DESC' ) === 'ASC' ? 'ASC' : 'DESC';
+		// WP_Query's ID order key is case-sensitive; sanitize_key lowercases it.
+		if ( 'id' === $orderby ) {
+			$orderby = 'ID';
+		}
+		$order = strtoupper( $params['order'] ?? 'DESC' ) === 'ASC' ? 'ASC' : 'DESC';
 
 		$args = array(
-			'post_type'      => $post_type,
-			'post_status'    => $post_status,
-			'posts_per_page' => $limit,
-			'offset'         => $offset,
-			'orderby'        => $orderby,
-			'order'          => $order,
+			'post_type'           => $post_type,
+			'post_status'         => $post_status,
+			'posts_per_page'      => $limit,
+			'offset'              => $offset,
+			'orderby'             => $orderby,
+			'order'               => $order,
+			// WordPress reads a query with no search or archive as the front page
+			// and adds sticky posts to it, past every filter, limit and total here.
+			'ignore_sticky_posts' => true,
 		);
 
 		// Post parent for hierarchical queries.
@@ -212,15 +221,12 @@ class Get_Posts_Tool extends Abstract_MCP_Tool {
 			}
 		}
 
-		// Include specific IDs.
-		if ( ! empty( $params['include'] ) ) {
-			$args['post__in'] = array_map( 'intval', explode( ',', $params['include'] ) );
+		// Include and exclude specific IDs; an excluded ID is never returned.
+		$id_args = $this->id_list_query_args( $params, 'post__in', 'post__not_in' );
+		if ( null === $id_args ) {
+			return $this->found_answer( $post_type, array(), 0, $offset, $limit );
 		}
-
-		// Exclude specific IDs.
-		if ( ! empty( $params['exclude'] ) ) {
-			$args['post__not_in'] = array_map( 'intval', explode( ',', $params['exclude'] ) );
-		}
+		$args = array_merge( $args, $id_args );
 
 		// Build date query for published and modified dates.
 		$date_query = $this->build_date_query( $params );
@@ -230,6 +236,18 @@ class Get_Posts_Tool extends Abstract_MCP_Tool {
 		}
 
 		$query = new \WP_Query( $args );
+		$total = (int) $query->found_posts;
+
+		// WP_Query skips found_posts when an offset returns no rows.
+		// Probe the first matching ID to retain the total beyond the last page.
+		if ( empty( $query->posts ) && $offset > 0 ) {
+			$count_args                   = $args;
+			$count_args['offset']         = 0;
+			$count_args['posts_per_page'] = 1; // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- One row, only to read the total.
+			$count_args['fields']         = 'ids';
+			$count_query                  = new \WP_Query( $count_args );
+			$total                        = (int) $count_query->found_posts;
+		}
 
 		$items = array_map(
 			function ( $post ) {
@@ -244,15 +262,29 @@ class Get_Posts_Tool extends Abstract_MCP_Tool {
 			$query->posts
 		);
 
+		return $this->found_answer( $post_type, $items, $total, $offset, $limit );
+	}
+
+	/**
+	 * The answer listing the posts found.
+	 *
+	 * @param string $post_type Post type queried.
+	 * @param array  $items     Posts on this page.
+	 * @param int    $total     Posts matching in all.
+	 * @param int    $offset    Posts skipped.
+	 * @param int    $limit     Page size.
+	 * @return array
+	 */
+	private function found_answer( string $post_type, array $items, int $total, int $offset, int $limit ): array {
 		return Json_Rpc_Response::create_success_response(
 			sprintf( 'Found %d %s', count( $items ), $post_type ),
 			array(
 				'post_type' => $post_type,
 				'items'     => $items,
-				'total'     => $query->found_posts,
+				'total'     => $total,
 				'offset'    => $offset,
 				'limit'     => $limit,
-				'has_more'  => ( $offset + count( $items ) ) < $query->found_posts,
+				'has_more'  => ( $offset + count( $items ) ) < $total,
 			)
 		);
 	}
@@ -338,7 +370,11 @@ class Get_Posts_Tool extends Abstract_MCP_Tool {
 	 * Parse date string to WordPress date_query array format.
 	 *
 	 * WordPress date_query works best with array format (year, month, day).
-	 * Uses site timezone for consistency with WP_Date_Query.
+	 *
+	 * A date without a timezone means that calendar day on the site, so it is
+	 * parsed in the site timezone. Parsing it as UTC and converting afterwards
+	 * shifted every date-only filter back one day on sites west of UTC.
+	 * The tool's input schema accepts only a calendar date, without a time.
 	 *
 	 * @see https://developer.wordpress.org/reference/classes/wp_date_query/
 	 *
@@ -346,17 +382,25 @@ class Get_Posts_Tool extends Abstract_MCP_Tool {
 	 * @return array|false Array with year, month, day keys or false on failure.
 	 */
 	private function parse_date_to_array( $date ) {
-		$timestamp = strtotime( $date );
+		$date = trim( (string) $date );
 
-		if ( false === $timestamp ) {
+		if ( '' === $date ) {
 			return false;
 		}
 
-		// Use wp_date() for site timezone consistency with WP_Date_Query.
+		$timezone = wp_timezone();
+		$parsed   = date_create( $date, $timezone );
+
+		if ( false === $parsed ) {
+			return false;
+		}
+
+		$parsed->setTimezone( $timezone );
+
 		return array(
-			'year'  => (int) wp_date( 'Y', $timestamp ),
-			'month' => (int) wp_date( 'n', $timestamp ),
-			'day'   => (int) wp_date( 'j', $timestamp ),
+			'year'  => (int) $parsed->format( 'Y' ),
+			'month' => (int) $parsed->format( 'n' ),
+			'day'   => (int) $parsed->format( 'j' ),
 		);
 	}
 }

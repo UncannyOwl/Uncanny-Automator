@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Domain\Export;
 
+use UncannyPageBuilder\Domain\ArrayShape;
 use UncannyPageBuilder\Domain\Exception\DeactivationFallbackCompilationFailed;
 
 /**
@@ -20,8 +21,8 @@ final class DynamicBindingOmissionProof
         private readonly array $removedBindingIds,
     ) {
         if (
-            !array_is_list($detectedBindingIds)
-            || !array_is_list($removedBindingIds)
+            !ArrayShape::isList($detectedBindingIds)
+            || !ArrayShape::isList($removedBindingIds)
             || $detectedBindingIds !== $removedBindingIds
         ) {
             throw new DeactivationFallbackCompilationFailed(

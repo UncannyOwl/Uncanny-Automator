@@ -145,14 +145,15 @@ final class EditorLockDialogRenderer
                     true,
                 );
             $body = $this->blocked($retryState, $postId, $targetKind, $editorMode, $message);
-            $title = esc_html_x('Editing takeover not confirmed', 'Page Builder', 'uncanny-automator');
+            $title = _x('Editing takeover not confirmed', 'Page Builder', 'uncanny-automator');
         } catch (\Throwable $failure) {
-            error_log('[Uncanny Page Builder] Editor takeover failure dialog failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Editor takeover failure dialog failed (' . $failure::class . ')');
             $body = 'Uncanny Page Builder could not confirm the editor takeover. Return to Pages and try again.';
             $title = 'Editing takeover not confirmed';
         }
 
-        wp_die($body, $title, ['response' => 409]);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $body is the dialog markup from blocked(), which escapes every dynamic value, or a plain sentence.
+        wp_die($body, esc_html($title), ['response' => 409]);
     }
 
     public function terminateBlocked(
@@ -163,14 +164,15 @@ final class EditorLockDialogRenderer
     ): never {
         try {
             $body = $this->blocked($state, $postId, $targetKind, $editorMode);
-            $title = esc_html_x('Item is already being edited', 'Page Builder', 'uncanny-automator');
+            $title = _x('Item is already being edited', 'Page Builder', 'uncanny-automator');
         } catch (\Throwable $failure) {
-            error_log('[Uncanny Page Builder] Editor ownership dialog failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Editor ownership dialog failed (' . $failure::class . ')');
             $body = 'This item is already being edited. Return to Pages and try again.';
             $title = 'Item is already being edited';
         }
 
-        wp_die($body, $title, ['response' => 409]);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $body is the dialog markup from blocked(), which escapes every dynamic value, or a plain sentence.
+        wp_die($body, esc_html($title), ['response' => 409]);
     }
 
     private function backUrl(string $targetKind): string

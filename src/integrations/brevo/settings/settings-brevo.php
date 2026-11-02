@@ -268,7 +268,7 @@ class Brevo_Settings extends App_Integration_Settings {
 							array(
 								'type' => 'icon',
 								'data' => array(
-									'id' => $item['icon'],
+									'code' => $item['icon'],
 								),
 							),
 						),
@@ -294,7 +294,7 @@ class Brevo_Settings extends App_Integration_Settings {
 									'color'          => 'secondary',
 									'size'           => 'extra-small',
 									'icon'           => array(
-										'id' => 'rotate',
+										'code' => 'rotate',
 									),
 								),
 							),

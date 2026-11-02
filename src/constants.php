@@ -33,16 +33,44 @@
  * @package Uncanny_Automator
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // ──────────────────────────────────────────────
 // Schema versions
 // ──────────────────────────────────────────────
 
 if ( ! defined( 'AUTOMATOR_DATABASE_VERSION' ) ) {
-	// 7.3.1: uap_recipe_count legacy index upgraded to UNIQUE in place —
-	// sites already on stored version 7.3.0 must re-enter activation()
-	// once so upgrade_recipe_count_unique_key() runs (the 7.3.0 dbDelta
-	// ALTER failed with "Duplicate key name" and saved the version anyway).
-	define( 'AUTOMATOR_DATABASE_VERSION', '7.3.1' );
+	// 8.0.0.3 — adds uap_async_jobs.connection_id: the connection a platform
+	// job's write was sent with, so a failed job is handled for that connection
+	// as the same answer given at once would be.
+	//
+	// 8.0.0.2 — drops uap_closure_log + uap_closure_log_meta (closures are
+	// retired; Automator_DB::drop_closure_log_tables()).
+	//
+	// 8.0.0.1 — adds uap_async_jobs.origin (`platform` | `site`): a background
+	// job records whether the platform or the site itself finishes it.
+	//
+	// 7.7.1 — adds uap_platform_inbox.claim_token + its index. The drain used
+	// to establish ownership with SELECT-then-UPDATE behind a site transient,
+	// which is not atomic: two drainers could select the same pending IDs and
+	// the loser's follow-up SELECT still returned rows the winner had claimed,
+	// so both dispatched the same event. Ownership is now stamped by the
+	// UPDATE itself and read back by token.
+	//
+	// 7.7.0 — adds the uap_platform_inbox `retention_scan (received_at)` index.
+	// The inbox stopped deleting rows on success (they are retained as
+	// `completed` for audit), so the table now accumulates and the retention
+	// sweep's `DELETE ... WHERE received_at < ?` needs a range scan instead of
+	// a full-table scan.
+	//
+	// 7.6.0 — adds uap_platform_inbox (durable ingress) + its platform_received_at
+	// column.
+	//
+	// Must differ from the prior value or the schema-upgrade gate in
+	// Automator_DB::verify_base_tables() bails and the change never applies.
+	define( 'AUTOMATOR_DATABASE_VERSION', '8.0.0.3' );
 }
 
 if ( ! defined( 'AUTOMATOR_MANIFEST_SCHEMA_VERSION' ) ) {
@@ -172,6 +200,8 @@ if ( ! defined( 'AUTOMATOR_POST_TYPE_ACTION' ) ) {
 }
 
 if ( ! defined( 'AUTOMATOR_POST_TYPE_CLOSURE' ) ) {
+	// Not registered since 8.0.0. Read only by the Redirect integration's
+	// closure-retirement migration, the WP token-alias migration and uninstall.
 	define( 'AUTOMATOR_POST_TYPE_CLOSURE', 'uo-closure' );
 }
 
@@ -184,19 +214,27 @@ if ( ! defined( 'AUTOMATOR_POST_TYPE_LOOP_FILTER' ) ) {
 }
 
 // ──────────────────────────────────────────────
-// Future post types (unified blocks architecture)
-//
-// Uncomment when the block/condition post types ship.
-// Then append to the relevant helper functions in global-functions.php.
+// Unified blocks architecture post types
 // ──────────────────────────────────────────────
 
-// if ( ! defined( 'AUTOMATOR_POST_TYPE_BLOCK' ) ) {
-//  define( 'AUTOMATOR_POST_TYPE_BLOCK', 'uo-block' );
-// }
+if ( ! defined( 'AUTOMATOR_POST_TYPE_BLOCK' ) ) {
+	define( 'AUTOMATOR_POST_TYPE_BLOCK', 'uo-block' );
+}
 
-// if ( ! defined( 'AUTOMATOR_POST_TYPE_FILTER_CONDITION' ) ) {
-//  define( 'AUTOMATOR_POST_TYPE_FILTER_CONDITION', 'uo-filter-condition' );
-// }
+if ( ! defined( 'AUTOMATOR_POST_TYPE_BLOCK_MODIFIER' ) ) {
+	define( 'AUTOMATOR_POST_TYPE_BLOCK_MODIFIER', 'uo-block-modifier' );
+}
+
+// ──────────────────────────────────────────────
+// Item meta keys
+// ──────────────────────────────────────────────
+
+if ( ! defined( 'AUTOMATOR_META_KEY_ITEM_CUSTOM_NAME' ) ) {
+	// The author's optional label for a trigger / action / block modifier,
+	// stored on the item's own post. Lowercase by design — the trigger store
+	// uppercases every other config key and exempts this one.
+	define( 'AUTOMATOR_META_KEY_ITEM_CUSTOM_NAME', '_automator_custom_item_name_' );
+}
 
 // ──────────────────────────────────────────────
 // Feature toggles (compile-time defaults)

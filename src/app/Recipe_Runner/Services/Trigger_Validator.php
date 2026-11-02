@@ -135,23 +135,32 @@ class Trigger_Validator {
 	/**
 	 * Get or create a trigger log ID for the user/trigger/recipe combination.
 	 *
-	 * @param int      $user_id       The user ID.
-	 * @param int      $trigger_id    The trigger post ID.
-	 * @param int      $recipe_id     The recipe post ID.
-	 * @param int|null $recipe_log_id The recipe log ID.
+	 * @param int|string      $user_id       The user ID.
+	 * @param int|string      $trigger_id    The trigger post ID.
+	 * @param int|string      $recipe_id     The recipe post ID.
+	 * @param int|string|null $recipe_log_id The recipe log ID.
 	 *
 	 * @return array
 	 */
 	public function maybe_get_trigger_id( $user_id, $trigger_id, $recipe_id, $recipe_log_id = null ): array {
 
-		if ( null === $trigger_id || null === $recipe_id || null === $user_id || 0 === $trigger_id || 0 === $recipe_id ) {
+		if ( null === $trigger_id || null === $recipe_id || null === $user_id ) {
+			return $this->fail( 'One of the required field is missing.' );
+		}
+
+		// Coerce at the boundary: legacy callers pass ids as ints or numeric strings, and the data provider and log store are strict-typed.
+		$user_id    = (int) $user_id;
+		$trigger_id = (int) $trigger_id;
+		$recipe_id  = (int) $recipe_id;
+
+		if ( 0 === $trigger_id || 0 === $recipe_id ) {
 			return $this->fail( 'One of the required field is missing.' );
 		}
 
 		$trigger_log_id = $this->data_provider->get_trigger_log_id( $user_id, $trigger_id, $recipe_id, $recipe_log_id );
 
 		if ( null === $trigger_log_id && is_numeric( $recipe_log_id ) ) {
-			$trigger_log_id = $this->log_store->add_trigger( $user_id, $trigger_id, $recipe_id, false, $recipe_log_id );
+			$trigger_log_id = $this->log_store->add_trigger( $user_id, $trigger_id, $recipe_id, false, (int) $recipe_log_id );
 		}
 
 		return array(

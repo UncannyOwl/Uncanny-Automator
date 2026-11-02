@@ -209,8 +209,9 @@ class Scope_Tag_Resolver {
 			return $tags;
 		}
 
-		// Use provided resolvers or default to integration resolvers.
-		$type_order = array_keys( $resolvers ?? $this->resolvers );
+		// Flip to name => position; array_keys() alone yields a list that the
+		// name lookup below can never hit, which made every tag rank equal.
+		$type_order = array_flip( array_keys( $resolvers ?? $this->resolvers ) );
 
 		usort(
 			$tags,

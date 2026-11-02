@@ -18,8 +18,6 @@ use Exception;
  */
 class Instagram_App_Helpers extends App_Helpers {
 
-	use Instagram_Publish_Retry;
-
 	/**
 	 * The facebook bridge.
 	 *

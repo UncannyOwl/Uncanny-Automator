@@ -72,6 +72,7 @@ class Elem_Tokens {
 		if ( empty( $post_metas ) ) {
 			global $wpdb;
 			if ( 0 === (int) $post_id ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Searches every post's _elementor_data meta for form widgets; no core API filters a meta value with LIKE across post types.
 				$post_metas = $wpdb->get_results(
 					$wpdb->prepare(
 						"SELECT pm.meta_value
@@ -87,6 +88,7 @@ WHERE p.post_type IS NOT NULL
 					)
 				);
 			} elseif ( is_numeric( $post_id ) ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Searches every post's _elementor_data meta for form widgets; no core API filters a meta value with LIKE across post types.
 				$post_metas = $wpdb->get_results(
 					$wpdb->prepare(
 						"SELECT pm.meta_value

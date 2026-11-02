@@ -15,6 +15,7 @@ use Uncanny_Automator\App\Application\Mcp\Client_Page_Url_Sanitizer;
 use Uncanny_Automator\App\Events\Dispatcher;
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Authentication\Site_Signing_Key_Manager;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Mcp_Version_Manager;
 use WP_Error;
 
 /**
@@ -178,6 +179,14 @@ class Client_Payload_Service {
 	 * @return string Empty string on failure.
 	 */
 	private function generate_encrypted_package_with_site_identity( array $payload_data, array $site_identity ): string {
+		if ( ! extension_loaded( 'openssl' ) ) {
+			$this->last_error = new WP_Error(
+				'mcp_client_openssl_missing',
+				'The OpenSSL PHP extension is required to encrypt the Agent payload.'
+			);
+			return '';
+		}
+
 		// The inner and outer identity values must describe the same WordPress site key.
 		$payload_data['wordpress_public_key']      = $site_identity['public_key'];
 		$payload_data['wordpress_key_fingerprint'] = $site_identity['fingerprint'];
@@ -246,6 +255,7 @@ class Client_Payload_Service {
 			'site_domain'            => sanitize_text_field( (string) wp_parse_url( get_site_url(), PHP_URL_HOST ) ),
 			'page_url'               => $this->resolve_page_url( $overrides ),
 			'mcp_url'                => esc_url_raw( $this->context->get_mcp_rest_url() ),
+			'mcp_protocol_version'   => Mcp_Version_Manager::get_latest_version(),
 			'bearer_token'           => $bearer_token,
 			'license_key'            => sanitize_text_field( (string) $this->context->get_license_key() ),
 			'license_id'             => absint( $this->context->get_license_id() ),
@@ -412,13 +422,20 @@ class Client_Payload_Service {
 	 * @return string Empty string on failure.
 	 */
 	private function create_encryption_package( array $encrypted, string $agent_key_version, array $site_identity ): string {
+		/*
+		 * The inner AES-CBC format is retained for compatibility with the Agent
+		 * platform. Its integrity boundary is this versioned Ed25519 envelope: the
+		 * canonical signature binds the encrypted key, encrypted payload, key
+		 * version, and WordPress identity fields. Consumers MUST authenticate this
+		 * signature and site-key identity before decrypting either inner value.
+		 */
 		$package = array(
-			'version'                       => self::ENVELOPE_VERSION,
-			'agent_key_version'             => $agent_key_version,
-			'wordpress_public_key'          => $site_identity['public_key'],
-			'wordpress_key_fingerprint'     => $site_identity['fingerprint'],
-			'encrypted_key'                 => $encrypted['encrypted_key'],
-			'encrypted_payload'             => $encrypted['encrypted_payload'],
+			'version'                   => self::ENVELOPE_VERSION,
+			'agent_key_version'         => $agent_key_version,
+			'wordpress_public_key'      => $site_identity['public_key'],
+			'wordpress_key_fingerprint' => $site_identity['fingerprint'],
+			'encrypted_key'             => $encrypted['encrypted_key'],
+			'encrypted_payload'         => $encrypted['encrypted_payload'],
 		);
 
 		// The second identity load detects a site-key change during package generation.

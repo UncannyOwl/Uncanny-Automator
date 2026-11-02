@@ -24,6 +24,7 @@ class Data_Access {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		return $wpdb->get_row(
 			$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}uap_recipe_log WHERE ID = %d", $id ),
 			ARRAY_A
@@ -42,6 +43,7 @@ class Data_Access {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$result = (array) $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT `completed` as `status` 
@@ -75,9 +77,10 @@ class Data_Access {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$results = (array) $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}uap_loop_entries WHERE status IN('in-progress','queued')",
+				"SELECT * FROM {$wpdb->prefix}uap_loop_entries WHERE recipe_log_id = %d AND status IN('in-progress','queued')",
 				$recipe_log_id
 			),
 			ARRAY_A

@@ -1,17 +1,14 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Action\Value_Objects;
 
 use Uncanny_Automator\App\Recipe_Builder\Shared\Interfaces\Parent_Id;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Id;
-use Uncanny_Automator\App\Recipe_Builder\Loop\Value_Objects\Loop_Id;
 
 /**
  * Action Parent ID Value Object.
  *
- * Wraps a Parent_Id interface (Recipe_ID or Loop_ID) to represent the parent container
- * of an action. This allows actions to exist within recipes or within loops.
+ * Wraps a Parent_Id interface to represent the parent container of an action.
  *
  * @since 7.0.0
  */
@@ -22,7 +19,7 @@ class Action_Parent_Id {
 	/**
 	 * Constructor.
 	 *
-	 * @param Parent_Id $parent Parent identifier (Recipe_ID or Loop_ID).
+	 * @param Parent_Id $parent Parent identifier.
 	 */
 	public function __construct( Parent_Id $parent ) {
 		$this->parent = $parent;
@@ -53,14 +50,5 @@ class Action_Parent_Id {
 	 */
 	public function is_recipe(): bool {
 		return $this->parent instanceof Recipe_Id;
-	}
-
-	/**
-	 * Check if parent is a loop.
-	 *
-	 * @return bool True if parent is Loop_ID.
-	 */
-	public function is_loop(): bool {
-		return $this->parent instanceof Loop_Id;
 	}
 }

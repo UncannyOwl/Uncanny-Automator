@@ -99,6 +99,7 @@ class JETCRM_CONTACT_STUTUS_UPDATED {
 		// Get status.
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Jetpack CRM's own table; the plugin offers no API for this query.
 		$status = $wpdb->get_var( $wpdb->prepare( "SELECT zbsc_status FROM `{$wpdb->prefix}zbs_contacts` WHERE ID = %d", $obj_id ) );
 
 		// check contact status

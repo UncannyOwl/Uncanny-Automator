@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects;
 
@@ -59,7 +58,7 @@ class Trigger_Code {
 		// Basic format validation - alphanumeric, underscores, hyphens
 		if ( ! preg_match( '/^[A-Z0-9_-]+$/i', $value ) ) {
 			throw new \InvalidArgumentException(
-				'Trigger code must contain only letters, numbers, underscores, and hyphens: ' . $value
+				'Trigger code must contain only letters, numbers, underscores, and hyphens: ' . esc_html( $value )
 			);
 		}
 	}

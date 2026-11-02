@@ -65,6 +65,9 @@ class Ld_Integration extends \Uncanny_Automator\Integration {
 	public function load() {
 
 		$this->load_shared_hooks();
+		// MCP requests fully load active integrations; keep curriculum hooks here
+		// so core does not need to know LearnDash's builder or permission rules.
+		( new Mcp\Curriculum_Operations() )->register();
 
 		// Old token class — self-guards in __construct() when modern integration exists.
 		new \Uncanny_Automator\Ld_Tokens();
@@ -100,5 +103,4 @@ class Ld_Integration extends \Uncanny_Automator\Integration {
 	public function plugin_active() {
 		return defined( 'LEARNDASH_VERSION' );
 	}
-
 }

@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Infrastructure\WordPress;
 use UncannyPageBuilder\Application\Rendering\LucideRuntimeInitializer;
 use UncannyPageBuilder\Application\Rendering\PublicRuntimeAssetCatalog;
 use UncannyPageBuilder\Application\Rendering\PublishedPageAssets;
+use UncannyPageBuilder\Domain\ArrayShape;
 use UncannyPageBuilder\Domain\Publishing\PageDeactivationFallback;
 use UncannyPageBuilder\Domain\Publishing\PublishedPageArtifact;
 use UncannyPageBuilder\Domain\Shell\ShellMode;
@@ -130,6 +131,7 @@ final class WordPressPublishedFallbackComposer
         foreach ($assets->all() as $asset) {
             $url = $this->versionedUrl($asset['url'], $asset['sha256']);
             if ($asset['kind'] === 'style') {
+                // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- This markup is stored in post_content as the deactivation fallback and must render while the plugin is inactive, so it cannot be enqueued.
                 $styles .= "\n<link rel=\"stylesheet\" data-upb-fallback-asset=\""
                     . self::escapeAttribute($asset['name'])
                     . "\" href=\"" . self::escapeAttribute($url) . '">';
@@ -173,7 +175,7 @@ final class WordPressPublishedFallbackComposer
     ): void {
         $manifest = $fallback->assetsManifest();
         $requested = $manifest['assets'] ?? null;
-        if (!is_array($requested) || $requested === [] || array_is_list($requested)) {
+        if (!is_array($requested) || $requested === [] || ArrayShape::isList($requested)) {
             throw new InvalidPublishedFallbackContent('The Page Builder fallback asset manifest is invalid.');
         }
 
@@ -215,6 +217,7 @@ final class WordPressPublishedFallbackComposer
             $url = 'https://fonts.googleapis.com/css2?' . implode('&', $families) . '&display=swap';
             $markup .= "\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">"
                 . "\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"
+                // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- This markup is stored in post_content as the deactivation fallback and must render while the plugin is inactive, so it cannot be enqueued.
                 . "\n<link rel=\"stylesheet\" data-upb-fallback-fonts=\"google\" href=\""
                 . self::escapeAttribute($url) . '">';
         }

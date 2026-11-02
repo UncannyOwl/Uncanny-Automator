@@ -41,6 +41,7 @@ class Flsupport_Tokens {
 			$trigger_meta = (string) $args['meta'];
 
 			$ticket_token_actions = apply_filters(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 				'uap_fl_support_ticket_tokens',
 				array(
 					'fluent_support/ticket_created',
@@ -52,6 +53,7 @@ class Flsupport_Tokens {
 			);
 
 			$agent_token_actions = apply_filters(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 				'uap_fl_support_agent_tokens',
 				array(
 					'fluent_support/response_added_by_customer',
@@ -62,6 +64,7 @@ class Flsupport_Tokens {
 			);
 
 			$ticket_response_token_actions = apply_filters(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 				'uap_fl_support_ticket_response_tokens',
 				array(
 					'fluent_support/response_added_by_customer',
@@ -282,6 +285,7 @@ class Flsupport_Tokens {
 						$value = $this->get_object_field( $token_field, $this->get_response_object( $response_id ) );
 						break;
 					default:
+						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 						$value = apply_filters( 'uap_fl_support_token_value', $value, $trigger_id, $pieces );
 				}
 			}

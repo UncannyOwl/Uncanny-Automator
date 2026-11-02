@@ -7,6 +7,10 @@
 
 namespace Uncanny_Automator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Admin_Tools_Status_Table {
 
 	public function __construct() {

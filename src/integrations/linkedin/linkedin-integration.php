@@ -89,7 +89,9 @@ class Linkedin_Integration extends \Uncanny_Automator\App_Integrations\App_Integ
 		add_action( 'wp_ajax_automator_linkedin_get_pages', array( $this->helpers, 'get_pages_ajax' ) );
 
 		// Refresh token expiration notice.
-		add_action( 'admin_init', array( $this->helpers, 'check_refresh_token_expiration' ) );
+		if ( is_admin() && ! in_array( 'linkedin-token', automator_notice_center()->ids(), true ) ) {
+			automator_notice_center()->add( new Linkedin_Token_Notice( $this->helpers ) );
+		}
 
 		// Scheduled post hooks (publish, unschedule).
 		$scheduled_posts = new Linkedin_Scheduled_Posts_Manager( $this->helpers, $this->dependencies->api );

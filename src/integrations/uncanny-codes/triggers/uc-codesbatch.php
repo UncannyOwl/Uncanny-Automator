@@ -170,6 +170,7 @@ class UC_CODESBATCH extends \Uncanny_Automator\Recipe\Trigger {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uncanny Codes' own table; the plugin offers no API for this query.
 		return (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT g.id

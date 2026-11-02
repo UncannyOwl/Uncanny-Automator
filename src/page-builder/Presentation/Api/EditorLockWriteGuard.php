@@ -8,6 +8,7 @@ use UncannyPageBuilder\Api\PermissionChecker;
 use UncannyPageBuilder\Application\EditorLock\CheckHumanWriteOwnership;
 use UncannyPageBuilder\Domain\EditorLock\EditorLockStoreInterface;
 use UncannyPageBuilder\Domain\EditorLock\EditorOwnershipStatus;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 
 /**
  * Cookie-authenticated write gate for Page Builder editor mutations.
@@ -67,7 +68,7 @@ final class EditorLockWriteGuard
 
     private function logRejectedWrite(int $postId, string $scope, string $reason): void
     {
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] Editor write rejected target=%d actor=%d scope=%s reason=%s',
             $postId,
             (int) get_current_user_id(),

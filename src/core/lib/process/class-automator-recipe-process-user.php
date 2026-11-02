@@ -150,7 +150,10 @@ class Automator_Recipe_Process_User {
 	 */
 	private function normalize_trigger_args( array $args ): array {
 
-		if ( ! isset( $args['is_signed_in'] ) ) {
+		// A caller can vouch that the user is signed in, never that they are not: a missing or
+		// false value goes through the sign-in rules, where a user-type trigger counts as signed in.
+		// AffiliateWP's count triggers pass false and run their Logged-in recipes for the affiliate.
+		if ( empty( $args['is_signed_in'] ) ) {
 			$args['is_signed_in'] = Automator()->is_user_signed_in( $args );
 		}
 
@@ -582,7 +585,8 @@ class Automator_Recipe_Process_User {
 
 		global $wpdb;
 
-		return $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Pass-through for queries that callers prepare with $wpdb->prepare() on Automator's own tables; live state read.
+		return $wpdb->get_var( $query );
 	}
 
 	/**

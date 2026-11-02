@@ -91,10 +91,10 @@ class Claude_Chat_Generate extends App_Action {
 	public function options() {
 
 		// translators: 1: Link to the documentation, 2: External link icon
-		$description_max_tokens = sprintf( esc_html_x( 'The maximum number of tokens to generate before stopping. Note that Claude models may stop before reaching this maximum. This parameter only specifies the absolute maximum number of tokens to generate. Different models have different maximum values for this parameter. %s', 'Claude', 'uncanny-automator' ), '<a href="https://docs.anthropic.com/en/docs/about-claude/models/overview" target="_blank">' . esc_html_x( 'Learn more', 'Claude', 'uncanny-automator' ) . '</a> <uo-icon id="external-link"></uo-icon>.' ); // phpcs:ignore Uncanny_Automator.Strings.SentenceCase.PotentialCaseIssue
+		$description_max_tokens = sprintf( esc_html_x( 'The maximum number of tokens to generate before stopping. Note that Claude models may stop before reaching this maximum. This parameter only specifies the absolute maximum number of tokens to generate. Different models have different maximum values for this parameter. %s', 'Claude', 'uncanny-automator' ), '<a href="https://docs.anthropic.com/en/docs/about-claude/models/overview" target="_blank">' . esc_html_x( 'Learn more', 'Claude', 'uncanny-automator' ) . '</a> <uas-icon code="arrow-up-right-from-square"></uas-icon>.' ); // phpcs:ignore Uncanny_Automator.Strings.SentenceCase.PotentialCaseIssue
 
 		// translators: 1: Link to the documentation, 2: External link icon
-		$description_temperature = sprintf( esc_html_x( 'Amount of randomness injected into the response. Defaults to 1.0. Ranges from 0.0 to 1.0. Use temperature closer to 0.0 for analytical / multiple choice, and closer to 1.0 for creative and generative tasks. %s', 'Claude', 'uncanny-automator' ), '<a href="https://docs.anthropic.com/en/api/complete#body-temperature" target="_blank">' . esc_html_x( 'Learn more', 'Claude', 'uncanny-automator' ) . '</a> <uo-icon id="external-link"></uo-icon>.' );
+		$description_temperature = sprintf( esc_html_x( 'Amount of randomness injected into the response. Defaults to 1.0. Ranges from 0.0 to 1.0. Use temperature closer to 0.0 for analytical / multiple choice, and closer to 1.0 for creative and generative tasks. %s', 'Claude', 'uncanny-automator' ), '<a href="https://docs.anthropic.com/en/api/complete#body-temperature" target="_blank">' . esc_html_x( 'Learn more', 'Claude', 'uncanny-automator' ) . '</a> <uas-icon code="arrow-up-right-from-square"></uas-icon>.' );
 
 		$description_system = esc_html_x( 'Add context or instructions for Claude to follow.', 'Claude', 'uncanny-automator' );
 
@@ -213,6 +213,7 @@ class Claude_Chat_Generate extends App_Action {
 		);
 
 		$payload_builder
+			// phpcs:ignore PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- The site owner connects their own Claude account; this integration calls the provider's API for them.
 			->endpoint( 'https://api.anthropic.com/v1/messages' )
 			->body( 'system', $system_content )
 			->model( $model )

@@ -6,6 +6,7 @@ use Uncanny_Automator\App\Recipe_Builder\Condition\Registry\WP_Action_Condition_
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
 use Uncanny_Automator\App\Plan\Services\Plan_Service;
 use Uncanny_Automator\App\Recipe_Builder\Services\Availability\Availability_Data;
+use Uncanny_Automator\App\Recipe_Builder\Services\Availability\Integration_Plugin_Presence;
 use Uncanny_Automator\App\Recipe_Builder\Services\Availability\Availability_Checker;
 use Uncanny_Automator\App\Infrastructure\Search\Services\Rag\Rag_Search_Service;
 use WP_Error;
@@ -150,6 +151,7 @@ class Condition_Registry_Service {
 			->code( $condition_code )
 			->type( 'condition' )
 			->integration_registered( ! empty( $integration ) )
+			->plugin_installed( empty( $integration ) && ( new Integration_Plugin_Presence() )->is_installed( $integration_code ) )
 			->feature_registered( true ) // Conditions don't have separate registration check
 			->app( ! empty( $integration['settings_url'] ) )
 			->connected( ! empty( $integration['connected'] ) )
@@ -191,12 +193,14 @@ class Condition_Registry_Service {
 				$all_conditions = array( $integration => $all_conditions[ $integration ] ?? array() );
 			}
 
-			$conditions_list = array();
+			$conditions_list   = array();
+			$integration_names = array_column( $this->condition_registry->get_available_integrations(), 'name', 'code' );
 
 			foreach ( $all_conditions as $integration_code => $conditions ) {
 				foreach ( $conditions as $condition_code => $condition ) {
 					$conditions_list[] = array(
 						'integration_code' => $integration_code,
+						'integration_name' => $integration_names[ $integration_code ] ?? $integration_code,
 						'condition_code'   => $condition_code,
 						'name'             => $condition['name'] ?? '',
 						'dynamic_name'     => $condition['dynamic_name'] ?? '',
@@ -364,6 +368,27 @@ class Condition_Registry_Service {
 	public function get_condition_field_schema( string $integration_code, string $condition_code ): array {
 		try {
 			return $this->condition_registry->get_condition_fields( $integration_code, $condition_code );
+		} catch ( \Throwable $e ) {
+			return array();
+		}
+	}
+
+	/**
+	 * Get the raw flat field-config list for a filter_condition.
+	 *
+	 * Pure pass-through to WP_Action_Condition_Registry::get_raw_condition_fields(),
+	 * which reads the legacy `automator_pro_actions_conditions_fields` filter.
+	 * Distinct from get_condition_field_schema() — that returns JSON Schema
+	 * for MCP consumers; this returns the raw legacy field shape for FE
+	 * rendering. Both intentionally coexist.
+	 *
+	 * @param string $integration_code Integration code (e.g. 'WP').
+	 * @param string $condition_code Condition code (e.g. 'WP_USER_LOGGED_IN').
+	 * @return array Flat list of raw field configs; empty when condition not found.
+	 */
+	public function get_raw_condition_fields( string $integration_code, string $condition_code ): array {
+		try {
+			return $this->condition_registry->get_raw_condition_fields( $integration_code, $condition_code );
 		} catch ( \Throwable $e ) {
 			return array();
 		}

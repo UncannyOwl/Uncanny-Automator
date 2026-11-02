@@ -8,6 +8,7 @@ use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integrat
 use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integration_Type;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integration_Details;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integration_Items;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integration_Block_Modifiers;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integration_Tokens;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integration_Connected;
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Dependency_Evaluatable;
@@ -71,6 +72,13 @@ class Integration implements Dependency_Evaluatable, Scope_Tag_Evaluatable {
 	private Integration_Items $items;
 
 	/**
+	 * The integration block modifiers.
+	 *
+	 * @var Integration_Block_Modifiers<array>
+	 */
+	private Integration_Block_Modifiers $block_modifiers;
+
+	/**
 	 * The integration tokens.
 	 *
 	 * @var Integration_Tokens<array>
@@ -107,13 +115,14 @@ class Integration implements Dependency_Evaluatable, Scope_Tag_Evaluatable {
 		// Any invalid data will throw an exception here.
 		// This also makes the class immutable after creation.
 		// Any changes require creating a new instance with new data.
-		$this->code          = new Integration_Code( $config->get_code() );
-		$this->name          = new Integration_Name( $config->get_name() );
-		$this->required_tier = new Integration_Required_Tier( $config->get_required_tier() );
-		$this->type          = new Integration_Type( $config->get_type() );
-		$this->details       = new Integration_Details( $config->get_details() );
-		$this->items         = new Integration_Items( $config->get_items() );
-		$this->tokens        = new Integration_Tokens( $config->get_tokens() );
+		$this->code            = new Integration_Code( $config->get_code() );
+		$this->name            = new Integration_Name( $config->get_name() );
+		$this->required_tier   = new Integration_Required_Tier( $config->get_required_tier() );
+		$this->type            = new Integration_Type( $config->get_type() );
+		$this->details         = new Integration_Details( $config->get_details() );
+		$this->items           = new Integration_Items( $config->get_items() );
+		$this->block_modifiers = new Integration_Block_Modifiers( $config->get_block_modifiers() );
+		$this->tokens          = new Integration_Tokens( $config->get_tokens() );
 
 		// Include connected status for integrations that require connection.
 		if ( null !== $config->get_connected() ) {
@@ -175,6 +184,15 @@ class Integration implements Dependency_Evaluatable, Scope_Tag_Evaluatable {
 	 */
 	public function get_items(): Integration_Items {
 		return $this->items;
+	}
+
+	/**
+	 * Get integration block modifiers.
+	 *
+	 * @return Integration_Block_Modifiers Integration block modifiers.
+	 */
+	public function get_block_modifiers(): Integration_Block_Modifiers {
+		return $this->block_modifiers;
 	}
 
 	/**
@@ -317,16 +335,21 @@ class Integration implements Dependency_Evaluatable, Scope_Tag_Evaluatable {
 	 */
 	private function build_array( bool $rest_format ): array {
 		$data = array(
-			'code'          => $this->code->get_value(),
-			'name'          => $this->name->get_value(),
-			'required_tier' => $this->required_tier->get_value(),
-			'type'          => $this->type->get_value(),
-			'details'       => $rest_format ? $this->details->to_rest() : $this->details->to_array(),
-			'items'         => $rest_format ? $this->items->to_rest() : $this->items->to_array(),
-			'tokens'        => $rest_format ? $this->tokens->to_rest() : $this->tokens->to_array(),
+			'code'            => $this->code->get_value(),
+			'name'            => $this->name->get_value(),
+			'required_tier'   => $this->required_tier->get_value(),
+			'type'            => $this->type->get_value(),
+			'details'         => $rest_format ? $this->details->to_rest() : $this->details->to_array(),
+			'items'           => $rest_format ? $this->items->to_rest() : $this->items->to_array(),
+			'block_modifiers' => $rest_format ? $this->block_modifiers->to_rest() : $this->block_modifiers->to_array(),
+			'tokens'          => $rest_format ? $this->tokens->to_rest() : $this->tokens->to_array(),
 		);
 
 		// Include connected status for integrations that require connection.
+		// REST format excludes it: the unscoped ModelIntegrationAppSchema is .strict()
+		// and does NOT carry `connected`. The scoped variant
+		// (ModelIntegrationAppScopedSchema) adds `connected` — and
+		// Integration_Scope_Resolver::build_scoped_data() stamps it there.
 		if ( ! $rest_format && $this->requires_connection() ) {
 			$data['connected'] = $this->connected->get_value();
 		}

@@ -415,6 +415,7 @@ class WhatsApp_Helpers extends App_Helpers {
 	public function get_action_data_by_wamid( $wamid = '' ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 		$wamid_row = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->prefix}uap_action_log_meta WHERE meta_key = %s AND meta_value = %s",
@@ -427,6 +428,7 @@ class WhatsApp_Helpers extends App_Helpers {
 			return array();
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 		$meta = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->prefix}uap_action_log_meta WHERE meta_key = %s AND automator_action_log_id = %d AND automator_action_id = %d",

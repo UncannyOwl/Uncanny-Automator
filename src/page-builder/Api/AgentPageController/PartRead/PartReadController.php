@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Api\AgentPageController\PartRead;
 
 use UncannyPageBuilder\Api\AgentTextResponse;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 
 /**
  * Routes unified read_part requests to section or global-part readers.
@@ -22,7 +23,7 @@ final class PartReadController
         try {
             return $this->readRequest($request);
         } catch (\Throwable $failure) {
-            error_log(sprintf('[Uncanny Page Builder] read_part failed (%s).', $failure::class));
+            DiagnosticLog::write(sprintf('[Uncanny Page Builder] read_part failed (%s).', $failure::class));
 
             return $this->textToolError('read_part', 500, 'read_failed', [
                 'NEXT STEP',

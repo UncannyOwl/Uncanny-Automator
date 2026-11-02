@@ -33,13 +33,6 @@ use WP_Error;
 class Action_Builder {
 
 	/**
-	 * Async config converter dependency.
-	 *
-	 * @var Async_Config_Converter
-	 */
-	private $async_converter;
-
-	/**
 	 * Field label resolver dependency.
 	 *
 	 * @var Field_Label_Resolver
@@ -56,32 +49,29 @@ class Action_Builder {
 	/**
 	 * Constructor.
 	 *
-	 * @param Async_Config_Converter     $async_converter   Async config converter.
 	 * @param Field_Label_Resolver|null  $label_resolver    Optional label resolver (for testing).
 	 * @param Item_Sentence_Composer|null $sentence_composer Optional sentence composer (for testing).
 	 */
 	public function __construct(
-		Async_Config_Converter $async_converter,
 		?Field_Label_Resolver $label_resolver = null,
 		?Item_Sentence_Composer $sentence_composer = null
 	) {
-		$this->async_converter  = $async_converter;
-		$this->label_resolver   = $label_resolver ?? new Field_Label_Resolver();
+		$this->label_resolver    = $label_resolver ?? new Field_Label_Resolver();
 		$this->sentence_composer = $sentence_composer ?? new Item_Sentence_Composer();
 	}
 
 	/**
 	 * Create action instance from parameters and definition.
 	 *
-	 * @param int      $recipe_id Recipe ID.
-	 * @param string   $action_code Action code.
-	 * @param array    $config User configuration.
-	 * @param array    $action_definition Action definition from registry.
-	 * @param array    $async_config Async configuration.
-	 * @param int|null $parent_id Parent ID (defaults to recipe_id if not provided).
+	 * @param int         $recipe_id         Recipe ID.
+	 * @param string      $action_code       Action code.
+	 * @param array       $config            User configuration.
+	 * @param array       $action_definition Action definition from registry.
+	 * @param int|null    $parent_id         Parent ID (defaults to recipe_id if not provided).
+	 * @param string|null $path_code         Optional path code (branch placement).
 	 * @return Action|\WP_Error Action instance or error.
 	 */
-	public function create( int $recipe_id, string $action_code, array $config, array $action_definition, array $async_config = array(), ?int $parent_id = null ) {
+	public function create( int $recipe_id, string $action_code, array $config, array $action_definition, ?int $parent_id = null, ?string $path_code = null ) {
 
 		try {
 
@@ -128,13 +118,6 @@ class Action_Builder {
 				$meta['sentence_human_readable'] = $sentence_hr_default;
 			}
 
-			// Add async configuration to meta if provided
-			if ( ! empty( $async_config ) && is_array( $async_config ) ) {
-				// Convert async configuration to flat structure for meta storage
-				$async_meta = $this->async_converter->convert_to_meta( $async_config );
-				$meta       = array_merge( $meta, $async_meta );
-			}
-
 			// Create action instance
 			$action_config = ( new Action_Config() )
 				->id( null ) // New action, no ID yet
@@ -145,7 +128,8 @@ class Action_Builder {
 				->meta_code( $meta_code )
 				->user_type( $action_type )
 				->status( Action_Status::DRAFT )
-				->meta( $meta );
+				->meta( $meta )
+				->path_code( $path_code );
 
 			return new Action( $action_config );
 
@@ -166,11 +150,10 @@ class Action_Builder {
 	 *
 	 * @param Action      $existing_action Current action instance.
 	 * @param array       $new_config New configuration to merge.
-	 * @param array       $async_config Async configuration.
 	 * @param string|null $status Optional status to set ('draft' or 'publish').
 	 * @return Action Updated action instance.
 	 */
-	public function update( Action $existing_action, array $new_config, array $async_config = array(), ?string $status = null ): Action {
+	public function update( Action $existing_action, array $new_config, ?string $status = null ): Action {
 
 		$new_config = $this->strip_sentence_artifacts( $new_config );
 
@@ -179,30 +162,6 @@ class Action_Builder {
 
 		// Merge new config with existing meta (preserving registry fields)
 		$updated_meta = array_merge( $current_meta, $new_config );
-
-		// Handle async configuration update
-		if ( ! empty( $async_config ) ) {
-			// Convert async configuration to meta format and merge
-			$async_meta   = $this->async_converter->convert_to_meta( $async_config );
-			$updated_meta = array_merge( $updated_meta, $async_meta );
-		}
-
-		if ( isset( $async_config ) && empty( $async_config ) ) {
-			// Empty async config means remove async settings
-			$async_keys_to_remove = array(
-				'async_mode',
-				'async_delay_number',
-				'async_delay_unit',
-				'async_schedule_date',
-				'async_schedule_time',
-				'async_custom',
-				'async_sentence',
-			);
-			// Remove async keys from updated meta.
-			foreach ( $async_keys_to_remove as $key ) {
-				unset( $updated_meta[ $key ] );
-			}
-		}
 
 		// Get configuration fields and extract labels using shared resolver.
 		$action_code          = $existing_action->get_action_code()->get_value();
@@ -242,6 +201,11 @@ class Action_Builder {
 		// Preserve parent_id if it exists
 		if ( null !== $existing_action->get_parent_id() ) {
 			$config->parent_id( $existing_action->get_parent_id()->get_parent() );
+		}
+
+		// Preserve path_code (branch placement) across a field update.
+		if ( null !== $existing_action->get_path_code() ) {
+			$config->path_code( $existing_action->get_path_code()->get_value() );
 		}
 
 		$status_obj      = $existing_action->get_status();

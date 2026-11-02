@@ -74,6 +74,7 @@ class Events_Manager_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Events Manager's own table; the plugin offers no API for this query.
 		$all_events = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT event_id,event_name FROM {$wpdb->prefix}em_events WHERE event_status = %d ORDER BY event_name",
@@ -107,6 +108,7 @@ class Events_Manager_Helpers {
 			'relevant_tokens' => $default_tokens,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_em_events', $option );
 	}
 }

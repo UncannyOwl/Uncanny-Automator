@@ -1,7 +1,4 @@
 <?php
-
-namespace Uncanny_Automator;
-
 /**
  * Connect your site
  * Settings > General > License > Connect your site
@@ -17,14 +14,22 @@ namespace Uncanny_Automator;
  * $disconnect_site_url   URL to disconnect the site
  */
 
+namespace Uncanny_Automator;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
+
 ?>
 
 <div class="uap-settings-panel-content-subtitle">
-	<?php esc_html_e( 'Access app integrations', 'uncanny-automator' ); ?>
+	<?php esc_html_e( 'Free account', 'uncanny-automator' ); ?>
 </div>
 
 <p>
-	<?php esc_html_e( 'Creating a free account gives you 250 app credits to try out app integrations like Google Sheets, Slack, Facebook, MailChimp and more.', 'uncanny-automator' ); ?>
+	<?php esc_html_e( 'Connecting your AI to this site takes a free Uncanny Automator account. It also gives you 250 app credits to try external apps like Slack and Google Sheets.', 'uncanny-automator' ); ?>
 </p>
 
 <?php
@@ -36,7 +41,7 @@ if ( $site_is_connected ) {
 
 	?>
 
-	<uo-alert 
+	<uas-alert 
 		type="success" 
 		heading="<?php esc_attr_e( 'Site connected', 'uncanny-automator' ); ?>"
 	>
@@ -45,11 +50,11 @@ if ( $site_is_connected ) {
 			<?php echo esc_html( $customer_email ); ?>
 		</p>
 
-		<uo-button size="small" color="secondary" href="<?php echo esc_url( $disconnect_site_url ); ?>">
+		<uas-button size="sm" color="secondary" href="<?php echo esc_url( $disconnect_site_url ); ?>">
 			<?php esc_html_e( 'Disconnect site', 'uncanny-automator' ); ?>
-		</uo-button>
+		</uas-button>
 
-	</uo-alert>
+	</uas-alert>
 
 	<?php
 
@@ -57,7 +62,7 @@ if ( $site_is_connected ) {
 
 	?>
 
-	<uo-button href="<?php echo esc_url( $connect_site_url ); ?>"><uo-icon id="badge-check"></uo-icon> <?php esc_html_e( 'Connect your site', 'uncanny-automator' ); ?></uo-button>
+	<uas-button href="<?php echo esc_url( $connect_site_url ); ?>"><uas-icon code="badge-check"></uas-icon> <?php esc_html_e( 'Create a free account', 'uncanny-automator' ); ?></uas-button>
 
 	<?php
 

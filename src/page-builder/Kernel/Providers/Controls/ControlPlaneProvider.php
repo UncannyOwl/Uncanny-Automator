@@ -70,6 +70,7 @@ use UncannyPageBuilder\Infrastructure\i18\strings\DeleteConfirmationModalPresent
 use UncannyPageBuilder\Infrastructure\i18\strings\CanvasSectionActionControlStrings;
 use UncannyPageBuilder\Infrastructure\i18\strings\CanvasVisibleControlStrings;
 use UncannyPageBuilder\Infrastructure\i18\strings\GlobalPartModalPresentationStrings;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 use UncannyPageBuilder\Kernel\Container;
 use UncannyPageBuilder\Kernel\Contracts\ServiceProviderInterface;
 
@@ -278,7 +279,7 @@ final class ControlPlaneProvider implements ServiceProviderInterface
 
     private function reportRegistrationFailure(\Throwable $error): void
     {
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] Control registration unavailable (%s).',
             $error::class,
         ));
@@ -1326,12 +1327,12 @@ final class ControlPlaneProvider implements ServiceProviderInterface
                 ];
             }
 
-            throw new \RuntimeException(sprintf('Missing agent tool contract for "%s".', $toolName));
+            throw new \RuntimeException(sprintf('Missing agent tool contract for "%s".', esc_html($toolName)));
         }
 
         $tool = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         if (!is_array($tool)) {
-            throw new \RuntimeException(sprintf('Invalid agent tool contract for "%s".', $toolName));
+            throw new \RuntimeException(sprintf('Invalid agent tool contract for "%s".', esc_html($toolName)));
         }
 
         return [

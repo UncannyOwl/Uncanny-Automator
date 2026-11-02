@@ -72,21 +72,28 @@ class Trigger_Query {
 	/**
 	 * Find triggers from WordPress database.
 	 *
-	 * Uses a transient cache to avoid running the 4-table JOIN on every request.
-	 * Cache is invalidated when the Automator cache handler clears `automator_actionified_triggers`.
+	 * When caching is enabled, a short transient avoids running the 4-table JOIN on
+	 * every request (invalidated when the Automator cache handler clears
+	 * `automator_actionified_triggers`). When caching is disabled the database is
+	 * queried directly and no transient is read or written.
 	 *
 	 * @return array Array of triggers.
 	 */
 	private function find_triggers() {
 
-		$cached = get_transient( self::CACHE_KEY );
+		$cache_enabled = Automator()->cache->is_cache_enabled();
 
-		if ( false !== $cached ) {
-			return (array) $cached;
+		if ( $cache_enabled ) {
+			$cached = get_transient( self::CACHE_KEY );
+
+			if ( false !== $cached ) {
+				return (array) $cached;
+			}
 		}
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Joins core posts and postmeta; no WordPress API returns this.
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT
@@ -115,7 +122,9 @@ class Trigger_Query {
 
 		$results = (array) $results;
 
-		set_transient( self::CACHE_KEY, $results, self::CACHE_TTL );
+		if ( $cache_enabled ) {
+			set_transient( self::CACHE_KEY, $results, self::CACHE_TTL );
+		}
 
 		return $results;
 	}

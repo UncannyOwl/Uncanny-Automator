@@ -127,6 +127,7 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 				stm_lms_add_user_lesson( compact( 'user_id', 'course_id', 'lesson_id', 'start_time', 'end_time' ) );
 				\STM_LMS_Course::update_course_progress( $user_id, $course_id );
 
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- MasterStudy LMS's own hook.
 				do_action( 'stm_lms_lesson_passed', $user_id, $lesson_id );
 
 				delete_user_meta( $user_id, "stm_lms_course_started_{$course_id}_{$lesson_id}" );
@@ -150,6 +151,7 @@ class MASTERSTUDY_MARKCOURSECOMPLETE {
 				\STM_LMS_Course::update_course_progress( $user_id, $course_id );
 
 				$user_quiz['progress'] = round( $user_quiz['progress'], 1 );
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- MasterStudy LMS's own hook.
 				do_action( 'stm_lms_quiz_' . $status, $user_id, $quiz_id, $user_quiz['progress'] );
 
 			}

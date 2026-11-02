@@ -32,9 +32,9 @@ class WP_USERROLEADDED extends \Uncanny_Automator\Recipe\Trigger {
 	protected function setup_trigger() {
 		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 
-		// translators: %1$s is a role.
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Role */
 				esc_html_x( '{{A specific:%1$s}} role is added to the user', 'WordPress', 'uncanny-automator' ),
 				$this->get_trigger_meta()
 			)

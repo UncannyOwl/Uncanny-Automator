@@ -17,6 +17,7 @@ use Uncanny_Automator\App\Feature_State\Domain\Pending_First_Use_Allocation;
  */
 final class Mcp_Allocation_Facts_Response {
 
+	private ?bool $phase_1_lite_enrolled;
 	private int $active_allocations;
 	private int $used_allocations;
 	private int $expired_allocations;
@@ -29,14 +30,17 @@ final class Mcp_Allocation_Facts_Response {
 	 * @param int    $expired_allocations Expired allocation count.
 	 * @param string $observed_at         RFC 3339 observation time.
 	 * @param string|null $pending_first_use_allocation Pending grant kind.
+	 * @param bool|null $phase_1_lite_enrolled Verified WordPress enrollment.
 	 */
 	private function __construct(
 		int $active_allocations,
 		int $used_allocations,
 		int $expired_allocations,
 		string $observed_at,
-		?string $pending_first_use_allocation
+		?string $pending_first_use_allocation,
+		?bool $phase_1_lite_enrolled
 	) {
+		$this->phase_1_lite_enrolled        = $phase_1_lite_enrolled;
 		$this->active_allocations           = $active_allocations;
 		$this->used_allocations             = $used_allocations;
 		$this->expired_allocations          = $expired_allocations;
@@ -109,7 +113,12 @@ final class Mcp_Allocation_Facts_Response {
 			throw new \UnexpectedValueException( 'The MCP allocation observation time is invalid.' );
 		}
 
-		return new self( $active, $used, $expired, $observed_at, $pending );
+		$enrolled = $response['phase_1_lite_enrolled'] ?? null;
+		if ( null !== $enrolled && ! is_bool( $enrolled ) ) {
+			throw new \UnexpectedValueException( 'The WordPress Lite enrollment fact is invalid.' );
+		}
+
+		return new self( $active, $used, $expired, $observed_at, $pending, $enrolled );
 	}
 
 	/**
@@ -145,6 +154,11 @@ final class Mcp_Allocation_Facts_Response {
 	 */
 	public function pending_first_use_allocation(): ?string {
 		return $this->pending_first_use_allocation;
+	}
+
+	/** @return bool|null Verified WordPress enrollment, if supplied. */
+	public function phase_1_lite_enrolled(): ?bool {
+		return $this->phase_1_lite_enrolled;
 	}
 
 	/**

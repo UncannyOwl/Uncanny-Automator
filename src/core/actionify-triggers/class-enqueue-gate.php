@@ -127,7 +127,7 @@ class Enqueue_Gate {
 	/**
 	 * Whether any live recipe on this trigger watches the fired value.
 	 *
-	 * recipes_from_trigger_code() is Trigger_Index-backed (cache/option, no
+	 * recipes_from_trigger_code() is Trigger_Index-backed (one stored option, no
 	 * recipe-runner boot), so each non-matching write costs an O(1) lookup plus a
 	 * tiny loop — no queue item, no loopback. This is the same source the engine
 	 * matches against at drain, so an empty result here means the drain would

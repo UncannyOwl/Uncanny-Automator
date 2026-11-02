@@ -195,6 +195,7 @@ class Stripe_Webhooks extends App_Webhooks {
 		$this->request_body = $action_params[0];
 
 		// Fire the incoming webhook action.
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is the automator_stripe_incoming_webhook constant.
 		do_action( $action_name, $this->request_body );
 
 		// Process Stripe-specific events
@@ -281,6 +282,7 @@ class Stripe_Webhooks extends App_Webhooks {
 		$invoice = $this->request_body['data']['object'];
 
 		foreach ( $invoice['lines']['data'] as $line_item ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is an automator_stripe_ constant.
 			do_action( self::INVOICE_ITEM_PAID_ACTION, $line_item, $invoice, $this->request_body );
 		}
 	}
@@ -298,6 +300,7 @@ class Stripe_Webhooks extends App_Webhooks {
 		$invoice = $this->request_body['data']['object'];
 
 		foreach ( $invoice['lines']['data'] as $line_item ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is an automator_stripe_ constant.
 			do_action( self::INVOICE_ITEM_PAYMENT_FAILED_ACTION, $line_item, $invoice, $this->request_body );
 		}
 	}
@@ -330,6 +333,7 @@ class Stripe_Webhooks extends App_Webhooks {
 		}
 
 		foreach ( $session['line_items']['data'] as $line_item ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is one of the automator_stripe_line_item_ constants.
 			do_action( $hook, $line_item, $session, $this->request_body );
 		}
 	}

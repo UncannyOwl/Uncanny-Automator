@@ -31,6 +31,7 @@
  */
 
 defined('ABSPATH') || exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
 
 $typographyNamePattern = $typographyNamePattern ?? 'ds_typography[roles][%1$s][%2$s]';
 $tokenNamePattern = $tokenNamePattern ?? 'ds_tokens[%s]';

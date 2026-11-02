@@ -120,6 +120,7 @@ class Slack_App_Helpers extends App_Helpers {
 			$message['icon_url'] = $icon;
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_slack_maybe_customize_bot', $message );
 	}
 

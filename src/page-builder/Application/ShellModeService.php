@@ -50,6 +50,12 @@ final class ShellModeService
         );
     }
 
+    /** Reads mode identity without resolving or repairing header/footer slots. */
+    public function modeForPage(int $pageId): ShellMode
+    {
+        return $this->repository->getForPage($pageId) ?? $this->repository->getSiteDefault();
+    }
+
     /**
      * Whether the page's shell slot resolves to an actual part. Falls back
      * to sitewide existence when no per-page resolver is wired (tests).

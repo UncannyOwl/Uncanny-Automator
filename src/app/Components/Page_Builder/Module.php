@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Components\Page_Builder;
 
+use Uncanny_Automator\App\Presentation\Admin\Page_Builder_Notice;
+
 use Uncanny_Automator\App\Application\Page_Builder\Can_Load_Page_Builder;
 use Uncanny_Automator\App\Infrastructure\Page_Builder\Page_Builder_Settings;
 use UncannyPageBuilder\Infrastructure\Persistence\SourceTransactionsUnavailableException;
@@ -53,22 +55,22 @@ class Module {
 	const PAGE_OWNERSHIP_META_KEY = '_uncanny_page_builder_owned';
 
 	/**
-	 * AJAX action that persists a notice dismissal.
-	 *
-	 * @var string
-	 */
-	const DISMISS_AJAX_ACTION = 'automator_page_builder_notice_dismiss';
-
-	/**
-	 * User meta key that stores the fingerprint of the notice this user
-	 * dismissed. Scoped per user and per site (stored through
-	 * update_user_option, so multisite gets a blog-prefixed key) -- one admin
-	 * dismissing a runtime-failure notice must not hide it from every other
-	 * admin, or from the same admin on a different site.
+	 * User option that held the fingerprint of the notice this user dismissed
+	 * before the notice center (per user, per site). Page_Builder_Notice still
+	 * honours it; new dismissals go to the center.
 	 *
 	 * @var string
 	 */
 	const DISMISSED_META_KEY = 'automator_page_builder_notice_dismissed';
+
+	/**
+	 * The statuses in which Page Builder cannot run and the admin is told.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var string[]
+	 */
+	const UNAVAILABLE_STATUSES = array( 'standalone_runtime_active', 'standalone_bridge_incompatible', 'module_class_missing', 'boot_failed', 'dom_extension_missing' );
 
 	/**
 	 * Page Builder table suffixes, mirrored from SchemaManager so this file
@@ -144,28 +146,9 @@ class Module {
 		add_action( 'plugins_loaded', array( $this, 'boot' ), 20 );
 		add_filter( 'site_status_tests', array( $this, 'register_site_health_test' ) );
 		add_filter( 'automator_system_report_get', array( $this, 'add_system_report' ) );
-		add_action( 'automator_show_internal_admin_notice', array( $this, 'register_admin_notice' ) );
-		add_action( 'wp_ajax_' . self::DISMISS_AJAX_ACTION, array( $this, 'ajax_dismiss_notice' ) );
-	}
 
-	/**
-	 * Register the renderer on the selected Automator and Page Builder routes.
-	 *
-	 * Automator removes normal admin notices before firing its internal-notice
-	 * hook. Registering the WordPress notice here restores it at the correct
-	 * render point without showing it throughout wp-admin.
-	 *
-	 * @return void
-	 */
-	public function register_admin_notice(): void {
-		try {
-			if ( ! $this->is_notice_route() ) {
-				return;
-			}
-
-			add_action( 'admin_notices', array( $this, 'render_admin_notice' ) );
-		} catch ( \Throwable $throwable ) {
-			return;
+		if ( is_admin() && ! in_array( 'page-builder-unavailable', automator_notice_center()->ids(), true ) ) {
+			automator_notice_center()->add( new Page_Builder_Notice( $this ) );
 		}
 	}
 
@@ -177,7 +160,7 @@ class Module {
 	 *
 	 * @return bool
 	 */
-	private function is_notice_route(): bool {
+	public function is_notice_route(): bool {
 		$post_type = automator_request_input( 'post_type' );
 
 		if ( in_array( $post_type, array( AUTOMATOR_POST_TYPE_RECIPE, 'upb_global_part' ), true ) ) {
@@ -215,12 +198,15 @@ class Module {
 				define( 'AUTOMATOR_PAGE_BUILDER_MODULE_VERSION', self::MODULE_VERSION );
 			}
 			if ( ! defined( 'UNCANNY_PB_VERSION' ) ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Public constant of the embedded Page Builder runtime, kept for compatibility.
 				define( 'UNCANNY_PB_VERSION', self::MODULE_VERSION );
 			}
 			if ( ! defined( 'UNCANNY_PB_PATH' ) ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Public constant of the embedded Page Builder runtime, kept for compatibility.
 				define( 'UNCANNY_PB_PATH', UA_ABSPATH . 'src/page-builder/' );
 			}
 			if ( ! defined( 'UNCANNY_PB_URL' ) ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Public constant of the embedded Page Builder runtime, kept for compatibility.
 				define( 'UNCANNY_PB_URL', plugin_dir_url( AUTOMATOR_BASE_FILE ) . 'src/page-builder/' );
 			}
 
@@ -459,117 +445,15 @@ class Module {
 	}
 
 	/**
-	 * Show an actionable warning for unsafe handover or embedded boot failure.
+	 * Whether the embedded Page Builder cannot run here, for a reason a site
+	 * manager should be told.
 	 *
-	 * Dismissal is remembered per user, by a fingerprint of the current
-	 * status and detail rather than a bare flag -- so a resolved failure
-	 * stays hidden, but a new or different failure surfaces again even if
-	 * this user already dismissed an earlier one, and one admin dismissing
-	 * it never hides it from other admins.
+	 * @since 8.0.0
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function render_admin_notice(): void {
-		try {
-			if (
-				! current_user_can( 'manage_options' )
-				|| ! in_array(
-					$this->status,
-					array( 'standalone_runtime_active', 'standalone_bridge_incompatible', 'module_class_missing', 'boot_failed', 'dom_extension_missing' ),
-					true
-				)
-			) {
-				return;
-			}
-
-			$fingerprint = $this->notice_fingerprint();
-			if ( get_user_option( self::DISMISSED_META_KEY, get_current_user_id() ) === $fingerprint ) {
-				return;
-			}
-
-			printf(
-				'<div class="notice notice-error is-dismissible" id="automator-page-builder-notice" data-nonce="%1$s" data-fingerprint="%2$s"><p><strong>%3$s</strong> %4$s</p><p class="description">%5$s</p></div>',
-				esc_attr( wp_create_nonce( $this->dismiss_nonce_action( $fingerprint ) ) ),
-				esc_attr( $fingerprint ),
-				esc_html_x( 'Uncanny Page Builder is not available right now.', 'Page Builder module admin notice', 'uncanny-automator' ),
-				esc_html( $this->friendly_message() ),
-				esc_html( $this->detail )
-			);
-
-			$this->render_dismiss_script();
-		} catch ( \Throwable $throwable ) {
-			return;
-		}
-	}
-
-	/**
-	 * Persist the dismissal for the current user so the notice does not
-	 * return for the same status and detail on their next page load.
-	 *
-	 * The nonce is bound to the fingerprint that the prior admin request
-	 * rendered. A later AJAX request can have a different runtime result, so
-	 * it must persist the verified rendered value rather than recompute it.
-	 *
-	 * @return void
-	 */
-	public function ajax_dismiss_notice(): void {
-		$fingerprint = isset( $_POST['fingerprint'] ) && is_string( $_POST['fingerprint'] )
-			? sanitize_text_field( wp_unslash( $_POST['fingerprint'] ) )
-			: '';
-
-		if ( 1 !== preg_match( '/\A[a-f0-9]{32}\z/', $fingerprint ) ) {
-			wp_send_json_error( 'Invalid notice fingerprint.', 400 );
-			return;
-		}
-
-		try {
-			$nonce_is_valid = check_ajax_referer( $this->dismiss_nonce_action( $fingerprint ), 'nonce', false );
-		} catch ( \Throwable $throwable ) {
-			$nonce_is_valid = false;
-		}
-
-		if ( false === $nonce_is_valid ) {
-			wp_die( -1, 403 );
-		}
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( 'Unauthorized', 403 );
-		}
-
-		try {
-			update_user_option( get_current_user_id(), self::DISMISSED_META_KEY, $fingerprint );
-		} catch ( \Throwable $throwable ) {
-			wp_send_json_error( 'Unable to dismiss notice.', 500 );
-		}
-
-		wp_send_json_success();
-	}
-
-	/**
-	 * Bind the dismiss button to the AJAX endpoint above.
-	 *
-	 * @return void
-	 */
-	private function render_dismiss_script(): void {
-		?>
-		<script>
-		(function(){
-			var notice = document.getElementById('automator-page-builder-notice');
-			if ( ! notice ) return;
-			notice.addEventListener('click', function(e) {
-				if ( ! e.target.classList.contains('notice-dismiss') ) return;
-				var xhr = new XMLHttpRequest();
-				xhr.open('POST', '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>');
-				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-				xhr.send(
-					'action=<?php echo esc_js( self::DISMISS_AJAX_ACTION ); ?>' +
-					'&nonce=' + encodeURIComponent(notice.getAttribute('data-nonce')) +
-					'&fingerprint=' + encodeURIComponent(notice.getAttribute('data-fingerprint'))
-				);
-			});
-		})();
-		</script>
-		<?php
+	public function is_unavailable(): bool {
+		return in_array( $this->status, self::UNAVAILABLE_STATUSES, true );
 	}
 
 	/**
@@ -588,7 +472,21 @@ class Module {
 	 * @return string
 	 */
 	public function friendly_message(): string {
-		if ( 'boot_failed' === $this->status && $this->database_engine_failure ) {
+		return self::friendly_message_for( $this->status, $this->database_engine_failure );
+	}
+
+	/**
+	 * The plain-language explanation of a status.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $status                  The module status.
+	 * @param bool   $database_engine_failure Whether a boot failure came from a table's storage engine.
+	 *
+	 * @return string
+	 */
+	public static function friendly_message_for( string $status, bool $database_engine_failure = false ): string {
+		if ( 'boot_failed' === $status && $database_engine_failure ) {
 			return esc_html_x(
 				'Page Builder needs your WordPress database tables to use the InnoDB storage engine, but at least one of them uses a different engine. Ask your host to convert the posts, postmeta and options tables to InnoDB, then reload this page.',
 				'Page Builder module status',
@@ -596,7 +494,7 @@ class Module {
 			);
 		}
 
-		switch ( $this->status ) {
+		switch ( $status ) {
 			case 'active':
 			case 'already_owned':
 				return esc_html_x( 'Page Builder is running and ready to use.', 'Page Builder module status', 'uncanny-automator' );
@@ -639,18 +537,8 @@ class Module {
 	 *
 	 * @return string
 	 */
-	private function notice_fingerprint(): string {
+	public function notice_fingerprint(): string {
 		return md5( $this->status . '|' . $this->detail );
-	}
-
-	/**
-	 * Bind one dismissal nonce to the notice that the user saw.
-	 *
-	 * @param string $fingerprint Rendered notice fingerprint.
-	 * @return string
-	 */
-	private function dismiss_nonce_action( string $fingerprint ): string {
-		return self::DISMISS_AJAX_ACTION . ':' . $fingerprint;
 	}
 
 	/**

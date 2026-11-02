@@ -83,6 +83,7 @@ class JETCRM_TAG_TO_COMPANY {
 		}
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Jetpack CRM's own table; the plugin offers no API for this query.
 		$contact_id = $wpdb->get_var( $wpdb->prepare( "SELECT `ID` FROM `{$wpdb->prefix}zbs_companies` WHERE zbsco_email LIKE %s", $company_email ) );
 		if ( ! empty( $contact_id ) ) {
 			$tag = $this->get_helpers()->check_if_tag_exists( $tag, ZBS_TYPE_COMPANY );

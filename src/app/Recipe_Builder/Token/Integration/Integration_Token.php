@@ -50,6 +50,34 @@ class Integration_Token {
 	private Integration_Token_Requires_User_Data $requires_user_data;
 
 	/**
+	 * Field directory for configurable tokens (setup-modal field rows).
+	 *
+	 * @var array
+	 */
+	private array $fields;
+
+	/**
+	 * ID template for configurable tokens ('' when not configurable).
+	 *
+	 * @var string
+	 */
+	private string $id_template;
+
+	/**
+	 * Name template for configurable tokens ('' when not configurable).
+	 *
+	 * @var string
+	 */
+	private string $name_template;
+
+	/**
+	 * Wire tag rows for the token ([] when none).
+	 *
+	 * @var array
+	 */
+	private array $tags;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Integration_Token_Config $config Integration token configuration object.
@@ -72,6 +100,10 @@ class Integration_Token {
 		$this->name               = new Integration_Token_Name( $config->get_name() );
 		$this->data_type          = new Integration_Token_Data_Type( $config->get_data_type() );
 		$this->requires_user_data = new Integration_Token_Requires_User_Data( $config->get_requires_user_data() );
+		$this->fields             = $config->get_fields();
+		$this->id_template        = $config->get_id_template();
+		$this->name_template      = $config->get_name_template();
+		$this->tags               = $config->get_tags();
 	}
 
 	/**
@@ -113,14 +145,35 @@ class Integration_Token {
 	/**
 	 * Convert to array for API responses and data transfer.
 	 *
+	 * The FE integration-token object is strict: exactly code / name /
+	 * data_type / requires_user_data plus OPTIONAL config and tags. The
+	 * config block requires BOTH templates non-empty (FE min-length 1 on
+	 * each) — a token with only one template set is malformed, so config is
+	 * omitted entirely. Tags emit only when non-empty (FE defaults absence
+	 * to an empty list).
+	 *
 	 * @return array Token data as associative array.
 	 */
 	public function to_array(): array {
-		return array(
+		$data = array(
 			'code'               => $this->code->get_value(),
 			'name'               => $this->name->get_value(),
 			'data_type'          => $this->data_type->get_value(),
 			'requires_user_data' => $this->requires_user_data->get_value(),
 		);
+
+		if ( '' !== $this->id_template && '' !== $this->name_template ) {
+			$data['config'] = array(
+				'fields'        => $this->fields,
+				'id_template'   => $this->id_template,
+				'name_template' => $this->name_template,
+			);
+		}
+
+		if ( ! empty( $this->tags ) ) {
+			$data['tags'] = $this->tags;
+		}
+
+		return $data;
 	}
 }

@@ -10,6 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	return;
 }
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
+
 global $wpdb;
 
 $args = wp_parse_args(
@@ -23,6 +25,7 @@ $args = wp_parse_args(
 	)
 );
 
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table joined to core posts; no WordPress API returns this, and the read must be live.
 return $wpdb->get_results(
 	$wpdb->prepare(
 		"SELECT 

@@ -117,14 +117,16 @@ class Discord_Settings extends App_Integration_Settings {
 	}
 
 	/**
-	 * Before Authorized Account Disconnect.
+	 * Once the platform confirmed the disconnect (handoff R8): remove the bot
+	 * from each connected server and the vault credentials. Errors are ignored
+	 * and the server list is deleted after, so it is safe to run twice.
 	 *
 	 * @param array $response The current response array
 	 * @param array $data The posted data
 	 *
-	 * @return void
+	 * @return array
 	 */
-	protected function before_disconnect( $response = array(), $data = array() ) {
+	protected function after_platform_disconnect( $response = array(), $data = array() ) {
 		$this->helpers->remove_credentials();
 
 		return $response;
@@ -375,6 +377,9 @@ class Discord_Settings extends App_Integration_Settings {
 										'label'                     => $is_connected
 											? esc_html_x( 'Disconnect server', 'Discord', 'uncanny-automator' )
 											: esc_html_x( 'Connect server', 'Discord', 'uncanny-automator' ),
+										'icon'                      => $is_connected
+											? array( 'code' => 'link-slash', 'size' => 'xs' )
+											: array( 'code' => 'bolt', 'size' => 'xs' ),
 										'color'                     => 'secondary',
 										'type'                      => 'submit',
 										'row-submission'            => true,
@@ -409,7 +414,7 @@ class Discord_Settings extends App_Integration_Settings {
 	 */
 	private function output_resync_alert() {
 		?>
-		<uo-alert heading="<?php echo esc_attr_x( 'Need to update your server list?', 'Discord', 'uncanny-automator' ); ?>" 
+		<uas-alert heading="<?php echo esc_attr_x( 'Need to update your server list?', 'Discord', 'uncanny-automator' ); ?>" 
 			class="uap-spacing-bottom">
 			<p><?php echo esc_html_x( "If you've added or removed servers since connecting, click the Resync Servers button below to refresh the list.", 'Discord', 'uncanny-automator' ); ?></p>
 			<?php
@@ -418,10 +423,11 @@ class Discord_Settings extends App_Integration_Settings {
 				esc_html_x( 'Resync servers', 'Discord', 'uncanny-automator' ),
 				array(
 					'color' => 'secondary',
+					'icon'  => 'rotate',
 				)
 			);
 			?>
-		</uo-alert>
+		</uas-alert>
 		<?php
 	}
 
@@ -432,17 +438,17 @@ class Discord_Settings extends App_Integration_Settings {
 	 */
 	private function output_user_verification_alert() {
 		?>
-		<uo-alert 
+		<uas-alert 
 			heading="<?php echo esc_attr_x( 'User Discord Verification', 'Discord', 'uncanny-automator' ); ?>" 
 			class="uap-spacing-bottom">
 			<p><?php echo esc_html_x( 'To fully automate your WordPress users for use within Discord actions requiring selecting a Member, have your users verify their account using this shortcode:', 'Discord', 'uncanny-automator' ); ?><code>[automator_discord_user_mapping]</code></p>
 			<p><?php echo esc_html_x( 'This will capture their Discord Member ID and save it to user meta key:', 'Discord', 'uncanny-automator' ); ?><code>automator_discord_member_id</code></p>
 			<p>
-				<uo-button href="https://automatorplugin.com/knowledge-base/discord/#4-user-discord-verification" target="_blank">
+				<uas-button href="https://automatorplugin.com/knowledge-base/discord/#4-user-discord-verification" target="_blank">
 					<?php echo esc_html_x( 'Learn more', 'Discord', 'uncanny-automator' ); ?>
-				</uo-button>
+				</uas-button>
 			</p>
-		</uo-alert>
+		</uas-alert>
 		<?php
 	}
 }

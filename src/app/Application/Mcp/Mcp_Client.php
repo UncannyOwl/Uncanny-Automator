@@ -43,6 +43,13 @@ class Mcp_Client {
 	const INFERENCE_URL = 'https://llm.automatorplugin.com';
 
 	/**
+	 * Configured timeout for sending an updated Agent context.
+	 *
+	 * @since 8.0.0
+	 */
+	private const CONTEXT_UPDATE_TIMEOUT = 2;
+
+	/**
 	 * Default SDK URL for chat components.
 	 */
 	const SDK_URL = 'https://llm.automatorplugin.com/sdk.js';
@@ -70,12 +77,12 @@ class Mcp_Client {
 	/**
 	 * SDK render cache schema version.
 	 */
-	private const SDK_RENDER_CACHE_SCHEMA_VERSION = 'sdk-render-v2';
+	private const SDK_RENDER_CACHE_SCHEMA_VERSION = 'sdk-render-v3';
 
 	/**
 	 * Producer-side negative render-decision TTL.
 	 */
-	private const SDK_RENDER_DENY_TTL = 5 * MINUTE_IN_SECONDS;
+	private const SDK_RENDER_DENY_TTL = MINUTE_IN_SECONDS;
 
 	/**
 	 * Runtime instance constructed by the MCP composition root.
@@ -245,13 +252,13 @@ class Mcp_Client {
 		}
 
 		if ( $this->has_cached_sdk_render_denial( $facts ) ) {
-			$this->sdk_render_context = $this->build_sdk_render_context( false, $facts['license_key'], '' );
+			$this->sdk_render_context = $this->build_sdk_render_context( false, $facts['license_key'], '', true );
 			return $this->sdk_render_context;
 		}
 
 		if ( ! $this->public_key_manager->ensure_public_key_ready() ) {
 			$this->cache_sdk_render_denial( $facts );
-			$this->sdk_render_context = $this->build_sdk_render_context( false, $facts['license_key'], '' );
+			$this->sdk_render_context = $this->build_sdk_render_context( false, $facts['license_key'], '', true );
 			return $this->sdk_render_context;
 		}
 
@@ -259,7 +266,7 @@ class Mcp_Client {
 
 		if ( '' === $license_payload ) {
 			$this->cache_sdk_render_denial( $facts );
-			$this->sdk_render_context = $this->build_sdk_render_context( false, $facts['license_key'], '' );
+			$this->sdk_render_context = $this->build_sdk_render_context( false, $facts['license_key'], '', true );
 			return $this->sdk_render_context;
 		}
 
@@ -464,14 +471,16 @@ class Mcp_Client {
 	 * @param bool   $should_render            Whether the SDK should be rendered.
 	 * @param string $license_key              Trusted license key.
 	 * @param string $license_payload_query_value Freshly generated encrypted SDK payload.
+	 * @param bool   $temporarily_unavailable      Whether an operational error prevents rendering.
 	 *
 	 * @return array<string,mixed>
 	 */
-	private function build_sdk_render_context( bool $should_render, string $license_key, string $license_payload_query_value ): array {
+	private function build_sdk_render_context( bool $should_render, string $license_key, string $license_payload_query_value, bool $temporarily_unavailable = false ): array {
 		return array(
 			'should_render'               => $should_render,
 			'license_key'                 => $license_key,
 			'license_payload_query_value' => $license_payload_query_value,
+			'temporarily_unavailable'     => $temporarily_unavailable,
 		);
 	}
 
@@ -563,10 +572,7 @@ class Mcp_Client {
 		add_action( 'admin_print_styles', array( $this, 'print_admin_bar_quicklink_styles' ) );
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
 
-		// Handshake for app.uncannyagent.com site connection.
-		( new Handshake\Handshake_Handler() )->init();
-
-		// Agent context REST endpoint for standalone app.
+		// Agent context REST endpoint for Uncanny Agent.
 		add_action( 'rest_api_init', array( new Agent_Context_Rest_Controller(), 'register_routes' ) );
 	}
 
@@ -737,10 +743,6 @@ class Mcp_Client {
 
 		$sdk_render_context = $this->get_sdk_render_context();
 
-		if ( ! $sdk_render_context['should_render'] ) {
-			return;
-		}
-
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is escaped in generate_launcher_html.
 		echo $this->generate_launcher_html( $sdk_render_context );
 	}
@@ -772,12 +774,16 @@ class Mcp_Client {
 		$sdk_render_context = $this->get_sdk_render_context();
 
 		if ( ! $sdk_render_context['should_render'] ) {
+			if ( $sdk_render_context['temporarily_unavailable'] ) {
+				$this->render_unavailable_quicklink( $admin_bar );
+			}
 			return;
 		}
 
 		$payload = $this->payload_service->generate_encrypted_payload( $this->build_chat_payload_overrides() );
 
 		if ( '' === $payload ) {
+			$this->render_unavailable_quicklink( $admin_bar );
 			return;
 		}
 
@@ -821,6 +827,29 @@ class Mcp_Client {
 	}
 
 	/**
+	 * Keep the top-bar retry path available when Agent setup fails.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param \WP_Admin_Bar $admin_bar WordPress admin bar.
+	 * @return void
+	 */
+	private function render_unavailable_quicklink( \WP_Admin_Bar $admin_bar ): void {
+		$admin_bar->add_node(
+			array(
+				'id'    => 'uncanny-agent-quicklink',
+				'title' => esc_html_x( 'Uncanny Agent could not load. Try again in a minute.', 'Agent unavailable', 'uncanny-automator' ),
+				'href'  => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-dashboard' ),
+				'meta'  => array(
+					'title'  => esc_attr_x( 'Try again in a minute. If it still does not load, contact Uncanny Automator support.', 'Agent unavailable', 'uncanny-automator' ),
+					'target' => '_blank',
+					'rel'    => 'noopener noreferrer',
+				),
+			)
+		);
+	}
+
+	/**
 	 * Print inline styles that keep the Uncanny Agent quicklink visible on mobile and swap to the icon-only variant.
 	 *
 	 * WordPress's responsive admin bar hides every non-core top-level item below 783px (`#wp-toolbar > ul > li { display: none; }`). The override re-shows the quicklink node so it stays reachable on phones, and toggles between the full and `icon-only` web component instances around the same breakpoint.
@@ -840,7 +869,7 @@ class Mcp_Client {
 
 		$sdk_render_context = $this->get_sdk_render_context();
 
-		if ( ! $sdk_render_context['should_render'] ) {
+		if ( ! $sdk_render_context['should_render'] && ! $sdk_render_context['temporarily_unavailable'] ) {
 			return;
 		}
 
@@ -916,20 +945,22 @@ class Mcp_Client {
 	/**
 	 * Generate the launcher HTML element including CSS.
 	 *
-	 * Handles all the logic: payload generation, recipe fetching, context building, CSS styles, and HTML element. Returns empty string on any failure.
+	 * Handles payload generation, context, CSS styles, and the launcher element.
 	 *
-	 * @return string The CSS and launcher HTML, or empty string on failure.
+	 * @param array<string,mixed> $sdk_render_context SDK render state.
+	 * @param bool                $rest_request Whether the launcher is requested by the REST route.
+	 * @return string The launcher, a recovery message, or an empty string when access is denied.
 	 */
-	private function generate_launcher_html( array $sdk_render_context ): string {
+	private function generate_launcher_html( array $sdk_render_context, bool $rest_request = false ): string {
 
 		if ( ! ( $sdk_render_context['should_render'] ?? false ) ) {
-			return '';
+			return ! empty( $sdk_render_context['temporarily_unavailable'] ) ? $this->get_unavailable_launcher_html( $rest_request ) : '';
 		}
 
 		$payload = $this->payload_service->generate_encrypted_payload( $this->build_chat_payload_overrides() );
 
 		if ( '' === $payload ) {
-			return '';
+			return $this->get_unavailable_launcher_html( $rest_request );
 		}
 
 		// Check if we can dock the widget to the right
@@ -968,6 +999,28 @@ class Mcp_Client {
 		);
 
 		return $this->get_inline_css() . $launcher;
+	}
+
+	/**
+	 * Show a retry path in place of the launcher to authorized administrators.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param bool $rest_request Whether the launcher is requested by the REST route.
+	 * @return string
+	 */
+	private function get_unavailable_launcher_html( bool $rest_request ): string {
+		if ( ! $this->context_service->can_access_client() && ! ( $rest_request && $this->ensure_admin_permissions() ) ) {
+			return '';
+		}
+
+		return sprintf(
+			'<div class="notice notice-warning is-dismissible" role="status" style="position:fixed;right:1em;bottom:1em;z-index:159900;max-width:24em"><p>%1$s <a href="%2$s" target="_blank" rel="noopener noreferrer">%3$s</a> %4$s</p></div>',
+			esc_html_x( 'Uncanny Agent could not load.', 'Agent unavailable', 'uncanny-automator' ),
+			esc_url( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-dashboard' ) ),
+			esc_html_x( 'Try again in a minute.', 'Agent unavailable', 'uncanny-automator' ),
+			esc_html_x( 'If it still does not load, contact Uncanny Automator support.', 'Agent unavailable', 'uncanny-automator' )
+		);
 	}
 
 	/**
@@ -1059,6 +1112,8 @@ class Mcp_Client {
 		}
 
 		if ( is_string( $page_url ) ) {
+			// A valid URL is not a trusted admin context. Keep refresh payloads on
+			// this site's approved admin routes even when the browser sends another URL.
 			$page_url = Client_Page_Url_Sanitizer::sanitize( $page_url, admin_url() );
 		}
 
@@ -1303,7 +1358,7 @@ class Mcp_Client {
 	/**
 	 * Push updated context to the inference server.
 	 *
-	 * Fire-and-forget: a short timeout prevents blocking the REST response.
+	 * Short connection and request timeouts limit the wait for this best-effort send.
 	 * Failures are silently ignored — the AI will still work with stale context
 	 * until the next successful push.
 	 *
@@ -1331,16 +1386,31 @@ class Mcp_Client {
 			return;
 		}
 
-		wp_remote_post(
-			trailingslashit( $url ) . 'api/context/update',
-			array(
-				'headers'   => array( 'Content-Type' => 'application/json' ),
-				'body'      => $body,
-				'timeout'   => 30,
-				'blocking'  => false,
-				'sslverify' => true,
-			)
-		);
+		$endpoint = trailingslashit( $url ) . 'api/context/update';
+
+		// WordPress passes its timeout to Requests, but Requests otherwise keeps a
+		// separate 10-second connection timeout for the stream transport.
+		$limit_connection = static function ( &$request_url, &$headers, &$data, &$type, &$options ) use ( $endpoint ): void {
+			if ( $endpoint === $request_url && 'POST' === $type ) {
+				$options['connect_timeout'] = self::CONTEXT_UPDATE_TIMEOUT;
+			}
+		};
+		add_action( 'requests-requests.before_request', $limit_connection, 10, 5 );
+
+		try {
+			wp_remote_post(
+				$endpoint,
+				array(
+					'headers'   => array( 'Content-Type' => 'application/json' ),
+					'body'      => $body,
+					'timeout'   => self::CONTEXT_UPDATE_TIMEOUT,
+					'blocking'  => false,
+					'sslverify' => true,
+				)
+			);
+		} finally {
+			remove_action( 'requests-requests.before_request', $limit_connection, 10 );
+		}
 	}
 
 	/**
@@ -1380,7 +1450,7 @@ class Mcp_Client {
 		}
 
 		$sdk_render_context = $this->get_sdk_render_context();
-		$html               = $this->generate_launcher_html( $sdk_render_context );
+		$html               = $this->generate_launcher_html( $sdk_render_context, true );
 
 		return rest_ensure_response(
 			array(

@@ -22,6 +22,7 @@ class Wp_Tokens {
 	public function __construct() {
 		// Hide error for Automator Pro until Pro 3.1 is released.
 		if ( PHP_MAJOR_VERSION >= 7 ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler -- Compatibility shim; hides the 'Declaration of' warnings that older Automator Pro raises from its wp-anon-tokens.php.
 			set_error_handler(
 				function ( $errno, $errstr, $file ) {
 					return strpos( $file, '/tokens/wp-anon-tokens.php' ) !== false &&
@@ -61,6 +62,7 @@ class Wp_Tokens {
 						global $wpdb;
 						$meta_field = $trigger['ID'] . ':' . $pieces[1] . ':' . $pieces[2];
 						$trigger_id = $trigger['ID'];
+						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 						$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key LIKE %s AND automator_trigger_id = %d ORDER BY ID DESC LIMIT 0,1", "%%$meta_field%%", $trigger_id ) );
 						if ( ! empty( $meta_value ) ) {
 							$value = automator_safe_unserialize( $meta_value );

@@ -8,7 +8,7 @@ namespace Uncanny_Automator;
  * This class is used to format the value of an option.
  * It is used to convert the value of an option to its proper type.
  *
- * @since <version>
+ * @since 8.0.0
  */
 final class Automator_Option_Formatter {
 

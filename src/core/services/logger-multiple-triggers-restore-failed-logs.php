@@ -53,6 +53,7 @@ class Multiple_Triggers_Restore_Failed_Logs {
 		// Restore everything.
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		return (array) $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, completed FROM {$wpdb->prefix}uap_recipe_log WHERE completed = %d",

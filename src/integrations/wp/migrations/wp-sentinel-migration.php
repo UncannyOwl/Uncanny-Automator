@@ -126,28 +126,36 @@ class Wp_Sentinel_Migration {
 
 		global $wpdb;
 
-		$key_placeholders = "'" . implode( "','", self::KEYS ) . "'";
-
-		// Build the post_id scope clause + the snapshot bucket. Two-mode:
+		// Build the snapshot bucket and the post_id scope. Two-mode:
 		// site-wide writes to OPTION_BACKUP; targeted appends a hash so
 		// concurrent imports don't stomp the previous snapshot.
 		if ( null === $post_ids ) {
-			$scope_clause = '';
-			$backup_key   = self::OPTION_BACKUP;
+			$backup_key = self::OPTION_BACKUP;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API finds posts by a raw meta value across post types.
+			$backup = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT meta_id, post_id, meta_key, meta_value
+					   FROM {$wpdb->postmeta}
+					  WHERE meta_key IN (" . implode( ',', array_fill( 0, count( self::KEYS ), '%s' ) ) . ")
+					    AND meta_value IN ('0', '')",
+					self::KEYS
+				)
+			);
 		} else {
-			$ids_csv      = implode( ',', array_map( 'absint', $post_ids ) );
-			$scope_clause = " AND post_id IN ({$ids_csv})";
-			$backup_key   = self::OPTION_BACKUP . '_' . md5( $ids_csv . '|' . microtime( true ) );
+			$ids_csv    = implode( ',', array_map( 'absint', $post_ids ) );
+			$backup_key = self::OPTION_BACKUP . '_' . md5( $ids_csv . '|' . microtime( true ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API finds posts by a raw meta value across post types.
+			$backup = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT meta_id, post_id, meta_key, meta_value
+					   FROM {$wpdb->postmeta}
+					  WHERE meta_key IN (" . implode( ',', array_fill( 0, count( self::KEYS ), '%s' ) ) . ")
+					    AND meta_value IN ('0', '')
+					    AND post_id IN (" . implode( ',', array_fill( 0, count( $post_ids ), '%d' ) ) . ')',
+					array_merge( self::KEYS, array_map( 'absint', $post_ids ) )
+				)
+			);
 		}
-
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- KEYS is a class constant whitelist; post IDs are absint'd above.
-		$backup = $wpdb->get_results(
-			"SELECT meta_id, post_id, meta_key, meta_value
-			   FROM {$wpdb->postmeta}
-			  WHERE meta_key IN ({$key_placeholders})
-			    AND meta_value IN ('0', '')
-			        {$scope_clause}"
-		);
 
 		if ( ! empty( $backup ) ) {
 			automator_update_option(
@@ -166,6 +174,7 @@ class Wp_Sentinel_Migration {
 		foreach ( self::KEYS as $meta_key ) {
 			foreach ( array( '0', '' ) as $legacy_value ) {
 				if ( null === $post_ids ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- One-off migration; no WordPress API rewrites a meta key or value across posts.
 					$updated = $wpdb->update(
 						$wpdb->postmeta,
 						array( 'meta_value' => '-1' ),
@@ -177,18 +186,15 @@ class Wp_Sentinel_Migration {
 						array( '%s', '%s' )
 					);
 				} else {
-					$ids_csv = implode( ',', array_map( 'absint', $post_ids ) );
-					// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- post IDs absint'd; meta_key/meta_value are parameters.
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- post IDs absint'd; meta_key/meta_value are parameters.
 					$updated = $wpdb->query(
 						$wpdb->prepare(
 							"UPDATE {$wpdb->postmeta}
 							   SET meta_value = %s
 							 WHERE meta_key   = %s
 							   AND meta_value = %s
-							   AND post_id IN ({$ids_csv})",
-							'-1',
-							$meta_key,
-							$legacy_value
+							   AND post_id IN (" . implode( ',', array_fill( 0, count( $post_ids ), '%d' ) ) . ')',
+							array_merge( array( '-1', $meta_key, $legacy_value ), array_map( 'absint', $post_ids ) )
 						)
 					);
 				}
@@ -231,6 +237,7 @@ class Wp_Sentinel_Migration {
 		$restored = 0;
 
 		foreach ( $backup['rows'] as $row ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; restores the stored value as is, which update_metadata_by_mid() would unslash and run hooks on.
 			$updated = $wpdb->update(
 				$wpdb->postmeta,
 				array( 'meta_value' => $row->meta_value ),

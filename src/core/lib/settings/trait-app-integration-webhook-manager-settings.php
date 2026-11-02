@@ -360,8 +360,8 @@ trait App_Integration_Webhook_Manager_Settings {
 				'value'                     => 'create_webhook',
 				'label'                     => esc_html_x( 'Connect', 'Integration settings', 'uncanny-automator' ),
 				'icon'                      => array(
-					'id'   => 'bolt',
-					'size' => 'xsmall',
+					'code' => 'bolt',
+					'size' => 'xs',
 				),
 				'confirmation-heading'      => esc_html_x( 'Connect Webhook', 'Integration settings', 'uncanny-automator' ),
 				'confirmation-content'      => sprintf(
@@ -392,8 +392,8 @@ trait App_Integration_Webhook_Manager_Settings {
 				'value'                     => 'update_webhook',
 				'label'                     => esc_html_x( 'Edit', 'Integration settings', 'uncanny-automator' ),
 				'icon'                      => array(
-					'id'   => 'pencil',
-					'size' => 'xsmall',
+					'code' => 'pencil',
+					'size' => 'xs',
 				),
 				'confirmation-heading'      => esc_html_x( 'Edit webhook events', 'Integration settings', 'uncanny-automator' ),
 				'confirmation-content'      => sprintf(
@@ -424,8 +424,8 @@ trait App_Integration_Webhook_Manager_Settings {
 				'value'                     => 'delete_webhook',
 				'label'                     => esc_html_x( 'Remove', 'Integration settings', 'uncanny-automator' ),
 				'icon'                      => array(
-					'id'   => 'trash',
-					'size' => 'xsmall',
+					'code' => 'trash',
+					'size' => 'xs',
 				),
 				'color'                     => 'danger',
 				'confirmation-heading'      => esc_html_x( 'Remove Webhook', 'Integration settings', 'uncanny-automator' ),

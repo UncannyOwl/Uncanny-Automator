@@ -233,7 +233,8 @@ class Wpum_Tokens {
 				$trigger_id     = $pieces[0];
 				$trigger_meta   = $pieces[2];
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-				$entry          = $wpdb->get_var(
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
+				$entry = $wpdb->get_var(
 					$wpdb->prepare(
 						"SELECT meta_value
 FROM {$wpdb->prefix}uap_trigger_log_meta
@@ -259,7 +260,8 @@ LIMIT 0,1",
 					$trigger_id     = $pieces[0];
 					$trigger_meta   = $pieces[2];
 					$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-					$entry          = $wpdb->get_var(
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
+					$entry = $wpdb->get_var(
 						$wpdb->prepare(
 							"SELECT meta_value
 FROM {$wpdb->prefix}uap_trigger_log_meta
@@ -324,6 +326,7 @@ LIMIT 0,1",
 				break;
 			default:
 				global $wpdb;
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WP User Manager's own table; the plugin offers no API for this query.
 				$field_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}wpum_fields WHERE type = %s LIMIT 0,1", $field ) );
 				$value    = get_user_meta(
 					$user->ID,

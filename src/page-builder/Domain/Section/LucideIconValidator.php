@@ -20,6 +20,7 @@ final class LucideIconValidator
         $invalid = $this->invalidIconNames($html);
 
         if ($invalid !== []) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
             throw SectionValidationException::invalidLucideIcons($invalid);
         }
     }

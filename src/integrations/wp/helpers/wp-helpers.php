@@ -207,6 +207,7 @@ class Wp_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_posts', $option );
 	}
 
@@ -258,6 +259,7 @@ class Wp_Helpers {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_pages', $option );
 	}
 
@@ -297,6 +299,7 @@ class Wp_Helpers {
 			'custom_value_description' => esc_attr_x( 'Role slug', 'WordPress', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_wp_user_roles', $option );
 	}
 
@@ -314,6 +317,7 @@ class Wp_Helpers {
 
 		$post_types = $this->get_post_types_options( $label, $option_code, $args, $apply_relevant_tokens );
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_post_types', $post_types, $option_code, $args, $this );
 	}
 
@@ -667,6 +671,7 @@ class Wp_Helpers {
 
 		$post_types = $this->get_post_types_options( $label, $option_code, $args, $apply_relevant_tokens );
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_wp_post_types', $post_types, $option_code, $args, $this );
 	}
 
@@ -729,11 +734,12 @@ class Wp_Helpers {
 
 			foreach ( $post_types as $post_type ) {
 
-				if ( $this->is_post_type_valid( $post_type ) ) {
-
-					$options[ $post_type->name ] = ( true === $args['plural_label'] ) ? esc_html( $post_type->labels->name ) : esc_html( $post_type->labels->singular_name );
-
+				if ( \automator_is_disabled_post_type( $post_type ) ) {
+					continue;
 				}
+
+				$options[ $post_type->name ] = ( true === $args['plural_label'] ) ? esc_html( $post_type->labels->name ) : esc_html( $post_type->labels->singular_name );
+
 			}
 		}
 
@@ -768,28 +774,8 @@ class Wp_Helpers {
 			'default_value'   => $args['default_value'],
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_wp_post_types', $option );
-	}
-
-	/**
-	 * Method is_post_type_valid.
-	 *
-	 * @param string $post_type The post type name.
-	 *
-	 * @return boolean True if post type meets the criteria. Otherwise, false.
-	 */
-	public function is_post_type_valid( $post_type ) {
-
-		$invalid_post_types = $this->get_disabled_post_types();
-
-		// Disable attachments.
-		if ( in_array( $post_type->name, $invalid_post_types, true ) ) {
-
-			return false;
-
-		}
-
-		return ! empty( $post_type->name ) && ! empty( $post_type->labels->name ) && ! empty( $post_type->labels->singular_name );
 	}
 
 	/**
@@ -802,35 +788,6 @@ class Wp_Helpers {
 	public function get_taxonomies( $post_type = 'post' ) {
 
 		return get_object_taxonomies( $post_type, 'objects' );
-	}
-
-	/**
-	 * Method get_disabled_post_types.
-	 *
-	 * @return array A list of post types that should be disabled in dropdown.
-	 */
-	public function get_disabled_post_types() {
-
-		$post_types = array(
-			'attachment',
-			'uo-action',
-			'uo-closure',
-			'uo-trigger',
-			'uo-recipe',
-			'customize_changeset',
-			'custom_css',
-			'wp_global_styles',
-			'wp_template',
-			'wp_template_part',
-			'wp_block',
-			'user_request',
-			'oembed_cache',
-			'revision',
-			'wp_navigation',
-			'nav_menu_item',
-		);
-
-		return apply_filters( 'automator_wp_get_disabled_post_types', $post_types );
 	}
 
 	/**

@@ -391,8 +391,10 @@ class Jetcrm_Tokens {
 		global $wpdb;
 		$to_replace = $pieces[2];
 		$contact_id = Automator()->db->token->get( 'object_id', $replace_args );
-		$contact    = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$wpdb->prefix}zbs_contacts` WHERE ID = %d", $contact_id ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Jetpack CRM's own table; the plugin offers no API for this query.
+		$contact = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$wpdb->prefix}zbs_contacts` WHERE ID = %d", $contact_id ) );
 		if ( array_intersect( $companies_trigger_metas, $pieces ) ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Jetpack CRM's own table; the plugin offers no API for this query.
 			$contact = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$wpdb->prefix}zbs_companies` WHERE ID = %d", $contact_id ) );
 		}
 

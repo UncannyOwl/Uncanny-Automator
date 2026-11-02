@@ -7,6 +7,10 @@
 
 namespace Uncanny_Automator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Admin_Tools_Status {
 
 	const PRIORITY = 10;

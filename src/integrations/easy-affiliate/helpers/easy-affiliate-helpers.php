@@ -49,6 +49,7 @@ class Easy_Affiliate_Helpers {
 			'options'               => $options,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_get_all_affiliates', $option );
 	}
 

@@ -64,10 +64,8 @@ class Facebook_Bridge {
 		$user = isset( $credentials['user-info'] ) ? $credentials['user-info'] : array();
 		$user = wp_parse_args( $user, $defaults );
 
-		// Build main info with name and icon
-		$main_info = ! empty( $user['name'] )
-			? $user['name'] . '<uo-icon integration="FACEBOOK"></uo-icon>'
-			: '';
+		// Main info shows the account name; the integration icon renders via main_info_icon.
+		$main_info = ! empty( $user['name'] ) ? $user['name'] : '';
 
 		// Format the additional info (user ID) with proper translation
 		$additional_info = ! empty( $user['user_id'] )
@@ -85,10 +83,11 @@ class Facebook_Bridge {
 			: '';
 
 		return array(
-			'avatar_type'  => 'image',
-			'avatar_value' => $avatar,
-			'main_info'    => $main_info,
-			'additional'   => $additional_info,
+			'avatar_type'    => 'image',
+			'avatar_value'   => $avatar,
+			'main_info'      => $main_info,
+			'main_info_icon' => true,
+			'additional'     => $additional_info,
 		);
 	}
 

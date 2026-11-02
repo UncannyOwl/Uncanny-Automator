@@ -5,6 +5,12 @@
  * @since   4.5
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
+
 ?>
 <style>
 #log-editor {
@@ -50,7 +56,7 @@
 
 		<?php if ( empty( $this->get_requested_log() ) ) { ?>
 
-			<uo-alert heading="<?php esc_html_e( 'Requested log is empty.', 'uncanny-automator' ); ?>" type="error" ></uo-alert>
+			<uas-alert heading="<?php esc_html_e( 'Requested log is empty.', 'uncanny-automator' ); ?>" type="error" ></uas-alert>
 
 		<?php } ?>
 
@@ -77,7 +83,7 @@
 
 		<div class="uap-settings-panel-bottom-left">
 
-			<uo-button
+			<uas-button
 				color="danger"
 				href="<?php echo esc_url_raw( $url ); ?>"
 				needs-confirmation
@@ -85,9 +91,9 @@
 				confirmation-content="<?php esc_attr_e( 'Are you sure you want to delete this log?', 'uncanny-automator' ); ?>"
 				confirmation-button-label="<?php esc_attr_e( 'Yes', 'uncanny-automator' ); ?>"
 				>
-				<uo-icon id="trash"></uo-icon>
+				<uas-icon code="trash"></uas-icon>
 				<?php echo esc_html__( 'Delete log', 'uncanny-automator' ); ?>
-			</uo-button>
+			</uas-button>
 		</div>
 
 	</div>

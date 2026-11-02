@@ -258,6 +258,7 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
             $styleUrl = trim((string) ($library['styleUrl'] ?? ''));
             if ($styleUrl !== '') {
                 $tags[] = sprintf(
+                    // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- Tag for a standalone canvas or static export document that WordPress does not render, where parser order must stay fixed, so it cannot be enqueued.
                     '<link rel="stylesheet" href="%s" media="print" data-noptimize="1" data-upb-runtime-library-style="%s" data-upb-runtime-library-style-preloaded="1">',
                     self::escapeAttribute($styleUrl),
                     self::escapeAttribute($slug),
@@ -270,6 +271,7 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
             }
 
             $tags[] = sprintf(
+                // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- Tag for a standalone canvas or static export document that WordPress does not render, where parser order must stay fixed, so it cannot be enqueued.
                 '<script defer src="%s" data-noptimize="1" data-uncanny-page-builder-custom-javascript="1" data-upb-runtime-library="%s" data-upb-runtime-library-preloaded="1"></script>',
                 self::escapeAttribute($scriptUrl),
                 self::escapeAttribute($slug),
@@ -289,8 +291,7 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
             return '';
         }
 
-        return <<<JS
-(function () {
+        return "(function () {
   var config = {$config};
   var runtime = window.UPBJavaScriptLibraries = window.UPBJavaScriptLibraries || {};
 
@@ -385,7 +386,7 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
       return stylePromises[label];
     }
 
-    var link = document.querySelector('[data-upb-runtime-library-style="' + label + '"][data-upb-runtime-library-style-preloaded]');
+    var link = document.querySelector('[data-upb-runtime-library-style=\"' + label + '\"][data-upb-runtime-library-style-preloaded]');
     if (!link) {
       return null;
     }
@@ -400,7 +401,7 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
       return stylePromises[label];
     }
 
-    var existing = document.querySelector('[data-upb-runtime-library-style="' + label + '"]');
+    var existing = document.querySelector('[data-upb-runtime-library-style=\"' + label + '\"]');
     if (existing) {
       styleNodes[label] = existing;
       stylePromises[label] = stylePromise(label, existing);
@@ -460,7 +461,7 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
       return scriptPromises[label];
     }
 
-    var script = document.querySelector('script[data-upb-runtime-library="' + label + '"][data-upb-runtime-library-preloaded]');
+    var script = document.querySelector('script[data-upb-runtime-library=\"' + label + '\"][data-upb-runtime-library-preloaded]');
     if (!config[label] || !script) {
       return null;
     }
@@ -480,7 +481,7 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
       return Promise.resolve(null);
     }
 
-    var existing = document.querySelector('script[data-upb-runtime-library="' + label + '"]');
+    var existing = document.querySelector('script[data-upb-runtime-library=\"' + label + '\"]');
     if (existing) {
       scriptNodes[label] = existing;
       scriptPromises[label] = scriptPromise(label, existing);
@@ -748,8 +749,7 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
       return libraries;
     });
   };
-})();
-JS;
+})();";
     }
 
     /**

@@ -171,10 +171,12 @@ final class WpOriginalPageContentStore implements OriginalPageContentStoreInterf
             throw new \RuntimeException('The WordPress content backup cannot be locked for publication.');
         }
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Row lock for the source write; must not be cached.
         $rows = $wpdb->get_results($wpdb->prepare(
-            "SELECT meta_id, meta_value FROM {$postmetaTable}
+            "SELECT meta_id, meta_value FROM %i
              WHERE post_id = %d AND meta_key = %s
              ORDER BY meta_id ASC LIMIT 2 FOR UPDATE",
+            $postmetaTable,
             $pageId,
             self::META_KEY,
         ));
@@ -264,6 +266,7 @@ final class WpOriginalPageContentStore implements OriginalPageContentStoreInterf
             // even when the current editor lacks unfiltered_html.
             if (isset($wpdb) && is_object($wpdb) && isset($wpdb->posts) && method_exists($wpdb, 'query')) {
                 $activeContent = $this->readPostContent($pageId);
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Write; wp_update_post() would run content filters on a body restored byte-for-byte.
                 $updated = $wpdb->query($wpdb->prepare(
                     "UPDATE {$wpdb->posts}
                      SET post_content = %s

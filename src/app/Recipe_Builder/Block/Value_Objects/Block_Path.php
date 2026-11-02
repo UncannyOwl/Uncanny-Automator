@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects;
 
@@ -189,11 +188,11 @@ class Block_Path {
 		}
 
 		if ( empty( $data['direction'] ) || ! in_array( $data['direction'], $this->valid_directions, true ) ) {
-			throw new InvalidArgumentException( 'Direction must be one of: ' . implode( ', ', $this->valid_directions ) );
+			throw new InvalidArgumentException( 'Direction must be one of: ' . esc_html( implode( ', ', $this->valid_directions ) ) );
 		}
 
 		if ( empty( $data['primary_color'] ) || ! Block_Colors::is_valid( $data['primary_color'] ) ) {
-			throw new InvalidArgumentException( 'Primary color must be one of: ' . implode( ', ', Block_Colors::get_all() ) );
+			throw new InvalidArgumentException( 'Primary color must be one of: ' . esc_html( implode( ', ', Block_Colors::get_all() ) ) );
 		}
 	}
 }

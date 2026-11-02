@@ -448,8 +448,8 @@ class Asana_Custom_Fields_Helper {
 	 * @return void
 	 */
 	private function add_error( $value, $field_type, $field_name ) {
-		// translators: %1$s: field type, %2$s: field value, %3$s: field name
 		$this->errors[] = sprintf(
+			/* translators: %1$s: Field type, %2$s: Field value, %3$s: Field name */
 			esc_html_x( 'Invalid %1$s value "%2$s" for field "%3$s"', 'Asana', 'uncanny-automator' ),
 			$field_type,
 			$value,

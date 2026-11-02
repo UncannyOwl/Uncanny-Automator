@@ -1,11 +1,12 @@
 <?php
+//phpcs:disable WordPress.NamingConventions.ValidHookName.UseUnderscores
 namespace Uncanny_Automator\Services\Recipe;
 
 use Uncanny_Automator\Services\Recipe\Common;
 
 use JsonSerializable;
 use Uncanny_Automator\Automator_Exception;
-use Uncanny_Automator\Services\Recipe\Structure\Pluggable\Conditions_Pluggable;
+use Uncanny_Automator\App\Recipe_Builder\Block\Resolvers\Block_Resolver;
 
 /**
  * This class is the main class for our Recipe UI object.
@@ -14,6 +15,8 @@ use Uncanny_Automator\Services\Recipe\Structure\Pluggable\Conditions_Pluggable;
  *
  * @since 5.0
  */
+// Pro's conditions set has_pro_item through set(); a declared property would add it to the JSON.
+#[\AllowDynamicProperties] // phpcs:ignore Uncanny_Automator.PHP.PHP80Features.Attribute -- a comment before PHP 8.
 final class Structure implements JsonSerializable {
 
 	use Common\Trait_JSON_Serializer;
@@ -23,14 +26,6 @@ final class Structure implements JsonSerializable {
 	 * @var int
 	 */
 	protected $recipe_id = 0;
-	/**
-	 * @var bool
-	 */
-	protected $is_pro_active = false;
-	/**
-	 * @var bool
-	 */
-	protected $has_pro_item = false;
 	/**
 	 * @var bool
 	 */
@@ -50,6 +45,10 @@ final class Structure implements JsonSerializable {
 	/**
 	 * @var null
 	 */
+	protected $settings = null;
+	/**
+	 * @var null
+	 */
 	protected $miscellaneous = null;
 	/**
 	 * @var null
@@ -60,15 +59,14 @@ final class Structure implements JsonSerializable {
 	 */
 	protected $actions = null;
 
-	// Basic config we can use to manipulate the structures.
 	/**
 	 * @var array
 	 */
 	protected $_config = array( // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
-								'fields'       => array(
+		'fields'       => array(
 			'show_original_field_resolver_structure' => false,
 		),
-								'publish_only' => false,
+		'publish_only' => false,
 	);
 
 	/**
@@ -94,12 +92,23 @@ final class Structure implements JsonSerializable {
 
 		$this->recipe_id = $recipe_id;
 
-		// Registers all pluggable object before we hydrate the properties.
-		// Think of the conditions as separate plugin until we move it as a post type.
-		$conditions_pluggable = new Conditions_Pluggable();
-		$conditions_pluggable->register_recipe_action_hook();
+		// Block_Resolver hooks at priority 5 and resolves both blocks and loops.
+		$block_resolver = Block_Resolver::instance();
+		$block_resolver->register_hooks();
 
-		$this->is_pro_active = defined( 'UAPro_ABSPATH' );
+		// Legacy frontend compat: translate block entities back into the
+		// legacy filter-wrapper shape (and surface inner Action items for
+		// non-filter blocks) at priority 99 so the bundled main.js — which
+		// only knows the pre-unified-blocks shape — can render them. Remove
+		// this call when the new recipe builder ships.
+		//
+		// Kill switch — see `automator_blocks_legacy_translators_disabled()`.
+		// When the flag is on, the recipe object emits native
+		// `entity_type='block'` items so the new builder team can verify
+		// their renderer against raw uo-block storage.
+		if ( ! automator_blocks_legacy_translators_disabled() ) {
+			\Uncanny_Automator\App\Recipe_Builder\Block\Resolvers\Legacy_Frontend_Translator::register_hooks();
+		}
 
 		$this->_config = wp_parse_args(
 			(array) $config,
@@ -155,9 +164,9 @@ final class Structure implements JsonSerializable {
 			throw new Automator_Exception(
 				esc_html(
 					sprintf(
-				/* translators: %d: Recipe ID */
-					esc_html__( 'No recipe found with ID: %d', 'uncanny-automator' ),
-					absint( $this->recipe_id )
+					/* translators: %d: Recipe ID */
+						esc_html__( 'No recipe found with ID: %d', 'uncanny-automator' ),
+						absint( $this->recipe_id )
 					)
 				),
 				404
@@ -182,16 +191,20 @@ final class Structure implements JsonSerializable {
 		$this->title        = self::$post['post_title'];
 		$this->recipe_type  = isset( self::$meta['uap_recipe_type'] ) ? self::$meta['uap_recipe_type'] : '';
 
-		$stats         = new Structure\Stats( $this );
-		$miscellaneous = new Structure\Miscellaneous( $this );
-		$triggers      = new Structure\Triggers\Triggers( $this );
-		$actions       = new Structure\Actions\Actions( $this, self::$meta );
+		$stats    = new Structure\Stats( $this );
+		$settings = new Structure\Settings( $this );
+		$triggers = new Structure\Triggers\Triggers( $this );
+		$actions  = new Structure\Actions\Actions( $this, self::$meta );
 
-		$this->stats         = apply_filters( 'automator_recipe_main_object\structure\stats', $stats, $this );
-		$this->miscellaneous = apply_filters( 'automator_recipe_main_object\structure\miscellaneous', $miscellaneous, $this );
-		$this->triggers      = apply_filters( 'automator_recipe_main_object\structure\triggers', $triggers, $this );
-		// @see Conditions_Pluggable::register_hooks().
+		$this->stats    = apply_filters( 'automator_recipe_main_object\structure\stats', $stats, $this );
+		$this->settings = apply_filters( 'automator_recipe_main_object\structure\settings', $settings, $this );
+		$this->triggers = apply_filters( 'automator_recipe_main_object\structure\triggers', $triggers, $this );
+		// @see Block_Resolver::register_hooks().
 		$this->actions = apply_filters( 'automator_recipe_main_object\structure\actions', $actions, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+
+		// Miscellaneous is loaded last so it can access triggers and actions to determine pro entity usage.
+		$miscellaneous       = new Structure\Miscellaneous( $this, $this->actions );
+		$this->miscellaneous = apply_filters( 'automator_recipe_main_object\structure\miscellaneous', $miscellaneous, $this );
 
 		return $this;
 	}

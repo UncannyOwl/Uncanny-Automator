@@ -126,6 +126,7 @@ final class WpSettingsRepository implements SettingsRepositoryInterface
             return null;
         }
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Named MySQL lock; there is no WordPress API for it.
         $result = $wpdb->get_var(
             $wpdb->prepare(
                 'SELECT GET_LOCK(%s, %d)',
@@ -148,6 +149,7 @@ final class WpSettingsRepository implements SettingsRepositoryInterface
             return;
         }
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Named MySQL lock; there is no WordPress API for it.
         $wpdb->get_var(
             $wpdb->prepare(
                 'SELECT RELEASE_LOCK(%s)',

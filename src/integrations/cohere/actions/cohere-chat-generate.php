@@ -248,6 +248,7 @@ class Cohere_Chat_Generate extends App_Action {
 
 		// Build the payload
 		$payload = $payload_builder
+			// phpcs:ignore PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- The site owner connects their own Cohere account; this integration calls the provider's API for them.
 			->endpoint( 'https://api.cohere.ai/v1/chat' )
 			->body( 'model', $model )
 			->body( 'safety_mode', $safety )

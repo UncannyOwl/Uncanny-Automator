@@ -97,6 +97,7 @@ final class PageSourcePackage
         try {
             PageDesignOverrides::fromArray($designOverrides);
         } catch (\Throwable $e) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- $e is the previous exception, not message text.
             throw new SourcePackageValidationException('The page export contains invalid design overrides.', 0, $e);
         }
 
@@ -279,6 +280,7 @@ final class PageSourcePackage
         try {
             $serialized = self::encodeJson($this->toArray(), JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
         } catch (\JsonException $e) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- $e is the previous exception, not message text.
             throw new SourcePackageValidationException('The page source could not be encoded.', 0, $e);
         }
 

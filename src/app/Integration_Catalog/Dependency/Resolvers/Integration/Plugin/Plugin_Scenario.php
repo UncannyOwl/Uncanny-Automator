@@ -13,6 +13,7 @@ namespace Uncanny_Automator\App\Integration_Catalog\Dependency\Resolvers\Integra
 
 use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Distribution_Type;
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Resolvers\Abstract_Scenario;
+use Uncanny_Automator\App\Integration_Catalog\Dependency\Value_Objects\Dependency_Cta;
 use Uncanny_Automator\Services\Plugin\Info as Plugin_Info;
 
 /**
@@ -36,10 +37,12 @@ class Plugin_Scenario extends Abstract_Scenario {
 		$this->scenarios = array(
 			// WP.org plugin.
 			Distribution_Type::SLUG_WP_ORG      => array(
-				'scenario_id' => 'installable-' . Distribution_Type::SLUG_WP_ORG,
+				'scenario_id'         => 'installable-' . Distribution_Type::SLUG_WP_ORG,
 				// translators: %s: Plugin name
-				'description' => esc_attr__( 'Install %s from the WordPress.org plugin directory', 'uncanny-automator' ),
-				'cta'         => array(
+				'description'         => esc_attr__( 'Install %s from the WordPress.org plugin directory', 'uncanny-automator' ),
+				// translators: %1$s: Plugin name. %2$s: Name of the plugin that must be installed first. Asterisks are markdown emphasis and must be kept.
+				'description_blocked' => esc_attr__( 'Install %1$s from the WordPress.org plugin directory. *Requires %2$s to be installed and active.*', 'uncanny-automator' ),
+				'cta'                 => array(
 					'type'  => 'link-external', // TODO: Change to 'fetch' when ready.
 					// translators: %s: Plugin name
 					'label' => esc_attr_x( 'Install %s', 'Dependency CTA', 'uncanny-automator' ),
@@ -47,10 +50,12 @@ class Plugin_Scenario extends Abstract_Scenario {
 			),
 			// Open source (non-WP.org).
 			Distribution_Type::SLUG_OPEN_SOURCE => array(
-				'scenario_id' => 'installable-' . Distribution_Type::SLUG_OPEN_SOURCE,
+				'scenario_id'         => 'installable-' . Distribution_Type::SLUG_OPEN_SOURCE,
 				// translators: %s: Plugin name
-				'description' => esc_attr__( 'Install the %s plugin to use this integration', 'uncanny-automator' ),
-				'cta'         => array(
+				'description'         => esc_attr__( 'Install the %s plugin to use this integration', 'uncanny-automator' ),
+				// translators: %1$s: Plugin name. %2$s: Name of the plugin that must be installed first. Asterisks are markdown emphasis and must be kept.
+				'description_blocked' => esc_attr__( 'Install the %1$s plugin to use this integration. *Requires %2$s to be installed and active.*', 'uncanny-automator' ),
+				'cta'                 => array(
 					'type'  => 'link-external',
 					// translators: %s: Plugin name
 					'label' => esc_attr_x( 'Install %s', 'Dependency CTA', 'uncanny-automator' ),
@@ -58,10 +63,12 @@ class Plugin_Scenario extends Abstract_Scenario {
 			),
 			// Commercial plugin.
 			Distribution_Type::SLUG_COMMERCIAL  => array(
-				'scenario_id' => 'installable-' . Distribution_Type::SLUG_COMMERCIAL,
+				'scenario_id'         => 'installable-' . Distribution_Type::SLUG_COMMERCIAL,
 				// translators: %s: Plugin name
-				'description' => esc_attr__( 'Purchase and install %s to use this integration', 'uncanny-automator' ),
-				'cta'         => array(
+				'description'         => esc_attr__( 'Purchase and install %s to use this integration', 'uncanny-automator' ),
+				// translators: %1$s: Plugin name. %2$s: Name of the plugin that must be installed first. Asterisks are markdown emphasis and must be kept.
+				'description_blocked' => esc_attr__( 'Purchase and install %1$s to use this integration. *Requires %2$s to be installed and active.*', 'uncanny-automator' ),
+				'cta'                 => array(
 					'type'  => 'link-external',
 					// translators: %s: Plugin name
 					'label' => esc_attr_x( 'Install %s', 'Dependency CTA', 'uncanny-automator' ),
@@ -105,11 +112,22 @@ class Plugin_Scenario extends Abstract_Scenario {
 	 *
 	 * @param string $scenario_id Scenario ID
 	 * @param string $name Integration name to insert in description
+	 * @param string $blocked_by Name of the plugin that must be installed first.
+	 *                           Empty when nothing blocks installing this one.
 	 *
 	 * @return string Translated description
 	 */
-	public function get_description( string $scenario_id, string $name ) {
+	public function get_description( string $scenario_id, string $name, string $blocked_by = '' ) {
 		$config = $this->get_scenario_config( $scenario_id );
+
+		if ( $config && '' !== $blocked_by && ! empty( $config['description_blocked'] ) ) {
+			return sprintf(
+				// translators: %1$s: Integration name. %2$s: Blocking plugin name.
+				$config['description_blocked'],
+				$name,
+				$blocked_by
+			);
+		}
 
 		if ( $config && ! empty( $config['description'] ) ) {
 			return sprintf(
@@ -124,6 +142,56 @@ class Plugin_Scenario extends Abstract_Scenario {
 			// translators: %s: Integration name
 			esc_attr__( 'Install %s to use this integration', 'uncanny-automator' ),
 			$name
+		);
+	}
+
+	/**
+	 * Description for a plugin that is installed but not active.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $name       Plugin name.
+	 * @param string $blocked_by Name of the plugin that must be active first. Empty when nothing blocks it.
+	 *
+	 * @return string Translated description
+	 */
+	public function get_inactive_description( string $name, string $blocked_by = '' ): string {
+		if ( '' !== $blocked_by ) {
+			return sprintf(
+				// translators: %1$s: Plugin name. %2$s: Name of the plugin that must be installed and active first. Asterisks are markdown emphasis and must be kept.
+				esc_attr__( '%1$s is installed but not active. Activate it to use this integration. *Requires %2$s to be installed and active.*', 'uncanny-automator' ),
+				$name,
+				$blocked_by
+			);
+		}
+
+		return sprintf(
+			// translators: %s: Plugin name
+			esc_attr__( '%s is installed but not active. Activate it to use this integration', 'uncanny-automator' ),
+			$name
+		);
+	}
+
+	/**
+	 * Call to action for a plugin that is installed but not active: the Plugins screen, filtered to it.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $name Plugin name.
+	 *
+	 * @return Dependency_Cta
+	 */
+	public function create_activate_cta( string $name ): Dependency_Cta {
+		return new Dependency_Cta(
+			array(
+				'type'  => 'link-external',
+				'label' => sprintf(
+					// translators: %s: Plugin name
+					esc_attr_x( 'Activate %s', 'Dependency CTA', 'uncanny-automator' ),
+					esc_html( $name )
+				),
+				'url'   => Plugin_Info::get_plugin_search_url( $name ),
+			)
 		);
 	}
 

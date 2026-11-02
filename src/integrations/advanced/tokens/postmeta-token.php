@@ -34,9 +34,9 @@ class Postmeta_Token extends Universal_Token {
 				'option_code'        => 'POSTID',
 				'required'           => true,
 				'label'              => esc_attr_x( 'Post ID', 'Advanced', 'uncanny-automator' ),
-				'description'        => esc_attr_x( 'The ID of the post that contains the meta data.', 'Advanced', 'uncanny-automator' ) . sprintf( ' <a href="%2$s">%1$s</a>', esc_attr_x( 'Learn more', 'Advanced', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon>', 'https://automatorplugin.com/knowledge-base/post-meta-tokens/?utm_source=uncanny-automator-pro&utm_medium=in-plugin&utm_content=add-token-post-meta-post-id-learn-more' ),
+				'description'        => esc_attr_x( 'The ID of the post that contains the meta data.', 'Advanced', 'uncanny-automator' ) . sprintf( ' <a href="%2$s">%1$s</a>', esc_attr_x( 'Learn more', 'Advanced', 'uncanny-automator' ) . ' <uas-icon code="arrow-up-right-from-square"></uas-icon>', 'https://automatorplugin.com/knowledge-base/post-meta-tokens/?utm_source=uncanny-automator-pro&utm_medium=in-plugin&utm_content=add-token-post-meta-post-id-learn-more' ),
 				'supports_tokens'    => true,
-				'unsupported_tokens' => array( 'USERMETA:KEY', 'POSTMETA:POSTID:KEY', 'CALCULATION:FORMULA' ),
+				'unsupported_tokens' => array( 'UT:ADVANCED:USERMETA', 'UT:ADVANCED:POSTMETA', 'UT:ADVANCED:CALCULATION' ),
 			),
 			array(
 				'input_type'         => 'text',
@@ -45,7 +45,7 @@ class Postmeta_Token extends Universal_Token {
 				'label'              => esc_attr_x( 'Meta key', 'Advanced', 'uncanny-automator' ),
 				'description'        => esc_attr_x( 'The meta key associated with the data you want to retrieve. Only one meta key can be entered per token.', 'Advanced', 'uncanny-automator' ),
 				'supports_tokens'    => true,
-				'unsupported_tokens' => array( 'USERMETA:KEY', 'POSTMETA:POSTID:KEY', 'CALCULATION:FORMULA' ),
+				'unsupported_tokens' => array( 'UT:ADVANCED:USERMETA', 'UT:ADVANCED:POSTMETA', 'UT:ADVANCED:CALCULATION' ),
 			),
 		);
 	}

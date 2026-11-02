@@ -63,6 +63,7 @@ class Advanced_Coupons_Helpers {
 			return 0;
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Advanced Coupons' own hook.
 		return apply_filters( 'acfw_filter_amount', \ACFWF()->Store_Credits_Calculate->get_customer_balance( $user_id ) );
 	}
 
@@ -72,6 +73,7 @@ class Advanced_Coupons_Helpers {
 	public function get_total_credits_of_the_user( $user_id ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Advanced Coupons' own table; the plugin offers no API for this query.
 		$raw_data = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT entry_type,entry_action,CONVERT(entry_amount, DECIMAL(%d,%d)) AS amount
@@ -91,6 +93,7 @@ class Advanced_Coupons_Helpers {
 			}
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Advanced Coupons' own hook.
 		return apply_filters( 'acfw_filter_amount', $total_amount );
 	}
 
@@ -135,6 +138,7 @@ class Advanced_Coupons_Helpers {
 			'relevant_tokens' => array(),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_advanced_coupons_all_conditions', $option );
 	}
 }

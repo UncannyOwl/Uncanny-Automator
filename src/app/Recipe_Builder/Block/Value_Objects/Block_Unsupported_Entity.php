@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects;
 
@@ -115,7 +114,7 @@ class Block_Unsupported_Entity {
 	 */
 	private function validate( array $data ): void {
 		if ( ! isset( $data['entity_type'] ) || ! in_array( $data['entity_type'], $this->valid_entity_types, true ) ) {
-			throw new InvalidArgumentException( 'Entity type must be one of: ' . implode( ', ', $this->valid_entity_types ) );
+			throw new InvalidArgumentException( 'Entity type must be one of: ' . esc_html( implode( ', ', $this->valid_entity_types ) ) );
 		}
 
 		if ( empty( $data['entity_code'] ) || ! is_string( $data['entity_code'] ) ) {

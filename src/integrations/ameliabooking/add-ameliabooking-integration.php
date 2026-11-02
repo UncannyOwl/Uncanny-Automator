@@ -64,6 +64,7 @@ class Add_Ameliabooking_Integration {
 		$trigger_codes = array( 'AMELIA_APPOINTMENT_BOOKED', 'AMELIA_USER_APPOINTMENT_BOOKED' );
 
 		// Get post IDs for the specific trigger types
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API finds posts by a raw meta value across post types.
 		$post_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'code' AND meta_value IN (" . implode( ',', array_fill( 0, count( $trigger_codes ), '%s' ) ) . ')',
@@ -73,10 +74,11 @@ class Add_Ameliabooking_Integration {
 
 		if ( ! empty( $post_ids ) ) {
 			// Update add_action meta for these specific posts
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API rewrites a meta key or value across posts.
 			$wpdb->query(
 				$wpdb->prepare(
-					"UPDATE {$wpdb->postmeta} SET meta_value = %s WHERE meta_key = 'add_action' AND post_id IN (" . implode( ',', array_map( 'intval', $post_ids ) ) . ')',
-					$new_hook
+					"UPDATE {$wpdb->postmeta} SET meta_value = %s WHERE meta_key = 'add_action' AND post_id IN (" . implode( ',', array_fill( 0, count( $post_ids ), '%d' ) ) . ')',
+					array_merge( array( $new_hook ), $post_ids )
 				)
 			);
 		}

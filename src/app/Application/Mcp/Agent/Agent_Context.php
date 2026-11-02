@@ -15,10 +15,9 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Application\Mcp\Agent;
 
 use Uncanny_Automator\App\Application\Mcp\Client_Page_Url_Sanitizer;
-use Uncanny_Automator\App\Bridge\Automator_Recipe_Object_Bridge;
-use Uncanny_Automator\App\Bridge\Recipe_Object_Bridge;
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
 use Uncanny_Automator\App\Plan\Services\Plan_Service;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Settings\Services\Recipe_Settings_Service;
 use WP_Post;
 use WP_Screen;
 use WP_Term;
@@ -40,17 +39,19 @@ class Agent_Context {
 	const VERSION = '1.0';
 
 	/**
-	 * Bridge to the legacy recipe-object lookups.
+	 * Recipe settings reader, for the current recipe's type.
 	 *
-	 * @var Recipe_Object_Bridge
+	 * @var Recipe_Settings_Service
 	 */
-	private Recipe_Object_Bridge $recipes;
+	private Recipe_Settings_Service $settings;
 
 	/**
-	 * @param Recipe_Object_Bridge|null $recipes Optional bridge override (tests).
+	 * Lazy-default DI: production reads the shared settings service.
+	 *
+	 * @param Recipe_Settings_Service|null $settings Recipe settings reader.
 	 */
-	public function __construct( ?Recipe_Object_Bridge $recipes = null ) {
-		$this->recipes = $recipes ?? new Automator_Recipe_Object_Bridge();
+	public function __construct( ?Recipe_Settings_Service $settings = null ) {
+		$this->settings = $settings ?? Recipe_Settings_Service::instance();
 	}
 
 	/**
@@ -278,16 +279,11 @@ class Agent_Context {
 			return false;
 		}
 
-		$recipe = $this->recipes->get_recipe_as_array( (int) $post->ID );
-
-		if ( null === $recipe ) {
-			return false;
-		}
-
 		return array(
 			'id'    => $post->ID,
 			'title' => sanitize_text_field( $post->post_title ),
-			'type'  => sanitize_text_field( $recipe['recipe_type'] ?? '' ),
+			// An untyped recipe reports '' so the agent does not assume a user recipe.
+			'type'  => $this->settings->get_recipe_type_or_null( (int) $post->ID ) ?? '',
 		);
 	}
 
@@ -328,6 +324,12 @@ class Agent_Context {
 	 * @return WP_Screen|null
 	 */
 	protected function get_current_screen(): ?WP_Screen {
+		// REST requests, such as GET automator/v1/agent-context, have no admin
+		// screen and do not load the screen API.
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return null;
+		}
+
 		$screen = get_current_screen();
 
 		return $screen instanceof WP_Screen ? $screen : null;

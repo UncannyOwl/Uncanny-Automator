@@ -18,5 +18,4 @@ interface Token_Data_Types {
 	const DATETIME = 'datetime';
 	const BOOLEAN  = 'boolean';
 	const ARRAY    = 'array';
-	const JSON     = 'json';
 }

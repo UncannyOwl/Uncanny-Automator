@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Token\Integration\Value_Objects;
 
@@ -58,7 +57,7 @@ class Integration_Token_Data_Type {
 	private function validate( string $value ): void {
 		if ( ! Token_Data_Types_Helper::is_valid( $value ) ) {
 			throw new InvalidArgumentException(
-				'Integration token data type must be one of: ' . implode( ', ', Token_Data_Types_Helper::get_all() ) . ', got: ' . $value
+				'Integration token data type must be one of: ' . esc_html( implode( ', ', Token_Data_Types_Helper::get_all() ) ) . ', got: ' . esc_html( $value )
 			);
 		}
 	}

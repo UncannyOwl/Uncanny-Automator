@@ -382,6 +382,91 @@ return array (
       ),
     ),
   ),
+  'DROPBOX_FILE_FOLDER_CREATED' => 
+  array (
+    'code' => 'DROPBOX_FILE_FOLDER_CREATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_File_Folder_Created',
+    'integration' => 'DROPBOX',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'FOLDER_PATH',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_dropbox_item_created',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'DROPBOX_FILE_FOLDER_DELETED' => 
+  array (
+    'code' => 'DROPBOX_FILE_FOLDER_DELETED',
+    'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_File_Folder_Deleted',
+    'integration' => 'DROPBOX',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'FOLDER_PATH',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_dropbox_item_deleted',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'DROPBOX_FILE_FOLDER_MOVED' => 
+  array (
+    'code' => 'DROPBOX_FILE_FOLDER_MOVED',
+    'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_File_Folder_Moved',
+    'integration' => 'DROPBOX',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'FOLDER_PATH',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_dropbox_item_moved',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'DROPBOX_FILE_FOLDER_RENAMED' => 
+  array (
+    'code' => 'DROPBOX_FILE_FOLDER_RENAMED',
+    'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_File_Folder_Renamed',
+    'integration' => 'DROPBOX',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'FOLDER_PATH',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_dropbox_item_renamed',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'DROPBOX_FILE_UPDATED' => 
+  array (
+    'code' => 'DROPBOX_FILE_UPDATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_File_Updated',
+    'integration' => 'DROPBOX',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'FOLDER_PATH',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_dropbox_file_updated',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
   'EDD_SL_LICENSE_EXPIRED' => 
   array (
     'code' => 'EDD_SL_LICENSE_EXPIRED',

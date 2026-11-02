@@ -15,6 +15,7 @@ namespace Uncanny_Automator\App\Feature_State\Domain;
  */
 final class Allocation_Facts {
 
+	private ?bool $phase_1_lite_enrolled;
 	private int $active_allocations;
 	private int $used_allocations;
 	private int $expired_allocations;
@@ -25,12 +26,14 @@ final class Allocation_Facts {
 	 * @param int $used_allocations    Fully used allocation rows.
 	 * @param int $expired_allocations Expired allocation rows.
 	 * @param Pending_First_Use_Allocation|null $pending_first_use_allocation Pending grant eligibility.
+	 * @param bool|null $phase_1_lite_enrolled Verified WordPress enrollment; null means unavailable.
 	 */
 	private function __construct(
 		int $active_allocations,
 		int $used_allocations,
 		int $expired_allocations,
-		?Pending_First_Use_Allocation $pending_first_use_allocation
+		?Pending_First_Use_Allocation $pending_first_use_allocation,
+		?bool $phase_1_lite_enrolled
 	) {
 		if (
 			$active_allocations < 0
@@ -40,6 +43,7 @@ final class Allocation_Facts {
 			throw new \InvalidArgumentException( 'The allocation facts contain impossible row counts.' );
 		}
 
+		$this->phase_1_lite_enrolled        = $phase_1_lite_enrolled;
 		$this->active_allocations           = $active_allocations;
 		$this->used_allocations             = $used_allocations;
 		$this->expired_allocations          = $expired_allocations;
@@ -60,6 +64,7 @@ final class Allocation_Facts {
 	 * @param int $used_allocations    Fully used allocation rows.
 	 * @param int $expired_allocations Expired allocation rows.
 	 * @param Pending_First_Use_Allocation|null $pending_first_use_allocation Pending grant eligibility.
+	 * @param bool|null $phase_1_lite_enrolled Verified WordPress enrollment; null means unavailable.
 	 *
 	 * @return self
 	 */
@@ -67,14 +72,21 @@ final class Allocation_Facts {
 		int $active_allocations,
 		int $used_allocations,
 		int $expired_allocations,
-		?Pending_First_Use_Allocation $pending_first_use_allocation = null
+		?Pending_First_Use_Allocation $pending_first_use_allocation = null,
+		?bool $phase_1_lite_enrolled = null
 	): self {
 		return new self(
 			$active_allocations,
 			$used_allocations,
 			$expired_allocations,
-			$pending_first_use_allocation
+			$pending_first_use_allocation,
+			$phase_1_lite_enrolled
 		);
+	}
+
+	/** Return WordPress enrollment independently of the shared credit wallet. */
+	public function phase_1_lite_enrolled(): ?bool {
+		return $this->phase_1_lite_enrolled;
 	}
 
 	/**

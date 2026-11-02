@@ -15,6 +15,12 @@ namespace Uncanny_Automator;
  * @package Uncanny_Automator
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
+
 $removable_statuses = Automator_Status::get_removable_statuses();
 $statuses           = array();
 if ( $removable_statuses ) {
@@ -54,11 +60,11 @@ if ( $removable_statuses ) {
 			<li><?php esc_attr_e( 'With this setting enabled, the "Times per user" setting for logged-in recipes will be ignored.', 'uncanny-automator' ); ?></li>
 		</ul>
 	</div>
-	<uo-button
+	<uas-button
 		type="submit"
 		class="uap-spacing-top"
 	>
 		<?php esc_html_e( 'Save', 'uncanny-automator' ); ?>
-	</uo-button>
+	</uas-button>
 
 </form>

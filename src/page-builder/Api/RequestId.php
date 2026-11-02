@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Api;
 
+use UncannyPageBuilder\Domain\ArrayShape;
+
 final class RequestId
 {
     public static function positive(mixed $value): ?int
@@ -62,7 +64,7 @@ final class RequestId
      */
     public static function positiveList(mixed $values): ?array
     {
-        if (!is_array($values) || $values === [] || !array_is_list($values)) {
+        if (!is_array($values) || $values === [] || !ArrayShape::isList($values)) {
             return null;
         }
 

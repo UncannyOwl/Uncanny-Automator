@@ -28,11 +28,11 @@ final class BindingContractReplacementService
     ): string {
         $contract = $this->findBindingContract($section, $bindingId);
         if ($contract === null) {
-            throw BindingContractUpdateException::bindingNotFound($bindingId);
+            throw BindingContractUpdateException::bindingNotFound(esc_html($bindingId));
         }
 
         if ($expectedContractHash !== $contract->contractHash()) {
-            throw BindingContractUpdateException::contractHashMismatch($contract->bindingId());
+            throw BindingContractUpdateException::contractHashMismatch(esc_html($contract->bindingId()));
         }
 
         $storedDoc = new \DOMDocument();
@@ -47,12 +47,12 @@ final class BindingContractReplacementService
 
         $storedRoot = $storedDoc->getElementById('__upb_bc_root');
         if (!$storedRoot instanceof \DOMElement) {
-            throw BindingContractUpdateException::bindingNotFound($contract->bindingId());
+            throw BindingContractUpdateException::bindingNotFound(esc_html($contract->bindingId()));
         }
 
         $targetNode = $this->findNodeByPath($storedRoot, $contract->path());
         if (!$targetNode instanceof \DOMElement) {
-            throw BindingContractUpdateException::bindingNotFound($contract->bindingId());
+            throw BindingContractUpdateException::bindingNotFound(esc_html($contract->bindingId()));
         }
 
         $replacementDoc = new \DOMDocument();

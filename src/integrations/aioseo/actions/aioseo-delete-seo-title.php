@@ -66,6 +66,7 @@ class Aioseo_Delete_Seo_Title extends \Uncanny_Automator\Recipe\Action {
 		$post    = get_post( $post_id );
 
 		if ( null === $post ) {
+			/* translators: %d: Post ID */
 			$this->add_log_error( sprintf( esc_html_x( 'Post with ID %d does not exist.', 'All in One SEO', 'uncanny-automator' ), $post_id ) );
 			return false;
 		}

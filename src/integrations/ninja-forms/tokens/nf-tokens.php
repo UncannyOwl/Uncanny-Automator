@@ -144,7 +144,8 @@ class Nf_Tokens {
 				$trigger_meta   = $pieces[1];
 				$field          = $pieces[2];
 				$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
-				$entry          = $wpdb->get_var(
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
+				$entry    = $wpdb->get_var(
 					$wpdb->prepare(
 						"SELECT meta_value
 						FROM {$wpdb->prefix}uap_trigger_log_meta
@@ -157,8 +158,8 @@ class Nf_Tokens {
 						$trigger_id
 					)
 				);
-				$entry          = automator_safe_unserialize( $entry );
-				$to_match       = "{$trigger_id}:{$trigger_meta}:{$field}";
+				$entry    = automator_safe_unserialize( $entry );
+				$to_match = "{$trigger_id}:{$trigger_meta}:{$field}";
 				if ( is_array( $entry ) && key_exists( $to_match, $entry ) ) {
 					$value = $entry[ $to_match ];
 				}

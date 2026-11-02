@@ -94,6 +94,7 @@ final class TypographyProfile
 
             $role = self::normalizeRoleName($key);
             if (!is_array($value)) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
                 throw new \InvalidArgumentException("Typography role '{$role}' must be an object.");
             }
 
@@ -268,6 +269,7 @@ final class TypographyProfile
         $candidate = str_replace('-', '_', preg_replace('/\s+/', '_', $candidate) ?? $candidate);
         $canonical = self::ROLE_ALIASES[$candidate] ?? null;
         if ($canonical === null) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
             throw new \InvalidArgumentException("Typography role '{$roleName}' is not supported.");
         }
 

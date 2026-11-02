@@ -3,6 +3,7 @@
 namespace Uncanny_Automator;
 
 use Exception;
+use Uncanny_Automator\App\Recipe_Builder\Block\Migration\Legacy_Storage_Migration_Exception;
 use Uncanny_Automator\Deprecated\Legacy_Token_Parser;
 use Uncanny_Automator\Resolver\Fields_Shared_Callable;
 use WP_Error;
@@ -21,7 +22,7 @@ class Automator_Functions {
 	 */
 	public static $instance;
 	/**
-	 * Composite Class of integration, trigger, action, and closure registration functions
+	 * Composite Class of integration, trigger and action registration functions
 	 *
 	 * @since    1.0.0
 	 * @access   public
@@ -44,7 +45,6 @@ class Automator_Functions {
 	public $recipe_part_post_types = array(
 		AUTOMATOR_POST_TYPE_TRIGGER,
 		AUTOMATOR_POST_TYPE_ACTION,
-		AUTOMATOR_POST_TYPE_CLOSURE,
 		AUTOMATOR_POST_TYPE_LOOP,
 		AUTOMATOR_POST_TYPE_LOOP_FILTER,
 	);
@@ -83,13 +83,6 @@ class Automator_Functions {
 	 * @access   public
 	 */
 	public $actions = array();
-	/**
-	 * Collection of all closures
-	 *
-	 * @since    1.0.0
-	 * @access   public
-	 */
-	public $closures = array();
 	/**
 	 * Collection of all loop filters
 	 *
@@ -247,7 +240,6 @@ class Automator_Functions {
 
 		// Automator DB Handler
 		require_once __DIR__ . '/utilities/db/class-automator-db-handler-tokens.php';
-		require_once __DIR__ . '/utilities/db/class-automator-db-handler-closures.php';
 		require_once __DIR__ . '/utilities/db/class-automator-db-handler-actions.php';
 		require_once __DIR__ . '/utilities/db/class-automator-db-handler-triggers.php';
 		require_once __DIR__ . '/utilities/db/class-automator-db-handler-recipes.php';
@@ -267,17 +259,17 @@ class Automator_Functions {
 		require_once __DIR__ . '/utilities/error/class-automator-error.php';
 		$this->error = Automator_Error::get_instance();
 
-		// Automator integration, trigger, action and closure registration
+		// Automator integration, trigger and action registration
 		require_once __DIR__ . '/utilities/class-automator-registration.php';
 		$this->register = Automator_Registration::get_instance();
 
-		// Automator integration, trigger, action and closure process
+		// Automator integration, trigger and action process
 		require_once __DIR__ . '/process/class-automator-recipe-process.php';
 		require_once __DIR__ . '/process/class-automator-recipe-process-user.php';
 		//require_once __DIR__ . '/process/class-automator-recipe-process-anon.php';
 		$this->process = Automator_Recipe_Process::get_instance();
 
-		// Automator integration, trigger, action and closure process
+		// Automator integration, trigger and action process
 		require_once __DIR__ . '/process/class-automator-action-status.php';
 		require_once __DIR__ . '/process/class-automator-recipe-process-complete.php';
 		$this->complete = Automator_Recipe_Process_Complete::get_instance();
@@ -285,7 +277,7 @@ class Automator_Functions {
 		// Unified recipe execution pipeline — single entry point for Abstract_Trigger.
 		$this->recipe_runner = new \Uncanny_Automator\App\Recipe_Runner\Recipe_Runner();
 
-		// Load pre-defined options for triggers, actions, and closures
+		// Load pre-defined options for triggers and actions
 		require_once __DIR__ . '/helpers/class-automator-helpers.php';
 		require_once __DIR__ . '/helpers/class-automator-email-helpers.php';
 		require_once __DIR__ . '/helpers/class-automator-recipe-helpers.php';
@@ -352,9 +344,6 @@ class Automator_Functions {
 		$this->triggers = apply_filters_deprecated( 'uap_triggers', array( $this->triggers ), '3.0', 'automator_triggers' );
 		$this->triggers = apply_filters( 'automator_triggers', $this->triggers );
 
-		$this->closures = apply_filters_deprecated( 'uap_closures', array( $this->closures ), '3.0', 'automator_closures' );
-		$this->closures = apply_filters( 'automator_closures', $this->closures );
-
 		$this->recipe_items = apply_filters( 'automator_recipe_items', $this->recipe_items );
 
 		$this->all_integrations = apply_filters( 'automator_all_integrations', $this->all_integrations );
@@ -400,20 +389,6 @@ class Automator_Functions {
 	}
 
 	/**
-	 * @returnLogger\Singleton\Main_Aggregate_Logger_Singleton
-	 */
-	public function main_aggregate_logger() {
-		return Logger\Singleton\Main_Aggregate_Logger_Singleton::get_instance();
-	}
-
-	/**
-	 * @return Services\Structure\Actions\Item\Loop\Filters_Db
-	 */
-	public function loop_filters_db() {
-		return new Services\Structure\Actions\Item\Loop\Filters_Db();
-	}
-
-	/**
 	 * @param $integration_code
 	 * @param $integration
 	 */
@@ -432,7 +407,11 @@ class Automator_Functions {
 			return;
 		}
 
-		$this->all_integrations[ $integration_code ] = $integration;
+		// Merge: the constructor registers the full set, then both loaders follow up
+		// with a name/icon-only write. Replacing dropped everything else.
+		$existing = (array) ( $this->all_integrations[ $integration_code ] ?? array() );
+
+		$this->all_integrations[ $integration_code ] = array_merge( $existing, $integration );
 	}
 
 	/**
@@ -555,34 +534,6 @@ class Automator_Functions {
 	}
 
 	/**
-	 * @param string $code
-	 * @param string $integration
-	 *
-	 * @return mixed false|array
-	 */
-	public function get_closure( $code, $integration ) {
-		$closures = $this->get_closures();
-		if ( ! empty( $closures ) ) {
-			foreach ( $closures as $closure ) {
-				if ( $closure['code'] === $code && $closure['integration'] === $integration ) {
-					return $closure;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * @param $closure
-	 */
-	public function set_closures( $closure ) {
-		if ( $this->add_unique_recipe_item( $closure, 'closures' ) ) {
-			$this->closures[] = $closure;
-		}
-	}
-
-	/**
 	 * Get all loop filters
 	 *
 	 * @since 5.9.1
@@ -631,7 +582,7 @@ class Automator_Functions {
 
 	/**
 	 * @param array $item
-	 * @param string $type "actions" || "triggers" || "closures"
+	 * @param string $type "actions" || "triggers"
 	 */
 	private function add_unique_recipe_item( $item, $type ) {
 
@@ -721,12 +672,83 @@ class Automator_Functions {
 	}
 
 	/**
-	 * Returns a filtered set on automator closures
+	 * Closures were retired in 8.0.0 (the Redirect action replaced them). The public facade keeps the
+	 * closure methods as no-ops that raise the standard deprecation notice, so code that still calls
+	 * them (internal tooling, third-party plugins) degrades instead of fataling. Removed in 8.1.
+	 *
+	 * @deprecated 8.0.0 Always empty.
 	 *
 	 * @return array
 	 */
 	public function get_closures() {
-		return $this->closures;
+		_deprecated_function( __METHOD__, '8.0.0' );
+		return array();
+	}
+
+	/**
+	 * @deprecated 8.0.0 Closures were retired; nothing to find.
+	 *
+	 * @param string $code        Closure code.
+	 * @param string $integration Integration code.
+	 *
+	 * @return false
+	 */
+	public function get_closure( $code, $integration ) {
+		_deprecated_function( __METHOD__, '8.0.0' );
+		return false;
+	}
+
+	/**
+	 * @deprecated 8.0.0 Closures were retired; nothing is registered.
+	 *
+	 * @param array $closure Closure definition.
+	 *
+	 * @return false
+	 */
+	public function set_closures( $closure ) {
+		_deprecated_function( __METHOD__, '8.0.0' );
+		return false;
+	}
+
+	/**
+	 * @deprecated 8.0.0 Closures were retired; nothing is registered.
+	 *
+	 * @param array|null  $closure          Closure definition.
+	 * @param string|null $integration_code Integration code.
+	 * @param array|null  $integration      Integration definition.
+	 *
+	 * @return null
+	 */
+	public function register_closure( $closure = null, $integration_code = null, $integration = null ) {
+		_deprecated_function( __METHOD__, '8.0.0' );
+		return null;
+	}
+
+	/**
+	 * @deprecated 8.0.0 Closures were retired; a recipe has none.
+	 *
+	 * @param int $recipe_id Recipe id.
+	 *
+	 * @return null
+	 */
+	public function get_recipe_closure( $recipe_id ) {
+		_deprecated_function( __METHOD__, '8.0.0' );
+		return null;
+	}
+
+	/**
+	 * @deprecated 8.0.0 Closures were retired; nothing runs.
+	 *
+	 * @param int|null   $recipe_id     Recipe id.
+	 * @param int|null   $user_id       User id.
+	 * @param int|null   $recipe_log_id Recipe log id.
+	 * @param array      $args          Trigger args.
+	 *
+	 * @return false
+	 */
+	public function complete_closures( $recipe_id = null, $user_id = null, $recipe_log_id = null, $args = array() ) {
+		_deprecated_function( __METHOD__, '8.0.0' );
+		return false;
 	}
 
 	/**
@@ -751,6 +773,7 @@ class Automator_Functions {
 			$filter = 'automator_author_name';
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- The hook name starts with the automator_ prefix.
 		return apply_filters( $filter, 'Uncanny Owl' );
 	}
 
@@ -772,11 +795,18 @@ class Automator_Functions {
 			$url .= $link;
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- The hook name starts with the automator_ prefix.
 		return apply_filters( $filter, $url );
 	}
 
 	/**
 	 * Get data for all recipe objects
+	 *
+	 * @deprecated 8.0.0 This legacy recipe object no longer describes a recipe's structure. Read the
+	 *             recipe tree (`Recipe_Schema_Reader::get_or_build()`), the builder's wire shape
+	 *             (`Recipe_Wire_Service::get_wire_array()`), or the stores
+	 *             (`automator_get_recipe_trigger_store()`, `automator_get_action_store()`,
+	 *             `automator_get_block_store()`) instead.
 	 *
 	 * @param $force_new_data_load
 	 * @param int $recipe_id . Defaults to null.
@@ -827,6 +857,7 @@ class Automator_Functions {
 
 		$recipe_limit = (int) apply_filters( 'automator_get_recipes_data_limit', 9999 );
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Selects only the columns needed, without building WP_Post objects; no WordPress API returns this.
 		$recipes = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, post_title, post_type, post_status, post_parent
@@ -850,7 +881,7 @@ class Automator_Functions {
 		//Extract Recipe IDs
 		$recipe_ids = array_column( (array) $recipes, 'ID' );
 
-		//Collective array of recipes triggers, actions, closures
+		//Collective array of recipes triggers and actions
 		$recipe_data = $this->pre_fetch_recipe_metas( $recipes );
 
 		//Collective array of users recipes completed status
@@ -915,13 +946,6 @@ class Automator_Functions {
 
 			$this->recipes_data[ $recipe_id ]['actions'] = $actions;
 
-			if ( array_key_exists( $recipe_id, $recipe_data ) && is_array( $recipe_data[ $recipe_id ] ) && array_key_exists( 'closures', $recipe_data[ $recipe_id ] ) ) {
-				$closures = $recipe_data[ $recipe_id ]['closures'];
-			} else {
-				$closures = array();
-			}
-			$this->recipes_data[ $recipe_id ]['closures'] = $closures;
-
 			$this->recipes_data[ $recipe_id ]['completed_by_current_user'] = array_key_exists( $recipe_id, $recipes_completed ) ? $recipes_completed[ $recipe_id ] : false;
 		}
 
@@ -952,18 +976,18 @@ class Automator_Functions {
 	 */
 	public function get_recipe_data_by_recipe_id( $recipe_id = null, $force_new = false ) {
 
-		$recipes_loops = Automator()->loop_db()->fetch_all_recipes_loops();
-
 		if ( null === $recipe_id ) {
 			return array();
 		}
 
-		$key    = 'automator_recipe_data_of_' . $recipe_id;
-		$recipe = Automator()->cache->get( $key );
+		$cache_key = 'automator_recipe_data_of_' . $recipe_id;
+		$recipe    = Automator()->cache->get( $cache_key );
 
 		if ( ! empty( $recipe ) && false === $force_new ) {
-			return $recipe;
+			return $this->with_request_recipe_state( $recipe, $recipe_id );
 		}
+
+		$recipes_loops = Automator()->loop_db()->fetch_all_recipes_loops();
 
 		$recipe  = array();
 		$recipes = get_post( $recipe_id );
@@ -1001,29 +1025,69 @@ class Automator_Functions {
 
 		$recipe[ $key ]['actions'] = $actions;
 
-		$closure_array              = array();
-		$closures                   = $this->get_recipe_data( AUTOMATOR_POST_TYPE_CLOSURE, $recipe_id, $closure_array );
-		$recipe[ $key ]['closures'] = $closures;
-
 		$recipe[ $key ]['completed_by_current_user'] = $is_recipe_completed;
 
-		// extra_options is consumed only by the recipe editor JS to populate static
-		// dropdowns. At execution time, the Fields Resolver reads the stored copy from
-		// uap_options (written during the last editor load). Skip the expensive callbacks
-		// on non-admin requests to avoid unnecessary API calls and DB queries.
-		// Note: is_admin() is false for REST API requests, so we also check for Automator
-		// REST requests to ensure newly added actions get their options cached.
-		// On the frontend execution path the Fields_Resolver lazy-builds any missing
-		// per-item schema cache directly — see Fields_Resolver::get_cached_extra_options().
-		$recipe[ $key ]['extra_options'] = ( is_admin() || \is_automator_rest_request() || is_mcp_rest_request() )
-			? $this->load_extra_options( $recipe[ $key ] )
-			: array();
+		$recipe[ $key ]['extra_options'] = $this->load_request_extra_options( $recipe[ $key ] );
 
 		$recipe = apply_filters( 'automator_get_recipe_data_by_recipe_id', $recipe, $key );
 
-		Automator()->cache->set( $key, $recipe );
+		// The cached copy holds the recipe, not this request's user or editor state.
+		$cacheable = $recipe;
+		unset( $cacheable[ $key ]['completed_by_current_user'], $cacheable[ $key ]['extra_options'] );
+
+		Automator()->cache->set( $cache_key, $cacheable );
 
 		return $recipe;
+	}
+
+	/**
+	 * Add this request's state to a recipe read from the per-recipe cache.
+	 *
+	 * Whether the current user completed the recipe is live, per-user state, and the editor's field
+	 * options are loaded on every editor read (see load_extra_options()), so neither is cached.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param array      $recipe    Cached recipe data, keyed by recipe ID.
+	 * @param int|string $recipe_id Recipe ID.
+	 *
+	 * @return array
+	 */
+	private function with_request_recipe_state( $recipe, $recipe_id ) {
+
+		if ( ! isset( $recipe[ $recipe_id ] ) || ! is_array( $recipe[ $recipe_id ] ) ) {
+			return $recipe;
+		}
+
+		$recipe[ $recipe_id ]['completed_by_current_user'] = $this->is_recipe_completed( $recipe_id );
+		$recipe[ $recipe_id ]['extra_options']             = $this->load_request_extra_options( $recipe[ $recipe_id ] );
+
+		return $recipe;
+	}
+
+	/**
+	 * The recipe's field options for an editor request; none elsewhere.
+	 *
+	 * extra_options is consumed only by the recipe editor JS to populate static
+	 * dropdowns. At execution time, the Fields Resolver reads the stored copy from
+	 * uap_options (written during the last editor load). Skip the expensive callbacks
+	 * on non-admin requests to avoid unnecessary API calls and DB queries.
+	 * Note: is_admin() is false for REST API requests, so we also check for Automator
+	 * REST requests to ensure newly added actions get their options cached.
+	 * On the frontend execution path the Fields_Resolver lazy-builds any missing
+	 * per-item schema cache directly — see Fields_Resolver::get_cached_extra_options().
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param array $recipe One recipe's data (triggers + actions).
+	 *
+	 * @return array
+	 */
+	private function load_request_extra_options( $recipe ) {
+
+		return ( is_admin() || \is_automator_rest_request() || is_mcp_rest_request() )
+			? $this->load_extra_options( $recipe )
+			: array();
 	}
 
 	/**
@@ -1226,15 +1290,15 @@ class Automator_Functions {
 		$metas    = array();
 		$triggers = array();
 		$actions  = array();
-		$closures = array();
 		if ( ! empty( $recipes ) ) {
 
 			global $wpdb;
 
-			// Fetch uo-trigger, uo-action, uo-closure — scoped to the recipes already in PHP.
+			// Fetch uo-trigger, uo-action — scoped to the recipes already in PHP.
 			$recipe_ids   = array_column( (array) $recipes, 'ID' );
 			$placeholders = implode( ',', array_fill( 0, count( $recipe_ids ), '%d' ) );
 			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $placeholders is built from array_fill('%d') and values are spread via $wpdb->prepare().
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Batch read of the children of many recipes in one query, instead of one query per recipe.
 			$recipe_children = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT ID, post_status, post_type, menu_order, post_parent
@@ -1269,14 +1333,6 @@ class Automator_Functions {
 								'post_parent' => $post_parent,
 							);
 							break;
-						case AUTOMATOR_POST_TYPE_CLOSURE:
-							$closures[ $child_id ] = array(
-								'ID'          => $child_id,
-								'post_status' => $p_s,
-								'menu_order'  => $m_o,
-								'post_parent' => $post_parent,
-							);
-							break;
 						default:
 							break;
 					}
@@ -1285,10 +1341,11 @@ class Automator_Functions {
 
 			// Fetch metas only for known child IDs — avoids the double subquery and JOIN.
 			$related_metas = array();
-			$child_ids     = array_keys( $triggers + $actions + $closures );
+			$child_ids     = array_keys( $triggers + $actions );
 			if ( ! empty( $child_ids ) ) {
 				$placeholders = implode( ',', array_fill( 0, count( $child_ids ), '%d' ) );
 				// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $placeholders is built from array_fill('%d') and values are spread via $wpdb->prepare().
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Batch read of the meta of many posts in one query, instead of one query per post.
 				$related_metas = $wpdb->get_results(
 					$wpdb->prepare(
 						"SELECT post_id, meta_key, meta_value
@@ -1309,8 +1366,6 @@ class Automator_Functions {
 						$triggers[ $child_id ]['meta'][ $m_k ] = $m_v;
 					} elseif ( array_key_exists( $child_id, $actions ) ) {
 						$actions[ $child_id ]['meta'][ $m_k ] = $m_v;
-					} elseif ( array_key_exists( $child_id, $closures ) ) {
-						$closures[ $child_id ]['meta'][ $m_k ] = $m_v;
 					}
 				}
 			}
@@ -1339,9 +1394,6 @@ class Automator_Functions {
 			}
 			foreach ( $actions as $action ) {
 				$metas[ absint( $action['post_parent'] ) ]['actions'][] = $action;
-			}
-			foreach ( $closures as $closure ) {
-				$metas[ absint( $closure['post_parent'] ) ]['closures'][] = $closure;
 			}
 		}
 
@@ -1378,8 +1430,12 @@ class Automator_Functions {
 
 		$completed = array();
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$results = $wpdb->get_results(
-			$wpdb->prepare( "SELECT COUNT(completed) AS completed, automator_recipe_id FROM {$wpdb->prefix}uap_recipe_log WHERE user_id = %d AND automator_recipe_id IN (" . join( ',', $recipe_ids ) . ') AND completed = 1 GROUP BY automator_recipe_id', $user_id ) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$wpdb->prepare(
+				"SELECT COUNT(completed) AS completed, automator_recipe_id FROM {$wpdb->prefix}uap_recipe_log WHERE user_id = %d AND automator_recipe_id IN (" . implode( ',', array_fill( 0, count( $recipe_ids ), '%d' ) ) . ') AND completed = 1 GROUP BY automator_recipe_id',
+				array_merge( array( $user_id ), array_values( $recipe_ids ) )
+			)
 		);
 
 		if ( $results ) {
@@ -1459,6 +1515,7 @@ class Automator_Functions {
 	 */
 	public function user_completed_recipe_number_times( $recipe_id, $user_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$results = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(completed) AS num_times_completed
@@ -1493,6 +1550,7 @@ class Automator_Functions {
 		}
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$results = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(completed) AS num_times_completed
@@ -1536,7 +1594,8 @@ class Automator_Functions {
 		);
 		$q = apply_filters( 'automator_get_recipe_data_query', $q, $recipe_id, $type );
 
-		return $wpdb->get_results( $q, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Reads recipe children from core posts; the query is prepared above and can be adjusted by the automator_get_recipe_data_query filter.
+		return $wpdb->get_results( $q, ARRAY_A );
 	}
 
 	/**
@@ -1670,6 +1729,7 @@ class Automator_Functions {
 		global $wpdb;
 
 		if ( false === $show_draft ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads only the ID, title and status of a recipe's steps; get_children() would load every full post.
 			$results = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT ID, post_title, post_status
@@ -1686,6 +1746,7 @@ class Automator_Functions {
 				ARRAY_A
 			);
 		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads only the ID, title and status of a recipe's steps; get_children() would load every full post.
 			$results = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT ID, post_title, post_status
@@ -1767,19 +1828,6 @@ class Automator_Functions {
 			if ( ! empty( $system_actions ) ) {
 				foreach ( $system_actions as $action ) {
 					if ( $action['code'] === $code ) {
-						$item_not_found = false;
-					}
-				}
-			} else {
-				$item_not_found = false;
-			}
-		}
-
-		if ( AUTOMATOR_POST_TYPE_CLOSURE === $type ) {
-			$system_closures = $this->closures;
-			if ( ! empty( $system_closures ) ) {
-				foreach ( $system_closures as $closure ) {
-					if ( $closure['code'] === $code ) {
 						$item_not_found = false;
 					}
 				}
@@ -1879,25 +1927,6 @@ class Automator_Functions {
 		}
 
 		return $this->complete->complete_actions( $recipe_id, $user_id, $recipe_log_id, $args );
-	}
-
-	/**
-	 * Complete all closures in recipe
-	 *
-	 * @param null $recipe_id
-	 * @param null $user_id
-	 * @param null $recipe_log_id
-	 * @param $args
-	 *
-	 * @return bool
-	 * @deprecated 3.0
-	 */
-	public function complete_closures( $recipe_id = null, $user_id = null, $recipe_log_id = null, $args = array() ) {
-		if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) {
-			_doing_it_wrong( 'complete_closures', 'Please use Automator()->complete->closures() instead.', 3.0 );
-		}
-
-		return $this->complete->closures( $recipe_id, $user_id, $recipe_log_id, $args );
 	}
 
 	/**
@@ -2122,25 +2151,6 @@ class Automator_Functions {
 	}
 
 	/**
-	 * Registers a new closure and creates a type if defined and the type does not exist
-	 *
-	 * @param $closure
-	 * @param $integration_code
-	 * @param $integration
-	 *
-	 * @return null|bool
-	 * @deprecated v2.1 Automator()->register->closure
-	 * @use Automator()->register->closure
-	 */
-	public function register_closure( $closure = null, $integration_code = null, $integration = null ) {
-		if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) {
-			_doing_it_wrong( 'register_closure', 'Please use Automator()->register->closure instead.', 3.0 );
-		}
-
-		return $this->register->closure( $closure, $integration_code, $integration );
-	}
-
-	/**
 	 * Add a new integration
 	 *
 	 * @param $integration_code
@@ -2242,10 +2252,12 @@ class Automator_Functions {
 		 *      - WP_LANG_DIR/uncanny-automator/uncanny-automator-LOCALE.mo
 		 *      - WP_LANG_DIR/plugins/uncanny-automator-LOCALE.mo
 		 */
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, applied as WordPress applies it.
 		$locale = apply_filters( 'plugin_locale', $locale, 'uncanny-automator' );
 
 		unload_textdomain( 'uncanny-automator', true );
 		load_textdomain( 'uncanny-automator', WP_LANG_DIR . '/uncanny-automator/uncanny-automator-' . $locale . '.mo' );
+		// phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- The site's own translation file loads first above; just-in-time loading skips the WordPress.org pack once the domain is loaded, so this merges it in after.
 		load_plugin_textdomain( 'uncanny-automator', false, plugin_basename( dirname( AUTOMATOR_BASE_FILE ) ) . '/languages' );
 	}
 
@@ -2322,6 +2334,7 @@ class Automator_Functions {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$result = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT meta_value
@@ -2357,6 +2370,7 @@ class Automator_Functions {
 
 		$condition_id_failure_message = array();
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT meta_value
@@ -2382,37 +2396,10 @@ class Automator_Functions {
 	}
 
 	/**
-	 * Retrieves the recipe closure.
-	 *
-	 * @param int $recipe_id The recipe ID.
-	 *
-	 * @return null|object The WordPress post object if not null.
-	 */
-	public function get_recipe_closure( $recipe_id ) {
-
-		global $wpdb;
-
-		if ( empty( $recipe_id ) ) {
-			return null;
-		}
-
-		$closure = $wpdb->get_row(
-			$wpdb->prepare(
-				"SELECT * FROM $wpdb->posts WHERE post_type = %s AND post_parent = %d",
-				AUTOMATOR_POST_TYPE_CLOSURE,
-				$recipe_id
-			)
-		);
-
-		if ( empty( $closure ) ) {
-			return null;
-		}
-
-		return $closure;
-	}
-
-	/**
 	 * Retrieves the recipe object.
+	 *
+	 * @deprecated 8.0.0 This legacy structure no longer describes an 8.0.0 recipe. Use
+	 *             get_recipe_flow_object(), the `ModelRecipe` wire array the builder reads.
 	 *
 	 * @param string $format Could be OBJECT, ARRAY_A, 'JSON'
 	 *
@@ -2439,6 +2426,24 @@ class Automator_Functions {
 		}
 
 		return $recipe_object->retrieve()->toJSON();
+	}
+
+	/**
+	 * The recipe as the builder and REST API read it: the `ModelRecipe` wire array.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $recipe_id Recipe post id.
+	 *
+	 * @return array|null The wire array, or null when the id is not a recipe or its legacy storage could not be migrated.
+	 */
+	public function get_recipe_flow_object( $recipe_id ) {
+		try {
+			return automator_get_recipe_wire_service()->get_wire_array( absint( $recipe_id ) );
+		} catch ( Legacy_Storage_Migration_Exception $e ) {
+			automator_log( $e->getMessage(), 'get_recipe_flow_object' );
+			return null;
+		}
 	}
 
 	/**
@@ -2538,9 +2543,6 @@ class Automator_Functions {
 				case AUTOMATOR_POST_TYPE_ACTION:
 					$integration_code = Automator()->get->action_integration_from_action_code( $item_code );
 					break;
-				case AUTOMATOR_POST_TYPE_CLOSURE:
-					$integration_code = Automator()->get->closure_integration_from_closure_code( $item_code );
-					break;
 				case AUTOMATOR_POST_TYPE_LOOP:
 					// TODO : REVIEW
 					$integration_code = in_array( $item_code, array( 'LOOP_POSTS', 'LOOP_USERS', 'LOOP_TOKEN' ), true ) ? 'WP' : 'UNKNOWN';
@@ -2625,9 +2627,6 @@ class Automator_Functions {
 				break;
 			case AUTOMATOR_POST_TYPE_ACTION:
 				$config = $this->get_action( $item_code );
-				break;
-			case AUTOMATOR_POST_TYPE_CLOSURE:
-				$config = $this->get_closure( $item_code, $integration_code );
 				break;
 			case AUTOMATOR_POST_TYPE_LOOP:
 				// TODO : REVIEW Elite loop settings?
@@ -2715,39 +2714,7 @@ class Automator_Functions {
 	 * @return bool Returns true if the recipe is throttled, false otherwise.
 	 */
 	public function is_recipe_throttled( int $recipe_id, int $user_id ) {
-
-		$data = (array) get_post_meta( $recipe_id, 'field_recipe_throttle', true );
-
-		try {
-			$throttler = new Services\Recipe\Process\Throttler( $recipe_id, $data );
-
-			$filter_args = array(
-				'throttler' => $throttler,
-				'data'      => $data,
-				'user_id'   => $user_id,
-				'recipe_id' => $recipe_id,
-			);
-
-			// Allow people to override the throttler execution and introduce their own logic on runtime.
-			$can_execute = apply_filters(
-				'automator_recipe_throttler_can_execute',
-				$throttler->can_execute( $user_id ),
-				$filter_args
-			);
-
-			// If the recipe can execute, return false because the recipe is not throttled.
-			if ( $can_execute ) {
-				return false;
-			}
-		} catch ( \Exception $e ) {
-			// Log the error.
-			automator_log( 'Error creating throttler: ' . $e->getMessage(), 'error' );
-			// Return false because the recipe can't be throttled due to an error.
-			return false;
-		}
-
-		// Otherwise, return true.
-		return true;
+		return automator_is_recipe_throttled( $recipe_id, $user_id );
 	}
 
 	/**

@@ -55,6 +55,7 @@ class Add_WPLMS_Integration {
 		}
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API finds posts by a raw meta value across post types.
 		$current_triggers = $wpdb->get_results( "SELECT post_id FROM $wpdb->postmeta WHERE meta_value = 'WPLMS4' AND meta_key = 'integration'" );
 
 		if ( empty( $current_triggers ) ) {

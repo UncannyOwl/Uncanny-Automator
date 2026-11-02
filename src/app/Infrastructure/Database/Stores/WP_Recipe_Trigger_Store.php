@@ -2,7 +2,10 @@
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Infrastructure\Database\Stores;
 
+use Uncanny_Automator\App\Events\Dispatcher;
+use Uncanny_Automator\App\Events\Recipe_Change_Record;
 use Uncanny_Automator\App\Infrastructure\Exceptions\Store_Exception;
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Item_Field_Filter;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Id;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Triggers;
 use Uncanny_Automator\Json_String_Repair;
@@ -12,6 +15,10 @@ use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Trigger_Id;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Enums\Trigger_Status;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Trigger_Store;
 use Uncanny_Automator\App\Infrastructure\Cache\Recipe_Cache;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Declared_Field_Codes_Resolver;
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Custom_Item_Name_Field;
+use Uncanny_Automator\App\Infrastructure\Database\Stores\Traits\Item_Usage_Counts;
 
 /**
  * WordPress Recipe Trigger Store.
@@ -21,7 +28,9 @@ use Uncanny_Automator\App\Infrastructure\Cache\Recipe_Cache;
  *
  * @since 7.0.0
  */
-class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
+class WP_Recipe_Trigger_Store extends WP_Post_Store implements Recipe_Trigger_Store {
+
+	use Item_Usage_Counts;
 
 	/**
 	 * Post type for triggers.
@@ -51,12 +60,33 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 	const DEFAULT_HOOK_PRIORITY   = 10;
 	const DEFAULT_HOOK_ARGS_COUNT = 1;
 
+	/**
+	 * The Pro run-now dispatch hook. Loopable triggers (CSV/JSON/XML/RSS
+	 * "Import a file") declare run-now capability by registering this hook as
+	 * their add_action — that postmeta is the registration-derived truth this
+	 * store reads. Writers of the contract: Pro's Loopable_Trigger base (the
+	 * single Pro-side declaration site) and Pro's Recipe_State_Flags, which
+	 * reports has_run_now for the same recipes on the wire.
+	 */
+	const RUN_NOW_TRIGGER_HOOK = 'automator_pro_run_now_recipe';
+
 	// Configuration keys that should NOT be uppercased (modern fields)
 	// Define in lowercase - compared against incoming config keys
 	const PRESERVE_CASE_KEYS = array(
-		'_automator_custom_item_name_',
+		Custom_Item_Name_Field::FIELD_CODE,
 		'added_by_llm',
+		'product_rating', // Woo's review-rating trigger (WCPRODREVIEWRATING) declares it lowercase.
 	);
+
+	/**
+	 * Suffixes of the companion keys stored beside a field as `{CODE}{suffix}`.
+	 * The suffix stays lowercase after the uppercased code; every reader looks it up that way.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var string[]
+	 */
+	const COMPANION_SUFFIXES = array( '_readable', '_custom' );
 
 	// Standard system meta keys (not user configuration)
 	const SYSTEM_META_KEYS = array(
@@ -117,10 +147,25 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 	}
 
 	/**
-	 * Get all triggers for a recipe.
+	 * @inheritDoc
+	 */
+	public function get_recipe_trigger_posts( int $recipe_id ): array {
+		return get_posts(
+			array(
+				'post_type'      => self::POST_TYPE,
+				'post_parent'    => $recipe_id,
+				'post_status'    => array( Trigger_Status::PUBLISH, Trigger_Status::DRAFT ),
+				'posts_per_page' => -1, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- Top-level triggers per recipe are bounded by the builder UI; no realistic cap needed.
+				'orderby'        => 'menu_order',
+				'order'          => 'ASC',
+			)
+		);
+	}
+	/**
+	 * Every trigger belonging to a recipe. Returns an empty collection when the id is not a recipe.
 	 *
-	 * @param Recipe_Id $recipe_id Recipe ID.
-	 * @return Recipe_Triggers Triggers collection.
+	 * @param Recipe_Id $recipe_id The ID.
+	 * @return Recipe_Triggers
 	 */
 	public function get_recipe_triggers( Recipe_Id $recipe_id ): Recipe_Triggers {
 
@@ -136,16 +181,7 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 		$recipe_type = ! empty( $recipe_type ) ? $recipe_type : 'user';
 
 		// Get trigger posts
-		$trigger_posts = get_posts(
-			array(
-				'post_type'      => self::POST_TYPE,
-				'post_parent'    => $recipe_id_value,
-				'post_status'    => array( Trigger_Status::PUBLISH, Trigger_Status::DRAFT ),
-				'posts_per_page' => -1,
-				'orderby'        => 'menu_order',
-				'order'          => 'ASC',
-			)
-		);
+		$trigger_posts = $this->get_recipe_trigger_posts( $recipe_id_value );
 
 		$triggers = array();
 		foreach ( $trigger_posts as $trigger_post ) {
@@ -163,22 +199,6 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 	}
 
 	/**
-	 * Get WP_Post object for trigger.
-	 *
-	 * @param int $trigger_id Trigger ID.
-	 * @return \WP_Post|null WP_Post object or null if not found.
-	 */
-	public function get_wp_post( int $trigger_id ): ?\WP_Post {
-		$post = get_post( $trigger_id );
-
-		if ( ! $post || self::POST_TYPE !== $post->post_type ) {
-			return null;
-		}
-
-		return $post;
-	}
-
-	/**
 	 * Add single trigger to recipe.
 	 *
 	 * @param Recipe_Id $recipe_id Recipe ID.
@@ -189,8 +209,6 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 	public function add_trigger_to_recipe( Recipe_Id $recipe_id, Trigger $trigger ): Trigger {
 
 		$trigger_id = $this->save_single_trigger( $recipe_id->get_value(), $trigger );
-
-		Recipe_Cache::invalidate( $recipe_id->get_value() );
 
 		// Reload and return the persisted trigger
 		$trigger_post  = get_post( $trigger_id );
@@ -217,13 +235,15 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 		$trigger_id_value = $trigger_id->get_value();
 		$trigger_data     = $this->prepare_trigger_for_storage( $trigger );
 
-		// Update post
-		$result = wp_update_post(
-			array(
-				'ID'         => $trigger_id_value,
-				'post_title' => $trigger_data['title'],
-			)
-		);
+		$post_update = array( 'ID' => $trigger_id_value );
+
+		// With no sentence anywhere there is nothing to title the trigger from, so it keeps the title it has.
+		if ( '' !== $trigger_data['title'] ) {
+			$post_update['post_title'] = $trigger_data['title'];
+		}
+
+		// Update post. Request WordPress errors: a refused update otherwise answers 0 and passes as saved.
+		$result = wp_update_post( $post_update, true );
 
 		if ( is_wp_error( $result ) ) {
 			// translators: %s is the error message.
@@ -231,12 +251,53 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 		}
 
 		// Update meta
-		foreach ( $trigger_data['meta'] as $meta_key => $meta_value ) {
-			update_post_meta( $trigger_id_value, $meta_key, $meta_value );
+		$candidate_edits = array();
+		$written         = array();
+		$stored          = get_post_meta( $trigger_id_value );
+		foreach ( $this->without_raw_structural_artifacts( $trigger_data['meta'] ) as $meta_key => $meta_value ) {
+			// A value the save left as it was read goes unwritten: it was read still serialized
+			// (an array, an object), and writing it back would serialize it again.
+			if ( isset( $stored[ $meta_key ] ) && array( $meta_value ) === $stored[ $meta_key ] ) {
+				continue;
+			}
+
+			// A key's first materialization is configuration, not an edit —
+			// only a key that already had a stored value can be a candidate
+			// (spec Stage 3, AMENDED 2026-08-12).
+			$existed = metadata_exists( 'post', $trigger_id_value, $meta_key );
+			$changed = update_post_meta( $trigger_id_value, $meta_key, $meta_value );
+			if ( false !== $changed ) {
+				$written[] = $meta_key;
+			}
+			if ( $existed && false !== $changed ) {
+				$candidate_edits[] = $meta_key;
+			}
 		}
 
+		Recipe_Change_Record::note_item_fields(
+			Integration_Item_Types::TRIGGER,
+			(int) $trigger_id_value,
+			(int) $recipe_id->get_value(),
+			$trigger->get_integration()->get_value(),
+			$trigger->get_trigger_code()->get_value(),
+			$written
+		);
+
+		// Declared codes resolve lazily — only a save that actually edited
+		// stored values pays the definition lookup.
+		if ( ! empty( $candidate_edits )
+			&& array_intersect( $candidate_edits, $this->declared_field_codes( $trigger, $trigger_data['meta'] ) ) ) {
+			Dispatcher::action( 'automator_node_fields_changed', 'item', $trigger_id_value );
+		}
+
+		// The field meta above lands AFTER wp_update_post, so the hook's
+		// invalidation ran against the pre-edit values. See
+		// Store_Write_Ordering_Test.
+		Recipe_Cache::invalidate( $recipe_id->get_value() );
+
 		// Reload and return the updated trigger
-		$trigger_post    = get_post( $trigger_id_value );
+		$trigger_post = get_post( $trigger_id_value );
+
 		$updated_trigger = $this->hydrate_trigger_from_post( $trigger_post );
 
 		if ( null === $updated_trigger ) {
@@ -244,26 +305,67 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 			throw new Store_Exception( sprintf( esc_html_x( 'Failed to reload trigger after update: %s', 'Trigger store reload error', 'uncanny-automator' ), absint( $trigger_id_value ) ) );
 		}
 
-		Recipe_Cache::invalidate( $recipe_id->get_value() );
-
 		return $updated_trigger;
+	}
+
+	/**
+	 * The trigger's declared field codes — the allow-list write-time
+	 * invalidation compares candidate edits against (spec Stage 3, AMENDED
+	 * 2026-08-12). The aggregate carries the identity, so callers never
+	 * supply this; resolution is memoized per request by the registry and
+	 * only ever invoked when a save produced candidate edits.
+	 *
+	 * @param Trigger              $trigger       Trigger being saved.
+	 * @param array<string, mixed> $incoming_meta Meta map being written — degraded fallback source.
+	 * @return array<string>
+	 */
+	private function declared_field_codes( Trigger $trigger, array $incoming_meta ): array {
+		return ( new Declared_Field_Codes_Resolver() )->resolve(
+			$trigger->get_integration()->get_value(),
+			Integration_Item_Types::TRIGGER,
+			$trigger->get_trigger_code()->get_value(),
+			$incoming_meta
+		);
 	}
 
 	/**
 	 * Remove trigger from recipe.
 	 *
+	 * Deletes the trigger only when it is one of the recipe's triggers.
+	 *
+	 * @since 7.0.0
+	 * @since 8.0.0 Throws when the trigger is not one of the recipe's, instead of deleting another recipe's trigger or doing nothing.
+	 *
 	 * @param Recipe_Id  $recipe_id Recipe ID.
 	 * @param Trigger_Id $trigger_id Trigger ID.
+	 *
+	 * @throws Store_Exception When the trigger is not one of the recipe's triggers, or WordPress does not delete it.
 	 */
 	public function remove_trigger_from_recipe( Recipe_Id $recipe_id, Trigger_Id $trigger_id ): void {
-		$trigger_id_value = $trigger_id->get_value();
-		$trigger_post     = get_post( $trigger_id_value );
+		$trigger_id_value = (int) $trigger_id->get_value();
+		$recipe_id_value  = (int) $recipe_id->get_value();
+		$trigger_post     = $this->get_wp_post( $trigger_id_value );
 
-		if ( $trigger_post && self::POST_TYPE === $trigger_post->post_type ) {
-			wp_delete_post( $trigger_id_value, true );
+		if ( null === $trigger_post || $recipe_id_value !== (int) $trigger_post->post_parent ) {
+			throw new Store_Exception(
+				sprintf(
+					/* translators: %1$d is the trigger ID, %2$d is the recipe ID. */
+					esc_html_x( 'Trigger %1$d is not a trigger of recipe %2$d.', 'Trigger store delete error', 'uncanny-automator' ),
+					absint( $trigger_id_value ),
+					absint( $recipe_id_value )
+				)
+			);
 		}
 
-		Recipe_Cache::invalidate( $recipe_id->get_value() );
+		if ( ! wp_delete_post( $trigger_id_value, true ) ) {
+			throw new Store_Exception(
+				sprintf(
+					/* translators: %d is the trigger ID. */
+					esc_html_x( 'Failed to delete trigger: %d', 'Trigger store delete error', 'uncanny-automator' ),
+					absint( $trigger_id_value )
+				)
+			);
+		}
 	}
 
 	/**
@@ -290,31 +392,6 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 	}
 
 	/**
-	 * Delete all triggers for recipe.
-	 *
-	 * @param Recipe_Id $recipe_id Recipe ID.
-	 */
-	public function delete_recipe_triggers( Recipe_Id $recipe_id ): void {
-		$trigger_posts = get_posts(
-			array(
-				'post_type'      => self::POST_TYPE,
-				'post_parent'    => $recipe_id->get_value(),
-				'post_status'    => 'any',
-				'posts_per_page' => -1,
-			)
-		);
-
-		foreach ( $trigger_posts as $trigger_post ) {
-			wp_delete_post( $trigger_post->ID, true );
-		}
-
-		// Clean up recipe meta
-		delete_post_meta( $recipe_id->get_value(), self::META_TRIGGER_LOGIC );
-
-		Recipe_Cache::invalidate( $recipe_id->get_value() );
-	}
-
-	/**
 	 * Check if recipe has triggers.
 	 *
 	 * @param Recipe_Id $recipe_id Recipe ID.
@@ -322,6 +399,29 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 	 */
 	public function recipe_has_triggers( Recipe_Id $recipe_id ): bool {
 		return $this->count_recipe_triggers( $recipe_id ) > 0;
+	}
+
+	/**
+	 * Whether the recipe has at least one live (published) trigger.
+	 *
+	 * @param Recipe_Id $recipe_id Recipe ID.
+	 * @return bool True when a published trigger exists.
+	 */
+	public function recipe_has_live_triggers( Recipe_Id $recipe_id ): bool {
+		$count = (int) $this->db->get_var(
+			$this->db->prepare(
+				"SELECT COUNT(*)
+				FROM {$this->db->posts}
+				WHERE post_type = %s
+				AND post_parent = %d
+				AND post_status = %s",
+				self::POST_TYPE,
+				$recipe_id->get_value(),
+				'publish'
+			)
+		);
+
+		return $count > 0;
 	}
 
 	/**
@@ -333,7 +433,7 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 	public function count_recipe_triggers( Recipe_Id $recipe_id ): int {
 		return (int) $this->db->get_var(
 			$this->db->prepare(
-				"SELECT COUNT(*) 
+				"SELECT COUNT(*)
 				FROM {$this->db->posts}
 				WHERE post_type = %s
 				AND post_parent = %d
@@ -354,34 +454,105 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 	 * @return bool True if recipe has a manual trigger.
 	 */
 	public function recipe_has_manual_trigger( Recipe_Id $recipe_id ): bool {
+		// Presence check delegates to the id lookup — same query, single source.
+		return null !== $this->get_manual_trigger_id( $recipe_id );
+	}
 
-		// Define manual trigger codes.
-		$manual_trigger_codes = array( 'RECIPE_MANUAL_TRIGGER_ANON' );
+	/**
+	 * Whether the recipe has a published manual trigger supported by run receipts.
+	 *
+	 * @param Recipe_Id $recipe_id Recipe ID.
+	 * @return bool
+	 */
+	public function recipe_has_live_manual_trigger( Recipe_Id $recipe_id ): bool {
+		return null !== $this->db->get_var(
+			$this->db->prepare(
+				"SELECT p.ID
+				FROM {$this->db->posts} p
+				INNER JOIN {$this->db->postmeta} pm ON p.ID = pm.post_id
+				WHERE p.post_parent = %d
+				AND p.post_type = %s
+				AND p.post_status = %s
+				AND pm.meta_key = %s
+				AND pm.meta_value = %s
+				LIMIT 1",
+				$recipe_id->get_value(),
+				self::POST_TYPE,
+				Trigger_Status::PUBLISH,
+				self::META_TRIGGER_CODE,
+				'RECIPE_MANUAL_TRIGGER_ANON'
+			)
+		);
+	}
 
-		// Build placeholders for IN clause (%s, %s, ...).
-		// Safe: count is from our own array, not user input.
-		$placeholders = implode( ', ', array_fill( 0, count( $manual_trigger_codes ), '%s' ) );
+	/**
+	 * The post ID of the recipe's manual (run-now) trigger, or null when none.
+	 *
+	 * @param Recipe_Id $recipe_id Recipe ID.
+	 * @return int|null
+	 */
+	public function get_manual_trigger_id( Recipe_Id $recipe_id ): ?int {
+		$manual_id = $this->get_trigger_id_by_code( $recipe_id, 'RECIPE_MANUAL_TRIGGER_ANON' );
+		if ( null !== $manual_id ) {
+			return $manual_id;
+		}
 
-		// Query for triggers with manual trigger codes.
-		// Safe: using $wpdb->prepare() with proper parameter merging.
+		// Run-now-style triggers are manual triggers for the route guard and
+		// the publish-first promotion — see RUN_NOW_TRIGGER_HOOK.
 		$query = $this->db->prepare(
-			"SELECT pm.meta_value
+			"SELECT p.ID
+			FROM {$this->db->posts} p
+			INNER JOIN {$this->db->postmeta} pm ON p.ID = pm.post_id
+			WHERE p.post_parent = %d
+			AND p.post_type = %s
+			AND pm.meta_key = 'add_action'
+			AND pm.meta_value = %s
+			LIMIT 1",
+			$recipe_id->get_value(),
+			self::POST_TYPE,
+			self::RUN_NOW_TRIGGER_HOOK
+		);
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above with $wpdb->prepare()
+		$id = $this->db->get_var( $query );
+
+		return null !== $id ? (int) $id : null;
+	}
+
+	/**
+	 * The post ID of the first trigger in a recipe matching a trigger code, or
+	 * null when the recipe has no such trigger.
+	 *
+	 * The generic "find a trigger by code in a recipe" primitive — domain
+	 * lookups like {@see self::get_manual_trigger_id()} are thin wrappers, and
+	 * the public helpers `automator_get_recipe_trigger_id()` /
+	 * `automator_recipe_has_trigger()` expose it to external callers (Pro).
+	 *
+	 * @param Recipe_Id $recipe_id    Recipe ID.
+	 * @param string    $trigger_code Trigger code to match.
+	 * @return int|null
+	 */
+	public function get_trigger_id_by_code( Recipe_Id $recipe_id, string $trigger_code ): ?int {
+
+		$query = $this->db->prepare(
+			"SELECT p.ID
 			FROM {$this->db->posts} p
 			INNER JOIN {$this->db->postmeta} pm ON p.ID = pm.post_id
 			WHERE p.post_parent = %d
 			AND p.post_type = %s
 			AND pm.meta_key = %s
-			AND pm.meta_value IN ({$placeholders})",
-			array_merge(
-				array( $recipe_id->get_value(), self::POST_TYPE, self::META_TRIGGER_CODE ),
-				$manual_trigger_codes
-			)
+			AND pm.meta_value = %s
+			LIMIT 1",
+			$recipe_id->get_value(),
+			self::POST_TYPE,
+			self::META_TRIGGER_CODE,
+			$trigger_code
 		);
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above with $wpdb->prepare()
-		$results = $this->db->get_results( $query );
+		$id = $this->db->get_var( $query );
 
-		return ! empty( $results );
+		return null !== $id ? (int) $id : null;
 	}
 
 	/**
@@ -404,10 +575,10 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 		// Arrange the post data.
 		$post_data = array(
 			'post_type'   => self::POST_TYPE,
-			'post_parent' => $trigger->get_recipe_id() ? $trigger->get_recipe_id()->get_value() : $recipe_id,
-			'post_title'  => $trigger_data['title'],
-			'post_status' => $trigger->get_status() ? $trigger->get_status()->get_value() : Trigger_Status::DRAFT,
-			'meta_input'  => $trigger_data['meta'],
+			'post_parent' => $recipe_id,
+			'post_title'  => $trigger_data['title'] ?? '',
+			'post_status' => $trigger_status,
+			'meta_input'  => $this->without_raw_structural_artifacts( $trigger_data['meta'] ?? array() ),
 		);
 
 		$trigger_id = $trigger->get_trigger_id();
@@ -416,7 +587,8 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 			$post_data['ID'] = $trigger_id->get_value();
 		}
 
-		$post_id = wp_insert_post( $post_data );
+		// Request WordPress errors: a refused write otherwise answers 0, and get_post( 0 ) reads the global post.
+		$post_id = wp_insert_post( $post_data, true );
 
 		if ( is_wp_error( $post_id ) ) {
 			// translators: %s is the error message.
@@ -505,21 +677,36 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 	/**
 	 * Convert clean configuration to legacy meta format.
 	 *
+	 * Companion keys are matched to their field without case, as meta keys are,
+	 * because exports and MCP can send `_CUSTOM` or another spelling of the field
+	 * code. They are written under the field's stored key with the suffix lowercased.
+	 *
 	 * @param array  $config Configuration array.
 	 * @param string $trigger_code Trigger code.
 	 * @return array Legacy meta fields.
 	 */
 	private function convert_configuration_to_legacy_meta( array $config, string $trigger_code ): array {
 		$legacy_meta = array();
+		$fields      = array();
+		$companions  = array();
 
-		// Handle different trigger types with their specific field patterns
-		foreach ( $config as $field_key => $field_value ) {
-			// Skip _readable keys - they'll be handled when processing their parent field.
-			// Also keeps _readable suffix lowercase as expected by sentence builder.
-			if ( substr( $field_key, -9 ) === '_readable' ) {
+		foreach ( $config as $key => $value ) {
+			$suffix = $this->companion_suffix( $key );
+
+			if ( null === $suffix ) {
+				$fields[ $key ] = $value;
 				continue;
 			}
 
+			$companion_key = strtolower( substr( $key, 0, - strlen( $suffix ) ) ) . $suffix;
+
+			// A key already spelled with the lowercase suffix wins over an uppercase copy of it.
+			if ( substr( $key, - strlen( $suffix ) ) === $suffix || ! array_key_exists( $companion_key, $companions ) ) {
+				$companions[ $companion_key ] = $value;
+			}
+		}
+
+		foreach ( $fields as $field_key => $field_value ) {
 			// Store field value as CAPSLOCK meta key (the legacy way)
 			// Exception: preserve case for modern fields that should not be uppercased
 			$field_key_lower = strtolower( $field_key );
@@ -530,16 +717,32 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 			}
 			$legacy_meta[ $legacy_key ] = $field_value;
 
-			// Store readable label if it exists (keep _readable suffix lowercase)
-			$readable_key = $field_key . '_readable';
-			if ( isset( $config[ $readable_key ] ) ) {
-				// Use uppercase field code + lowercase _readable suffix
-				$legacy_readable_key                 = $legacy_key . '_readable';
-				$legacy_meta[ $legacy_readable_key ] = $config[ $readable_key ];
+			foreach ( self::COMPANION_SUFFIXES as $suffix ) {
+				if ( isset( $companions[ $field_key_lower . $suffix ] ) ) {
+					$legacy_meta[ $legacy_key . $suffix ] = $companions[ $field_key_lower . $suffix ];
+				}
 			}
 		}
 
 		return $legacy_meta;
+	}
+
+	/**
+	 * The companion suffix a configuration key ends with, compared without case.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $key Configuration key.
+	 * @return string|null The suffix as listed in COMPANION_SUFFIXES, or null for a field key.
+	 */
+	private function companion_suffix( string $key ): ?string {
+		foreach ( self::COMPANION_SUFFIXES as $suffix ) {
+			if ( 0 === strcasecmp( substr( $key, - strlen( $suffix ) ), $suffix ) ) {
+				return $suffix;
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -573,10 +776,12 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 	/**
 	 * Parse trigger meta into clean format.
 	 *
+	 * @since 8.0.0 Public, so a reader can use what a trigger the aggregate refuses stores.
+	 *
 	 * @param int $trigger_post_id Trigger post ID.
-	 * @return array|null Clean trigger data or null.
+	 * @return array|null Clean trigger data, or null when the post stores no trigger code.
 	 */
-	private function parse_trigger_meta( int $trigger_post_id ): ?array {
+	public function parse_trigger_meta( int $trigger_post_id ): ?array {
 		// Get all meta for this post
 		$all_meta = get_post_meta( $trigger_post_id );
 
@@ -591,12 +796,17 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 		}
 
 		// Extract basic trigger info
-		$trigger_code                 = $this->get_meta_value( $all_meta, self::META_TRIGGER_CODE );
-		$trigger_type                 = $this->get_meta_value( $all_meta, self::META_TRIGGER_TYPE, 'user' );
-		$integration                  = $this->get_meta_value( $all_meta, self::META_INTEGRATION, 'WP' );
-		$hook_name                    = $this->get_meta_value( $all_meta, self::META_ADD_ACTION, '' );
-		$sentence                     = $this->get_meta_value( $all_meta, self::META_SENTENCE, '' );
-		$sentence_human_readable      = $this->get_meta_value( $all_meta, self::META_SENTENCE_HUMAN_READABLE, $sentence );
+		// Trimmed as the aggregate trims them, so a reader of this row and of a hydrated trigger see one value.
+		$trigger_code = trim( (string) $this->get_meta_value( $all_meta, self::META_TRIGGER_CODE ) );
+		$trigger_type = $this->get_meta_value( $all_meta, self::META_TRIGGER_TYPE, 'user' );
+		$integration  = trim( (string) $this->get_meta_value( $all_meta, self::META_INTEGRATION ) );
+		// `add_action` holds a single hook name OR — for triggers registered via
+		// `add_action( array( 'a', 'b' ), ... )` — a serialized list of names.
+		// `get_post_meta( $id )` returns the raw (still-serialized) value, so
+		// unserialize here to round-trip multi-hook triggers.
+		$hook_name                    = automator_safe_unserialize( $this->get_meta_value( $all_meta, self::META_ADD_ACTION, '' ) );
+		$sentence                     = trim( (string) $this->get_meta_value( $all_meta, self::META_SENTENCE, '' ) );
+		$sentence_human_readable      = trim( (string) $this->get_meta_value( $all_meta, self::META_SENTENCE_HUMAN_READABLE, $sentence ) );
 		$sentence_human_readable_html = $this->get_meta_value( $all_meta, self::META_SENTENCE_HUMAN_READABLE_HTML, '' );
 
 		if ( empty( $trigger_code ) ) {
@@ -608,7 +818,7 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 			'trigger_id'                   => $trigger_post_id,
 			'trigger_code'                 => $trigger_code,
 			'trigger_type'                 => $trigger_type,
-			'integration'                  => $integration,
+			'integration'                  => '' !== $integration ? $integration : 'WP',
 			'sentence'                     => $sentence,
 			'sentence_human_readable'      => $sentence_human_readable,
 			'sentence_human_readable_html' => $sentence_human_readable_html,
@@ -650,9 +860,13 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 				continue;
 			}
 
-			// Match CAPSLOCK field names (letters, numbers, underscores only)
-			// This also matches preserved-case keys (e.g., _AUTOMATOR_CUSTOM_ITEM_NAME_)
-			if ( preg_match( '/^[A-Z][A-Z0-9_]*$/', $meta_key ) && strlen( $meta_key ) > 0 ) {
+			// Match CAPSLOCK field names (letters, numbers, underscores only).
+			// Additionally allow keys listed in PRESERVE_CASE_KEYS (e.g.
+			// `_automator_custom_item_name_`) — these are case-preserved
+			// modern fields the regex doesn't naturally match.
+			$is_capslock_field    = (bool) preg_match( '/^[A-Z][A-Z0-9_]*$/', $meta_key );
+			$is_preserve_case_key = in_array( $meta_key, self::PRESERVE_CASE_KEYS, true );
+			if ( ( $is_capslock_field || $is_preserve_case_key ) && strlen( $meta_key ) > 0 ) {
 				$field_name  = $meta_key; // Keep original case (CAPSLOCK or preserved)
 				$field_value = is_array( $meta_value ) ? $meta_value[0] : $meta_value;
 
@@ -662,21 +876,49 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 
 				$configuration[ $field_name ] = $field_value;
 
-				// Look for readable label
-				$readable_key = $meta_key . '_readable';
-				if ( isset( $all_meta[ $readable_key ] ) ) {
-					$readable_value = is_array( $all_meta[ $readable_key ] ) ? $all_meta[ $readable_key ][0] : $all_meta[ $readable_key ];
+				foreach ( self::COMPANION_SUFFIXES as $suffix ) {
+					$companion_key = $meta_key . $suffix;
 
-					if ( Json_String_Repair::looks_like_structured_json( $readable_value ) ) {
-						$readable_value = Json_String_Repair::repair( $readable_value );
+					if ( ! isset( $all_meta[ $companion_key ] ) ) {
+						continue;
 					}
 
-					$configuration[ $meta_key . '_readable' ] = $readable_value;
+					$companion_value = is_array( $all_meta[ $companion_key ] ) ? $all_meta[ $companion_key ][0] : $all_meta[ $companion_key ];
+
+					if ( Json_String_Repair::looks_like_structured_json( $companion_value ) ) {
+						$companion_value = Json_String_Repair::repair( $companion_value );
+					}
+
+					$configuration[ $companion_key ] = $companion_value;
 				}
 			}
 		}
 
 		return $configuration;
+	}
+
+	/**
+	 * Drop structural keys whose value is a still-serialized string — raw
+	 * hydration artifacts of integration side-effect caches (WEBHOOK_SAMPLE,
+	 * captured-token bags): bulk get_post_meta() never unserializes, so
+	 * writing the string back serializes it a SECOND time and corrupts the
+	 * cache. Clean scalar structural values (a custom-name rename) are real
+	 * writes and pass through. Same hazard WP_Action_Store's $core_fields
+	 * comment documents.
+	 *
+	 * @param array $meta Prepared meta map about to be written.
+	 * @return array The map minus raw structural artifacts.
+	 */
+	private function without_raw_structural_artifacts( array $meta ): array {
+		$structural_keys = array_keys( array_diff_key( $meta, Item_Field_Filter::omit_structural_keys( $meta ) ) );
+
+		foreach ( $structural_keys as $key ) {
+			if ( is_string( $meta[ $key ] ) && is_serialized( $meta[ $key ] ) ) {
+				unset( $meta[ $key ] );
+			}
+		}
+
+		return $meta;
 	}
 
 	/**
@@ -696,10 +938,15 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 		return is_array( $value ) ? $value[0] : $value;
 	}
 
+
 	/**
-	 * Get post type.
+	 * Deprecated one-line accessor retained for 8.0.0.
 	 *
-	 * @return string Post type.
+	 * Its callers (the recipe-item REST classes) move off it in a later PR;
+	 * deleting it here would break them in the interim. Removed in the
+	 * post-8.0.0 cleanup pass together with those callers.
+	 *
+	 * @deprecated 8.0.0
 	 */
 	public function get_post_type(): string {
 		return self::POST_TYPE;

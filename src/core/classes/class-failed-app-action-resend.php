@@ -53,54 +53,43 @@ class Failed_App_Action_Resend {
 		// successfully resent. The 'completed' response row is what drops a row off the list.
 		// When an endpoint filter is set, constrain the EXISTS action row to that endpoint so
 		// the COUNT and the page rows stay in sync.
-		$endpoint_filter = '' !== $endpoint ? ' AND api.endpoint = %s' : '';
+		//
+		// The statements below are assembled from fragments that are each prepared first,
+		// because the endpoint filter and the cursor are optional clauses.
+		// The failed statuses are integer constants.
+		$status_in = implode( ', ', array_map( 'absint', self::FAILED_STATUSES ) );
 
-		// Placeholder list for the failed-status set, e.g. "%d, %d, %d".
-		$status_in = implode( ', ', array_fill( 0, count( self::FAILED_STATUSES ), '%d' ) );
+		// The same endpoint clause constrains the EXISTS row and the INNER JOIN below, so the
+		// returned rows match the count.
+		$endpoint_filter = '' !== $endpoint ? $wpdb->prepare( ' AND api.endpoint = %s', $endpoint ) : '';
 
-		$where_args = array_merge( self::FAILED_STATUSES, array( $days ) );
-		if ( '' !== $endpoint ) {
-			$where_args[] = $endpoint;
-		}
-		$where_args[] = $completed_class;
-
-		$where = $wpdb->prepare(
-			"al.completed IN ( {$status_in} )
-			 AND al.date_time >= DATE_SUB( NOW(), INTERVAL %d DAY )
-			 AND EXISTS (
+		$where = "al.completed IN ( {$status_in} )"
+			. $wpdb->prepare( ' AND al.date_time >= DATE_SUB( NOW(), INTERVAL %d DAY )', $days )
+			. " AND EXISTS (
 			     SELECT 1 FROM {$wpdb->prefix}uap_api_log api
 			     WHERE api.item_log_id = al.ID AND api.type = 'action'{$endpoint_filter}
-			 )
-			 AND NOT EXISTS (
+			 )"
+			. $wpdb->prepare(
+				" AND NOT EXISTS (
 			     SELECT 1 FROM {$wpdb->prefix}uap_api_log_response r
 			     WHERE r.item_log_id = al.ID AND r.result = %s
 			 )",
-			$where_args
-		); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$completed_class
+			);
 
 		// Header count: all matching the same WHERE (not just this page).
-		$total = (int) $wpdb->get_var(
-			"SELECT COUNT(*) FROM {$wpdb->prefix}uap_action_log al WHERE {$where}"
-		); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table; live state read. $where is assembled from prepared fragments above.
+		$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}uap_action_log al WHERE {$where}" );
 
-		// The INNER JOIN also restricts to the filtered endpoint so the returned rows match the count.
-		$join_endpoint = '' !== $endpoint ? ' AND api.endpoint = %s' : '';
 		// Descending keyset (newest first): the first page (last_id 0) starts from the
 		// newest row; later pages continue below the oldest id already seen.
-		$cursor_clause = $last_id > 0 ? ' AND al.ID < %d' : '';
-		$page_args     = array();
-		if ( '' !== $endpoint ) {
-			$page_args[] = $endpoint;
-		}
-		if ( $last_id > 0 ) {
-			$page_args[] = $last_id;
-		}
-		$page_args[] = $batch + 1; // One extra row beyond the page so has_more is exact (see below).
+		$cursor_clause = $last_id > 0 ? $wpdb->prepare( ' AND al.ID < %d', $last_id ) : '';
+
+		// One extra row beyond the page so has_more is exact (see below).
+		$limit_clause = $wpdb->prepare( ' LIMIT %d', $batch + 1 );
 
 		// Page of rows, joined to api_log (action) + recipe_log (run_number) + a resent counter.
-		$results = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT al.ID AS action_log_id,
+		$page_query = "SELECT al.ID AS action_log_id,
 				        al.automator_recipe_id AS recipe_id,
 				        al.automator_recipe_log_id AS recipe_log_id,
 				        al.user_id AS user_id,
@@ -114,15 +103,14 @@ class Failed_App_Action_Resend {
 				          WHERE rc.item_log_id = al.ID ) AS resent_count
 				 FROM {$wpdb->prefix}uap_action_log al
 				 INNER JOIN {$wpdb->prefix}uap_api_log api
-				        ON api.item_log_id = al.ID AND api.type = 'action'{$join_endpoint}
+				        ON api.item_log_id = al.ID AND api.type = 'action'{$endpoint_filter}
 				 LEFT JOIN {$wpdb->prefix}uap_recipe_log rl
 				        ON rl.ID = al.automator_recipe_log_id
 				 WHERE {$where}{$cursor_clause}
-				 ORDER BY al.ID DESC
-				 LIMIT %d",
-				$page_args
-			)
-		); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				 ORDER BY al.ID DESC{$limit_clause}";
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table; live state read. The query is assembled from prepared fragments above.
+		$results = $wpdb->get_results( $page_query );
 
 		// We fetched one row beyond the page (LIMIT $batch + 1), so has_more is exact:
 		// drop the probe row and report a next page only when it actually exists — no
@@ -211,15 +199,14 @@ class Failed_App_Action_Resend {
 
 		global $wpdb;
 
-		$status_in = implode( ', ', array_fill( 0, count( self::FAILED_STATUSES ), '%d' ) );
-
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read.
 		$endpoints = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT DISTINCT api.endpoint
 				 FROM {$wpdb->prefix}uap_action_log al
 				 INNER JOIN {$wpdb->prefix}uap_api_log api
 				        ON api.item_log_id = al.ID AND api.type = 'action'
-				 WHERE al.completed IN ( {$status_in} )
+				 WHERE al.completed IN ( " . implode( ', ', array_fill( 0, count( self::FAILED_STATUSES ), '%d' ) ) . " )
 				   AND al.date_time >= DATE_SUB( NOW(), INTERVAL %d DAY )
 				   AND NOT EXISTS (
 				       SELECT 1 FROM {$wpdb->prefix}uap_api_log_response r
@@ -228,7 +215,7 @@ class Failed_App_Action_Resend {
 				 ORDER BY api.endpoint ASC",
 				array_merge( self::FAILED_STATUSES, array( $days, $completed_class ) )
 			)
-		); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		);
 
 		return array_map( 'strval', (array) $endpoints );
 	}

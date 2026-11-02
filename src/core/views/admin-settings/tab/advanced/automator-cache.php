@@ -12,6 +12,10 @@ namespace Uncanny_Automator;
  * @author  Ajay Verma.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 
 <form method="POST" action="options.php">
@@ -36,9 +40,9 @@ namespace Uncanny_Automator;
 		<div class="uap-settings-panel-bottom">
 
 			<div class="uap-settings-panel-bottom-left">
-				<uo-button type="submit">
+				<uas-button type="submit">
 					<?php esc_html_e( 'Save settings', 'uncanny-automator' ); ?>
-				</uo-button>
+				</uas-button>
 			<div>
 
 		</div>

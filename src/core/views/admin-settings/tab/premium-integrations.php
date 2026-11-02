@@ -22,13 +22,34 @@
 
 namespace Uncanny_Automator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
+
+// Sort integrations alphabetically by name (previously handled by the tabs' order="title").
+uasort(
+	$integrations_tabs,
+	function ( $a, $b ) {
+		$a_name = is_object( $a ) ? $a->name : $a['name'];
+		$b_name = is_object( $b ) ? $b->name : $b['name'];
+		return strcasecmp( (string) $a_name, (string) $b_name );
+	}
+);
+
+// On the landing page (no integration selected) the tabs component activates the first tab; pair the "none selected" panel with it so the placeholder shows.
+$first_integration_key = ! empty( $integrations_tabs ) ? (string) array_key_first( $integrations_tabs ) : '';
+
+// In "Focus" mode the tab strip is hidden, so pass the active integration as the controlled value so its panel (or the credits message) still shows.
+$focus_active_value = '';
+if ( 'focus' === $layout_version ) {
+	$focus_active_value = ! empty( $current_integration ) ? (string) $current_integration : $first_integration_key;
+}
+
 ?>
 
-<uo-tabs
-	direction="column"
-	parameter="integration"
-	order="title"
->
+<uas-tabs orientation="vertical"<?php echo '' !== $focus_active_value ? ' value="' . esc_attr( $focus_active_value ) . '"' : ''; ?>>
 
 	<?php
 
@@ -47,8 +68,8 @@ namespace Uncanny_Automator;
 
 			?>
 
-			<uo-tab
-				id="<?php echo esc_attr( $tab_key ); ?>"
+			<uas-tab
+				value="<?php echo esc_attr( $tab_key ); ?>"
 
 				<?php
 
@@ -59,18 +80,10 @@ namespace Uncanny_Automator;
 
 				<?php
 
-				// IF the current tab is NOT selected,
-				// and if the content DOESN'T have to be preloaded
-				// THEN add the href attribute, which will redirect the user to another page
-				if ( ! $integration_tab->is_selected && ! $integration_tab->preload ) {
-					?>
-
-					href="<?php echo esc_url( Admin_Settings_Premium_Integrations::utility_get_premium_integrations_page_link( $tab_key ) ); ?>"
-
-					<?php
-				}
-
+				// The href is the tab's canonical URL. It lets an in-place switch update the address bar, and lets a non-rendered tab navigate with a full page load.
 				?>
+
+				href="<?php echo esc_url( Admin_Settings_Premium_Integrations::utility_get_premium_integrations_page_link( $tab_key ) ); ?>"
 
 				<?php
 
@@ -87,30 +100,38 @@ namespace Uncanny_Automator;
 
 				?>
 			>
-				<div class="uo-tab-content">
-					<div class="uo-tab-main">
-						<?php
-						// Check if it has an icon
-						if ( isset( $integration_tab->icon ) ) {
-							?>
-							<uo-icon
-								integration="<?php echo esc_attr( $integration_tab->icon ); ?>"
-							></uo-icon>
-							<?php
-						}
-						?>
-						<?php echo esc_html( $integration_tab->name ); ?>
-					</div>
+				<?php
+
+				// Check if it has an icon
+				if ( isset( $integration_tab->icon ) ) {
+					?>
+
+					<uap-d-integrations-icon
+						code="<?php echo esc_attr( $integration_tab->icon ); ?>"
+						size="xs"
+					></uap-d-integrations-icon>
+
 					<?php
-					// Add a badge if the tab is a third party integration
-					if ( $integration_tab->is_third_party ) :
-						?>
-						<uo-chip size="small" filled>
-							<?php echo esc_html_x( '3rd-party', 'Integration settings', 'uncanny-automator' ); ?>
-						</uo-chip>
-					<?php endif; ?>
-				</div>
-			</uo-tab>
+				}
+
+				?>
+
+				<?php echo esc_html( $integration_tab->name ); ?>
+
+				<?php
+				// Add a badge if the tab is a third party integration
+				if ( $integration_tab->is_third_party ) :
+					?>
+
+					<uas-chip
+						size="xs"
+						label="<?php echo esc_attr_x( '3rd-party', 'Integration settings', 'uncanny-automator' ); ?>"
+						color="info"
+						filled
+					></uas-chip>
+
+				<?php endif; ?>
+			</uas-tab>
 
 			<?php
 
@@ -130,8 +151,9 @@ namespace Uncanny_Automator;
 
 			?>
 
-			<uo-tab-panel
-				id="<?php echo esc_attr( $tab_key ); ?>"
+			<uas-tab-panel
+				slot="panel"
+				name="<?php echo esc_attr( $tab_key ); ?>"
 
 				<?php
 
@@ -143,7 +165,7 @@ namespace Uncanny_Automator;
 
 				<?php do_action( 'automator_settings_premium_integrations_' . $tab_key . '_tab' ); ?>
 
-			</uo-tab-panel>
+			</uas-tab-panel>
 
 			<?php
 
@@ -164,4 +186,4 @@ namespace Uncanny_Automator;
 	}
 	?>
 
-</uo-tabs>
+</uas-tabs>

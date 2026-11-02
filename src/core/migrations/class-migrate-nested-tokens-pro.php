@@ -2,6 +2,10 @@
 
 namespace Uncanny_Automator\Migrations;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Migrate_Nested_Tokens_Pro.
  *

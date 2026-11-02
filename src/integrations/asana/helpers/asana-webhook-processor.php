@@ -354,6 +354,7 @@ class Asana_Webhook_Processor {
 		$action_name = 'automator_asana_' . str_replace( '.', '_', $event_type );
 
 		// Fire the main trigger.
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is built from the automator_asana_ prefix and the event type.
 		do_action( $action_name, $this->project_config['id'], $event_data, $event );
 
 		// Also fire custom field trigger if this is a custom field change.

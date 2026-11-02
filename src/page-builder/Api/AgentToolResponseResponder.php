@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Api;
 use UncannyPageBuilder\Application\Contracts\Agent\AgentToolResponse;
 use UncannyPageBuilder\Domain\ErrorMessage;
 use UncannyPageBuilder\Api\ApiResponse;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 
 /**
  * Wrap AgentToolResponse contract validation for REST controllers.
@@ -24,7 +25,7 @@ final class AgentToolResponseResponder
         try {
             return ApiResponse::ok(AgentToolResponse::validate($toolName, $data))->toResponse();
         } catch (\InvalidArgumentException | \UnexpectedValueException $e) {
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[AgentToolResponseResponder] tool=%s | %s',
                 $toolName,
                 $e->getMessage(),

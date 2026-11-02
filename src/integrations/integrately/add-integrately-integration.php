@@ -31,6 +31,7 @@ class Add_Integrately_Integration {
 		$this->set_distribution_type( 'saas' );
 	}
 
+
 	/**
 	 * @return bool
 	 */

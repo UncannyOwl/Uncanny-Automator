@@ -221,6 +221,7 @@ class OpenAI_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Selects Automator's own action posts by parent in every status, trash included; WP_Query 'any' leaves trashed posts out.
 		$actions = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID FROM $wpdb->posts WHERE post_type = 'uo-action' AND post_parent = %d",

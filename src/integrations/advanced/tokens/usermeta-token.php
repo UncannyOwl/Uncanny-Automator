@@ -35,7 +35,7 @@ class Usermeta_Token extends Universal_Token {
 				'label'              => esc_attr_x( 'Meta key', 'Token', 'uncanny-automator' ),
 				'description'        => esc_attr_x( 'The meta key associated with the data you want to retrieve. Only one meta key can be entered per token.', 'Token', 'uncanny-automator' ),
 				'supports_tokens'    => true,
-				'unsupported_tokens' => array( 'USERMETA:KEY', 'POSTMETA:POSTID:KEY', 'CALCULATION:FORMULA' ),
+				'unsupported_tokens' => array( 'UT:ADVANCED:USERMETA', 'UT:ADVANCED:POSTMETA', 'UT:ADVANCED:CALCULATION' ),
 			),
 		);
 	}

@@ -31,4 +31,30 @@ interface Action_Tokens_Bridge {
 	 * @return bool|int Result of the store operation, or false on empty value.
 	 */
 	public function hydrate_action_tokens( int $user_id, int $action_id, int $action_log_id, array $process_args, $value, bool $encode = true );
+
+	/**
+	 * Resolve the renderable token list for an action — what the
+	 * bundled recipe-builder shows in the token dropdown for downstream
+	 * items.
+	 *
+	 * Wraps `Automator()->tokens->get_action_tokens_renderable()`. That
+	 * call fires `automator_action_{CODE}_tokens_renderable` so action
+	 * classes (e.g. DROPBOX_CREATE_FOLDER declaring FOLDER_PATH via
+	 * `set_action_tokens()`) can register what they emit.
+	 *
+	 * Used by {@see \Uncanny_Automator\App\Recipe_Builder\Block\Resolvers\Block_Resolver::resolve_child}
+	 * to populate `$action['tokens']` for actions inside `uo-block`
+	 * posts. Without this the stamping `Automator_Functions::get_recipe_data`
+	 * performs never fires for wrapped actions, and the dropdown loses every
+	 * token they declare.
+	 *
+	 * @param array $action_meta Flat post-meta map for the action (must
+	 *                           include `code`).
+	 * @param int   $action_id   Action post id.
+	 * @param int   $recipe_id   Owning recipe id.
+	 *
+	 * @return array Renderable token list in the legacy
+	 *               `[ {tokenId, tokenType, tokenName, tokenParent} ]` shape.
+	 */
+	public function get_renderable_tokens( array $action_meta, int $action_id, int $recipe_id ): array;
 }

@@ -25,9 +25,11 @@ interface Webhook_Handler_Interface {
 	/**
 	 * Validate the incoming webhook request.
 	 *
-	 * Used as the REST route permission_callback. Return false to reject.
-	 * Set a validation error via get_validation_error() for detailed
-	 * REST API error responses.
+	 * Used as the REST route permission_callback. Return false to reject:
+	 * the router answers `403 webhook_validation_failed`. Set a validation
+	 * error via get_validation_error() for detailed REST API error responses.
+	 * A handler that answers its own refusal is not refused here — see
+	 * {@see Answers_Own_Refusal}.
 	 *
 	 * @param \WP_REST_Request $request The incoming request.
 	 *
@@ -60,4 +62,25 @@ interface Webhook_Handler_Interface {
 	 * @return bool
 	 */
 	public function accepts_get(): bool;
+
+	/**
+	 * OPTIONAL — deliberately NOT declared on this interface.
+	 *
+	 * `public function get_rest_namespace(): string` — the REST namespace
+	 * a handler registers under. Webhook_Router `method_exists()`-checks
+	 * for it and falls back to `uap/v2` (the legacy / plugin-scoped
+	 * default) when absent, so pre-7.4 implementers of this interface —
+	 * including third-party ones — keep loading without change. Platform
+	 * integration controllers that receive callbacks from
+	 * `api.automatorplugin.com` implement it (or pull in
+	 * {@see Namespace_Default_Trait}) and return `automator/platform/v1`
+	 * so their routes sit on a distinct REST namespace separate from the
+	 * plugin's own webhook receivers.
+	 *
+	 * Declaring it abstract here would fatal every existing implementer
+	 * at class-load time — an interface addition is a breaking change
+	 * for implementers, unlike the router-side sniff.
+	 *
+	 * @since 8.0.0
+	 */
 }

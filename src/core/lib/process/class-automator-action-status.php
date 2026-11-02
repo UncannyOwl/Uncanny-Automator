@@ -72,6 +72,14 @@ class Automator_Status {
 	const FAILED = 14;
 
 	/**
+	 * The node waits on a background app action that has not finished: an action row
+	 * flipped by the walker, or a block recorded in the run's blocked-nodes meta.
+	 * Pending in Recipe_Status_Resolver (severity 3, transient), excluded from the
+	 * stuck-recipe sweep, released or skipped by Recipe_Runner::complete_background_action().
+	 */
+	const BLOCKED_ON_DEPENDENCY = 15;
+
+	/**
 	 * Action status name
 	 *
 	 * @param int $status
@@ -104,6 +112,7 @@ class Automator_Status {
 			self::COMPLETED_WITH_NOTICE  => esc_attr_x( 'Completed with notice', 'Recipe log status', 'uncanny-automator' ),
 			self::FAILED                 => esc_attr_x( 'Failed', 'Recipe log status', 'uncanny-automator' ),
 			self::IN_PROGRESS_WITH_ERROR => esc_attr_x( 'In progress with errors', 'Recipe log status', 'uncanny-automator' ),
+			self::BLOCKED_ON_DEPENDENCY  => esc_attr_x( 'Blocked on dependency', 'Recipe log status', 'uncanny-automator' ),
 		);
 	}
 
@@ -140,7 +149,6 @@ class Automator_Status {
 		);
 
 		return apply_filters( 'automator_status_removable', $removable_statuses );
-
 	}
 
 	/**
@@ -165,12 +173,12 @@ class Automator_Status {
 				self::QUEUED                 => 'queued',
 				self::FAILED                 => 'failed',
 				self::IN_PROGRESS_WITH_ERROR => 'in-progress-with-errors',
+				self::BLOCKED_ON_DEPENDENCY  => 'blocked-on-dependency',
 			),
 			$status
 		);
 
 		return ! isset( $label[ $status ] ) ? $status : $label[ $status ];
-
 	}
 
 	/**

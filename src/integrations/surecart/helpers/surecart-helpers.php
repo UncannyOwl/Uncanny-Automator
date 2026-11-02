@@ -4,6 +4,10 @@ namespace Uncanny_Automator\Integrations\SureCart;
 
 use SureCart\Models\Product;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class SureCart_Helpers
  *

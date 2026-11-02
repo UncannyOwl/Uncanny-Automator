@@ -126,11 +126,13 @@ class UC_ADD_BATCH_CODES extends \Uncanny_Automator\Recipe\Action {
 			'character_type'  => $character_type,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Uncanny Codes' own hook.
 		$gen_args = apply_filters( 'ulc_automatr_codes_group_args', $gen_args, $batch_id, $parsed );
 
 		$inserted = \uncanny_learndash_codes\Database::add_codes_to_batch( $batch_id, array(), $gen_args );
 
 		if ( $inserted ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Uncanny Codes' own hook.
 			do_action( 'ulc_codes_group_generated', $batch_id, $inserted );
 		}
 
@@ -153,7 +155,8 @@ class UC_ADD_BATCH_CODES extends \Uncanny_Automator\Recipe\Action {
 		$tbl_codes = $wpdb->prefix . \uncanny_learndash_codes\Config::$tbl_codes;
 
 		// Sample existing codes from the batch to determine length.
-		$sample_code = $wpdb->get_var( $wpdb->prepare( "SELECT code FROM $tbl_codes WHERE code_group = %d LIMIT 1", $batch_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Uncanny Codes' own table; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
+		$sample_code = $wpdb->get_var( $wpdb->prepare( "SELECT code FROM $tbl_codes WHERE code_group = %d LIMIT 1", $batch_id ) );
 
 		// If batch has existing codes, calculate length from sample (Yoda style).
 		if ( ! empty( $sample_code ) ) {

@@ -19,6 +19,17 @@ namespace Uncanny_Automator\App\Transient\Ports;
 interface Transient_Port {
 
 	/**
+	 * Get a transient.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $key The transient key.
+	 *
+	 * @return mixed The value, or false when it is not stored.
+	 */
+	public function get( string $key );
+
+	/**
 	 * Add a transient.
 	 *
 	 * @param string $key        The transient key.

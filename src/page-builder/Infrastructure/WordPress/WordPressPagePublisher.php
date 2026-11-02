@@ -107,13 +107,15 @@ final class WordPressPagePublisher implements PagePublisherInterface
         } catch (PagePublicationFailed $exception) {
             throw $exception;
         } catch (PublishedPageRuntimeUnavailable $exception) {
-            throw PagePublicationFailed::publicStateCommitFailed(
+            $runtimeFailure = PagePublicationFailed::publicStateCommitFailed(
                 $exception,
                 $exception->reasonCode(),
                 $exception->diagnostics(),
             );
+            throw $runtimeFailure;
         } catch (\Throwable $exception) {
-            throw PagePublicationFailed::publicStateCommitFailed($exception);
+            $commitFailure = PagePublicationFailed::publicStateCommitFailed($exception);
+            throw $commitFailure;
         }
 
         try {
@@ -124,13 +126,15 @@ final class WordPressPagePublisher implements PagePublisherInterface
         } catch (StaleSourceGenerationException | PagePublicationFailed $exception) {
             throw $exception;
         } catch (\Throwable $exception) {
-            throw PagePublicationFailed::publicStateCommitFailed($exception);
+            $commitFailure = PagePublicationFailed::publicStateCommitFailed($exception);
+            throw $commitFailure;
         }
 
         if (!$result instanceof PublishPageResult) {
-            throw PagePublicationFailed::publicStateCommitFailed(
+            $invalidResult = PagePublicationFailed::publicStateCommitFailed(
                 new \RuntimeException('The publication transaction returned an invalid result.'),
             );
+            throw $invalidResult;
         }
 
         /*
@@ -211,7 +215,8 @@ final class WordPressPagePublisher implements PagePublisherInterface
             (int) ($page->post_parent ?? 0),
         );
         if ($resolvedSlug !== $candidate->slug()) {
-            throw PagePublicationFailed::slugConflict($candidate->slug(), $resolvedSlug);
+            $slugConflict = PagePublicationFailed::slugConflict($candidate->slug(), $resolvedSlug);
+            throw $slugConflict;
         }
 
         $publishedAt = $this->currentTime();
@@ -230,12 +235,14 @@ final class WordPressPagePublisher implements PagePublisherInterface
         try {
             $storedArtifact = $this->artifacts->insert($artifact);
         } catch (\Throwable $exception) {
-            throw PagePublicationFailed::artifactPersistFailed($exception);
+            $persistFailure = PagePublicationFailed::artifactPersistFailed($exception);
+            throw $persistFailure;
         }
         if ($storedArtifact->id() === null || $storedArtifact->pageId() !== $candidate->pageId()) {
-            throw PagePublicationFailed::artifactPersistFailed(
+            $invalidIdentity = PagePublicationFailed::artifactPersistFailed(
                 new \RuntimeException('The immutable artifact repository returned an invalid identity.'),
             );
+            throw $invalidIdentity;
         }
 
         $composedContent = $this->fallbackComposer->compose(
@@ -266,8 +273,10 @@ final class WordPressPagePublisher implements PagePublisherInterface
     {
         global $wpdb;
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
         $row = $wpdb->get_row($wpdb->prepare(
-            'SELECT * FROM ' . SchemaManager::pageStateTableName() . ' WHERE page_id = %d LIMIT 1',
+            'SELECT * FROM %i WHERE page_id = %d LIMIT 1',
+            SchemaManager::pageStateTableName(),
             $pageId,
         ));
         if (!is_object($row)) {
@@ -282,8 +291,10 @@ final class WordPressPagePublisher implements PagePublisherInterface
         global $wpdb;
 
         $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Live state read; must not be cached.
         $row = $wpdb->get_row($wpdb->prepare(
-            "SELECT ID, post_type, post_status, post_parent, post_content FROM {$postsTable} WHERE ID = %d LIMIT 1",
+            "SELECT ID, post_type, post_status, post_parent, post_content FROM %i WHERE ID = %d LIMIT 1",
+            $postsTable,
             $pageId,
         ));
         if (!is_object($row)) {
@@ -300,10 +311,12 @@ final class WordPressPagePublisher implements PagePublisherInterface
         $postmetaTable = isset($wpdb->postmeta)
             ? (string) $wpdb->postmeta
             : (string) $wpdb->prefix . 'postmeta';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Row lock for the source write; must not be cached.
         $row = $wpdb->get_row($wpdb->prepare(
-            "SELECT meta_id FROM {$postmetaTable}
+            "SELECT meta_id FROM %i
              WHERE post_id = %d AND meta_key = %s AND meta_value = '1'
              LIMIT 1 FOR UPDATE",
+            $postmetaTable,
             $pageId,
             WpPageOwnershipRepository::META_OWNED,
         ));
@@ -373,6 +386,7 @@ final class WordPressPagePublisher implements PagePublisherInterface
         global $wpdb;
 
         $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write; wp_update_post() would run save_post hooks.
         $updated = $wpdb->update(
             $postsTable,
             [
@@ -397,8 +411,10 @@ final class WordPressPagePublisher implements PagePublisherInterface
         global $wpdb;
 
         $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Live state read; must not be cached.
         $actualContent = $wpdb->get_var($wpdb->prepare(
-            "SELECT post_content FROM {$postsTable} WHERE ID = %d LIMIT 1",
+            "SELECT post_content FROM %i WHERE ID = %d LIMIT 1",
+            $postsTable,
             $pageId,
         ));
 
@@ -415,6 +431,7 @@ final class WordPressPagePublisher implements PagePublisherInterface
     ): void {
         global $wpdb;
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $updated = $wpdb->update(
             SchemaManager::pageStateTableName(),
             [

@@ -11,11 +11,14 @@ use Uncanny_Automator\App\Recipe_Builder\Trigger\Registry\Trigger_Registry;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Registry\WP_Trigger_Registry;
 use Uncanny_Automator\App\Recipe_Builder\Services\Availability\Availability_Checker;
 use Uncanny_Automator\App\Recipe_Builder\Services\Availability\Availability_Data;
+use Uncanny_Automator\App\Recipe_Builder\Services\Availability\Integration_Plugin_Presence;
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
 use Uncanny_Automator\App\Recipe_Builder\Services\Traits\Service_Response_Formatter;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Services\Utilities\Trigger_Schema_Converter;
 use Uncanny_Automator\App\Plan\Services\Plan_Service;
-use Uncanny_Automator\Services\Integrations\Fields;
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Field_Registry_Service;
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Field_Validation_Service;
 use Uncanny_Automator\App\Infrastructure\Search\Services\Rag\Rag_Search_Service;
 use WP_Error;
 use Uncanny_Automator\App\Events\Dispatcher;
@@ -69,18 +72,27 @@ class Trigger_Registry_Service {
 	private Trigger_Definition_Bridge $trigger_definitions;
 
 	/**
+	 * Validates a configuration against the trigger's fields; resolved on first use.
+	 *
+	 * @var Field_Validation_Service|null
+	 */
+	private ?Field_Validation_Service $field_validation;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Trigger_Registry|null          $trigger_registry      Trigger registry implementation.
 	 * @param Integration_Registry_Service|null $integration_registry  Integration registry implementation.
 	 * @param Trigger_Schema_Converter|null     $schema_converter      Schema converter implementation.
 	 * @param Trigger_Definition_Bridge|null    $trigger_definitions   Bridge override (test seam).
+	 * @param Field_Validation_Service|null     $field_validation      Field validation override (test seam).
 	 */
 	public function __construct(
 		$trigger_registry = null,
 		$integration_registry = null,
 		$schema_converter = null,
-		?Trigger_Definition_Bridge $trigger_definitions = null
+		?Trigger_Definition_Bridge $trigger_definitions = null,
+		?Field_Validation_Service $field_validation = null
 	) {
 		$this->trigger_registry = $trigger_registry ?? new WP_Trigger_Registry();
 
@@ -93,6 +105,7 @@ class Trigger_Registry_Service {
 
 		$this->schema_converter    = $schema_converter ?? new Trigger_Schema_Converter();
 		$this->trigger_definitions = $trigger_definitions ?? new Automator_Trigger_Definition_Bridge();
+		$this->field_validation    = $field_validation;
 	}
 
 	/**
@@ -165,6 +178,23 @@ class Trigger_Registry_Service {
 		$definition = $this->trigger_definitions->get_trigger_definition( $trigger_code );
 
 		return null === $definition ? false : $definition;
+	}
+
+	/**
+	 * Whether the builder renders an on / off switch for steps built from a
+	 * trigger.
+	 *
+	 * Read from the registered definition. Only an explicit false removes the
+	 * switch, so an unregistered code or a definition without the key reads
+	 * true, as the FE reads a missing `has_status_toggle`.
+	 *
+	 * @param string $trigger_code Trigger code.
+	 * @return bool
+	 */
+	public function has_status_toggle( string $trigger_code ): bool {
+		$definition = $this->trigger_definitions->get_trigger_definition( $trigger_code );
+
+		return false !== ( $definition['has_status_toggle'] ?? true );
 	}
 
 	/**
@@ -253,6 +283,11 @@ class Trigger_Registry_Service {
 			$rag_response = $this->call_rag_search( $query, 'trigger', $integration_filter, $limit, $user_type );
 
 			if ( is_wp_error( $rag_response ) ) {
+				// A local fallback would hide the missing license and its setup instructions.
+				if ( 'rag_license_missing' === $rag_response->get_error_code() ) {
+					return $rag_response;
+				}
+
 				// Fallback to keyword search if RAG fails.
 				return $this->find_triggers_fallback( $query, $filters, $limit );
 			}
@@ -373,18 +408,21 @@ class Trigger_Registry_Service {
 				return $definition;
 			}
 
-			// Get configuration schema using Fields class like actions do
-			$fields = new Fields();
-			$fields->set_config(
-				array(
-					'object_type' => 'triggers',
-					'code'        => $trigger_code,
-				)
+			// Materialize the grouped field shape via the central service.
+			$configuration_fields = Field_Registry_Service::instance()->get_item_fields_grouped(
+				$definition['integration'] ?? '',
+				'trigger',
+				$trigger_code
 			);
 
-			$configuration_fields = $fields->get();
+			if ( is_wp_error( $configuration_fields ) ) {
+				return $this->error_response(
+					$configuration_fields->get_error_code(),
+					$configuration_fields->get_error_message()
+				);
+			}
 
-			// Convert to JSON Schema format using schema converter
+			// Convert to JSON Schema format using the existing converter.
 			$input_schema = $this->schema_converter->convert_fields_to_schema( $configuration_fields );
 
 			$trigger_definition = array(
@@ -543,6 +581,7 @@ class Trigger_Registry_Service {
 			->code( $trigger_code )
 			->type( 'trigger' )
 			->integration_registered( $is_integration_registered )
+			->plugin_installed( ! $is_integration_registered && ( new Integration_Plugin_Presence() )->is_installed( $integration_code ) )
 			->feature_registered( $is_trigger_registered )
 			->app( $is_app )
 			->connected( $is_connected )
@@ -565,9 +604,13 @@ class Trigger_Registry_Service {
 	/**
 	 * Validate trigger configuration.
 	 *
+	 * Checks the configuration against the trigger's fields with the validator
+	 * that checks an action's configuration: unknown fields, required fields
+	 * that are missing or empty, and each value's format.
+	 *
 	 * @param string $trigger_code Trigger code.
 	 * @param array  $config Configuration to validate.
-	 * @return array|\WP_Error Validation result or error.
+	 * @return array|\WP_Error Validation result, or an error when the trigger or its fields cannot be read.
 	 */
 	public function validate_trigger_configuration( string $trigger_code, array $config ) {
 		try {
@@ -582,32 +625,58 @@ class Trigger_Registry_Service {
 				);
 			}
 
-			// Get trigger definition with schema
-			$options    = array( 'include_schema' => true );
-			$definition = $this->trigger_registry->get_trigger_definition( $trigger_code_vo, $options );
+			$checked = $this->field_validation()->validate_config( $trigger_code, $config, Integration_Item_Types::TRIGGER );
 
-			if ( ! $definition ) {
-				return $this->error_response(
-					'trigger_definition_not_found',
-					'Trigger definition not found: '
-					. $trigger_code
-					. 'use the search tool to discover available triggers.'
-				);
+			// The trigger's fields could not be read, so the configuration was not checked.
+			if ( is_wp_error( $checked ) && 'validation_failed' !== $checked->get_error_code() ) {
+				return $this->error_response( $checked->get_error_code(), $checked->get_error_message() );
 			}
 
-			// Validate configuration against schema
-			$validation_errors = $this->validate_config_against_schema( $config, $definition );
+			$errors = is_wp_error( $checked ) ? $this->validation_errors( $checked ) : array();
 
 			return array(
 				'success' => true,
-				'valid'   => empty( $validation_errors ),
-				'errors'  => $validation_errors,
+				'valid'   => empty( $errors ),
+				'errors'  => $errors,
 				'trigger' => $trigger_code,
 			);
 
 		} catch ( \Throwable $e ) {
 			return $this->error_response( 'trigger_validation_failed', 'Failed to validate trigger configuration: ' . $e->getMessage() );
 		}
+	}
+
+	/**
+	 * The field validation service, resolved on first use.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return Field_Validation_Service
+	 */
+	private function field_validation(): Field_Validation_Service {
+		if ( null === $this->field_validation ) {
+			$this->field_validation = Field_Validation_Service::instance();
+		}
+
+		return $this->field_validation;
+	}
+
+	/**
+	 * Each problem a failed validation found.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param WP_Error $failure The validator's `validation_failed` error.
+	 * @return string[]
+	 */
+	private function validation_errors( WP_Error $failure ): array {
+		$data = $failure->get_error_data();
+
+		if ( is_array( $data ) && ! empty( $data['validation_errors'] ) && is_array( $data['validation_errors'] ) ) {
+			return array_values( array_map( 'strval', $data['validation_errors'] ) );
+		}
+
+		return array( $failure->get_error_message() );
 	}
 
 	/**
@@ -829,27 +898,5 @@ class Trigger_Registry_Service {
 				'tokens'      => $definition['tokens'] ?? array(),
 			),
 		);
-	}
-
-	/**
-	 * Validate configuration against schema.
-	 *
-	 * @param array $config Configuration to validate.
-	 * @param array $definition Trigger definition with schema.
-	 * @return array Validation errors.
-	 */
-	private function validate_config_against_schema( array $config, array $definition ): array {
-		$errors = array();
-
-		// Basic validation - check required fields if schema exists
-		if ( ! empty( $definition['fields'] ) ) {
-			foreach ( $definition['fields'] as $field_code => $field_def ) {
-				if ( ( $field_def['required'] ?? false ) && ! isset( $config[ $field_code ] ) ) {
-					$errors[] = "Required field '{$field_code}' is missing";
-				}
-			}
-		}
-
-		return $errors;
 	}
 }

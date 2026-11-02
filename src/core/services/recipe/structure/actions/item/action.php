@@ -18,7 +18,14 @@ final class Action implements \JsonSerializable {
 	use Common\Trait_JSON_Serializer;
 	use Common\Trait_Setter_Getter;
 
-	protected $type             = 'action';
+	protected $type = 'action';
+
+	/**
+	 * Marks this as an item rather than a block, so consumers walking the recipe can tell the two apart.
+	 *
+	 * @var string
+	 */
+	protected $entity_type      = 'item';
 	protected $_ui_order        = 0; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 	protected $is_item_on       = false;
 	protected $id               = null;
@@ -65,7 +72,7 @@ final class Action implements \JsonSerializable {
 		}
 
 		// Add custom name field
-		$misc->custom_name = $action_meta[ \Uncanny_Automator\Global_Custom_Name_Field::FIELD_CODE ] ?? '';
+		$misc->custom_name = $action_meta[ AUTOMATOR_META_KEY_ITEM_CUSTOM_NAME ] ?? '';
 
 		return $misc;
 	}

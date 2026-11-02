@@ -30,7 +30,7 @@ final class SiteLogoImageNormalizer
 {
     /**
      * Agent-facing warning attached to the write response when a rewrite
-     * happened, so tool callers learn the binding exists.
+     * happened, so callers of the tool learn the binding exists.
      */
     public const REWRITE_WARNING = 'Hardcoded site logo <img> was rewritten to the site_logo dynamic binding. Author logos as <span data-ai-dynamic="site_logo"> regions so logo changes propagate to every page automatically.';
 

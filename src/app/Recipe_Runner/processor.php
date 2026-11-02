@@ -12,8 +12,7 @@ declare( strict_types=1 );
  *     ├── Stage 1: Trigger_Entry_Stage   — match, validate, log, numtimes
  *     ├── Stage 2: Trigger_Complete_Stage — mark complete, check all/any
  *     ├── Stage 3: Action_Run_Stage      — execute actions
- *     ├── Stage 4: Recipe_Complete_Stage  — finalize status
- *     └── Stage 5: Closure_Stage         — redirects, completion emails
+ *     └── Stage 4: Recipe_Complete_Stage  — finalize status
  *
  * Services (composed by stages):
  *   ├── Trigger_Validator          — trigger validation logic

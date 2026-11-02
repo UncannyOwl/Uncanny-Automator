@@ -46,14 +46,14 @@ class Availability_Checker implements Availability_Checker_Interface {
 		// Check 1: Tier requirement. Stop here because inactive premium code can
 		// make its bundled integrations look like missing standalone plugins.
 		if ( ! empty( $data->user_tier_id ) && ! empty( $data->requires_tier ) && ! $this->tier_meets_requirement( $data->user_tier_id, $data->requires_tier ) ) {
-			$blockers[] = sprintf( 'Upgrade to %s plan at https://automatorplugin.com/pricing/', $this->format_tier_name( $data->requires_tier ) );
+			$blockers[] = sprintf( 'Upgrade to the %s plan at https://automatorplugin.com/pricing/', $this->format_tier_name( $data->requires_tier ) );
 
 			return $blockers;
 		}
 
-		// Check 2: Integration installed.
+		// Check 2: Integration installed and active.
 		if ( ! $data->is_integration_registered ) {
-			$blockers[] = sprintf( 'Install %s plugin', $this->format_integration_name( $data->integration ) );
+			$blockers[] = sprintf( $data->is_plugin_installed ? 'Activate %s plugin' : 'Install %s plugin', $this->format_integration_name( $data->integration ) );
 		}
 
 		// Check 3: App connection (only if integration exists).
@@ -113,15 +113,15 @@ class Availability_Checker implements Availability_Checker_Interface {
 	 *
 	 * @param string $tier_id Tier ID (e.g., 'pro-basic').
 	 *
-	 * @return string Formatted tier name (e.g., 'Automator Pro Basic').
+	 * @return string Formatted tier name (e.g., 'Basic').
 	 */
 	private function format_tier_name( $tier_id ) {
 
 		$tier_names = array(
-			'lite'      => 'Automator Lite',
-			'pro-basic' => 'Automator Pro Basic',
-			'pro-plus'  => 'Automator Pro Plus',
-			'pro-elite' => 'Automator Pro Elite',
+			'lite'      => 'Lite',
+			'pro-basic' => 'Basic',
+			'pro-plus'  => 'Plus',
+			'pro-elite' => 'Elite',
 		);
 
 		return isset( $tier_names[ $tier_id ] ) ? $tier_names[ $tier_id ] : $tier_id;

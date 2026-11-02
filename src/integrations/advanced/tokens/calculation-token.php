@@ -93,9 +93,9 @@ class Calculation_Token extends Universal_Token {
 				'option_code'        => 'FORMULA',
 				'required'           => true,
 				'label'              => esc_attr_x( 'Formula', 'Advanced', 'uncanny-automator' ),
-				'description'        => esc_attr_x( 'The ID of the post that contains the meta data.', 'Advanced', 'uncanny-automator' ) . sprintf( ' <a href="%2$s">%1$s</a>', esc_attr_x( 'Learn more', 'Advanced', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon>', 'https://automatorplugin.com/knowledge-base/post-meta-tokens/?utm_source=uncanny-automator-pro&utm_medium=in-plugin&utm_content=add-token-post-meta-post-id-learn-more' ),
+				'description'        => esc_attr_x( 'The math formula to calculate. Use numbers, tokens that return numbers, the operators +, -, *, /, ^ and %, parentheses, and functions such as round, floor, ceil, abs, sqrt, min and max.', 'Advanced', 'uncanny-automator' ) . sprintf( ' <a href="%2$s">%1$s</a>', esc_attr_x( 'Learn more', 'Advanced', 'uncanny-automator' ) . ' <uas-icon code="arrow-up-right-from-square"></uas-icon>', 'https://automatorplugin.com/knowledge-base/calculations-math-equations/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=add-token-calculation-formula-learn-more' ),
 				'supports_tokens'    => true,
-				'unsupported_tokens' => array( 'CALCULATION:FORMULA' ),
+				'unsupported_tokens' => array( 'UT:ADVANCED:CALCULATION' ),
 			),
 		);
 	}
@@ -142,8 +142,8 @@ class Calculation_Token extends Universal_Token {
 	 *
 	 * @return string
 	 */
-	public function parse_integration_token( $return, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-		$this->return       = $return;
+	public function parse_integration_token( $parsed_value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+		$this->return       = $parsed_value;
 		$this->pieces       = $pieces;
 		$this->recipe_id    = $recipe_id;
 		$this->trigger_data = $trigger_data;
@@ -159,12 +159,12 @@ class Calculation_Token extends Universal_Token {
 
 			$this->calculate();
 
-			$return = $this->get_result();
+			$parsed_value = $this->get_result();
 
 		} catch ( \Exception $e ) {
-			$return = $e->getMessage();
+			$parsed_value = $e->getMessage();
 		}
 
-		return apply_filters( 'automator_calculation_token_output', $return, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args );
+		return apply_filters( 'automator_calculation_token_output', $parsed_value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args );
 	}
 }

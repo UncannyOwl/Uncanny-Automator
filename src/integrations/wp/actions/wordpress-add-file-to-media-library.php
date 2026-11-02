@@ -2,10 +2,21 @@
 
 namespace Uncanny_Automator\Integrations\Wp;
 
+use Uncanny_Automator\App\Infrastructure\Remote_File\Remote_File_Client;
+
 /**
  * @property Wp_Helpers $item_helpers
  */
 class WP_ADD_FILE_TO_MEDIA_LIBRARY extends \Uncanny_Automator\Recipe\Action {
+
+	/**
+	 * Seconds the download may take: download_url()'s default, which it used before.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var int
+	 */
+	private const DOWNLOAD_TIMEOUT = 300;
 
 	/**
 	 * Setup action.
@@ -19,6 +30,7 @@ class WP_ADD_FILE_TO_MEDIA_LIBRARY extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: File */
 				esc_html_x( 'Add {{a file:%1$s}} to the media library', 'WordPress', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)
@@ -118,12 +130,6 @@ class WP_ADD_FILE_TO_MEDIA_LIBRARY extends \Uncanny_Automator\Recipe\Action {
 			return false;
 		}
 
-		// Block requests to private/reserved IP ranges (SSRF protection).
-		if ( function_exists( 'automator_resolves_to_private_ip' ) && automator_resolves_to_private_ip( $url ) ) {
-			$this->add_log_error( esc_html_x( 'The URL resolves to a private or reserved IP address and cannot be used.', 'WordPress', 'uncanny-automator' ) );
-			return false;
-		}
-
 		// Ensure required WordPress media functions are available.
 		if ( ! function_exists( 'media_handle_sideload' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/media.php';
@@ -131,18 +137,27 @@ class WP_ADD_FILE_TO_MEDIA_LIBRARY extends \Uncanny_Automator\Recipe\Action {
 			require_once ABSPATH . 'wp-admin/includes/image.php';
 		}
 
-		$tmp_file = download_url( $url );
+		// One GET that follows no redirect, after the address check (SSRF protection): a public URL must not
+		// hand the download on to an address the check refuses.
+		$download = ( new Remote_File_Client() )->download( $url, self::DOWNLOAD_TIMEOUT );
 
-		if ( is_wp_error( $tmp_file ) ) {
+		if ( is_wp_error( $download ) && Remote_File_Client::PRIVATE_ADDRESS === $download->get_error_code() ) {
+			$this->add_log_error( esc_html_x( 'The URL resolves to a private or reserved IP address and cannot be used.', 'WordPress', 'uncanny-automator' ) );
+			return false;
+		}
+
+		if ( is_wp_error( $download ) ) {
 			$this->add_log_error(
 				sprintf(
 					/* translators: %s: Error message */
 					esc_html_x( 'Failed to download file: %s', 'WordPress', 'uncanny-automator' ),
-					$tmp_file->get_error_message()
+					$download->get_error_message()
 				)
 			);
 			return false;
 		}
+
+		$tmp_file = $download->path();
 
 		$file_array = array(
 			'name'     => basename( wp_parse_url( $url, PHP_URL_PATH ) ),

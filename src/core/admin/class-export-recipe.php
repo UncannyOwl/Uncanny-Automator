@@ -12,13 +12,6 @@ use WP_Error;
 class Export_Recipe {
 
 	/**
-	 * Copy recipe parts class instance.
-	 *
-	 * @var \Uncanny_Automator\Copy_Recipe_Parts
-	 */
-	public $copy_recipe_parts = null;
-
-	/**
 	 * Export_Recipe constructor.
 	 */
 	public function __construct() {
@@ -230,11 +223,12 @@ class Export_Recipe {
 	}
 
 	/**
-	 * Fetch the recipe data as JSON.
+	 * Fetch the recipe data as JSON — the versioned portable document emitted
+	 * by the portability engine (`automator_export_recipe()`).
 	 *
 	 * @param int $recipe_id
 	 *
-	 * @return string - JSON encoded recipe data.
+	 * @return string|\WP_Error JSON-encoded portable document, or the failure.
 	 */
 	public function fetch_recipe_as_json( $recipe_id ) {
 		// Check if the post ID is valid
@@ -244,78 +238,15 @@ class Export_Recipe {
 			return $recipe_id;
 		}
 
-		$recipe = (object) array(
-			'recipe'   => array(
-				'post' => get_post( $recipe_id ),
-				'meta' => $this->fetch_post_meta( $recipe_id ),
-			),
-			'triggers' => $this->fetch_recipe_parts( $recipe_id, AUTOMATOR_POST_TYPE_TRIGGER ),
-			'actions'  => $this->fetch_recipe_parts( $recipe_id, AUTOMATOR_POST_TYPE_ACTION ),
-			'loops'    => $this->fetch_recipe_parts( $recipe_id, AUTOMATOR_POST_TYPE_LOOP ),
-			'closure'  => $this->fetch_recipe_parts( $recipe_id, AUTOMATOR_POST_TYPE_CLOSURE ),
-		);
+		$document = automator_export_recipe( $recipe_id );
 
-		$recipe = apply_filters( 'automator_recipe_export_object', $recipe );
-		return wp_json_encode( $recipe, JSON_UNESCAPED_UNICODE );
+		if ( is_wp_error( $document ) ) {
+			return $document;
+		}
+
+		return wp_json_encode( $document, JSON_UNESCAPED_UNICODE );
 	}
 
-	/**
-	 * Fetch the post meta for a given post ID.
-	 *
-	 * @param int $post_id
-	 *
-	 * @return array - JSON encoded post meta data.
-	 */
-	public function fetch_post_meta( $post_id ) {
-		// Check if the post ID is valid
-		if ( ! is_numeric( $post_id ) || null === get_post( $post_id ) ) {
-			return array( 'error' => 'Invalid post ID' );
-		}
-
-		return get_post_meta( $post_id );
-	}
-
-	/**
-	 * Fetch the recipe parts for a given post ID as JSON.
-	 *
-	 * @param int $parent_id - The post ID of the recipe or loop to fetch parts for.
-	 * @param string $post_type - The post type of the recipe parts to fetch.
-	 *
-	 * @return mixed
-	 */
-	public function fetch_recipe_parts( $post_id, $post_type ) {
-
-		if ( is_null( $this->copy_recipe_parts ) ) {
-			$this->copy_recipe_parts = Automator_Load::get_core_class_instance( 'Copy_Recipe_Parts' );
-		}
-
-		$recipe_parts = $this->copy_recipe_parts->get_recipe_parts_posts( $post_type, $post_id );
-		if ( empty( $recipe_parts ) ) {
-			return false;
-		}
-
-		$parts = array();
-		foreach ( $recipe_parts as $r => $recipe_part ) {
-
-			if ( $post_type !== $recipe_part->post_type ) {
-				continue;
-			}
-
-			$parts[ $r ] = (object) array(
-				'post' => $recipe_part,
-				'meta' => $this->fetch_post_meta( $recipe_part->ID ),
-			);
-
-			if ( AUTOMATOR_POST_TYPE_LOOP === $post_type ) {
-				$parts[ $r ]->loops = array(
-					'filters' => $this->fetch_recipe_parts( $recipe_part->ID, AUTOMATOR_POST_TYPE_LOOP_FILTER ),
-					'actions' => $this->fetch_recipe_parts( $recipe_part->ID, AUTOMATOR_POST_TYPE_ACTION ),
-				);
-			}
-		}
-
-		return ( empty( (array) $parts ) ) ? false : apply_filters( 'automator_recipe_export_parts', $parts, $recipe_parts, $post_id, $post_type );
-	}
 
 	/**
 	 * Generate a filename for the exported recipe.

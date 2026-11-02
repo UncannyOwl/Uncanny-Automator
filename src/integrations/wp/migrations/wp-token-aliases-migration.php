@@ -386,7 +386,6 @@ class WP_Token_Aliases_Migration {
 
 		$updated = 0;
 		$offset  = 0;
-		$types   = "'" . implode( "','", self::MIGRATABLE_POST_TYPES ) . "'";
 
 		// Scoped mode: skip batching and the post_type join — the importer
 		// only hands us recipe-structure posts to begin with.
@@ -395,35 +394,31 @@ class WP_Token_Aliases_Migration {
 			if ( empty( $ids ) ) {
 				return 0;
 			}
-			$ids_csv = implode( ',', $ids );
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API finds posts by a raw meta value across post types.
 			$rows = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT meta_id, post_id, meta_value
 					 FROM {$wpdb->postmeta}
 					 WHERE meta_value LIKE %s
-					   AND post_id IN ({$ids_csv})",
-					'%{{%}}%'
+					   AND post_id IN (" . implode( ',', array_fill( 0, count( $ids ), '%d' ) ) . ')',
+					array_merge( array( '%{{%}}%' ), array_values( $ids ) )
 				)
 			);
 			return $this->apply_rewrites( (array) $rows, $aliases );
 		}
 
 		do {
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API finds posts by a raw meta value across post types.
 			$rows = $wpdb->get_results(
 				$wpdb->prepare(
-					// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					"SELECT pm.meta_id, pm.post_id, pm.meta_value
 					 FROM {$wpdb->postmeta} pm
 					 JOIN {$wpdb->posts} p ON p.ID = pm.post_id
-					 WHERE p.post_type IN ({$types})
+					 WHERE p.post_type IN (" . implode( ',', array_fill( 0, count( self::MIGRATABLE_POST_TYPES ), '%s' ) ) . ')
 					   AND pm.meta_value LIKE %s
 					 ORDER BY pm.meta_id ASC
-					 LIMIT %d OFFSET %d",
-					'%{{%}}%',
-					self::BATCH_SIZE,
-					$offset
+					 LIMIT %d OFFSET %d',
+					array_merge( self::MIGRATABLE_POST_TYPES, array( '%{{%}}%', self::BATCH_SIZE, $offset ) )
 				)
 			);
 
@@ -537,10 +532,10 @@ class WP_Token_Aliases_Migration {
 
 		$table = $wpdb->prefix . 'uap_options';
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration on Automator's own table; the query has no input.
 		$rows = $wpdb->get_results(
 			"SELECT option_id, option_value
-			 FROM {$table}
+			 FROM {$wpdb->prefix}uap_options
 			 WHERE option_value LIKE 'a:%user_id%action_data%'
 			   AND option_value LIKE '%{{%}}%'"
 		);

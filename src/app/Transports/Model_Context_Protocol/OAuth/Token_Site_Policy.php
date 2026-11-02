@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth;
 
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Mcp_Resource_Identifier;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Mcp_Rest_Controller;
+
 // phpcs:disable PSR2.Methods.FunctionClosingBrace.SpacingBeforeClose -- Deliberate breathing room at function boundaries.
 
 /**
@@ -15,6 +18,15 @@ namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth;
  * @since 7.4.1
  */
 final class Token_Site_Policy {
+
+	private Mcp_Resource_Identifier $resource_identifier;
+
+	/**
+	 * Construct the site boundary around the canonical MCP resource.
+	 */
+	public function __construct( ?Mcp_Resource_Identifier $resource_identifier = null ) {
+		$this->resource_identifier = $resource_identifier ?? new Mcp_Resource_Identifier();
+	}
 
 	/**
 	 * Base user meta key for encrypted token records.
@@ -51,8 +63,9 @@ final class Token_Site_Policy {
 	/**
 	 * Get the canonical audience for newly issued credentials.
 	 *
-	 * The home option is used directly so request protocol and proxy state
-	 * cannot change the authenticated audience between requests.
+	 * The site origin is deliberately independent of the REST permalink form.
+	 * Changing between pretty and query-based REST URLs must not invalidate every
+	 * credential or, on multisite, make its encrypted aggregate unreadable.
 	 *
 	 * @return string Canonical current-site audience.
 	 */
@@ -60,6 +73,38 @@ final class Token_Site_Policy {
 
 		return untrailingslashit( (string) get_option( 'home' ) );
 
+	}
+
+	/**
+	 * Return the currently advertised MCP protected-resource identifier.
+	 */
+	public function get_resource(): string {
+		return $this->resource_identifier->get();
+	}
+
+	/**
+	 * Return the former site-origin audience for one-time token migration.
+	 */
+	public function get_legacy_audience(): string {
+		return untrailingslashit( (string) get_option( 'home' ) );
+	}
+
+	/**
+	 * Determine whether a recorded resource is an MCP route on this site.
+	 *
+	 * Both WordPress REST URL forms identify the same protected resource. The
+	 * route and exact site-prefix checks preserve that boundary without coupling
+	 * credential validity to the current permalink setting.
+	 */
+	public function is_resource_for_current_site( $candidate_resource ): bool {
+		if ( ! is_string( $candidate_resource ) || '' === $candidate_resource ) {
+			return false;
+		}
+
+		$site_prefix = trailingslashit( $this->get_audience() );
+
+		return 0 === strpos( trailingslashit( $candidate_resource ), $site_prefix )
+			&& Mcp_Rest_Controller::is_mcp_route( $candidate_resource );
 	}
 
 	/**
@@ -117,6 +162,19 @@ final class Token_Site_Policy {
 
 		return 'mcp_primary_token_v1:' . hash( 'sha256', $identity );
 
+	}
+
+	/**
+	 * Resolve the pre-revamp multisite encryption context.
+	 */
+	public function get_legacy_encryption_context(): string {
+		if ( ! is_multisite() ) {
+			return '';
+		}
+
+		$identity = $this->get_site_id() . "\0" . $this->get_legacy_audience();
+
+		return 'mcp_primary_token_v1:' . hash( 'sha256', $identity );
 	}
 
 	/**

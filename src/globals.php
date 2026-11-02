@@ -22,6 +22,10 @@
 
 namespace Uncanny_Automator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! defined( 'AUTOMATOR_DEBUG_MODE' ) ) {
 	/**
 	 * Automator debug mode on/off
@@ -33,18 +37,54 @@ if ( ! defined( 'LOAD_AUTOMATOR' ) ) {
 	/**
 	 * Load Automator on/off
 	 */
-	define( 'LOAD_AUTOMATOR', apply_filters( 'automator_should_load_automator', true ) );
+	define( 'LOAD_AUTOMATOR', apply_filters( 'automator_should_load_automator', true ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Existing load-control constant that sites may define before the plugin loads.
 }
 
 if ( ! defined( 'UA_DEBUG_LOGS_DIR' ) ) {
 	/**
 	 * Automator ABSPATH for automator logs directory
 	 */
-	define( 'UA_DEBUG_LOGS_DIR', trailingslashit( UA_ABSPATH ) . 'logs' . DIRECTORY_SEPARATOR );
+	define( 'UA_DEBUG_LOGS_DIR', trailingslashit( UA_ABSPATH ) . 'logs' . DIRECTORY_SEPARATOR ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Existing log-directory constant that sites may override before the plugin loads.
 }
 
 if ( ! defined( 'AUTOMATOR_API_URL' ) ) {
 	define( 'AUTOMATOR_API_URL', apply_filters( 'automator_api_url', 'https://api.automatorplugin.com/' ) );
+}
+
+if ( ! defined( 'AUTOMATOR_PLATFORM_API_PATH' ) ) {
+	/**
+	 * URL path prefix for the Automator Platform's plugin↔platform plumbing
+	 * surface — site registration, jobs polling, connection management,
+	 * OAuth flows. Decoupled from `/v3/{integration}` (vendor-call surface)
+	 * per the unified rollout plan's "Decoupling rule".
+	 *
+	 * Endpoints under this prefix:
+	 *  - {AUTOMATOR_PLATFORM_API_PATH}/sites/register
+	 *  - {AUTOMATOR_PLATFORM_API_PATH}/sites/alive
+	 *  - {AUTOMATOR_PLATFORM_API_PATH}/jobs/{id}
+	 *  - {AUTOMATOR_PLATFORM_API_PATH}/connections/{id}
+	 *  - {AUTOMATOR_PLATFORM_API_PATH}/oauth/{integration}/start
+	 *
+	 * @since 8.0.0
+	 */
+	define( 'AUTOMATOR_PLATFORM_API_PATH', apply_filters( 'automator_platform_api_path', '/app/v1' ) );
+}
+
+if ( ! defined( 'AUTOMATOR_PLATFORM_WEBHOOK_RECEIVER_ROUTE' ) ) {
+	/**
+	 * REST API route on the plugin side that receives platform fanouts —
+	 * async-completion callbacks AND vendor-event webhook deliveries
+	 * (discriminated by `payload_type` per Contract I).
+	 *
+	 * Used by:
+	 *  - `Site.callback_url` registered at platform via /sites/register
+	 *  - `webhook_url` body field on /v3/{integration}/register-site-for-webhooks
+	 *
+	 * Resolve to a full URL via `rest_url( AUTOMATOR_PLATFORM_WEBHOOK_RECEIVER_ROUTE )`.
+	 *
+	 * @since 8.0.0
+	 */
+	define( 'AUTOMATOR_PLATFORM_WEBHOOK_RECEIVER_ROUTE', apply_filters( 'automator_platform_webhook_receiver_route', 'automator/platform/v1/webhooks/events' ) );
 }
 
 if ( ! defined( 'AUTOMATOR_USAGE_REPORTS_URL' ) ) {

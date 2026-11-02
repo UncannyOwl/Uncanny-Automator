@@ -18,11 +18,8 @@ class Add_Konnectz_It_Integration {
 	 * Integration Set-up.
 	 */
 	protected function setup() {
-
 		$this->set_integration( 'KONNECTZ_IT' );
-
 		$this->set_name( 'KonnectzIT' );
-
 		$this->set_icon( __DIR__ . '/img/konnectzit-icon.svg' );
 
 		$this->set_developer_name( 'KonnectzIT' );
@@ -36,8 +33,6 @@ class Add_Konnectz_It_Integration {
 	 * @return bool
 	 */
 	public function plugin_active() {
-
 		return true;
-
 	}
 }

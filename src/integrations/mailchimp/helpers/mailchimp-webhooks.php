@@ -1,6 +1,7 @@
 <?php
 namespace Uncanny_Automator\Integrations\Mailchimp;
 
+use Exception;
 use Uncanny_Automator\App_Integrations\App_Webhooks;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -66,7 +67,9 @@ class Mailchimp_Webhooks extends App_Webhooks {
 	 *
 	 * @param WP_REST_Request $request The request object.
 	 *
-	 * @return bool|WP_REST_Response
+	 * @return true|WP_REST_Response
+	 *
+	 * @throws Exception If the user agent is not Mailchimp.
 	 */
 	protected function validate_webhook_request( $request ) {
 		// Handle GET requests (Mailchimp validation handshake).
@@ -78,7 +81,7 @@ class Mailchimp_Webhooks extends App_Webhooks {
 		// Verify user agent (Mailchimp sets user agent to MailChimp).
 		$user_agent = $request->get_header( 'user_agent' );
 		if ( empty( $user_agent ) || false === strpos( strtolower( $user_agent ), 'mailchimp' ) ) {
-			return false;
+			throw new Exception( 'Invalid user agent' );
 		}
 
 		return true;

@@ -123,7 +123,7 @@ class Integration_Http_Client implements Http_Client_Interface {
 	 * 4. Check for WP_Error (WordPress HTTP errors)
 	 * 5. Validate HTTP status code (200/201 only)
 	 * 6. Extract and decode JSON response body
-	 * 7. Validate JSON decode was successful
+	 * 7. Validate JSON decode was successful and gave an object or array
 	 * 8. Reduce credits for successful request
 	 * 9. Return decoded response array
 	 *
@@ -152,6 +152,7 @@ class Integration_Http_Client implements Http_Client_Interface {
 	 * - Network failures → AI_Service_Exception with WP_Error message
 	 * - Bad HTTP status → AI_Service_Exception with status code and response
 	 * - Invalid JSON → AI_Service_Exception with JSON error details
+	 * - A bare JSON value (string, number, boolean) → AI_Service_Exception, no credit charged
 	 *
 	 * @inheritDoc
 	 */
@@ -211,8 +212,20 @@ class Integration_Http_Client implements Http_Client_Interface {
 			throw new AI_Service_Exception(
 				sprintf(
 					'Invalid JSON response from %s. JSON Error: %s. Response: %s',
-					esc_url( $url ),
+					esc_url( $this->url_for_error( $url ) ),
 					esc_html( json_last_error_msg() ),
+					esc_html( $data ),
+				),
+			);
+		}
+
+		// A bare JSON value ("ok", 42, true) is no answer an action can read: refuse it before the credit charge.
+		if ( ! is_array( $decoded ) ) {
+			throw new AI_Service_Exception(
+				sprintf(
+					/* translators: 1: The address the request was sent to (scheme, host and path), 2: The answer the provider sent */
+					esc_html_x( 'Invalid response from %1$s. Expected a JSON object or array. Response: %2$s', 'AI', 'uncanny-automator' ),
+					esc_url( $this->url_for_error( $url ) ),
 					esc_html( $data ),
 				),
 			);
@@ -221,6 +234,28 @@ class Integration_Http_Client implements Http_Client_Interface {
 		$this->get_api_server_credit_adapter()->reduce_credits();
 
 		return $decoded;
+	}
+
+	/**
+	 * The address an error message names: scheme, host and path only.
+	 *
+	 * A query string or userinfo can carry a secret, and an error message is stored in the run log.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $url The request URL.
+	 *
+	 * @return string The URL without userinfo, port, query string or fragment, or '' when it has no scheme or host.
+	 */
+	private function url_for_error( string $url ): string {
+
+		$parts = wp_parse_url( $url );
+
+		if ( ! is_array( $parts ) || empty( $parts['scheme'] ) || empty( $parts['host'] ) ) {
+			return '';
+		}
+
+		return $parts['scheme'] . '://' . $parts['host'] . ( $parts['path'] ?? '' );
 	}
 
 	/**

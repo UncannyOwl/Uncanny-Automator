@@ -3,8 +3,8 @@ declare( strict_types=1 );
 
 namespace Uncanny_Automator\App\Infrastructure\License;
 
-use Uncanny_Automator\App\Infrastructure\Api_Client\Api_Request;
-use Uncanny_Automator\App\Infrastructure\Api_Client\Api_Client_Interface;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Request;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Client_Interface;
 use Uncanny_Automator\App\Infrastructure\Exceptions\Api_Exception;
 use Uncanny_Automator\App\Plan\Services\Plan_Service;
 
@@ -30,7 +30,7 @@ class Credit_Manager {
 	/**
 	 * API client for making credit API calls.
 	 *
-	 * @var Api_Client_Interface
+	 * @var Client_Interface
 	 */
 	private $api_client;
 
@@ -48,10 +48,10 @@ class Credit_Manager {
 	 * Constructor.
 	 *
 	 * @param License_Manager      $license_manager The license manager instance.
-	 * @param Api_Client_Interface $api_client      The API client instance.
+	 * @param Client_Interface     $api_client      The API client instance.
 	 * @param Plan_Service|null    $plan_service    The plan service instance.
 	 */
-	public function __construct( License_Manager $license_manager, Api_Client_Interface $api_client, ?Plan_Service $plan_service = null ) {
+	public function __construct( License_Manager $license_manager, Client_Interface $api_client, ?Plan_Service $plan_service = null ) {
 		$this->license_manager = $license_manager;
 		$this->api_client      = $api_client;
 		$this->plan_service    = $plan_service ?? new Plan_Service();
@@ -127,7 +127,7 @@ class Credit_Manager {
 	public function charge( ?array $trigger_data = null ): array {
 		$this->has_credits();
 
-		$request = new Api_Request(
+		$request = new Request(
 			'v2/credits',
 			array( 'action' => 'reduce_credits' )
 		);

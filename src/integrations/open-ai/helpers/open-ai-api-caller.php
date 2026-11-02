@@ -30,6 +30,7 @@ class OpenAI_Api_Caller extends \Uncanny_Automator\App_Integrations\Api_Caller {
 	 *
 	 * @var string
 	 */
+	// phpcs:ignore PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- The site owner connects their own OpenAI account; this integration calls the provider's API for them.
 	const OPENAI_API_URL = 'https://api.openai.com/';
 
 	////////////////////////////////////////////////////////////
@@ -178,6 +179,7 @@ class OpenAI_Api_Caller extends \Uncanny_Automator\App_Integrations\Api_Caller {
 		$filter_id = strtolower( $action_code );
 
 		$body = array(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Public filter named after the action code, kept for compatibility.
 			'model'    => apply_filters( $filter_id . '_model', $model, $prompt ),
 			'messages' => array(
 				array(
@@ -187,6 +189,7 @@ class OpenAI_Api_Caller extends \Uncanny_Automator\App_Integrations\Api_Caller {
 			),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Public filter named after the action code, kept for compatibility.
 		$body = apply_filters( $filter_id . '_body', $body );
 
 		$response = $this->openai_request( 'v1/chat/completions', $body );

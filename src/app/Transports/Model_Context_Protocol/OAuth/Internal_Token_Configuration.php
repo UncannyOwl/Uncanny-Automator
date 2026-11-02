@@ -88,6 +88,42 @@ class Internal_Token_Configuration {
 	}
 
 	/**
+	 * Whether WordPress's `auth` salt has a strong half from wp-config.php.
+	 *
+	 * Mirrors wp_salt(): each half uses AUTH_* first, then SECRET_*, and a value
+	 * shared by two salt constants is ignored. A half that falls back to the
+	 * database adds nothing a database reader does not already have.
+	 *
+	 * @return bool Whether at least one half comes from strong external material.
+	 */
+	public function has_external_auth_salt(): bool {
+		$values = array();
+		foreach ( array( 'AUTH', 'SECURE_AUTH', 'LOGGED_IN', 'NONCE', 'SECRET' ) as $first ) {
+			foreach ( array( 'KEY', 'SALT' ) as $second ) {
+				$value = $this->read_constant( $first . '_' . $second );
+				if ( is_string( $value ) && '' !== $value ) {
+					$values[] = $value;
+				}
+			}
+		}
+		$counts = array_count_values( $values );
+
+		foreach ( array( array( 'AUTH_KEY', 'SECRET_KEY' ), array( 'AUTH_SALT', 'SECRET_SALT' ) ) as $sources ) {
+			foreach ( $sources as $constant_name ) {
+				$value = $this->read_constant( $constant_name );
+				if ( is_string( $value ) && '' !== $value && 1 === ( $counts[ $value ] ?? 0 ) ) {
+					if ( $this->is_strong_secret( $value ) ) {
+						return true;
+					}
+					break;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Build the actionable application error for missing strong configuration.
 	 *
 	 * @return WP_Error Configuration error.

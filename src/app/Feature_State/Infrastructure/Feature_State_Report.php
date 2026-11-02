@@ -120,7 +120,7 @@ final class Feature_State_Report {
 				'allocation_schema_version'    => $this->field( $cached, 'schema_version' ),
 				'allocation_cache_key_matches' => $this->format( false !== $cached ? '' !== $key && is_string( $hash ) && hash_equals( hash( 'sha256', $key ), $hash ) : null ),
 			),
-			$this->fields( $facts, array( 'success', 'active_allocations', 'used_allocations', 'expired_allocations', 'pending_first_use_allocation', 'observed_at' ) )
+			$this->fields( $facts, array( 'success', 'active_allocations', 'used_allocations', 'expired_allocations', 'pending_first_use_allocation', 'phase_1_lite_enrolled', 'observed_at' ) )
 		);
 	}
 
@@ -244,7 +244,7 @@ final class Feature_State_Report {
 		// Do not turn malformed scalar types into apparently authoritative facts.
 		// The policy readers require real booleans and non-negative integer counts.
 		if ( null !== $value ) {
-			$is_boolean = in_array( $key, array( 'success', 'is_lifetime' ), true );
+			$is_boolean = in_array( $key, array( 'success', 'is_lifetime', 'phase_1_lite_enrolled' ), true );
 			$is_count   = in_array( $key, array( 'active_allocations', 'used_allocations', 'expired_allocations', 'schema_version' ), true );
 			$is_pending = 'pending_first_use_allocation' === $key;
 			if (

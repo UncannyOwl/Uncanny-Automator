@@ -1,7 +1,4 @@
 <?php
-
-namespace Uncanny_Automator;
-
 /**
  * App integrations
  * Settings > App integrations > None selected
@@ -13,17 +10,26 @@ namespace Uncanny_Automator;
  * @version 3.8
  * @package Uncanny_Automator
  * @author  Daniela R. & Agustin B.
+ *
+ * Variables:
+ * $first_integration_key  The value of the first tab, which the tabs component activates on the landing page
  */
+
+namespace Uncanny_Automator;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 ?>
 
-<uo-tab-panel active>
+<uas-tab-panel slot="panel" name="<?php echo esc_attr( $first_integration_key ); ?>" active>
 
 	<div class="uap-settings-panel">
 
 		<div class="uap-settings-panel-placeholder" has-arrow>
 
-			<uo-icon id="bolt"></uo-icon>
+			<uas-icon code="bolt"></uas-icon>
 
 			<div class="uap-settings-panel-title">
 				<?php esc_html_e( 'Select an app integration', 'uncanny-automator' ); ?>
@@ -42,4 +48,4 @@ namespace Uncanny_Automator;
 
 	</div>
 
-</uo-tab-panel>
+</uas-tab-panel>

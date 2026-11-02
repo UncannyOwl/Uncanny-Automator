@@ -65,13 +65,6 @@ class MAKE_SENDWEBHOOK {
 			)
 		);
 
-		$this->set_buttons(
-			Automator()->send_webhook->fields->buttons(
-				$this->get_action_meta(),
-				$this->get_support_link()
-			)
-		);
-
 		$this->set_background_processing( true );
 
 		$this->register_action();

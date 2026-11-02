@@ -27,6 +27,7 @@ final class FallbackAssetFilesystemDiagnostics
         // A silent failure must not inherit a warning from an earlier operation.
         $this->operation = $operation;
         $this->systemError = null;
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler -- Captures the native filesystem warning for the diagnostic; the previous handler is restored in the finally block.
         set_error_handler(function (int $severity, string $message): bool {
             $this->systemError = $message;
             // Native warnings must not corrupt the REST response, including when @ is used.

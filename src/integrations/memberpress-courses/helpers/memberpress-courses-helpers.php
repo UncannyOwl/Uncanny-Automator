@@ -164,6 +164,7 @@ class Memberpress_Courses_Helpers {
 			'custom_value_description' => _x( 'Course ID', 'Memberpress', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_mp_courses', $option );
 	}
 
@@ -217,7 +218,8 @@ class Memberpress_Courses_Helpers {
 			stripcslashes( $post_types_string )
 		);
 
-		$db_lessons = $wpdb->get_results( stripcslashes( $query ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- MemberPress Courses stores lessons as posts with section and order meta; the query comes from $wpdb->prepare() and stripcslashes() only undoes the escaping of the post-type list.
+		$db_lessons = $wpdb->get_results( stripcslashes( $query ) );
 		$lessons    = array();
 
 		foreach ( $db_lessons as $lesson ) {

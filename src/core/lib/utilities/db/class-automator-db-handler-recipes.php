@@ -2,6 +2,9 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\App\Infrastructure\Database\Database;
+use Uncanny_Automator\App\Infrastructure\Exceptions\Store_Exception;
+
 /**
  * Class Automator_DB_Handler_Recipes
  *
@@ -46,6 +49,7 @@ class Automator_DB_Handler_Recipes {
 		global $wpdb;
 
 		$table_name = isset( Automator()->db->tables->recipe ) ? Automator()->db->tables->recipe : 'uap_recipe_log';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Write to Automator's own table.
 		$wpdb->insert(
 			$wpdb->prefix . $table_name,
 			array(
@@ -82,6 +86,7 @@ class Automator_DB_Handler_Recipes {
 		global $wpdb;
 		$table_name = isset( Automator()->db->tables->recipe ) ? Automator()->db->tables->recipe : 'uap_recipe_log';
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		return $wpdb->update(
 			$wpdb->prefix . $table_name,
 			$to_update,
@@ -278,7 +283,8 @@ class Automator_DB_Handler_Recipes {
 		global $wpdb;
 		$tbl = Automator()->db->tables->recipe;
 
-		return $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}{$tbl} WHERE completed = %d AND automator_recipe_id = %d AND user_id = %d", '-1', $recipe_id, $user_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		return $wpdb->get_var( $wpdb->prepare( 'SELECT ID FROM `' . esc_sql( $wpdb->prefix . $tbl ) . '` WHERE completed = %d AND automator_recipe_id = %d AND user_id = %d', '-1', $recipe_id, $user_id ) );
 	}
 
 	/**
@@ -300,7 +306,7 @@ class Automator_DB_Handler_Recipes {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT automator_recipe_id, user_id FROM {$wpdb->prefix}{$tbl} WHERE ID = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'SELECT automator_recipe_id, user_id FROM `' . esc_sql( $wpdb->prefix . $tbl ) . '` WHERE ID = %d',
 				$recipe_log_id
 			)
 		);
@@ -324,7 +330,8 @@ class Automator_DB_Handler_Recipes {
 
 		$tbl = Automator()->db->tables->action;
 
-		$results = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}{$tbl} WHERE completed = 5 AND automator_recipe_log_id = %d", $recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$results = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM `' . esc_sql( $wpdb->prefix . $tbl ) . '` WHERE completed = 5 AND automator_recipe_log_id = %d', $recipe_log_id ) );
 
 		return apply_filters( 'automator_has_scheduled_actions', absint( $results ), $recipe_log_id, $args );
 	}
@@ -336,6 +343,7 @@ class Automator_DB_Handler_Recipes {
 		global $wpdb;
 
 		// delete from uap_recipe_log
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->delete(
 			$wpdb->prefix . Automator()->db->tables->recipe,
 			array( 'automator_recipe_id' => $recipe_id )
@@ -343,6 +351,10 @@ class Automator_DB_Handler_Recipes {
 	}
 
 	/**
+	 * Deletes one run: its uap_error_log, uap_recipe_log_meta, uap_tokens_log and uap_run_snapshots rows, then its
+	 * uap_recipe_log row. Every single-run deletion comes here through automator_purge_recipe_logs(): the run's delete
+	 * link, log pruning, a deleted user's runs, "Delete recipe records on completion" and Pro's auto-purge.
+	 *
 	 * @param $recipe_id
 	 * @param $automator_recipe_log_id
 	 */
@@ -351,12 +363,17 @@ class Automator_DB_Handler_Recipes {
 		global $wpdb;
 
 		// Delete from uap_error_log.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->delete(
 			$wpdb->prefix . 'uap_error_log',
 			array( 'recipe_log_id' => $automator_recipe_log_id )
 		);
 
+		// Delete the run's finished uap_async_jobs rows and processed uap_platform_inbox rows; an open job stays, so its retry still runs.
+		$this->delete_finished_background_rows_of_run( absint( $automator_recipe_log_id ) );
+
 		// Delete from uap_recipe_log_meta.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->delete(
 			$wpdb->prefix . Automator()->db->tables->recipe_meta,
 			array(
@@ -366,6 +383,7 @@ class Automator_DB_Handler_Recipes {
 		);
 
 		// Delete from uap_tokens_log
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->delete(
 			$wpdb->prefix . Automator()->db->tables->tokens_logs,
 			array(
@@ -374,7 +392,15 @@ class Automator_DB_Handler_Recipes {
 			)
 		);
 
+		// Delete from uap_run_snapshots: the trigger data the run kept so it can run again. A deleted run can't be replayed.
+		try {
+			Database::get_run_snapshot_store()->purge_run( absint( $automator_recipe_log_id ) );
+		} catch ( Store_Exception $e ) {
+			automator_log( $e->getMessage(), 'delete_logs', true );
+		}
+
 		// Delete from uap_recipe_log.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->delete(
 			$wpdb->prefix . Automator()->db->tables->recipe,
 			array(
@@ -385,6 +411,12 @@ class Automator_DB_Handler_Recipes {
 	}
 
 	/**
+	 * Deletes every run of a recipe ("Clear activity").
+	 *
+	 * Covers the run log tables: uap_recipe_log and its meta, uap_tokens_log, uap_trigger_log and its meta,
+	 * uap_action_log and its meta, uap_error_log, uap_api_log, uap_api_log_response and uap_run_snapshots, and deletes
+	 * the recipe's uap_recipe_count row.
+	 *
 	 * @param $recipe_id
 	 *
 	 * @return void
@@ -401,13 +433,40 @@ class Automator_DB_Handler_Recipes {
 			)
 		);
 
-		// Delete from closures
-		Automator()->db->closure->delete_by_recipe_id( $recipe_id );
+		// Delete from uap_api_log and uap_api_log_response; their rows are found through the run, action and trigger logs.
+		Automator()->db->api->delete_by_recipe_id( $recipe_id );
+		// Delete the finished uap_async_jobs rows and processed uap_platform_inbox rows; the inbox rows are found through the run logs.
+		$this->delete_finished_background_rows_of_recipe( absint( $recipe_id ) );
 		// Delete from actions
 		Automator()->db->action->delete_by_recipe_id( $recipe_id );
 		// Delete from triggers
 		Automator()->db->trigger->delete_by_recipe_id( $recipe_id );
+
+		// Delete from uap_recipe_log_meta.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
+		$wpdb->delete(
+			$wpdb->prefix . Automator()->db->tables->recipe_meta,
+			array( 'recipe_id' => $recipe_id ),
+			array( '%d' )
+		);
+
+		// Delete from uap_tokens_log: the parsed token values, which can hold personal data.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
+		$wpdb->delete(
+			$wpdb->prefix . Automator()->db->tables->tokens_logs,
+			array( 'recipe_id' => $recipe_id ),
+			array( '%d' )
+		);
+
+		// Delete from uap_run_snapshots: the trigger data each run kept so it can run again.
+		try {
+			Database::get_run_snapshot_store()->purge_recipe( absint( $recipe_id ) );
+		} catch ( Store_Exception $e ) {
+			automator_log( $e->getMessage(), 'clear_activity_log_by_recipe_id', true );
+		}
+
 		// delete from uap_recipe_log
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->delete(
 			$wpdb->prefix . Automator()->db->tables->recipe,
 			array(
@@ -416,12 +475,64 @@ class Automator_DB_Handler_Recipes {
 		);
 
 		// delete from uap_recipe_log
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->delete(
 			"{$wpdb->prefix}uap_recipe_count",
 			array(
 				'recipe_id' => $recipe_id,
 			)
 		);
+	}
+
+	/**
+	 * Delete a recipe's finished background jobs and processed platform inbox rows.
+	 *
+	 * Open and processing jobs, and inbox rows the drain has still to apply or retry, stay: a site job's retry or a
+	 * completion still runs, and finds the run's log gone. Call it before the recipe's run logs are deleted, since
+	 * the inbox rows are found through them. A failed delete is logged and the clear goes on.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $recipe_id The recipe being cleared.
+	 *
+	 * @return void
+	 */
+	private function delete_finished_background_rows_of_recipe( $recipe_id ) {
+		try {
+			Database::get_background_job_store()->delete_finished_for_recipe( $recipe_id );
+		} catch ( Store_Exception $e ) {
+			automator_log( $e->getMessage(), 'clear_activity_log_by_recipe_id', true );
+		}
+
+		try {
+			Database::get_platform_inbox_store()->delete_processed_for_recipe( $recipe_id, \Uncanny_Automator\App\Infrastructure\Async_Jobs\Inbox_Drainer::MAX_ATTEMPTS );
+		} catch ( Store_Exception $e ) {
+			automator_log( $e->getMessage(), 'clear_activity_log_by_recipe_id', true );
+		}
+	}
+
+	/**
+	 * Delete one run's finished background jobs and processed platform inbox rows (see
+	 * delete_finished_background_rows_of_recipe()). A failed delete is logged and the run's other rows still go.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $recipe_log_id The run being deleted.
+	 *
+	 * @return void
+	 */
+	private function delete_finished_background_rows_of_run( $recipe_log_id ) {
+		try {
+			Database::get_background_job_store()->delete_finished_for_run( $recipe_log_id );
+		} catch ( Store_Exception $e ) {
+			automator_log( $e->getMessage(), 'delete_logs', true );
+		}
+
+		try {
+			Database::get_platform_inbox_store()->delete_processed_for_run( $recipe_log_id, \Uncanny_Automator\App\Infrastructure\Async_Jobs\Inbox_Drainer::MAX_ATTEMPTS );
+		} catch ( Store_Exception $e ) {
+			automator_log( $e->getMessage(), 'delete_logs', true );
+		}
 	}
 
 	/**
@@ -438,6 +549,7 @@ class Automator_DB_Handler_Recipes {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
 		$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}uap_recipe_count SET runs = runs + 1 WHERE recipe_id = %d", $recipe_id ) );
 	}
 
@@ -450,6 +562,7 @@ class Automator_DB_Handler_Recipes {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$results = (array) $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, completed, automator_recipe_id FROM {$wpdb->prefix}uap_recipe_log WHERE completed = %d",
@@ -472,6 +585,7 @@ class Automator_DB_Handler_Recipes {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$result = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT automator_trigger_id
@@ -517,7 +631,8 @@ class Automator_DB_Handler_Recipes {
 		$has_record = ! empty( $this->get_meta( $meta_key, $args ) );
 
 		if ( $has_record && true === $upsert ) {
-			return $wpdb->update(
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write to Automator's own table.
+			$updated = $wpdb->update(
 				$wpdb->prefix . 'uap_recipe_log_meta',
 				array(
 					'meta_value' => wp_json_encode( $meta_value ),
@@ -531,6 +646,11 @@ class Automator_DB_Handler_Recipes {
 				array( '%s' ),
 				array( '%d', '%d', '%d', '%s' )
 			);
+
+			// get_meta() cached the value it read; drop it so the next read returns the value just stored.
+			wp_cache_delete( $this->meta_cache_key( $meta_key, $args ), 'automator_recipe' );
+
+			return $updated;
 		}
 
 		$meta_value = wp_json_encode( $meta_value );
@@ -561,6 +681,7 @@ class Automator_DB_Handler_Recipes {
 				return false;
 			}
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Write to Automator's own table.
 			$inserted = $wpdb->insert(
 				$wpdb->prefix . 'uap_recipe_log_meta',
 				$column_val,
@@ -590,14 +711,7 @@ class Automator_DB_Handler_Recipes {
 
 		$group = 'automator_recipe';
 
-		$key = sprintf(
-			'%s_%d_%d_%d_%s',
-			$group,
-			$args['user_id'],
-			$args['recipe_id'],
-			$args['recipe_log_id'],
-			$meta_key
-		);
+		$key = $this->meta_cache_key( $meta_key, $args );
 
 		$meta_val_cached = Automator()->cache->get( $key, $group, true );
 
@@ -607,6 +721,7 @@ class Automator_DB_Handler_Recipes {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$meta_val = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT meta_value
@@ -627,6 +742,26 @@ class Automator_DB_Handler_Recipes {
 		}
 
 		return $meta_val;
+	}
+
+	/**
+	 * The object cache key get_meta() keeps a run's meta value under, in the automator_recipe group.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string                                             $meta_key The meta key.
+	 * @param array{user_id:int,recipe_id:int,recipe_log_id:int} $args     The run.
+	 *
+	 * @return string
+	 */
+	private function meta_cache_key( $meta_key, $args ) {
+		return sprintf(
+			'automator_recipe_%d_%d_%d_%s',
+			$args['user_id'],
+			$args['recipe_id'],
+			$args['recipe_log_id'],
+			$meta_key
+		);
 	}
 
 	/**
@@ -654,13 +789,14 @@ class Automator_DB_Handler_Recipes {
 		}
 		$safe_field = $allowed_fields[ $field ];
 
-		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->uap_recipe_log WHERE $safe_field = %s", $value ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		return $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `' . esc_sql( $wpdb->uap_recipe_log ) . '` WHERE `' . esc_sql( $safe_field ) . '` = %s', $value ) );
 	}
 
 	/**
 	 * @param int[] $args
 	 * @param string $meta_key
-	 * @param string $meta_value
+	 * @param string $meta_value The value as stored: already JSON-encoded by add_meta().
 	 *
 	 * @return bool True if existing data already exists. Otherwise, false.
 	 */
@@ -677,6 +813,7 @@ class Automator_DB_Handler_Recipes {
 		}
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID FROM {$wpdb->prefix}uap_recipe_log_meta
@@ -690,7 +827,7 @@ class Automator_DB_Handler_Recipes {
 				$args['recipe_id'],
 				$args['recipe_log_id'],
 				$meta_key,
-				wp_json_encode( $meta_value )
+				$meta_value
 			)
 		);
 

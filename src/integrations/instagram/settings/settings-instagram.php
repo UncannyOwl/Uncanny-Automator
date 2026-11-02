@@ -125,7 +125,8 @@ class Instagram_Settings extends App_Integration_Settings {
 	}
 
 	/**
-	 * Before Authorized Account Disconnect.
+	 * Once the platform confirmed the disconnect (handoff R8): remove the vault
+	 * entry on the API proxy. Safe to run twice.
 	 *
 	 * Instagram shares credentials with Facebook, so disconnecting
 	 * from Instagram also disconnects Facebook.
@@ -135,7 +136,7 @@ class Instagram_Settings extends App_Integration_Settings {
 	 *
 	 * @return array The response array.
 	 */
-	protected function before_disconnect( $response = array(), $data = array() ) {
+	protected function after_platform_disconnect( $response = array(), $data = array() ) {
 		$this->facebook_bridge->disconnect( $this->api );
 
 		return $response;
@@ -309,7 +310,7 @@ class Instagram_Settings extends App_Integration_Settings {
 							'data' => array(
 								'label'          => esc_html_x( 'Refresh', 'Instagram', 'uncanny-automator' ),
 								'icon'           => array(
-									'id' => 'rotate',
+									'code' => 'rotate',
 								),
 								'color'          => 'secondary',
 								'size'           => 'extra-small',

@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Recipe_Builder\Field\Value_Objects;
@@ -34,6 +33,8 @@ class Field_Type {
 	 * @return void
 	 */
 	public function __construct( string $value = '' ) {
+		$value = Field_Types::normalize( $value );
+
 		$this->validate( $value );
 		$this->value = $value;
 	}
@@ -69,8 +70,8 @@ class Field_Type {
 			throw new InvalidArgumentException(
 				sprintf(
 					'Invalid field type: %s. Must be one of: %s',
-					$value,
-					implode( ', ', Field_Types::get_all() )
+					esc_html( $value ),
+					esc_html( implode( ', ', Field_Types::get_all() ) )
 				)
 			);
 		}

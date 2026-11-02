@@ -4,6 +4,10 @@ namespace Uncanny_Automator\Integrations\WooCommerce_Bookings;
 
 use Uncanny_Automator\Wc_Tokens;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Wc_Bookings_Helpers
  *

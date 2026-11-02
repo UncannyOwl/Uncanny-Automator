@@ -417,6 +417,7 @@ class Loginizer_Helpers extends Abstract_Helpers {
 		$table = $this->logs_table();
 
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Loginizer owns this custom table; the name is built from $wpdb->prefix and the value is prepared.
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- Loginizer's own table; the plugin offers no API for this query. Table name comes from the helper's logs_table().
 		$row = $wpdb->get_row(
 			$wpdb->prepare( "SELECT * FROM {$table} WHERE ip = %s", (string) $ip ),
 			ARRAY_A
@@ -437,6 +438,7 @@ class Loginizer_Helpers extends Abstract_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Loginizer's own table; write; the plugin offers no API for this query.
 		$deleted = $wpdb->delete( $this->logs_table(), array( 'ip' => (string) $ip ), array( '%s' ) );
 
 		return false === $deleted ? 0 : (int) $deleted;

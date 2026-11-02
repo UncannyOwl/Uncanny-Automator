@@ -19,6 +19,7 @@ class Seedprod_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- SeedProd offers no function that lists its landing pages; they are pages carrying the _seedprod_page meta.
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID as `value`, post_title as `text` FROM $wpdb->posts p

@@ -36,7 +36,7 @@ class Background_Actions {
 	 */
 	const ENDPOINT = '/async_action/';
 	/**
-	 *
+	 * The legacy setting. Frozen since 8.0.0: read, never saved from the UI.
 	 */
 	const OPTION_NAME = 'uncanny_automator_background_actions';
 
@@ -52,7 +52,6 @@ class Background_Actions {
 		// The priority is important here. We need to make sure we run this filter after scheduling the actions.
 		add_filter( 'automator_before_action_executed', array( $this, 'maybe_send_to_background' ), 200, 1 );
 
-		add_action( 'admin_init', array( $this, 'register_setting' ) );
 		add_action( 'automator_settings_advanced_tab_view', array( $this, 'settings_output' ), 0 );
 
 		add_action( 'automator_activation_before', array( $this, 'add_option' ) );
@@ -569,35 +568,6 @@ class Background_Actions {
 	}
 
 	/**
-	 * sanitize_background_actions_setting
-	 *
-	 * @param mixed $value
-	 *
-	 * @return string
-	 */
-	public function sanitize_background_actions_setting( $value ) {
-		$sanitized = ( '1' === $value || 1 === $value || true === $value ) ? '1' : '0';
-		automator_update_option( self::OPTION_NAME, $sanitized );
-
-		return $sanitized;
-	}
-
-	/**
-	 * register_setting
-	 *
-	 * @return void
-	 */
-	public function register_setting() {
-
-		$args = array(
-			'type'              => 'boolean',
-			'sanitize_callback' => array( $this, 'sanitize_background_actions_setting' ),
-		);
-
-		register_setting( 'uncanny_automator_advanced', self::OPTION_NAME, $args );
-	}
-
-	/**
 	 * maybe_show_error
 	 *
 	 * @return void
@@ -617,12 +587,12 @@ class Background_Actions {
 
 		?>
 
-		<uo-alert class="uap-spacing-top" type="error"
+		<uas-alert class="uap-spacing-top" type="error"
 					heading="<?php esc_html_e( 'Background actions have been automatically disabled because an error was detected:', 'uncanny-automator' ); ?>">
 
 			<?php echo esc_html( $error_message ); ?>
 
-		</uo-alert>
+		</uas-alert>
 
 		<?php
 	}
@@ -630,7 +600,9 @@ class Background_Actions {
 	/**
 	 * settings_output
 	 *
-	 * Outputs the background action settings.
+	 * Outputs the background action setting, frozen since 8.0.0: the switch
+	 * shows the value the site had and cannot be changed. Nothing registers
+	 * the option for saving any more.
 	 *
 	 * @param mixed $action
 	 *
@@ -649,6 +621,7 @@ class Background_Actions {
 			<uo-switch
 				id="<?php echo esc_attr( self::OPTION_NAME ); ?>"
 				<?php echo $bg_actions_enabled ? 'checked' : ''; ?>
+				disabled
 
 				status-label="<?php esc_attr_e( 'Enabled', 'uncanny-automator' ); ?>,<?php esc_attr_e( 'Disabled', 'uncanny-automator' ); ?>"
 
@@ -656,7 +629,11 @@ class Background_Actions {
 			></uo-switch>
 
 			<div class="uap-field-description">
-				<?php esc_html_e( 'When enabled, actions that send data to an external site or service will be run in a background process to accelerate the execution of recipes.  We recommend leaving this setting enabled unless instructed otherwise by support.', 'uncanny-automator' ); ?>
+				<?php esc_html_e( 'When enabled, actions that send data to an external site or service will be run in a background process to accelerate the execution of recipes.', 'uncanny-automator' ); ?>
+			</div>
+
+			<div class="uap-field-description">
+				<?php esc_html_e( 'This setting is retired. It keeps the value it had before Uncanny Automator 8.0.0 and can no longer be changed.', 'uncanny-automator' ); ?>
 			</div>
 
 		</div>

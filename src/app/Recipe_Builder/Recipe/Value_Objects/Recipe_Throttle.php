@@ -1,7 +1,8 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects;
+
+use Uncanny_Automator\App\Recipe_Builder\Field\Services\Utilities\Field_Value_Normalizer;
 
 /**
  * Recipe Throttle Value Object.
@@ -20,13 +21,56 @@ namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects;
  */
 class Recipe_Throttle {
 
+	/**
+	 * @var bool Whether throttling is enabled.
+	 */
 	private $enabled;
+
+	/**
+	 * @var int|null Throttle duration — positive int when enabled, null when disabled.
+	 */
 	private $duration;
+
+	/**
+	 * @var string|null Duration unit (one of VALID_UNITS) when enabled, null when disabled.
+	 */
 	private $unit;
+
+	/**
+	 * @var string|null Throttle scope (one of VALID_SCOPES) when enabled, null when disabled.
+	 */
 	private $scope;
 
-	const VALID_UNITS  = array( 'minutes', 'hours', 'days' );
+	/**
+	 * Single source of truth for the recipe-throttle duration units.
+	 *
+	 * The full set the FE offers and released supports. The store coercion and
+	 * the MCP tool schema both reference this const — define units here only.
+	 * (The runtime Time_Unit_Converter_Trait still maps these to seconds; it
+	 * collapses into this source when the throttle enforcement engine migrates.)
+	 */
+	const VALID_UNITS  = array( 'seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'years' );
 	const VALID_SCOPES = array( 'recipe', 'user' );
+
+	/**
+	 * Defaults applied when a value is absent (ctor) or unrecognized (coerce_*).
+	 * Defined here so consumers never hardcode their own throttle defaults.
+	 */
+	const DEFAULT_UNIT = 'hours';
+
+	/**
+	 * Throttle the whole recipe rather than each user, unless the author says otherwise.
+	 *
+	 * @var string
+	 */
+	const DEFAULT_SCOPE = 'recipe';
+
+	/**
+	 * How long the throttle window lasts when the author has not set one.
+	 *
+	 * @var int
+	 */
+	const DEFAULT_DURATION = 1;
 
 	/**
 	 * Constructor.
@@ -35,27 +79,27 @@ class Recipe_Throttle {
 	 * stored but should be ignored. Always check is_enabled() before using
 	 * throttle configuration values.
 	 *
-	 * @param mixed  $enabled  Whether throttling is enabled (bool, 0/1, '0'/'1').
+	 * @param mixed  $enabled  Whether throttling is enabled (any boolean-ish value, normalized via Field_Value_Normalizer).
 	 * @param int    $duration Throttle duration (positive integer).
-	 * @param string $unit     Duration unit (minutes, hours, days).
+	 * @param string $unit     Duration unit (one of Recipe_Throttle::VALID_UNITS).
 	 * @param string $scope    Throttle scope (recipe or user).
 	 * @throws \InvalidArgumentException If parameters are invalid.
 	 */
 	public function __construct( $enabled = false, $duration = null, $unit = null, $scope = null ) {
 		$this->validate_enabled( $enabled );
 
-		$this->enabled = (bool) $enabled;
+		$this->enabled = Field_Value_Normalizer::to_bool( $enabled );
 
 		// Only validate/set other values if throttling is enabled
 		// This prevents misleading defaults on disabled throttles
 		if ( $this->enabled ) {
-			$this->validate_duration( $duration ?? 1 );
-			$this->validate_unit( $unit ?? 'hours' );
-			$this->validate_scope( $scope ?? 'recipe' );
+			$this->validate_duration( $duration ?? self::DEFAULT_DURATION );
+			$this->validate_unit( $unit ?? self::DEFAULT_UNIT );
+			$this->validate_scope( $scope ?? self::DEFAULT_SCOPE );
 
-			$this->duration = (int) ( $duration ?? 1 );
-			$this->unit     = $unit ?? 'hours';
-			$this->scope    = $scope ?? 'recipe';
+			$this->duration = (int) ( $duration ?? self::DEFAULT_DURATION );
+			$this->unit     = $unit ?? self::DEFAULT_UNIT;
+			$this->scope    = $scope ?? self::DEFAULT_SCOPE;
 		} else {
 			// Set null values for disabled throttle to avoid confusion
 			$this->duration = null;
@@ -147,6 +191,41 @@ class Recipe_Throttle {
 	}
 
 	/**
+	 * Coerce a unit to a valid value, defaulting to DEFAULT_UNIT.
+	 *
+	 * Lenient counterpart to the strict ctor validation — for callers (e.g. the
+	 * store) that normalize possibly-stale input rather than reject it.
+	 *
+	 * @param mixed $unit Candidate unit.
+	 * @return string A value in VALID_UNITS.
+	 */
+	public static function coerce_unit( $unit ): string {
+		return in_array( $unit, self::VALID_UNITS, true ) ? (string) $unit : self::DEFAULT_UNIT;
+	}
+
+	/**
+	 * Coerce a scope to a valid value, defaulting to DEFAULT_SCOPE.
+	 *
+	 * @param mixed $scope Candidate scope.
+	 * @return string A value in VALID_SCOPES.
+	 */
+	public static function coerce_scope( $scope ): string {
+		return in_array( $scope, self::VALID_SCOPES, true ) ? (string) $scope : self::DEFAULT_SCOPE;
+	}
+
+	/**
+	 * The canonical "no throttle" domain shape (a disabled throttle's array form).
+	 *
+	 * Single source for the disabled shape so readers (e.g. Recipe_Settings_Service)
+	 * don't re-declare the keys.
+	 *
+	 * @return array{enabled: bool, duration: int|null, unit: string|null, scope: string|null}
+	 */
+	public static function disabled_shape(): array {
+		return ( new self( false ) )->to_array();
+	}
+
+	/**
 	 * Validate enabled parameter.
 	 *
 	 * Accepts boolean values or boolean-ish strings/numbers.
@@ -156,25 +235,13 @@ class Recipe_Throttle {
 	 * @throws \InvalidArgumentException If invalid.
 	 */
 	private function validate_enabled( $enabled ) {
-		// Accept explicit booleans
-		if ( is_bool( $enabled ) ) {
-			return;
+		// Bool semantics live in Field_Value_Normalizer; the VO only enforces
+		// that the input is boolean-ish (rejecting 2, -1, 'bananas', arrays...).
+		if ( ! Field_Value_Normalizer::is_boolish( $enabled ) ) {
+			throw new \InvalidArgumentException(
+				'Enabled must be a boolean-ish value (bool, 0/1, true/false, yes/no, on/off, or empty)'
+			);
 		}
-
-		// Accept numeric 0/1
-		if ( is_numeric( $enabled ) && in_array( (int) $enabled, array( 0, 1 ), true ) ) {
-			return;
-		}
-
-		// Accept string '0'/'1'
-		if ( is_string( $enabled ) && in_array( $enabled, array( '0', '1' ), true ) ) {
-			return;
-		}
-
-		// Reject ambiguous values like 'bananas', 2, -1, etc.
-		throw new \InvalidArgumentException(
-			'Enabled must be boolean, numeric 0/1, or string "0"/"1"'
-		);
 	}
 
 	/**
@@ -198,7 +265,7 @@ class Recipe_Throttle {
 	private function validate_unit( $unit ) {
 		if ( ! is_string( $unit ) || ! in_array( $unit, self::VALID_UNITS, true ) ) {
 			throw new \InvalidArgumentException(
-				'Unit must be one of: ' . implode( ', ', self::VALID_UNITS )
+				'Unit must be one of: ' . esc_html( implode( ', ', self::VALID_UNITS ) )
 			);
 		}
 	}
@@ -212,7 +279,7 @@ class Recipe_Throttle {
 	private function validate_scope( $scope ) {
 		if ( ! is_string( $scope ) || ! in_array( $scope, self::VALID_SCOPES, true ) ) {
 			throw new \InvalidArgumentException(
-				'Scope must be one of: ' . implode( ', ', self::VALID_SCOPES )
+				'Scope must be one of: ' . esc_html( implode( ', ', self::VALID_SCOPES ) )
 			);
 		}
 	}

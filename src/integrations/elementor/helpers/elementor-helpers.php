@@ -75,6 +75,7 @@ class Elementor_Helpers {
 				$options['-1'] = $args['uo_any_label'];
 			}
 			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Searches every post's _elementor_data meta for form widgets; no core API filters a meta value with LIKE across post types.
 			$post_metas = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT pm.meta_value, pm.post_id
@@ -126,6 +127,7 @@ WHERE p.post_type IS NOT NULL
 
 		//      Automator()->cache->set( 'uap_option_all_elementor_forms', $option );
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_elementor_forms', $option );
 	}
 

@@ -3,7 +3,6 @@
 namespace Uncanny_Automator;
 
 use WP_Error;
-use Uncanny_Automator\Services\Addons\Data\License_Summary;
 
 /**
  * Class Admin_Menu
@@ -11,6 +10,13 @@ use Uncanny_Automator\Services\Addons\Data\License_Summary;
  * @package Uncanny_Automator
  */
 class Admin_Menu {
+
+	/**
+	 * The Connect Apps entry's slug: the App integrations tab of Settings, relative to wp-admin.
+	 *
+	 * @var string
+	 */
+	const CONNECT_APPS_SLUG = 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations';
 
 	/**
 	 * @var null
@@ -75,10 +81,6 @@ class Admin_Menu {
 		//$this->enqueue_global_assets();
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_global_assets' ), 99, 1 );
 
-		// Add inline JS data
-		$this->dashboard_inline_js_data();
-		$this->integrations_inline_js_data();
-
 		add_filter(
 			'admin_title',
 			array(
@@ -114,13 +116,15 @@ class Admin_Menu {
 			)
 		);
 
-		add_action(
-			'admin_menu',
-			array(
-				$this,
-				'register_submenu_app_integrations',
-			)
-		);
+		// Runs on admin_head, not admin_menu: WordPress reads a page's title from the submenu list before admin_head and renders the menu after it, so removing an entry earlier leaves its page with a null title (blank browser tab, strip_tags() deprecation notice).
+		add_action( 'admin_head', array( $this, 'hide_submenu_pages' ) );
+
+		add_filter( 'submenu_file', array( $this, 'highlight_dashboard_on_status_page' ) );
+
+		// After Admin_Ai_Menu (20), so an existing site's entry can sit right below Connect your AI; the 8.0 order is Admin_Menu_Order's.
+		add_action( 'admin_menu', array( $this, 'register_submenu_connect_apps' ), 21 );
+		add_action( 'admin_menu', array( $this, 'place_connect_apps_below_ai' ), 1001 );
+		add_filter( 'submenu_file', array( $this, 'highlight_connect_apps' ) );
 
 		add_action(
 			'admin_menu',
@@ -140,16 +144,6 @@ class Admin_Menu {
 		);
 
 		add_filter( 'admin_body_class', array( $this, 'add_legacy_activity_logs_css_class' ), 1, 1 );
-
-		$this->register_dashboard_recent_articles_endpoint();
-	}
-
-	/**
-	 * @return void
-	 */
-	public function register_dashboard_recent_articles_endpoint() {
-		$recent_articles = new \Uncanny_Automator\Services\Dashboard\Recent_Articles();
-		$recent_articles->register_hooks();
 	}
 
 	/**
@@ -205,6 +199,7 @@ class Admin_Menu {
 	public function plugins_loaded() {
 		$tabs = array();
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		$tabs       = apply_filters( 'uap_settings_tabs', $tabs );
 		self::$tabs = apply_filters( 'automator_settings_tabs', $tabs );
 		if ( self::$tabs ) {
@@ -286,19 +281,6 @@ class Admin_Menu {
 			0
 		);
 
-		// Create "All integrations" submenu page
-		add_submenu_page(
-			$parent_slug,
-			esc_attr__( 'All integrations', 'uncanny-automator' ),
-			esc_attr__( 'All integrations', 'uncanny-automator' ),
-			automator_get_capability(),
-			'uncanny-automator-integrations',
-			array(
-				$this,
-				'integrations_template',
-			)
-		);
-
 		// Recipe details (modal).
 		add_submenu_page(
 			$parent_slug_fake,
@@ -311,18 +293,114 @@ class Admin_Menu {
 	}
 
 	/**
+	 * Adds the Connect Apps entry, which opens the App integrations tab of Settings.
+	 *
 	 * @return void
 	 */
-	public function register_submenu_app_integrations() {
-		// Get the global $submenu array
+	public function register_submenu_connect_apps() {
 		add_submenu_page(
 			'edit.php?post_type=uo-recipe',
-			/* translators: 1. Trademarked term */
-			esc_html__( 'App integrations', 'uncanny-automator' ),
-			esc_html__( 'App integrations', 'uncanny-automator' ),
-			automator_get_capability(),
-			admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations' )
+			esc_attr__( 'Connect Apps', 'uncanny-automator' ),
+			esc_html__( 'Connect Apps', 'uncanny-automator' ),
+			automator_get_capability(), // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- automator_get_capability() returns the capability the Automator menu requires.
+			self::CONNECT_APPS_SLUG
 		);
+	}
+
+	/**
+	 * Moves Connect Apps directly below Connect your AI on a site that upgraded to 8.0.
+	 *
+	 * A site that installed 8.0 gets its order from Admin_Menu_Order (below AI activity). Without a
+	 * Connect your AI entry, the entry follows Logs, the entry Connect your AI itself follows.
+	 *
+	 * @return void
+	 */
+	public function place_connect_apps_below_ai() {
+
+		$parent = 'edit.php?post_type=uo-recipe';
+
+		if ( Admin_Ai_Menu::site_installed_at_8_or_later() || empty( $GLOBALS['submenu'][ $parent ] ) ) {
+			return;
+		}
+
+		$items = array_values( $GLOBALS['submenu'][ $parent ] );
+		$slugs = array_column( $items, 2 );
+		$index = array_search( self::CONNECT_APPS_SLUG, $slugs, true );
+
+		if ( false === $index ) {
+			return;
+		}
+
+		$entry = $items[ $index ];
+		unset( $items[ $index ] );
+		$items  = array_values( $items );
+		$hosted = \Uncanny_Automator\App\Application\Mcp\Hosted_App::base_url();
+		$anchor = false;
+
+		foreach ( $items as $position => $item ) {
+			if ( in_array( $item[2], array( Admin_Ai_Menu::SETTINGS_SLUG, Admin_Ai_Menu::WIZARD_SLUG ), true ) || 0 === strpos( $item[2], $hosted ) ) {
+				$anchor = $position;
+				break;
+			}
+		}
+
+		if ( false === $anchor ) {
+			$anchor = array_search( Admin_Ai_Menu::ANCHOR_EXISTING_INSTALL, array_column( $items, 2 ), true );
+		}
+
+		array_splice( $items, false === $anchor ? count( $items ) : $anchor + 1, 0, array( $entry ) );
+
+		$GLOBALS['submenu'][ $parent ] = $items; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- WordPress offers no function to place a submenu entry, as Admin_Ai_Menu::reposition() and Admin_Menu_Order::arrange() do.
+	}
+
+	/**
+	 * Highlights Connect Apps, not Settings, while the App integrations tab is open.
+	 *
+	 * @param string|null $submenu_file The submenu file WordPress resolved for the current page.
+	 *
+	 * @return string|null
+	 */
+	public function highlight_connect_apps( $submenu_file ) {
+
+		global $plugin_page;
+
+		if ( 'uncanny-automator-config' !== $plugin_page || 'premium-integrations' !== (string) automator_filter_input( 'tab' ) ) {
+			return $submenu_file;
+		}
+
+		return self::CONNECT_APPS_SLUG;
+	}
+
+	/**
+	 * Removes the Recipe templates and Status entries from the Automator menu.
+	 *
+	 * The Dashboard links to Status. Recipe templates left the menu for 8.0
+	 * (Ken, November 2, 2026) and may return in a later release. Both pages
+	 * stay registered, so their URLs, screen IDs and load hooks keep working.
+	 *
+	 * @return void
+	 */
+	public function hide_submenu_pages() {
+		remove_submenu_page( 'edit.php?post_type=uo-recipe', 'uncanny-automator-template-library' );
+		remove_submenu_page( 'edit.php?post_type=uo-recipe', 'uncanny-automator-admin-tools' );
+	}
+
+	/**
+	 * Highlights the Dashboard entry while the user is on the Status page, which the Dashboard links to.
+	 *
+	 * @param string|null $submenu_file The submenu file WordPress resolved for the current page.
+	 *
+	 * @return string|null
+	 */
+	public function highlight_dashboard_on_status_page( $submenu_file ) {
+
+		global $plugin_page;
+
+		if ( 'uncanny-automator-admin-tools' !== $plugin_page ) {
+			return $submenu_file;
+		}
+
+		return 'uncanny-automator-dashboard';
 	}
 
 	/**
@@ -381,663 +459,31 @@ class Admin_Menu {
 	 * Create Dashboard view
 	 */
 	public function dashboard_menu_page_output() {
-
-		// Check connect and credits
-		$dashboard = self::get_dashboard_details();
-
 		?>
 
 		<div class="wrap uap">
-			<?php include UA_ABSPATH . 'src/core/views/admin-dashboard.php'; ?>
+			<div id="uap-dashboard">
+
+				<!-- Some plugins need an h1 to add their notices -->
+				<h1 style="margin: 0; padding: 0;"></h1>
+
+				<?php do_action( 'automator_dashboard_header_after' ); ?>
+
+				<uap-d-site-auth
+					site-api-url="<?php echo esc_attr( rest_url() . AUTOMATOR_REST_API_END_POINT ); ?>"
+					site-api-nonce="<?php echo esc_attr( wp_create_nonce( 'wp_rest' ) ); ?>"
+				>
+					<?php if ( Admin_Ai_Settings::current_user_can_manage_ai() ) { ?>
+						<uap-f-page-dashboard can-manage-ai></uap-f-page-dashboard>
+					<?php } else { ?>
+						<uap-f-page-dashboard></uap-f-page-dashboard>
+					<?php } ?>
+				</uap-d-site-auth>
+
+			</div>
 		</div>
 
 		<?php
-	}
-
-	/**
-	 * @return object
-	 */
-	public static function get_dashboard_details() {
-
-		$is_connected = Api_Server::is_automator_connected( true );
-
-		$redirect_url = admin_url( 'admin.php?page=uncanny-automator-dashboard' );
-		$connect_url  = self::$automator_connect_url . self::$automator_connect_page . '?redirect_url=' . rawurlencode( $redirect_url );
-
-		$is_elite_active = defined( 'UAEI_PLUGIN_VERSION' );
-
-		// Unlimited app credits = any paid plan tier. Resolved via the single
-		// src/app seam, not an item_name match (which capped legacy licenses).
-		$has_unlimited_credits = automator_has_unlimited_credits();
-
-		$user = wp_get_current_user();
-
-		$paid_usage_count = isset( $is_connected['paid_usage_count'] ) ? $is_connected['paid_usage_count'] : 0;
-		$usage_limit      = isset( $is_connected['usage_limit'] ) ? $is_connected['usage_limit'] : 250;
-		$first_name       = isset( $is_connected['customer_name'] ) ? $is_connected['customer_name'] : esc_html__( 'Guest', 'uncanny-automator' );
-		$avatar           = isset( $is_connected['user_avatar'] ) ? $is_connected['user_avatar'] : esc_url( get_avatar_url( $user->ID ) );
-
-		$connected_sites = isset( $is_connected['license_id'] ) && isset( $is_connected['payment_id'] )
-			? self::$automator_connect_url . 'checkout/purchase-history/?license_id=' . $is_connected['license_id'] . '&action=manage_licenses&payment_id=' . $is_connected['payment_id']
-			: '#';
-
-		$free_credits = $is_connected ? ( $usage_limit - $paid_usage_count ) : 250;
-
-		// Ledger payload from the API server (api/credits/ledger). The API may
-		// omit `llm_credits` until the allocation is exposed or if the upstream call fails.
-		$ledger          = isset( $is_connected['llm_credits'] ) ? (array) $is_connected['llm_credits'] : array();
-		$ledger_has_data = ! empty( $ledger ) && ! empty( $ledger['success'] );
-
-		$ledger_active = $ledger_has_data && isset( $ledger['active'] ) ? (array) $ledger['active'] : array();
-
-		// Featured allocation: latest by `date_of_expiry` when multiple are
-		// active (typically the most recent purchase / renewal). The big-number
-		// % and total are pre-aggregated upstream via `overall_usage_percent`,
-		// so this only governs the suffix name + expiry caption.
-		// ISO 8601 strings sort lexicographically the same as chronologically.
-		$current_alloc = array();
-		if ( ! empty( $ledger_active ) ) {
-			usort(
-				$ledger_active,
-				static function ( $a, $b ): int {
-					$a_exp = isset( $a['date_of_expiry'] ) ? (string) $a['date_of_expiry'] : '';
-					$b_exp = isset( $b['date_of_expiry'] ) ? (string) $b['date_of_expiry'] : '';
-					return strcmp( $b_exp, $a_exp );
-				}
-			);
-			$current_alloc = (array) $ledger_active[0];
-		}
-
-		$llm_usage_percent   = $ledger_has_data && isset( $ledger['overall_usage_percent'] )
-			? max( 0, min( 100, (int) $ledger['overall_usage_percent'] ) )
-			: 0;
-		$llm_allocation_name = isset( $current_alloc['description'] ) ? (string) $current_alloc['description'] : '';
-		$llm_expires_on      = isset( $current_alloc['date_of_expiry'] ) ? (string) $current_alloc['date_of_expiry'] : '';
-
-		$kb_articles = array(
-			array(
-				'title' => esc_html__( 'Getting started', 'uncanny-automator' ),
-				'articles' => array(
-					array(
-						'title' => esc_html__( 'What is Uncanny Automator?', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/what-is-uncanny-automator/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
-					),
-					array(
-						'title' => esc_html__( 'Installing Uncanny Automator', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/installing-uncanny-automator/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
-					),
-					array(
-						'title' => esc_html__( 'Creating a Recipe', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/creating-a-recipe/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
-					),
-					array(
-						'title' => esc_html__( 'Recipes for Everyone', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/anonymous-recipes/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
-					),
-					array(
-						'title' => esc_html__( 'Managing Triggers', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/managing-triggers/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
-					),
-					array(
-						'title' => esc_html__( 'Managing Actions', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/managing-actions/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
-					),
-					array(
-						'title' => esc_html__( 'Managing Tokens', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/managing-tokens/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
-					),
-					array(
-						'title' => esc_html__( 'Scheduled Actions', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/scheduled-actions/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
-					),
-					array(
-						'title' => esc_html__( 'Action filters / conditions', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/action-filters-conditions/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
-					),
-					array(
-						'title' => esc_html__( 'What are App Credits?', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
-					),
-					array(
-						'title' => esc_html__( 'License Keys', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/where-can-i-find-my-license-key/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
-					),
-					array(
-						'title' => esc_html__( 'Working with Redirects', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/working-with-redirects/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
-					),
-				),
-			),
-			array(
-				'title' => esc_html__( 'Key resources', 'uncanny-automator' ),
-				'articles' => array(
-					array(
-						'title' => esc_html__( 'Uncanny Automator Changelog', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
-					),
-					array(
-						'title' => esc_html__( 'Uncanny Automator Pro Changelog', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-automator-pro-changelog/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
-					),
-					array(
-						'title' => esc_html__( 'Having trouble? Read this', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/important-notes-troubleshooting/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
-					),
-					array(
-						'title' => esc_html__( 'Using Automator Logs', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/using-automator-logs/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
-					),
-					array(
-						'title' => esc_html__( 'Developer Resources', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/developer-resources/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
-					),
-					array(
-						'title' => esc_html__( 'Data Privacy and GDPR', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/data-privacy-and-gdpr/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
-					),
-					array(
-						'title' => esc_html__( 'Usage Tracking', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/usage-tracking/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
-					),
-					array(
-						'title' => esc_html__( 'Connecting your site', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/connecting-your-site-with-a-free-uncanny-automator-account/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
-					),
-					array(
-						'title' => esc_html__( 'PHP version', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/php-version/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
-					),
-				),
-			),
-			array(
-				'title' => esc_html__( 'Webhooks', 'uncanny-automator' ),
-				'articles' => array(
-					array(
-						'title' => esc_html__( 'Incoming Webhook Triggers', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/webhook-triggers/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Webhook Actions', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/send-data-to-a-webhook/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Sending a JSON Array', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/sending-a-json-array-with-automators-outgoing-webhook-action/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Sending a JSON Object', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/sending-a-json-object-with-outgoing-webhooks/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-				),
-			),
-			array(
-				'title' => esc_html__( 'Special triggers', 'uncanny-automator' ),
-				'articles' => array(
-					array(
-						'title' => esc_html__( 'Magic Buttons & Magic Links', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/magic-button/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
-					),
-					array(
-						'title' => esc_html__( 'Schedule', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/schedule/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
-					),
-					array(
-						'title' => esc_html__( 'Google Sheets™ Webhook Addon', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/google-sheets-webhook-addon/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
-					),
-					array(
-						'title' => esc_html__( 'Run Now', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/run-now/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
-					),
-					array(
-						'title' => esc_html__( 'Advanced Custom Fields', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/advanced-custom-fields/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
-					),
-					array(
-						'title' => esc_html__( 'ActiveCampaign', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/activecampaign-triggers/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
-					),
-					array(
-						'title' => esc_html__( 'IFTTT', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/ifttt-to-wordpress/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
-					),
-					array(
-						'title' => esc_html__( 'OptinMonster Triggers', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/optinmonster-triggers/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
-					),
-					array(
-						'title' => esc_html__( 'Mailchimp', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/mailchimp-wordpress-triggers/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
-					),
-					array(
-						'title' => esc_html__( 'WhatsApp', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/whatsapp/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
-					),
-					array(
-						'title' => esc_html__( 'Help Scout', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/helpscout-triggers/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
-					),
-					array(
-						'title' => esc_html__( 'Telegram', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/telegram/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
-					),
-					array(
-						'title' => esc_html__( 'WooCommerce', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/woocommerce-triggers/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
-					),
-				),
-			),
-			array(
-				'title' => esc_html__( 'Special actions', 'uncanny-automator' ),
-				'articles' => array(
-					array(
-						'title' => esc_html__( 'Run a WordPress hook', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/run-a-wordpress-hook/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Call a custom function/method', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/call-a-custom-function-method/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'The Formatter Action', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/the-formatter-action/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Google Sheets', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/google-sheets/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Google Calendar', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/google-calendar/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'OpenAI', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/open-ai/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'X / Twitter', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/twitter/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Mailchimp', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/mailchimp/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'ActiveCampaign', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/activecampaign/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Facebook Pages', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/facebook/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'OptinMonster', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/optinmonster/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Zapier Actions', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/working-with-zapier-actions/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'WhatsApp', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/whatsapp/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Integrately', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/integrately/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Popup Maker', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/working-with-popup-maker-actions/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Slack', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/slack/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Zoom', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/zoom/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Integromat', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/working-with-integromat-actions/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'HubSpot', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/hubspot/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'GoToTraining', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/gototraining/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'GoToWebinar', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/gotowebinar/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Twilio', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/twilio/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Instagram Business', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/instagram/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Send a certificate', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/generate-an-email-a-certificate-to-the-user/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Uncanny Continuing Education Credits', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-continuing-education-credits/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'IFTTT', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/ifttt/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Create WooCommerce orders', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/create-woocommerce-orders/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'LinkedIn Pages', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/linkedin-pages/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Airtable', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/airtable/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Make', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/make/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'MailerLite', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/mailerlite/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Drip', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/drip/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Microsoft Teams (Beta)', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/microsoft-teams/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Telegram', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/telegram/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-					array(
-						'title' => esc_html__( 'Zoho Campaigns', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/zoho-campaigns/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
-				),
-			),
-			array(
-				'title' => esc_html__( 'Special tokens', 'uncanny-automator' ),
-				'articles' => array(
-					array(
-						'title' => esc_html__( 'User meta tokens', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/user-meta-tokens/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-tokens',
-					),
-					array(
-						'title' => esc_html__( 'Post meta tokens', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/post-meta-tokens/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-tokens',
-					),
-					array(
-						'title' => esc_html__( 'Calculations (math equations)', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/calculations-math-equations/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-tokens',
-					),
-				),
-			),
-			array(
-				'title' => esc_html__( 'Custom User Fields Addon', 'uncanny-automator' ),
-				'articles' => array(
-					array(
-						'title' => esc_html__( 'Installing the Custom User Fields Addon', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/installing-the-custom-user-fields-addon/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Managing Custom User Fields', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/managing-custom-user-fields/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Updating Custom User Field Data', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/updating-custom-user-field-data/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Displaying Custom User Fields', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/displaying-custom-user-fields/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Uncanny Automator Custom User Fields Addon Changelog', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-automator-custom-user-fields-addon-changelog/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-				),
-			),
-			array(
-				'title' => esc_html__( 'Restrict Content Addon', 'uncanny-automator' ),
-				'articles' => array(
-					array(
-						'title' => esc_html__( 'Installing the Restrict Content Addon', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/installing-the-restrict-content-addon/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Managing Access Levels', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/managing-access-levels/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Restrict Content Shortcodes', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/restrict-content-shortcodes/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Restrict Content for Blocks', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/restrict-content-for-blocks/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Restrict WordPress Pages & Posts', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/restrict-wordpress-pages-posts/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Restrict Content Integration with Automator', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/restrict-content-integration-with-automator/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Uncanny Automator Restrict Content Addon Changelog', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-automator-restrict-content-addon-changelog/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-				),
-			),
-			array(
-				'title' => esc_html__( 'User Lists Addon', 'uncanny-automator' ),
-				'articles' => array(
-					array(
-						'title' => esc_html__( 'Installing the User Lists Addon', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/installing-the-user-lists-addon/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Managing user lists', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/managing-user-lists/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Managing user list subscriptions', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/managing-user-list-subscriptions/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'User Lists Integration with Automator', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/user-lists-integration-with-automator/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Sending bulk emails with user lists', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/sending-bulk-emails-with-user-lists/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'The Unsubscribed list and managing subscriptions', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/the-unsubscribed-list-subscription-management/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Uncanny Automator User Lists Addon Changelog', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-automator-user-lists-addon-changelog/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-				),
-			),
-			array(
-				'title' => esc_html__( 'Advanced Topics', 'uncanny-automator' ),
-				'articles' => array(
-					array(
-						'title' => esc_html__( 'User Loops', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/user-loops/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Post Loops', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/post-loops/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Custom Scheduling', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/how-to-use-custom-scheduling-in-wordpress-automations/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-				),
-			),
-			array(
-				'title' => esc_html__( 'Registering users', 'uncanny-automator' ),
-				'articles' => array(
-					array(
-						'title' => esc_html__( 'Registration form with Contact Form 7', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-contact-form-7/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-registering-users',
-					),
-					array(
-						'title' => esc_html__( 'Registration form with Caldera Forms', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-caldera-forms/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-registering-users',
-					),
-					array(
-						'title' => esc_html__( 'Registration form with Ninja Forms', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-ninja-forms/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-registering-users',
-					),
-					array(
-						'title' => esc_html__( 'Registration form with Gravity Forms', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-gravity-forms/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-registering-users',
-					),
-					array(
-						'title' => esc_html__( 'Registration form with Formidable Forms', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-formidable-forms/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-registering-users',
-					),
-					array(
-						'title' => esc_html__( 'Registration form with WPForms', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-wpforms/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-registering-users',
-					),
-				),
-			),
-			array(
-				'title' => esc_html__( 'Integrations FAQ', 'uncanny-automator' ),
-				'articles' => array(
-					array(
-						'title' => esc_html__( 'Contact Form 7', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/contact-form-7/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'Gravity Forms', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/gravity-forms/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-					array(
-						'title' => esc_html__( 'WooCommerce', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/woocommerce/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
-					),
-				),
-			),
-		);
-
-		$faq_items = array(
-			array(
-				'question' => esc_html_x( 'What are app credits?', 'Dashboard FAQ', 'uncanny-automator' ),
-				'answer'   => esc_html_x( "Some app integrations connect to other services using an API. Automator's app credit system allows free plugin users to try this out. Passing a record to one of these integrations uses one app credit.", 'Dashboard FAQ', 'uncanny-automator' ),
-			),
-			array(
-				'question' => esc_html_x( 'Do I need app credits?', 'Dashboard FAQ', 'uncanny-automator' ),
-				'answer'   => esc_html_x( 'App credits are only needed for app integrations that pass through an API. Everything else is unrestricted (and Pro users get unlimited app credits).', 'Dashboard FAQ', 'uncanny-automator' ),
-			),
-			array(
-				'question' => esc_html_x( 'Can I get more app credits?', 'Dashboard FAQ', 'uncanny-automator' ),
-				'answer'   => esc_html_x( 'If you use more than 250 app credits, you must either purchase the Pro version or disable your actions that use credits.', 'Dashboard FAQ', 'uncanny-automator' ),
-			),
-			array(
-				'question' => esc_html_x( 'What is Uncanny Agent?', 'Dashboard FAQ', 'uncanny-automator' ),
-				'answer'   => esc_html_x( 'Uncanny Agent is a highly capable AI agent for your WordPress site. It can build, update and troubleshoot recipes, provide business insights, and complete tasks for you.', 'Dashboard FAQ', 'uncanny-automator' ),
-			),
-			array(
-				'question' => esc_html_x( 'What is Uncanny Agent usage?', 'Dashboard FAQ', 'uncanny-automator' ),
-				'answer'   => esc_html_x( 'Capable AI tools like Uncanny Agent require significant resources to operate. (Resources are consumed in a datacenter; Uncanny Agent does not use your server resources.) Uncanny Agent usage is a measurement of how much you can use Uncanny Agent on your AI + Automation plan and via other purchases or allocations of Uncanny Agent usage.', 'Dashboard FAQ', 'uncanny-automator' ),
-			),
-			array(
-				'question' => esc_html_x( 'How can I get more Uncanny Agent usage?', 'Dashboard FAQ', 'uncanny-automator' ),
-				'answer'   => esc_html_x( 'The most cost-effective method of getting additional usage of Uncanny Agent is by upgrading your plan. Higher plan tiers offer discounts on Uncanny Agent additional usage packs. Visit the usage page in your dashboard for details.', 'Dashboard FAQ', 'uncanny-automator' ),
-			),
-		);
-
-		return (object) array(
-			// The number of credits used by pro.
-			'paid_usage_count'   => absint( $paid_usage_count ),
-			'usage_limit'        => absint( $usage_limit ),
-			// Check if the user is using Automator Pro
-			'is_pro'             => $has_unlimited_credits,
-			'is_elite'           => $is_elite_active,
-			// Is Pro connected
-			'is_pro_installed'   => defined( 'AUTOMATOR_PRO_FILE' ) ? true : false,
-			'pro_activate_link'  => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=general&general=license' ),
-			// Check if this site is connected to an automatorplugin.com account
-			'has_site_connected' => $is_connected ? true : false,
-			// Get data about the CONNECTED user (automatorplugin.com)
-			// If no user is connected, "connected_user" should be NULL
-			'connected_user'     => (object) array(
-				// First name.
-				// If first name is not available, then Display name
-				'first_name' => $first_name,
-				// Gravatar
-				'avatar'     => $avatar,
-				'url'        => (object) array(
-					// automatorplugin.com link to edit profile
-					'edit_profile'       => self::$automator_connect_url . 'my-account/',
-					// automatorplugin.com link to manage connected sites under this account
-					'connected_sites'    => $connected_sites,
-					// URL to disconnect current site from the account
-					'disconnect_account' => add_query_arg(
-						array(
-							'action' => 'discount_automator_connect',
-							'state'  => wp_create_nonce( 'automator_setup_wizard_redirect_nonce' ),
-						)
-					),
-				),
-			),
-			'kb_articles'        => $kb_articles,
-			'faq_items'          => $faq_items,
-			'connect_url'        => $connect_url,
-			'miscellaneous'      => (object) array(
-				'free_credits'              => $free_credits,
-				'site_url_without_protocol' => preg_replace( '(^https?://)', '', get_site_url() ),
-			),
-			'upgrade_url'        => 'https://automatorplugin.com/pricing/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard&utm_campaign=upgrade-to-pro',
-			'llm_credits'        => (object) array(
-				'has_data'        => $ledger_has_data,
-				'usage_percent'   => $llm_usage_percent,
-				'allocation_name' => $llm_allocation_name,
-				'expires_on'      => $llm_expires_on,
-			),
-			'show_agent_usage'   => self::should_show_agent_usage( (bool) $is_connected, $ledger_has_data ),
-		);
-	}
-
-	/**
-	 * Determine whether the dashboard can show Uncanny Agent usage.
-	 *
-	 * The pane requires a connected account and a successful ledger response.
-	 * This gate applies to Free and Pro accounts.
-	 *
-	 * @param bool $is_connected    Whether the site has a connected account.
-	 * @param bool $ledger_has_data Whether the Agent ledger response succeeded.
-	 *
-	 * @return bool
-	 */
-	public static function should_show_agent_usage( bool $is_connected, bool $ledger_has_data ): bool {
-
-		return $is_connected && $ledger_has_data;
 	}
 
 	/**
@@ -1316,8 +762,20 @@ class Admin_Menu {
 		// this license is still valid
 		if ( 'valid' === $license_data->license ) {
 			automator_update_option( 'uap_automator_pro_license_status', $license_data->license );
-			if ( 'lifetime' !== $license_data->expires ) {
-				automator_update_option( 'uap_automator_pro_license_expiry', $license_data->expires );
+
+			// Lifetime/perpetual licenses have no expiry. The API strips the null
+			// `expires` from the response (sparse-shape parity, platform PR #94),
+			// so the property is absent on the wire — only the EDD store path
+			// emits the 'lifetime' sentinel this branch was written for.
+			// Normalise a missing/null value to 'lifetime' so the checks below
+			// don't warn on an undefined property, blank the stored expiry, or
+			// pass null to DateTime (which resolves to NOW and schedules a bogus
+			// "license expiring" notification for lifetime customers). Mirrors
+			// Pro's Licensing::check_license() fix.
+			$expires = $license_data->expires ?? 'lifetime';
+
+			if ( 'lifetime' !== $expires ) {
+				automator_update_option( 'uap_automator_pro_license_expiry', $expires );
 			} else {
 				automator_update_option(
 					'uap_automator_pro_license_expiry',
@@ -1325,8 +783,8 @@ class Admin_Menu {
 				);
 			}
 
-			if ( 'lifetime' !== $license_data->expires ) {
-				$expire_notification = new \DateTime( $license_data->expires, wp_timezone() );
+			if ( 'lifetime' !== $expires ) {
+				$expire_notification = new \DateTime( $expires, wp_timezone() );
 				automator_update_option( 'uap_automator_pro_license_expiry_notice', $expire_notification );
 				if ( wp_get_scheduled_event( 'uapro_notify_admin_of_license_expiry' ) ) {
 					wp_unschedule_hook( 'uapro_notify_admin_of_license_expiry' );
@@ -1361,7 +819,6 @@ class Admin_Menu {
 				'edit-tags.php',
 				'options.php',
 				'uncanny-automator-dashboard',
-				'uncanny-automator-integrations',
 				'uncanny-automator-config',
 				'uncanny-automator-tools',
 				'uncanny-automator-action-log',
@@ -1427,8 +884,7 @@ class Admin_Menu {
 			'main',
 			array(
 				'localize' => array(
-					'UncannyAutomatorBackend' => $this->get_js_backend_inline_data( $hook ),
-					'UncannyAutomator' => array(),
+					'UncannyAutomator' => $this->get_js_backend_inline_data( $hook ),
 				),
 			)
 		);
@@ -1465,51 +921,9 @@ class Admin_Menu {
 	public function get_js_backend_inline_data( $hook ) {
 		// Set default data
 		$automator_backend_js = array(
-			'ajax'       => array(
-				'url'   => admin_url( 'admin-ajax.php' ),
-				'nonce' => \wp_create_nonce( 'uncanny_automator' ),
-			),
-			'rest'       => array(
-				'url'   => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ), // Automator URL endpoint
-				'base'  => esc_url_raw( rest_url() ), // Actual URL of the /wp-json/
-				'nonce' => \wp_create_nonce( 'wp_rest' ),
-			),
-			'logs'       => array(
-				'runsPerPage' => (int) apply_filters( 'automator_loop_logs_runs_per_page', \Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Loop_Logs_Resources::DEFAULT_RUNS_PER_PAGE ),
-			),
-			'debugging'  => array(
-				'enabled' => (bool) AUTOMATOR_DEBUG_MODE,
-			),
-			'components' => array(
-				'icon'     => array(
-					'integrations' => $this->get_integrations_for_components(),
-				),
-			),
-			'_site'      => array(
-				'automator' => array(
-					'license_details'    => ( new License_Summary() )->get_license_summary(),
-					'is_pro_active'      => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ),
-					'links' => array(
-						'marketing_referer'  => automator_get_option( 'uncannyautomator_source', '' ),
-						'external' => array(
-							'url_upgrade_to_pro' => add_query_arg(
-								// UTM
-								array(
-									'utm_source'   => 'uncanny-automator',
-									'utm_medium'   => 'in-plugin',
-									'utm_content'  => 'upgrade-to-pro-button',
-									'utm_campaign' => 'upgrade-to-pro',
-								),
-								'https://automatorplugin.com/pricing/'
-							),
-						),
-						'internal' => array(
-							'all_recipes'        => admin_url( 'edit.php?post_type=uo-recipe' ),
-							'tools'              => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-tools' ),
-							'manage_license'     => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=general&general=license' ),
-						),
-					),
-				),
+			'utm' => array(
+				'source'   => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? 'plugin-pro' : 'plugin-lite',
+				'referrer' => automator_get_option( 'uncannyautomator_source', null ),
 			),
 		);
 
@@ -1521,400 +935,6 @@ class Admin_Menu {
 		);
 
 		return $automator_backend_js;
-	}
-
-	/**
-	 * Adds required JS data for the Dashboard page. Before doing so, checks if
-	 * the current page is indeed the Dashboard page.
-	 * This uses the filter "automator_assets_backend_js_data". If the page is
-	 * not the targeted page, it just returns the data unmodified.
-	 */
-	private function dashboard_inline_js_data() {
-		// Filter inline data
-		add_filter(
-			'automator_assets_backend_js_data',
-			function ( $data, $hook ) {
-				// Check if the current page is the "Dashboard" page
-				if ( 'uo-recipe_page_uncanny-automator-dashboard' === (string) $hook ) {
-					// Get data about the connected site
-					$this->automator_connect = Api_Server::is_automator_connected();
-
-					// Check if the user has Automator Pro (unlimited credits = any
-					// paid tier). Resolved via the single src/app seam, not an
-					// item_name match (which capped legacy licenses).
-					$has_unlimited_credits = automator_has_unlimited_credits();
-
-					// Add it to the main JS variable
-					$data['isPro'] = $has_unlimited_credits;
-
-					// Check if the site is connected
-					$data['hasSiteConnected'] = $this->automator_connect ? true : false;
-				}
-
-				return $data;
-			},
-			10,
-			2
-		);
-	}
-
-	/**
-	 * Adds required JS data for the Integrations page. Before doing so, checks
-	 * if the current page is indeed the Integrations page. This uses the
-	 * filter "automator_assets_backend_js_data". If the page is not the
-	 * targeted page, it just returns the data unmodified.
-	 */
-	private function integrations_inline_js_data() {
-		// Filter inline data
-		add_filter(
-			'automator_assets_backend_js_data',
-			function ( $data, $hook ) {
-				// Check if the current page is the "Integrations" page
-				if ( 'uo-recipe_page_uncanny-automator-integrations' === (string) $hook ) {
-					// Check if integrations are already loaded in transient.
-					$integrations = get_transient( 'automator_all_integration_items' );
-
-					if ( false === $integrations ) {
-						$integrations = $this->get_integrations();
-					}
-
-					// Check if integrations' collections are already loaded in transient.
-					$collections = get_transient( 'automator_integration_collection_items' );
-
-					if ( false === $collections ) {
-						$collections = $this->get_collections();
-					}
-
-					// Add integrations
-					$data['integrations'] = $integrations;
-					$data['collections']  = $collections;
-				}
-
-				return $data;
-			},
-			10,
-			2
-		);
-	}
-
-	/**
-	 * Returns the integration ID defined in the URL
-	 *
-	 * @return {String} The integration ID
-	 */
-	public function integrations_get_id_from_url() {
-		return automator_filter_has_var( 'integration' ) ? sanitize_text_field( automator_filter_input( 'integration' ) ) : '';
-	}
-
-	/**
-	 * Defines what's the template that must be loaded for the integrations
-	 * page, depending on the value of the GET parameter "integration"
-	 *
-	 * @return null|void
-	 */
-	public function integrations_template() {
-		// Get the current integration
-		$integration_id = $this->integrations_get_id_from_url();
-
-		// Check if it's the archive page by checking if an integration ID
-		// is defined in the URL
-		$is_archive = empty( $integration_id );
-
-		/*
-		if ( $is_archive ) {
-			$this->integrations_template_load_archive();
-		} else {
-			$this->integrations_template_load_single();
-		}
-		*/
-
-		$this->integrations_template_load_archive();
-	}
-
-	/**
-	 * Loads the archive view of the integrations page
-	 *
-	 * @return null|void
-	 */
-	public function integrations_template_load_archive() {
-
-		// Go to all recipes URL
-		$all_recipes_url = add_query_arg(
-			array(
-				'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
-			),
-			admin_url( 'edit.php' )
-		);
-
-		// Check if the user has Automator Pro installed
-		$user_has_automator_pro = defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' );
-
-		// Check if integrations are already loaded in transient.
-		$integrations = get_transient( 'automator_all_integration_items' );
-
-		$is_refresh = automator_filter_input( 'refresh' );
-
-		if ( false === $integrations || isset( $is_refresh ) ) {
-			$integrations = $this->get_integrations();
-		}
-
-		// Check if integrations' collections are already loaded in transient.
-		$collections = get_transient( 'automator_integration_collection_items' );
-
-		if ( false === $collections ) {
-			$collections = $this->get_collections();
-		}
-
-		// Load archive view
-		include Utilities::automator_get_view( 'admin-integrations/archive.php' );
-	}
-
-	/**
-	 * @return array
-	 */
-	public function get_collections() {
-
-		// The endpoint url. Change this to live site later.
-		$endpoint_url = AUTOMATOR_INTEGRATIONS_JSON_LIST; // Append time to prevent caching.
-
-		// Get integrations from Automator plugin.
-		$response = wp_remote_get( esc_url_raw( $endpoint_url ) );
-
-		$collections = array();
-
-		if ( is_wp_error( $response ) ) {
-			return $collections;
-		}
-
-		$api_response = json_decode( $response['body'], true );
-
-		foreach ( $api_response as $integration ) {
-
-			$collection = $integration['collection'];
-
-			if ( empty( $collection ) ) {
-				continue;
-			}
-
-			$collection = array_shift( $collection );
-
-			$collection_slug = $collection['slug'];
-
-			if ( isset( $collections[ $collection_slug ] ) && is_object( $collections[ $collection_slug ] ) ) {
-				if ( ! isset( $collections[ $collection_slug ]->integrations ) || ! is_array( $collections[ $collection_slug ]->integrations ) ) {
-					$collections[ $collection_slug ]->integrations = array();
-				}
-				$collections[ $collection_slug ]->integrations[] = $integration['post_id'];
-				continue;
-			}
-
-			$collections[ $collection_slug ] = (object) array(
-				'id'           => $collection['slug'],
-				'name'         => $collection['name'],
-				'description'  => $collection['description'],
-				'integrations' => array( $integration['post_id'] ),
-			);
-		}
-
-		// Add "Installed integrations"
-		$collections['installed-integrations'] = (object) array(
-			'id'           => 'installed-integrations',
-			'name'         => esc_html__( 'Installed integrations', 'uncanny-automator' ),
-			'description'  => esc_html__( 'Ready-to-use integrations', 'uncanny-automator' ),
-			'integrations' => $this->get_installed_integrations_ids(),
-		);
-
-		// Save in transients. Refreshes every day.
-		set_transient( 'automator_integration_collection_items', $collections, DAY_IN_SECONDS );
-
-		return $collections;
-	}
-
-	/**
-	 * Returns the list of integrations.
-	 *
-	 * @return array $integrations The list of integrations.
-	 */
-	public function get_integrations() {
-
-		// The endpoint url to S3
-		$endpoint_url = AUTOMATOR_INTEGRATIONS_JSON_LIST; // Append time to prevent caching.
-
-		$response = wp_remote_get( $endpoint_url );
-
-		if ( is_wp_error( $response ) ) {
-			return array();
-		}
-
-		$integrations = array();
-
-		$api_response = json_decode( $response['body'], true );
-
-		foreach ( $api_response as $integration ) {
-
-			// Requires on "All integrations" page to sort by categories
-			$post_id = isset( $integration['post_id'] ) ? $integration['post_id'] : 0;
-
-			$integration_id   = $integration['integration_id'];
-			$integration_name = $integration['integration_name'];
-			$permalink        = add_query_arg(
-				array(
-					'post_type'   => AUTOMATOR_POST_TYPE_RECIPE,
-					'page'        => 'uncanny-automator-integrations',
-					'integration' => $integration_id,
-				),
-				admin_url( 'edit.php' )
-			);
-
-			// Assume that the integration name is
-			// different but the code is same
-			if ( isset( $integrations[ $integration_id ] ) ) {
-				$integration_id = Utilities::decouple_integration_id_name( $integration_id, $integration_name );
-			}
-
-			$integrations[ $post_id ] = (object) array(
-				'id'                 => $post_id,
-				'integration_id'     => $integration['integration_id'],
-				'name'               => $integration_name,
-				'permalink'          => $permalink,
-				'external_permalink' => $integration['integration_link'],
-				'is_pro'             => $integration['is_pro_integration'],
-				'is_plus'            => $integration['is_plus_integration'],
-				'is_elite'           => isset( $integration['is_elite_integration'] ) ? $integration['is_elite_integration'] : false,
-				'is_built_in'        => $integration['is_app_integration'],
-				'is_addon'           => $integration['is_automator_addon'],
-				'is_third_party'     => $integration['is_third_party_integration'],
-				'is_installed'       => $this->is_installed( $integration_id ),
-				'short_description'  => $integration['short_description'],
-				'icon_url'           => $integration['integration_icon'],
-			);
-
-		}
-
-		set_transient( 'automator_all_integration_items', $integrations, DAY_IN_SECONDS );
-
-		return $integrations;
-	}
-
-	/**
-	 * Returns the IDs of the installed integrations
-	 *
-	 * @return array The IDs
-	 */
-	public function get_installed_integrations_ids() {
-		// Check if integrations are already loaded in transient.
-		$integrations = get_transient( 'automator_all_integration_items' );
-
-		if ( false === $integrations ) {
-			$integrations = $this->get_integrations();
-		}
-
-		// Filter them to get only the installed ones
-		$installed_integrations = array_filter(
-			$integrations,
-			function ( $integration ) {
-				return $integration->is_installed;
-			}
-		);
-
-		// Create collection data
-		return array_keys( $installed_integrations );
-	}
-
-	/**
-	 * Returns the "All integrations" collection
-	 *
-	 * @return object The collection
-	 */
-	public function get_all_integrations_collection() {
-		// Check if integrations are already loaded in transient.
-		$integrations = get_transient( 'automator_all_integration_items' );
-
-		if ( false === $integrations ) {
-			$integrations = $this->get_integrations();
-		}
-
-		// Create collection data
-		return (object) array(
-			'id'                  => 'all-integrations',
-			'name'                => esc_html__( 'All integrations', 'uncanny-automator' ),
-			'description'         => esc_html__( 'Put your WordPress site on autopilot', 'uncanny-automator' ),
-			'integrations'        => array_keys( $integrations ),
-			'add_no_results_item' => true,
-		);
-	}
-
-	/**
-	 * Check if the plugin integration is installed or not.
-	 *
-	 * @param string $integration_id The ID of the integration.
-	 *
-	 * @return boolean True if installed. Otherwise, false.
-	 */
-	public function is_installed( $integration_id = '' ) {
-
-		if ( empty( $integration_id ) ) {
-			return false;
-		}
-
-		$existing_integrations = array_keys( Automator()->get_integrations() );
-
-		return in_array( $integration_id, $existing_integrations, true );
-	}
-
-	/**
-	 * Loads the single view of the integrations page
-	 *
-	 * @return null|void
-	 */
-	public function integrations_template_load_single() {
-		// Get the current integration
-		$integration_id = $this->integrations_get_id_from_url();
-
-		// Load single view
-		include Utilities::automator_get_view( 'admin-integrations/single.php' );
-	}
-
-	/**
-	 * @return array
-	 */
-	public function get_integrations_for_components() {
-		// List all integrations, active and not active
-		$integrations = Automator()->get_all_integrations();
-		if ( empty( $integrations ) ) {
-			return array();
-		}
-		$data = array();
-		foreach ( $integrations as $integration_id => $integration ) {
-			if ( array_key_exists( $integration_id, $data ) ) {
-				continue;
-			}
-			$data[ $integration_id ] = array(
-				'id'   => $integration_id,
-				'icon' => isset( $integration['icon_svg'] ) ? $integration['icon_svg'] : '',
-				'name' => isset( $integration['name'] ) ? $integration['name'] : '',
-			);
-		}
-
-		// fallback for legacy methods,
-		// where a trait method is not used
-		// to define integration. Mostly API integrations
-		$integrations = Automator()->get_integrations();
-		if ( empty( $integrations ) ) {
-			return $data;
-		}
-		foreach ( $integrations as $integration_id => $integration ) {
-			if ( array_key_exists( $integration_id, $data ) ) {
-				continue;
-			}
-			$data[ $integration_id ] = array(
-				'id'   => $integration_id,
-				'icon' => isset( $integration['icon_svg'] ) ? $integration['icon_svg'] : '',
-				'name' => isset( $integration['name'] ) ? $integration['name'] : '',
-			);
-		}
-
-		return $data;
 	}
 
 	/**
@@ -2047,33 +1067,81 @@ class Admin_Menu {
 
 		$license_data = self::licensing_call( 'activate-license', $license );
 
-		if ( ! $license_data ) {
+		wp_safe_redirect(
+			$this->finish_free_license_activation(
+				$license_data,
+				automator_filter_input( 'page' ),
+				! empty( automator_filter_input( 'ua_connecting_integration_id' ) ),
+				automator_filter_input( \Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Server\OAuth_Account_Link::RETURN_PARAM )
+			)
+		);
+
+		die;
+	}
+
+	/**
+	 * Store the store's activation reply and say where the owner goes next:
+	 * back to the recipe when an integration was connecting, to the Dashboard
+	 * when linking started there, to the wizard screen it started from, else
+	 * to Setup wizard step 2. A reply with
+	 * no license data stores nothing and goes to the license page, which
+	 * explains the failure.
+	 *
+	 * @param object|null $license_data           The store's activation reply.
+	 * @param string      $page                   The admin page the store returned to.
+	 * @param bool        $connecting_integration Whether an integration was connecting.
+	 * @param string      $account_link           Optional saved AI approval return.
+	 *
+	 * @return string The URL to redirect to, without the key and state.
+	 */
+	private function finish_free_license_activation( $license_data, $page, $connecting_integration, $account_link = '' ) {
+		if ( ! is_object( $license_data ) ) {
 			automator_delete_option( 'uap_automator_free_license_key' );
+
+			return add_query_arg(
+				array(
+					'sl_activation' => 'false',
+					'error_message' => 'license_activation_failed',
+				),
+				self::get_license_page_url()
+			);
 		}
 
 		$this->store_free_license_activation( $license_data );
 
-		if ( ! empty( automator_filter_input( 'ua_connecting_integration_id' ) ) ) {
-			wp_safe_redirect(
-				add_query_arg(
+		if ( 'valid' === ( $license_data->license ?? '' ) && '' !== $account_link ) {
+			$resume_url = ( new \Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Server\OAuth_Account_Link() )->resume_url( $account_link );
+			if ( null !== $resume_url ) {
+				return $resume_url;
+			}
+		}
+
+		if ( $connecting_integration ) {
+			return add_query_arg(
+				array(
+					'action' => 'edit',
+				),
+				remove_query_arg(
 					array(
-						'action' => 'edit',
-					),
-					remove_query_arg(
-						array(
-							'uap_automator_free_license_key',
-							'state',
-						)
+						'uap_automator_free_license_key',
+						'state',
 					)
 				)
 			);
-			die;
 		}
 
-		// Redirect to step 2.
-		wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-setup-wizard&step=2' ) );
+		if ( 'uncanny-automator-dashboard' === $page ) {
+			return admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-dashboard' );
+		}
 
-		die;
+		// The wizard's return address names its screen (Choose your AI, or Skipped).
+		// It is rebuilt from the request path, not home_url( REQUEST_URI ), which
+		// doubles the folder on a site installed in a subfolder.
+		if ( 'uncanny-automator-setup-wizard' === $page ) {
+			return remove_query_arg( array( 'action', 'uap_automator_free_license_key', 'state', 'method' ) );
+		}
+
+		return admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-setup-wizard&step=2' );
 	}
 
 	/**
@@ -2082,25 +1150,61 @@ class Admin_Menu {
 	public function deactivate_license() {
 
 		$this->validate_credentials( automator_filter_input( 'state' ) );
+		// This explicit Free-account action now ends access for connected AI apps
+		// on this site. A filtered recipe-management capability is not sufficient.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Only a site administrator can disconnect this account.', 'uncanny-automator' ) );
+		}
 
 		$license = automator_get_option( 'uap_automator_free_license_key' );
 
 		if ( $license ) {
 
-			if ( self::licensing_call( 'deactivate-license', $license ) ) {
-
-				automator_delete_option( 'uap_automator_free_license_status' );
-				automator_delete_option( 'uap_automator_free_license_key' );
-				automator_delete_option( 'uap_automator_free_license_data' );
-
-				// Option deletion has no lifecycle hook. After the remote disconnect
-				// succeeds, invalidate once all local identity removals were attempted.
-				$this->flush_license_caches();
-			}
+			$this->disconnect_free_license( $license );
 
 			wp_safe_redirect( remove_query_arg( array( 'action' ) ) );
 			die;
 		}
+	}
+
+	/**
+	 * End this site's AI access, unlink the Free account at the store, and,
+	 * once the store agrees, forget the account and stop usage reports.
+	 *
+	 * Connecting opts the site in to usage reports (auto_optin_users()), so
+	 * disconnecting opts it out. Nothing records whether the owner had opted in
+	 * before connecting, so every disconnect turns reports off; the owner can
+	 * turn them on again in Settings > General > Improve Automator.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $license The Free license key.
+	 *
+	 * @return void
+	 */
+	private function disconnect_free_license( $license ) {
+
+		// End access locally first. If the store is unavailable, the Free account
+		// remains linked for retry, but already-ended AI sessions stay ended.
+		// Pro deactivation and automatic license checks do not enter this path.
+		if ( ! ( new \Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Server\OAuth_Site_Credential_Revoker() )->revoke() ) {
+			wp_die( esc_html__( 'AI connections could not all be disconnected. Please try disconnecting your account again.', 'uncanny-automator' ) );
+		}
+
+		if ( ! self::licensing_call( 'deactivate-license', $license ) ) {
+			return;
+		}
+
+		automator_delete_option( 'uap_automator_free_license_status' );
+		automator_delete_option( 'uap_automator_free_license_key' );
+		automator_delete_option( 'uap_automator_free_license_data' );
+
+		// Off is stored as no option, as the switch and the banner store it.
+		automator_delete_option( 'automator_reporting' );
+
+		// Option deletion has no lifecycle hook. After the remote disconnect
+		// succeeds, invalidate once all local identity removals were attempted.
+		$this->flush_license_caches();
 	}
 
 	/**

@@ -49,6 +49,7 @@ class Wholesale_Suite_Helpers {
 			'supports_custom_value' => $custom_value,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_get_all_wss_roles', $option );
 	}
 
@@ -72,6 +73,7 @@ class Wholesale_Suite_Helpers {
 		}
 		$fields = array(
 			'first_name'        => array(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'label'       => apply_filters( 'wwlc_filter_first_name_field_form_label', esc_html__( 'First name', 'uncanny-automator' ) ),
 				'type'        => 'text',
 				'required'    => true,
@@ -79,6 +81,7 @@ class Wholesale_Suite_Helpers {
 				'placeholder' => ( get_option( 'wwlc_fields_first_name_field_placeholder' ) ) ? get_option( 'wwlc_fields_first_name_field_placeholder' ) : '',
 			),
 			'last_name'         => array(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'label'       => apply_filters( 'wwlc_filter_last_name_field_form_label', esc_html__( 'Last name', 'uncanny-automator' ) ),
 				'type'        => 'text',
 				'required'    => true,
@@ -86,6 +89,7 @@ class Wholesale_Suite_Helpers {
 				'placeholder' => ( get_option( 'wwlc_fields_last_name_field_placeholder' ) ) ? get_option( 'wwlc_fields_last_name_field_placeholder' ) : '',
 			),
 			'wwlc_phone'        => array(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'label'       => apply_filters( 'wwlc_filter_phone_field_form_label', esc_html__( 'Phone', 'uncanny-automator' ) ),
 				'type'        => 'phone',
 				'required'    => ( get_option( 'wwlc_fields_require_phone_field' ) == 'yes' ) ? true : false,
@@ -93,6 +97,7 @@ class Wholesale_Suite_Helpers {
 				'placeholder' => ( get_option( 'wwlc_fields_phone_field_placeholder' ) ) ? get_option( 'wwlc_fields_phone_field_placeholder' ) : '',
 			),
 			'user_email'        => array(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'label'       => apply_filters( 'wwlc_filter_email_field_form_label', esc_html__( 'Email', 'uncanny-automator' ) ),
 				'type'        => 'email',
 				'required'    => true,
@@ -100,6 +105,7 @@ class Wholesale_Suite_Helpers {
 				'placeholder' => ( get_option( 'wwlc_fields_email_field_placeholder' ) ) ? get_option( 'wwlc_fields_email_field_placeholder' ) : '',
 			),
 			'wwlc_username'     => array(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'label'       => apply_filters( 'wwlc_filter_username_form_label', esc_html__( 'Username', 'uncanny-automator' ) ),
 				'type'        => 'text',
 				'required'    => true,
@@ -107,6 +113,7 @@ class Wholesale_Suite_Helpers {
 				'placeholder' => ( get_option( 'wwlc_fields_username_placeholder' ) ) ? get_option( 'wwlc_fields_username_placeholder' ) : '',
 			),
 			'wwlc_company_name' => array(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'label'       => apply_filters( 'wwlc_filter_company_field_form_label', esc_html__( 'Company name', 'uncanny-automator' ) ),
 				'type'        => 'text',
 				'required'    => ( get_option( 'wwlc_fields_require_company_name_field' ) == 'yes' ) ? true : false,
@@ -114,6 +121,7 @@ class Wholesale_Suite_Helpers {
 				'placeholder' => ( get_option( 'wwlc_fields_company_field_placeholder' ) ) ? get_option( 'wwlc_fields_company_field_placeholder' ) : '',
 			),
 			'wwlc_country'      => array(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'label'    => apply_filters( 'wwlc_filter_country_field_form_label', esc_html__( 'Country', 'uncanny-automator' ) ),
 				'type'     => 'select',
 				'required' => ( get_option( 'wwlc_fields_require_address_field' ) == 'yes' ) ? true : false,
@@ -121,38 +129,48 @@ class Wholesale_Suite_Helpers {
 				'options'  => $countryList,
 			),
 			'wwlc_address'      => array(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'label'       => apply_filters( 'wwlc_filter_address1_field_form_label', esc_html__( 'Address line 1', 'uncanny-automator' ) ),
 				'type'        => 'text',
 				'required'    => ( get_option( 'wwlc_fields_require_address_field' ) == 'yes' ) ? true : false,
 				'active'      => ( get_option( 'wwlc_fields_activate_address_field' ) == 'yes' ) ? true : false,
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'placeholder' => apply_filters( 'wwlc_filter_address1_field_form_placeholder', get_option( 'wwlc_fields_address_placeholder', '' ) ),
 			),
 			'wwlc_address_2'    => array(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'label'       => apply_filters( 'wwlc_filter_address2_field_form_label', esc_html__( 'Address line 2', 'uncanny-automator' ) ),
 				'type'        => 'text',
 				'required'    => false,
 				'active'      => ( get_option( 'wwlc_fields_activate_address_field' ) == 'yes' ) ? true : false,
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'placeholder' => apply_filters( 'wwlc_filter_address2_field_form_placeholder', get_option( 'wwlc_fields_address2_placeholder', '' ) ),
 			),
 			'wwlc_city'         => array(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'label'       => apply_filters( 'wwlc_filter_city_field_form_label', esc_html__( 'City', 'uncanny-automator' ) ),
 				'type'        => 'text',
 				'required'    => ( get_option( 'wwlc_fields_require_address_field' ) == 'yes' ) ? true : false,
 				'active'      => ( get_option( 'wwlc_fields_activate_address_field' ) == 'yes' ) ? true : false,
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'placeholder' => apply_filters( 'wwlc_filter_city_field_form_placeholder', get_option( 'wwlc_fields_city_placeholder', '' ) ),
 			),
 			'wwlc_state'        => array(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'label'       => apply_filters( 'wwlc_filter_state_field_form_label', esc_html__( 'State', 'uncanny-automator' ) ),
 				'type'        => 'text',
 				'required'    => ( get_option( 'wwlc_fields_require_address_field' ) == 'yes' ) ? true : false,
 				'active'      => ( get_option( 'wwlc_fields_activate_address_field' ) == 'yes' ) ? true : false,
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'placeholder' => apply_filters( 'wwlc_filter_state_field_form_placeholder', get_option( 'wwlc_fields_state_placeholder', '' ) ),
 			),
 			'wwlc_postcode'     => array(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'label'       => apply_filters( 'wwlc_filter_postcode_field_form_label', esc_html__( 'Postcode', 'uncanny-automator' ) ),
 				'type'        => 'text',
 				'required'    => ( get_option( 'wwlc_fields_require_address_field' ) == 'yes' ) ? true : false,
 				'active'      => ( get_option( 'wwlc_fields_activate_address_field' ) == 'yes' ) ? true : false,
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce Wholesale Lead Capture's own hook.
 				'placeholder' => apply_filters( 'wwlc_filter_postcode_field_form_placeholder', get_option( 'wwlc_fields_postcode_placeholder', '' ) ),
 			),
 			'wwlc_role'         => array(

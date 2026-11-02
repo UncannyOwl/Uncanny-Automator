@@ -51,8 +51,11 @@ final class SectionOrderMetaBox
         if (wp_is_post_revision($postId)) {
             return;
         }
+        $changed = isset($_POST[self::CHANGED_FIELD]) && is_string($_POST[self::CHANGED_FIELD])
+            ? sanitize_text_field(wp_unslash($_POST[self::CHANGED_FIELD]))
+            : '';
         if (
-            ($_POST[self::CHANGED_FIELD] ?? '') !== '1'
+            $changed !== '1'
             || !isset($_POST[self::NONCE_KEY])
             || !wp_verify_nonce(
                 sanitize_text_field(wp_unslash($_POST[self::NONCE_KEY])),
@@ -67,7 +70,7 @@ final class SectionOrderMetaBox
             FILTER_VALIDATE_INT,
             ['options' => ['min_range' => 0]],
         );
-        $orderedIds = $this->orderedIds(wp_unslash($_POST[self::ORDER_FIELD] ?? ''));
+        $orderedIds = $this->orderedIds(sanitize_text_field(wp_unslash($_POST[self::ORDER_FIELD] ?? '')));
         if ($expectedGeneration === false || $orderedIds === []) {
             $message = _x('Section order was not saved because the submitted draft identity was invalid.', 'Page Builder', 'uncanny-automator');
             if ($this->nativePageSave instanceof NativePageSave) {
@@ -144,6 +147,7 @@ final class SectionOrderMetaBox
 
     public function renderSaveNotice(): void
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
         $postId = absint(sanitize_text_field(wp_unslash($_GET['post'] ?? '0')));
         if ($postId <= 0) {
             return;

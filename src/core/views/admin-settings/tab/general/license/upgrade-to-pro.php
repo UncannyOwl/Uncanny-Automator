@@ -19,13 +19,17 @@ use Uncanny_Automator\Services\Admin_Post\Admin_Post_Routes;
  * @var string|null $success_message      Success message if any
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 
 <div class="uap-settings-panel-content-separator"></div>
 
 <?php if ( ! empty( $error_message ) ) : ?>
 	<!-- Error notice -->
-	<uo-alert
+	<uas-alert
 		type="error"
 		heading="<?php esc_attr_e( 'Installation Failed', 'uncanny-automator' ); ?>"
 		role="alert"
@@ -35,8 +39,8 @@ use Uncanny_Automator\Services\Admin_Post\Admin_Post_Routes;
 		<p><?php echo esc_html( $error_message ); ?></p>
 		<p>
 			<?php
-			// Translators: %1$s opens link, %2$s closes it, %3$s is the external‑link icon.
 			printf(
+				// Translators: %1$s opens link, %2$s closes it, %3$s is the external‑link icon.
 				esc_html_x(
 					'If you continue to experience issues, you can %1$sdownload the Pro plugin manually%3$s%2$s from your account page.',
 					'manual download link',
@@ -44,16 +48,16 @@ use Uncanny_Automator\Services\Admin_Post\Admin_Post_Routes;
 				),
 				'<a href="' . esc_url( $license_key_url ) . '" target="_blank" rel="noopener noreferrer">',
 				'</a>',
-				'&nbsp;<uo-icon id="external-link" aria-hidden="true"></uo-icon>'
+				'&nbsp;<uas-icon code="arrow-up-right-from-square" aria-hidden="true"></uas-icon>'
 			);
 			?>
 		</p>
-	</uo-alert>
+	</uas-alert>
 <?php endif; ?>
 
 <?php if ( ! empty( $success_message ) ) : ?>
 	<!-- Success notice -->
-	<uo-alert
+	<uas-alert
 		type="success"
 		heading="<?php esc_attr_e( 'Installation Successful', 'uncanny-automator' ); ?>"
 		role="alert"
@@ -66,38 +70,38 @@ use Uncanny_Automator\Services\Admin_Post\Admin_Post_Routes;
 			esc_html_e( 'You can now access all Pro features and unlimited app credits!', 'uncanny-automator' );
 			?>
 		</p>
-	</uo-alert>
+	</uas-alert>
 <?php endif; ?>
 
 <!-- Notice prompting upgrade -->
-<uo-alert
+<uas-alert
 	type="info"
-	heading="<?php esc_attr_e( 'Upgrade to Pro and unlock even more value for your site!', 'uncanny-automator' ); ?>"
+	heading="<?php esc_attr_e( 'Do more with Uncanny Automator Pro', 'uncanny-automator' ); ?>"
 	role="region"
 	aria-label="<?php esc_attr_e( 'Upgrade to Pro notice', 'uncanny-automator' ); ?>"
 >
 	<p>
 		<?php
-		// Translators: %1$s opens link, %2$s closes it, %3$s is the external‑link icon.
 		printf(
+			// Translators: %1$s opens link, %2$s closes it, %3$s is the external‑link icon.
 			esc_html_x(
-				'To unlock more than 3x the triggers and actions for your recipes and unlimited app credits, consider %1$supgrading to Pro%3$s%2$s',
+				'Pro removes the daily tool-use limit, adds WooCommerce actions, user management and hundreds more actions, and unlocks schedules, delays, conditions and loops in your recipes. %1$sSee plans%3$s%2$s',
 				'Upgrade to Pro link',
 				'uncanny-automator'
 			),
 			'<a href="' . esc_url( $upgrade_to_pro_url_link ) . '" target="_blank" rel="noopener noreferrer">',
 			'</a>',
-			'&nbsp;<uo-icon id="external-link" aria-hidden="true"></uo-icon>'
+			'&nbsp;<uas-icon code="arrow-up-right-from-square"></uas-icon>'
 		);
 		?>
 	</p>
 
 	<ul>
-		<li><?php echo esc_html_x( '3x the triggers and actions', 'license upgrade text', 'uncanny-automator' ); ?></li>
+		<li><?php echo esc_html_x( 'Unlimited tool usage for your connected AI', 'license upgrade text', 'uncanny-automator' ); ?></li>
+		<li><?php echo esc_html_x( 'Hundreds more triggers and actions, including WooCommerce actions and creating users', 'license upgrade text', 'uncanny-automator' ); ?></li>
+		<li><?php echo esc_html_x( 'Schedules, delays, conditions and loops in your recipes', 'license upgrade text', 'uncanny-automator' ); ?></li>
 		<li><?php echo esc_html_x( 'Unlimited app credits with no per-transaction fees', 'license upgrade text', 'uncanny-automator' ); ?></li>
-		<li><?php echo esc_html_x( 'Add schedules and delays to your actions', 'license upgrade text', 'uncanny-automator' ); ?></li>
-		<li><?php echo esc_html_x( 'Create users in recipes', 'license upgrade text', 'uncanny-automator' ); ?></li>
-		<li><?php echo esc_html_x( 'Premium help desk support', 'license upgrade text', 'uncanny-automator' ); ?></li>
+		<li><?php echo esc_html_x( 'Priority support', 'license upgrade text', 'uncanny-automator' ); ?></li>
 	</ul>
 
 	<section class="uap-license-section">
@@ -130,10 +134,10 @@ use Uncanny_Automator\Services\Admin_Post\Admin_Post_Routes;
 			</p>
 
 			<div class="uap-actions" style="display: flex; gap: 10px; margin-top: 1rem;">
-				<uo-button id="btn-activate-license" type="submit" class="uap-btn-primary">
+				<uas-button id="btn-activate-license" type="submit" class="uap-btn-primary">
 					<?php echo esc_html_x( 'Activate license', 'submit button text', 'uncanny-automator' ); ?>
-				</uo-button>
-				<uo-button
+				</uas-button>
+				<uas-button
 					color="secondary"
 					href="<?php echo esc_url( $upgrade_to_pro_url_button ); ?>"
 					target="_blank"
@@ -141,11 +145,11 @@ use Uncanny_Automator\Services\Admin_Post\Admin_Post_Routes;
 					class="uap-btn-secondary"
 				>
 					<?php echo esc_html_x( 'Upgrade to Pro', 'secondary button text', 'uncanny-automator' ); ?>
-				</uo-button>
+				</uas-button>
 			</div>
 		</form>
 	</section>
-</uo-alert>
+</uas-alert>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

@@ -21,13 +21,13 @@ final class PluginStaticExportAssetSource implements StaticExportAssetSourceInte
         $path = rtrim($this->pluginPath, '/') . '/' . $relativePath;
 
         if (!is_file($path)) {
-            throw new \RuntimeException(sprintf('Static export asset "%s" was not found.', $relativePath));
+            throw new \RuntimeException(sprintf('Static export asset "%s" was not found.', esc_html($relativePath)));
         }
 
         // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Export assets are plugin-local files, not remote URLs.
         $content = file_get_contents($path);
         if (!is_string($content)) {
-            throw new \RuntimeException(sprintf('Static export asset "%s" could not be read.', $relativePath));
+            throw new \RuntimeException(sprintf('Static export asset "%s" could not be read.', esc_html($relativePath)));
         }
 
         return $content;

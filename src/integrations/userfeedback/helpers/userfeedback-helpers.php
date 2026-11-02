@@ -31,6 +31,7 @@ class Userfeedback_Helpers extends Abstract_Helpers {
 			);
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- UserFeedback's own table; the plugin offers no API for this query.
 		$surveys = $wpdb->get_results(
 			$wpdb->prepare( "SELECT id, title FROM {$wpdb->prefix}userfeedback_surveys WHERE status = %s", 'publish' )
 		);
@@ -75,6 +76,7 @@ class Userfeedback_Helpers extends Abstract_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- UserFeedback's own table; the plugin offers no API for this query.
 		return $wpdb->get_row(
 			$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}userfeedback_surveys WHERE id = %d", $survey_id )
 		);
@@ -91,6 +93,7 @@ class Userfeedback_Helpers extends Abstract_Helpers {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- UserFeedback's own table; the plugin offers no API for this query.
 		return $wpdb->get_row(
 			$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}userfeedback_survey_responses WHERE id = %d", $response_id )
 		);

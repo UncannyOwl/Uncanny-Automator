@@ -103,8 +103,9 @@ class UOA_RECIPECOMPLETEDTIMES {
 		}
 
 		global $wpdb;
-		$table_name      = $wpdb->prefix . Automator()->db->tables->recipe;
-		$completed_count = $wpdb->get_var( $wpdb->prepare( "SELECT count(ID) FROM $table_name WHERE automator_recipe_id = %d", $recipe_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$table_name = $wpdb->prefix . Automator()->db->tables->recipe;
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Automator's own table, name built from $wpdb->prefix and the table registry; live run state read, must not be cached.
+		$completed_count = $wpdb->get_var( $wpdb->prepare( "SELECT count(ID) FROM $table_name WHERE automator_recipe_id = %d", $recipe_id ) );
 		if ( 0 === $completed_count ) {
 			return;
 		}

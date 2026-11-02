@@ -30,7 +30,7 @@ class Info {
 	/**
 	 * Get the addon plugin file.
 	 *
-	 * @param array $addon - The addon details from Uncanny_Automator\Services\Addons\Data\External_Feed.
+	 * @param array $addon - The addon `key` and `name`, as carried by the addons feed.
 	 *
 	 * @return string|false The addon plugin file path if found, false otherwise.
 	 */
@@ -59,14 +59,28 @@ class Info {
 	}
 
 	/**
-	 * Check if the Pro plugin is installed.
+	 * Check if the Pro plugin is installed, whether or not it is active.
 	 *
 	 * @return bool
 	 */
 	public static function is_pro_plugin_installed() {
-		return self::get_pro_plugin_file()
-			? self::is_plugin_installed( self::get_pro_plugin_file() )
-			: false;
+		$pro_file = self::get_pro_plugin_file();
+		if ( false === $pro_file ) {
+			$pro_file = self::find_installed_pro_plugin_file();
+		}
+
+		return $pro_file ? self::is_plugin_installed( $pro_file ) : false;
+	}
+
+	/**
+	 * Find Pro among the installed plugins by its text domain. AUTOMATOR_PRO_FILE
+	 * exists only while Pro runs, so this is how an installed but inactive Pro,
+	 * in any folder, is found.
+	 *
+	 * @return string|false The Pro plugin file relative to the plugins directory, or false.
+	 */
+	public static function find_installed_pro_plugin_file() {
+		return self::get_plugin_path_by( 'TextDomain', 'uncanny-automator-pro' );
 	}
 
 	/**

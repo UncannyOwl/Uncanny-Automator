@@ -104,6 +104,7 @@ class UOA_RECIPECOMPLETED_STATUS {
 
 		global $wpdb;
 		// get recipe actions
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 		$recipe_status = $wpdb->get_var( $wpdb->prepare( "SELECT `completed` FROM {$wpdb->prefix}uap_recipe_log WHERE ID = %d AND automator_recipe_id = %d", $recipe_log_id, $recipe_id ) );
 
 		if ( ! isset( $recipe_status ) ) {

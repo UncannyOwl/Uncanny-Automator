@@ -19,13 +19,6 @@ class Admin_Template_Library {
 	public $admin_hook;
 
 	/**
-	 * Library
-	 *
-	 * @var Recipe_Template_Library
-	 */
-	public $library = null;
-
-	/**
 	 * Page slug
 	 *
 	 * @var string
@@ -39,7 +32,6 @@ class Admin_Template_Library {
 
 		add_action( 'admin_menu', array( $this, 'submenu_page' ) );
 		add_action( 'automator_template_library_admin_load', array( $this, 'admin_load' ) );
-		add_action( 'rest_api_init', array( $this, 'register_rest_endpoint' ) );
 	}
 
 	/**
@@ -52,10 +44,9 @@ class Admin_Template_Library {
 		// Add submenu
 		$this->admin_hook = add_submenu_page(
 			'edit.php?post_type=uo-recipe',
-			/* translators: 1. Trademarked term */
-			sprintf( esc_attr__( '%1$s settings', 'uncanny-automator' ), 'Uncanny Automator' ),
 			esc_attr__( 'Recipe templates', 'uncanny-automator' ),
-			automator_get_capability(),
+			esc_attr__( 'Recipe templates', 'uncanny-automator' ),
+			automator_get_capability(), // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- automator_get_capability() returns the capability the Automator menu requires.
 			'uncanny-automator-template-library',
 			array( $this, 'submenu_page_output' ),
 			3
@@ -80,20 +71,14 @@ class Admin_Template_Library {
 	}
 
 	/**
-	 * Register REST endpoints.
-	 *
-	 * @return void
-	 */
-	public function register_rest_endpoint() {
-		$this->library()->register_rest_routes();
-	}
-
-	/**
 	 * Load Library class and enqueue scripts.
 	 *
 	 * @return void
 	 */
 	public function admin_load() {
+
+		// Strip the WordPress admin chrome around the page. Added here so it only runs on this screen.
+		add_action( 'admin_head', array( $this, 'print_screen_css' ) );
 
 		// Add the page slug to the global assets.
 		add_filter(
@@ -103,169 +88,24 @@ class Admin_Template_Library {
 				return $slugs;
 			}
 		);
-
-		// Dequeue conflicting Select2 scripts.
-		add_filter(
-			'automator_conflictive_assets',
-			function ( $assets ) {
-				// Remove the default Select2 scripts and styles.
-				foreach ( $assets as $type => $group ) {
-					foreach ( $group as $key => $handle ) {
-						if ( 'select2' === $handle ) {
-							unset( $assets[ $type ][ $key ] );
-						}
-					}
-				}
-				return $assets;
-			}
-		);
-		Recipe_Post_Utilities::dequeue_conflictive_assets();
-
-		// Populate the template data.
-		add_filter(
-			'automator_assets_backend_js_data',
-			array( $this, 'localize_template_data' ),
-			999,
-			2
-		);
-
-		$this->library()->load();
 	}
 
 	/**
-	 * Localize the template data.
+	 * Print the scoped CSS that strips the WordPress chrome around the template library.
 	 *
-	 * @param array  $data - The data to localize.
-	 * @param string $hook - The current hook.
+	 * This is global WordPress-admin chrome CSS (light DOM, outside the component ?inline SCSS pipeline), so it ships as plain CSS in admin_head rather than a component stylesheet. The component owns everything inside `uap-f-recipe-template`; this only resets the surrounding admin frame and paints the page behind the component, mirroring the recipe builder screen. The component fills the screen through the `uap-wp-admin-pinned-app` class it is rendered with, which pins it between the admin bar and the admin menu.
 	 *
-	 * @return array
+	 * @return void
 	 */
-	public function localize_template_data( $data, $hook ) {
+	public function print_screen_css() {
+		echo '<style id="uap-template-library-screen-css">
+			body.uo-recipe_page_uncanny-automator-template-library #screen-meta,
+			body.uo-recipe_page_uncanny-automator-template-library #screen-meta-links,
+			body.uo-recipe_page_uncanny-automator-template-library #wpfooter { display: none !important; }
 
-		if ( $hook !== $this->admin_hook ) {
-			return $data;
-		}
-
-		// Add the template library data.
-		$data['templateLibrary'] = array(
-			'baseURL'            => $this->get_url(),
-			'categoryURLsprintf' => $this->get_url( array( 'category' => '%s' ) ),
-			'endpoint'           => '/template-library',
-			'templates'          => $this->library()->templates,
-			'categories'         => $this->library()->categories,
-			'integrations'       => $this->library()->integrations,
-			'addNewTemplate'     => array(
-				'id'  => 'add-new-template',
-				'url' => add_query_arg( 'post_type', AUTOMATOR_POST_TYPE_RECIPE, admin_url( 'post-new.php' ) ),
-			),
-			// Search keys for fuse.js
-			'searchKeys'         => array(
-				'title',
-				'integrations.name',
-			),
-			'activeFilter'       => $this->get_active_filter(),
-			'itemsPerPage'       => $this->library()->per_page,
-			'pluginInstallURL'   => add_query_arg(
-				array(
-					'type' => 'term',
-					'tab'  => 'search',
-				),
-				admin_url( 'plugin-install.php' )
-			),
-		);
-
-		// Ensure all integration data is made available for icons.
-		$data['components']['icon']['integrations'] = $this->populate_component_integrations( $data['components']['icon']['integrations'] );
-
-		return $data;
-	}
-
-	/**
-	 * Populate any missing items in the component integrations.
-	 *
-	 * @param array $integrations - The component integrations.
-	 *
-	 * @return array
-	 */
-	private function populate_component_integrations( $integrations ) {
-		if ( empty( $integrations ) || empty( $this->library()->integrations ) ) {
-			return $integrations;
-		}
-
-		foreach ( $this->library()->integrations as $integration ) {
-			if ( ! isset( $integrations[ $integration['code'] ] ) ) {
-				$integrations[ $integration['code'] ] = array(
-					'id'   => $integration['code'],
-					'icon' => $integration['icon'],
-					'name' => $integration['name'],
-				);
-			}
-		}
-
-		return $integrations;
-	}
-
-	/**
-	 * Get the active filter
-	 *
-	 * @return array
-	 */
-	public function get_active_filter() {
-		$filter = array(
-			'filter' => 'all',
-			'type'   => 'all',
-			'page'   => 1,
-		);
-
-		// Check for page.
-		if ( automator_filter_has_var( 'paged' ) ) {
-			$filter['page'] = absint( automator_filter_input( 'paged' ) );
-		}
-
-		// Check for search string.
-		if ( automator_filter_has_var( 'search' ) ) {
-			$filter['filter'] = automator_filter_input( 'search' );
-			$filter['type']   = 'search';
-			// If no search string, check for category.
-		} elseif ( automator_filter_has_var( 'category' ) ) {
-			$filter['filter'] = automator_filter_input( 'category' );
-			$filter['type']   = 'category';
-			// If no search || category, check for integration.
-		} elseif ( automator_filter_has_var( 'integration' ) ) {
-			$filter['filter'] = automator_filter_input( 'integration' );
-			$filter['type']   = 'integration';
-		}
-
-		return $filter;
-	}
-
-	/**
-	 * Get the URL
-	 *
-	 * @param array $args - Optional arguments for the URL
-	 *
-	 * @return string
-	 */
-	public function get_url( $args = array() ) {
-
-		$defaults = array(
-			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
-			'page'      => self::PAGE_SLUG,
-		);
-
-		$args = ! empty( $args ) && is_array( $args ) ? wp_parse_args( $args, $defaults ) : $defaults;
-		return add_query_arg( $args, admin_url( 'edit.php' ) );
-	}
-
-	/**
-	 * Get the instance of the library.
-	 *
-	 * @return Recipe_Template_Library
-	 */
-	public function library() {
-		if ( is_null( $this->library ) ) {
-			$this->library = new Recipe_Template_Library();
-		}
-		return $this->library;
+			body.uo-recipe_page_uncanny-automator-template-library #wpcontent { padding-left: 0 !important; }
+			body.uo-recipe_page_uncanny-automator-template-library #wpbody-content { padding: 0 !important; }
+			body.uo-recipe_page_uncanny-automator-template-library uap-f-recipe-template { background-color: #fff; }
+		</style>';
 	}
 }

@@ -574,7 +574,7 @@ class Active_Campaign_Api_Caller extends Api_Caller {
 		);
 
 		if ( empty( $body ) ) {
-			$custom_message .= ' — ' . esc_html_x( 'Try reconnecting your ActiveCampaign account and try again if the issue persists.', 'ActiveCampaign', 'uncanny-automator' );
+			$custom_message .= '. ' . esc_html_x( 'Try reconnecting your ActiveCampaign account and try again if the issue persists.', 'ActiveCampaign', 'uncanny-automator' );
 		}
 
 		$message = $this->format_activecampaign_error( $status_code, $custom_message );

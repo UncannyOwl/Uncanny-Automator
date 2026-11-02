@@ -50,7 +50,7 @@ class Logger_Auto_Removal {
 		 *
 		 * This must not move earlier in the pipeline. log_remove() gates on the row
 		 * being in a removable status, and Stage 3's
-		 * `automator_recipe_process_complete_complete_actions_before_closures` runs
+		 * `automator_recipe_action_walk_completed` runs
 		 * while the row is still NOT_COMPLETED, so the guard rejects every run.
 		 *
 		 * PHP_INT_MAX so the purge lands after every *synchronous* listener on this

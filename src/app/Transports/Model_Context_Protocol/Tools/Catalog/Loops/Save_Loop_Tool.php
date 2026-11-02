@@ -14,6 +14,7 @@ namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Catalog\
 
 use Uncanny_Automator\App\Recipe_Builder\Loop\Enums\Loop_Status;
 use Uncanny_Automator\App\Recipe_Builder\Shared\User\Value_Objects\User_Context;
+use Uncanny_Automator\App\Recipe_Builder\Block\Services\Block_Crud_Service;
 use Uncanny_Automator\App\Recipe_Builder\Loop\Services\Loop_CRUD_Service;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Utilities\Recipe_Link_Builder;
 use Uncanny_Automator\App\Recipe_Builder\Token\Services\Validation\Token_Validator;
@@ -54,11 +55,15 @@ class Save_Loop_Tool extends Abstract_Loop_Tool {
 	 * {@inheritDoc}
 	 */
 	public function get_description(): string {
-		return 'Create or update a loop. Omit loop_id to create, include loop_id to update. '
-			. 'Create requires recipe_id and type (users/posts/token). loopable_token required when type=token. '
-			. 'Token loops accept registry loopable tokens and recipe-context loopable tokens from saved triggers or actions. '
-			. 'Update requires recipe_id and loop_id. Loop type cannot be changed after creation. '
-			. 'Loops are always published.';
+		return 'Create or update a loop that repeats its actions for each matching user, post, or token item. '
+			. 'To create, pass recipe_id and type (users/posts/token), omitting loop_id. To update, pass recipe_id and loop_id. Changing type reconciles incompatible filters automatically, and an update that leaves the loop with no filter adds its type\'s default filter. '
+			. 'For token loops, also pass loopable_token: a registry token found with search(type="loopable_token"), or a loopable token from a saved trigger or action. '
+			. 'Loop filters select which items run. After creation, use get_recipe to inspect the loop and its automatically added default filter. User loops initially exclude administrators. '
+			. 'Find compatible filters with search(type="loop_filter", mode="list", loop_id=the returned loop_id). '
+			. 'Use save_loop_filter to configure them: include filter_id to update an existing filter, or omit it to add one. Multiple filters must all match; adding a filter does not replace the default. A loop with no filters cannot be published or run. '
+			. 'Add actions with save_action(parent_type="loop", parent_id=loop_id). Use get_tokens(recipe_id, loop_id) for the current iteration\'s values. '
+			. 'Check the finished configuration with get_recipe. Loops are always published; saving a loop does not execute it. '
+			. 'Use those names as root tools when listed. Otherwise use rest_discover and rest_request for the corresponding native operations: automator/search, automator/get-recipe, automator/save-loop-filter, automator/save-action and automator/get-tokens.';
 	}
 
 	/**
@@ -67,7 +72,7 @@ class Save_Loop_Tool extends Abstract_Loop_Tool {
 	protected function get_annotations(): array {
 		return array(
 			'readOnlyHint'    => false,
-			'destructiveHint' => false,
+			'destructiveHint' => true,
 			'idempotentHint'  => false,
 			'openWorldHint'   => true,
 		);
@@ -97,13 +102,13 @@ class Save_Loop_Tool extends Abstract_Loop_Tool {
 				),
 				'type'           => array(
 					'type'        => 'string',
-					'description' => 'Iteration type. Required for create. Cannot be changed on update.',
+					'description' => 'Iteration type. Required for create. May be changed on update; invalidated loop filters are reconciled automatically.',
 					'enum'        => array( 'users', 'posts', 'token' ),
 				),
 				'loopable_token' => $loopable_token_schema,
 				'fields'         => array(
 					'type'                 => 'object',
-					'description'          => 'Configuration fields. For users: user_roles, user_ids. For posts: post_type, post_status.',
+					'description'          => 'Stored iterable-expression fields; normally omit. User and post selection is configured through save_loop_filter, or the discovered automator/save-loop-filter operation, not this object. user_ids, user_roles, post_type and post_status here do not select items. For token loops, pass loopable_token; the tool builds the TOKEN field automatically.',
 					'additionalProperties' => true,
 				),
 			),
@@ -257,12 +262,10 @@ class Save_Loop_Tool extends Abstract_Loop_Tool {
 		$existing_loop  = $this->get_existing_loop( $loop_id );
 		$existing_type  = $existing_loop['type'] ?? '';
 		$effective_type = $existing_type;
-
-		if ( array_key_exists( 'type', $params ) && (string) $params['type'] !== $existing_type ) {
-			return Json_Rpc_Response::create_error_response(
-				sprintf( 'Loop type cannot be changed after creation. Existing type is "%s"; omit type on update.', $existing_type )
-			);
+		if ( array_key_exists( 'type', $params ) && '' !== (string) $params['type'] ) {
+			$effective_type = (string) $params['type'];
 		}
+		$type_changed = ( $effective_type !== $existing_type );
 
 		// Determine loopable_token.
 		$loopable_token = $params['loopable_token'] ?? '';
@@ -303,15 +306,28 @@ class Save_Loop_Tool extends Abstract_Loop_Tool {
 			}
 		}
 
-		$iterable_expression = array();
+		// Switching away from a token loop must not carry the stale TOKEN field forward.
+		if ( 'token' !== $effective_type ) {
+			unset( $fields['TOKEN'] );
+		}
 
-		if ( 'token' === $effective_type || array_key_exists( 'fields', $params ) ) {
+		// Carry the (possibly changed) type so the service reconciles filters
+		// whose ancestor rules no longer hold under the new iteration type.
+		$iterable_expression = array(
+			'type' => $effective_type,
+		);
+
+		if ( 'token' === $effective_type || $type_changed || array_key_exists( 'fields', $params ) ) {
 			$iterable_expression['fields'] = wp_json_encode( $fields );
 		}
 
 		if ( 'token' === $effective_type ) {
 			$backup                        = $this->build_token_backup( $loopable_token );
 			$iterable_expression['backup'] = wp_json_encode( $backup );
+		} elseif ( $type_changed ) {
+			// Switched away from token: overwrite the stale token backup so the
+			// service's array_merge doesn't carry it forward onto the row.
+			$iterable_expression['backup'] = wp_json_encode( array() );
 		}
 
 		$result = $this->loop_service->update_loop( $loop_id, $iterable_expression, null );
@@ -349,14 +365,19 @@ class Save_Loop_Tool extends Abstract_Loop_Tool {
 	private function validate_loop_ownership( int $loop_id, int $recipe_id ): ?array {
 		$loop_post = get_post( $loop_id );
 
-		if ( ! $loop_post || AUTOMATOR_POST_TYPE_LOOP !== $loop_post->post_type ) {
+		// Loops persist as uo-block(block_type=loop); ownership rides the
+		// block store's recipe_id link (loops can nest inside other blocks).
+		if ( ! $loop_post || AUTOMATOR_POST_TYPE_BLOCK !== $loop_post->post_type ) {
 			return Json_Rpc_Response::create_error_response( sprintf( 'Loop not found: %d.', $loop_id ) );
 		}
 
-		$actual_recipe_id = (int) $loop_post->post_parent;
-		if ( $actual_recipe_id !== $recipe_id ) {
+		$block = Block_Crud_Service::instance()->get_block( $loop_id );
+		if ( is_wp_error( $block ) || 'loop' !== (string) ( $block['block_type'] ?? '' ) ) {
+			return Json_Rpc_Response::create_error_response( sprintf( 'Loop not found: %d.', $loop_id ) );
+		}
+		if ( (int) ( $block['recipe_id'] ?? 0 ) !== $recipe_id ) {
 			return Json_Rpc_Response::create_error_response(
-				sprintf( 'Loop %d belongs to recipe %d, not recipe %d.', $loop_id, $actual_recipe_id, $recipe_id )
+				sprintf( 'Loop %d belongs to recipe %d, not recipe %d.', $loop_id, (int) ( $block['recipe_id'] ?? 0 ), $recipe_id )
 			);
 		}
 

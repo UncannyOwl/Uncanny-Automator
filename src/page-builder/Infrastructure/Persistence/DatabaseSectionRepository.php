@@ -47,8 +47,9 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
          */
         for ($attempt = 0; $attempt < 3; $attempt++) {
             $before = $this->generationStore()->pageGeneration($pageId);
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
             $rows = $wpdb->get_results(
-                $wpdb->prepare("SELECT * FROM {$table} WHERE page_id = %d ORDER BY position", $pageId)
+                $wpdb->prepare('SELECT * FROM %i WHERE page_id = %d ORDER BY position', $table, $pageId)
             );
             $after = $this->generationStore()->pageGeneration($pageId);
 
@@ -64,7 +65,7 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
             return SectionCollection::fromPersisted($sections, $before);
         }
 
-        throw new StaleSourceGenerationException('page', $before ?? 0, $after ?? 0);
+        throw new StaleSourceGenerationException('page', (int) ($before ?? 0), (int) ($after ?? 0));
     }
 
     public function findById(int $sectionId): Section
@@ -72,12 +73,13 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
         global $wpdb;
         $table = $this->table();
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
         $row = $wpdb->get_row(
-            $wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $sectionId)
+            $wpdb->prepare('SELECT * FROM %i WHERE id = %d', $table, $sectionId)
         );
 
         if ($row === null) {
-            throw SectionNotFoundException::withId($sectionId);
+            throw SectionNotFoundException::withId((int) $sectionId);
         }
 
         return Section::fromRow($row);
@@ -124,6 +126,7 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
                 global $wpdb;
                 $table = $this->table();
 
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
                 if ($wpdb->delete($table, ['page_id' => $pageId], ['%d']) === false) {
                     throw new \RuntimeException('Failed to delete sections for replace-all.');
                 }
@@ -145,8 +148,9 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
                         array_unshift($formats, '%d');
                     }
 
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table write.
                     if ($wpdb->insert($table, $data, $formats) === false) {
-                        throw new \RuntimeException("Failed to insert section '{$section->name()}'.");
+                        throw new \RuntimeException(sprintf("Failed to insert section '%s'.", esc_html($section->name())));
                     }
 
                     if ($section->id() === null) {
@@ -168,8 +172,9 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
         global $wpdb;
         $table = $this->table();
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
         $count = (int) $wpdb->get_var(
-            $wpdb->prepare("SELECT COUNT(*) FROM {$table} WHERE page_id = %d", $pageId)
+            $wpdb->prepare('SELECT COUNT(*) FROM %i WHERE page_id = %d', $table, $pageId)
         );
 
         return $count > 0;
@@ -209,10 +214,12 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
         global $wpdb;
         $postmetaTable = isset($wpdb->postmeta) ? (string) $wpdb->postmeta : (string) $wpdb->prefix . 'postmeta';
         $wpdb->last_error = '';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Live state read; must not be cached.
         $row = $wpdb->get_row($wpdb->prepare(
-            "SELECT meta_value FROM {$postmetaTable}
+            'SELECT meta_value FROM %i
              WHERE post_id = %d AND meta_key = %s
-             ORDER BY meta_id DESC LIMIT 1",
+             ORDER BY meta_id DESC LIMIT 1',
+            $postmetaTable,
             $pageId,
             self::META_COMPILED,
         ));
@@ -262,6 +269,7 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
                 foreach ($sections->all() as $section) {
                     if ($section->isNew()) {
                         if (
+                            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table write.
                             $wpdb->insert($table, [
                             'page_id'  => $pageId,
                             'position' => $section->position(),
@@ -271,11 +279,12 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
                             'element_styles' => $section->content()->elementStyles()->toJson(),
                             ], ['%d', '%d', '%s', '%s', '%s', '%s']) === false
                         ) {
-                            throw new \RuntimeException("Failed to insert section '{$section->name()}'.");
+                            throw new \RuntimeException(sprintf("Failed to insert section '%s'.", esc_html($section->name())));
                         }
 
                         $this->assignDurableIdentity($section, (int) $wpdb->insert_id, $table);
                     } else {
+                        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
                         $updated = $wpdb->update(
                             $table,
                             [
@@ -291,7 +300,7 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
                         );
 
                         if ($updated === false) {
-                            throw new \RuntimeException("Failed to update section {$section->id()}.");
+                            throw new \RuntimeException(sprintf('Failed to update section %d.', (int) $section->id()));
                         }
                     }
                 }
@@ -335,6 +344,7 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
             $sourceSectionId,
             $sectionId,
         ));
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $updated = $wpdb->update(
             $table,
             [
@@ -347,7 +357,7 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
             ['%d'],
         );
         if ($updated === false) {
-            throw new \RuntimeException("Failed to persist section {$sectionId} root identity.");
+            throw new \RuntimeException(sprintf('Failed to persist section %d root identity.', (int) $sectionId));
         }
     }
 
@@ -375,8 +385,9 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
             }
         }
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
         $rows = $wpdb->get_results(
-            $wpdb->prepare("SELECT id FROM {$this->table()} WHERE page_id = %d", $pageId)
+            $wpdb->prepare('SELECT id FROM %i WHERE page_id = %d', $this->table(), $pageId)
         );
 
         foreach ($rows as $row) {
@@ -385,8 +396,9 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
                 continue;
             }
 
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
             if ($wpdb->delete($this->table(), ['id' => $rowId, 'page_id' => $pageId], ['%d', '%d']) === false) {
-                throw new \RuntimeException("Failed to delete section {$rowId}.");
+                throw new \RuntimeException(sprintf('Failed to delete section %d.', (int) $rowId));
             }
         }
     }

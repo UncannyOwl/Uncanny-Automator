@@ -44,7 +44,7 @@ final class Remote_Data_Request {
 	 * single-key access with sanitization applied.
 	 *
 	 * Loop-filter and condition forms POST values as field-state envelopes
-	 * ({type, value, readable, backup}); trigger/action/closure forms POST
+	 * ({type, value, readable, backup}); trigger/action forms POST
 	 * flat scalars. We unwrap envelopes here so handlers see one shape.
 	 *
 	 * @return array The values object, with field-state envelopes flattened.

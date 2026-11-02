@@ -123,6 +123,31 @@ class Field_Types {
 	const HTML = 'html';
 
 	/**
+	 * Wire aliases accepted for canonical types. The FE FieldTypeSchema
+	 * enum (and the integration catalog it mirrors) says 'int'; this enum's
+	 * canonical value is 'integer'. FieldsOutput saves echo the catalog
+	 * value back, so the boundary must accept the alias.
+	 *
+	 * @var array<string, string>
+	 */
+	const ALIASES = array(
+		'int' => self::INTEGER,
+	);
+
+	/**
+	 * Resolve a wire alias to its canonical type value.
+	 *
+	 * Unknown values pass through unchanged — validation stays the caller's
+	 * concern.
+	 *
+	 * @param string $value Raw field type value.
+	 * @return string Canonical field type value.
+	 */
+	public static function normalize( string $value ): string {
+		return self::ALIASES[ $value ] ?? $value;
+	}
+
+	/**
 	 * Validate field type value.
 	 *
 	 * @param string $value Field type value to validate.
@@ -205,5 +230,37 @@ class Field_Types {
 	 */
 	public static function is_internal( string $value ): bool {
 		return in_array( $value, array( self::MARKDOWN, self::HTML ), true );
+	}
+
+	/**
+	 * Resolve a wire-input type to its internal-only type from the field's
+	 * AUTHORITATIVE definition.
+	 *
+	 * A `textarea` becomes `html` when the definition declares
+	 * `supports_tinymce`, or `markdown` when it declares `supports_markdown`
+	 * (tinymce wins if both). Every other type — and a plain textarea — is
+	 * returned unchanged. Only `textarea` is eligible, so a text/email/url
+	 * field can never be promoted into the sanitizer's raw-passthrough
+	 * html/markdown branch.
+	 *
+	 * The definition MUST come from the registry, never from request-supplied
+	 * data: html/markdown route to raw pass-through in Field_Sanitizer, so
+	 * trusting a client-sent flag would let any field bypass sanitization.
+	 *
+	 * @param string $wire_type  The request-supplied field type (e.g. 'textarea').
+	 * @param array  $definition The authoritative field definition.
+	 * @return string The resolved (possibly internal) field type.
+	 */
+	public static function resolve_internal_type( string $wire_type, array $definition ): string {
+		if ( self::TEXTAREA !== $wire_type ) {
+			return $wire_type;
+		}
+		if ( ! empty( $definition['supports_tinymce'] ) ) {
+			return self::HTML;
+		}
+		if ( ! empty( $definition['supports_markdown'] ) ) {
+			return self::MARKDOWN;
+		}
+		return $wire_type;
 	}
 }

@@ -136,6 +136,7 @@ class RAFFLEPRESS_ANON_REGISTERS_GIVEAWAY extends \Uncanny_Automator\Recipe\Trig
 		}
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API finds posts by a raw meta value across post types.
 		$current_triggers = $wpdb->get_results( "SELECT post_id FROM $wpdb->postmeta WHERE meta_value = 'ANON_REGISTERED_FOR_GIVEAWAY' AND meta_key = 'code'" );
 
 		if ( empty( $current_triggers ) ) {

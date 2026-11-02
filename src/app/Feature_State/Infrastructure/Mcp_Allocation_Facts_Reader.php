@@ -20,7 +20,7 @@ use Uncanny_Automator\App\Infrastructure\License\License_Manager;
 final class Mcp_Allocation_Facts_Reader {
 
 	public const TRANSIENT      = 'automator_llm_allocation_facts';
-	public const SCHEMA_VERSION = 2;
+	public const SCHEMA_VERSION = 3;
 
 	private License_Manager $licenses;
 
@@ -73,7 +73,8 @@ final class Mcp_Allocation_Facts_Reader {
 			$response->active_allocations(),
 			$response->used_allocations(),
 			$response->expired_allocations(),
-			$pending_fact
+			$pending_fact,
+			$response->phase_1_lite_enrolled()
 		);
 	}
 }

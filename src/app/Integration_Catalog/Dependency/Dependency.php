@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Integration_Catalog\Dependency;
 
@@ -306,7 +305,7 @@ class Dependency {
 		// Validate type enum.
 		$valid_types = array( 'license', 'installable', 'account' );
 		if ( ! in_array( $config->get_type(), $valid_types, true ) ) {
-			throw new InvalidArgumentException( 'Dependency type must be one of: ' . implode( ', ', $valid_types ) );
+			throw new InvalidArgumentException( 'Dependency type must be one of: ' . esc_html( implode( ', ', $valid_types ) ) );
 		}
 
 		// Type-specific validation.
@@ -326,7 +325,7 @@ class Dependency {
 
 		// All types require scenario_id.
 		if ( empty( $config->get_scenario_id() ) ) {
-			throw new InvalidArgumentException( "Dependency scenario_id is required for type: {$type}" );
+			throw new InvalidArgumentException( sprintf( 'Dependency scenario_id is required for type: %s', esc_html( $type ) ) );
 		}
 
 		// If not installable, return early.

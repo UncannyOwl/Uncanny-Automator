@@ -14,7 +14,7 @@ use Uncanny_Automator\App\Integration_Catalog\Scope_Tag\Scope_Tag_Evaluatable;
 use Uncanny_Automator\App\Integration_Catalog\Scope_Tag\Resolvers\Abstract_Scope_Tag_Resolver;
 
 /**
- * Resolves license scope tags (Pro Basic, Pro Plus, Pro Elite).
+ * Resolves license scope tags (Pro, Plus, Elite).
  *
  * @since 7.0.0
  */

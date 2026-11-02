@@ -153,7 +153,7 @@ trait Premium_Integration_Alerts {
 		$allowed_html = $this->filter_content_kses_args();
 
 		?>
-		<uo-alert
+		<uas-alert
 			type="<?php echo esc_attr( $alert['type'] ); ?>"
 			heading="<?php echo esc_attr( $alert['heading'] ); ?>"
 			class="<?php echo esc_attr( $alert['class'] ); ?>"
@@ -170,7 +170,7 @@ trait Premium_Integration_Alerts {
 					?>
 				</div>
 			<?php endif; ?>
-		</uo-alert>
+		</uas-alert>
 		<?php
 	}
 

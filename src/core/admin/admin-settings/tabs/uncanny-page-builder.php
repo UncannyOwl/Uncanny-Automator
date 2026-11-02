@@ -2,6 +2,10 @@
 
 namespace Uncanny_Automator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Admin_Settings_Uncanny_Page_Builder
  *
@@ -59,7 +63,6 @@ class Admin_Settings_Uncanny_Page_Builder {
 			$current_uncanny_page_builder_tab = automator_filter_has_var( 'uncanny-page-builder' )
 				? sanitize_text_field( automator_filter_input( 'uncanny-page-builder' ) )
 				: 'general';
-			$layout_version                   = automator_filter_has_var( 'automator_hide_settings_tabs' ) ? 'focus' : 'default';
 
 			foreach ( $uncanny_page_builder_tabs as $tab_key => $tab ) {
 				if ( isset( $tab->function ) && is_callable( $tab->function ) ) {
@@ -71,6 +74,7 @@ class Admin_Settings_Uncanny_Page_Builder {
 								unset( $ignored );
 								$callback();
 							} catch ( \Throwable $throwable ) {
+								// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Diagnostic for a caught error; it logs the exception class only, no site data.
 								error_log( sprintf( '[Uncanny Page Builder] Settings subtab callback failed (%s).', get_class( $throwable ) ) );
 							}
 						}
@@ -82,6 +86,7 @@ class Admin_Settings_Uncanny_Page_Builder {
 
 			include Utilities::automator_get_view( 'admin-settings/tab/uncanny-page-builder.php' );
 		} catch ( \Throwable $throwable ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Diagnostic for a caught error; it logs the exception class only, no site data.
 			error_log( sprintf( '[Uncanny Page Builder] Settings tab output failed (%s).', get_class( $throwable ) ) );
 		}
 	}

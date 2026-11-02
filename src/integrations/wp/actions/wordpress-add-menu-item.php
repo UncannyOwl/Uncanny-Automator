@@ -22,6 +22,7 @@ class WP_ADD_MENU_ITEM extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Menu, %2$s: Menu item title */
 				esc_html_x( 'Add {{an item:%2$s}} to {{a menu:%1$s}}', 'WordPress', 'uncanny-automator' ),
 				$this->get_action_meta(),
 				'WP_MENU_ITEM_TITLE:' . $this->get_action_meta()

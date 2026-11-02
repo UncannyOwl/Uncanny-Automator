@@ -4,8 +4,6 @@ namespace Uncanny_Automator\Services\Email;
 
 use Exception;
 use Uncanny_Automator\Services\Email\Attachment\Handler;
-use Uncanny_Automator\Utilities;
-
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -149,11 +147,13 @@ class Tester {
 	/**
 	 * Sends the email.
 	 *
-	 * @return bool
+	 * @param bool $return_result Return the result array instead of emitting JSON and terminating (legacy callers keep the emit-and-die default).
+	 *
+	 * @return array{success: bool}|void Result array when $return_result or under DOING_AUTOMATOR_TEST; otherwise emits JSON and terminates.
 	 *
 	 * @throws Exception
 	 */
-	public function send() {
+	public function send( $return_result = false ) {
 
 		$params = $this->get_parameters();
 
@@ -170,7 +170,7 @@ class Tester {
 			}
 		}
 
-		if ( isset( $_ENV['DOING_AUTOMATOR_TEST'] ) ) {
+		if ( $return_result || isset( $_ENV['DOING_AUTOMATOR_TEST'] ) ) {
 			return array( 'success' => $is_sent );
 		}
 
@@ -197,7 +197,7 @@ class Tester {
 				$path = $this->process_attachment( $attachment_url );
 
 				if ( is_wp_error( $path ) ) {
-					throw new Exception( $path->get_error_message(), 400 );
+					throw new Exception( esc_html( $path->get_error_message() ), 400 );
 				}
 
 				if ( file_exists( $path ) ) {
@@ -241,61 +241,4 @@ class Tester {
 		return $headers;
 
 	}
-
-	/**
-	 * Generates array for this object consumption.
-	 *
-	 * @param int $action_id
-	 *
-	 * @return mixed[]
-	 */
-	public static function generate_args( $request ) {
-
-		$action_id               = $request->get_param( 'action_id' );
-		$email_address           = $request->get_param( 'email_address' );
-		$email_body              = $request->get_param( 'email_body' );
-		$attachments_stringified = $request->get_param( 'attachments' );
-		$attachments_array       = (array) json_decode( $attachments_stringified, true );
-
-		$first_attachment_url = $attachments_array[0]['url'] ?? '';
-
-		// Replace all tokens
-		$regex = '/<ins contenteditable="false">.*?<span class="uap-token__name">(.*?)<\/span>.*?<\/ins>/s';
-
-		$email_body = preg_replace_callback(
-			$regex,
-			function ( $matches ) {
-				return '{' . $matches[1] . '}'; // Replace with the captured text inside the <span> tags
-			},
-			$email_body
-		);
-
-		$action_meta = Utilities::flatten_post_meta( get_post_meta( $action_id ) );
-
-		$args = array(
-			'to'      => $email_address,
-			'subject' => esc_html__( 'Uncanny Automator Test', 'uncanny-automator' ),
-			'body'    => $email_body,
-		);
-
-		if ( ! empty( $first_attachment_url ) ) {
-			$args['attachments'][] = $first_attachment_url;
-		}
-
-		if ( isset( $action_meta['EMAILCONTENTTYPE'] ) && 'plain' === $action_meta['EMAILCONTENTTYPE'] ) {
-
-			$args['content-type'] = 'text/plain; charset=UTF-8';
-
-			$body = preg_replace( '/<br\s*\/?>/', PHP_EOL, $args['body'] );
-
-			$body = wp_strip_all_tags( $body );
-
-			$args['body'] = $body;
-
-		}
-
-		return $args;
-	}
-
-
 }

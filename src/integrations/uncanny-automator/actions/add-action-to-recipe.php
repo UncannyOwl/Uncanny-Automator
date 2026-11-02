@@ -28,7 +28,7 @@ class ADD_ACTION_TO_RECIPE extends Action {
 			// translators: %1$s is the placeholder for the action, %2$s for the recipe.
 			esc_html_x( 'Add {{an action:%1$s}} to {{a recipe:%2$s}}', 'Uncanny Automator', 'uncanny-automator' ),
 			'PLACEHOLDER:' . $this->get_action_meta(),
-			'PLACEHOLDER:RECIPE_ID'
+			'PLACEHOLDER:UOA_RECIPE_ID'
 		);
 
 		// Sentence that appears in the dropdown in the recipe builder.
@@ -65,7 +65,7 @@ class ADD_ACTION_TO_RECIPE extends Action {
 		);
 
 		$recipe_id = array(
-			'option_code'     => 'RECIPE_ID',
+			'option_code'     => 'UOA_RECIPE_ID',
 			'label'           => esc_html_x( 'Recipe ID', 'Uncanny Automator', 'uncanny-automator' ),
 			'input_type'      => 'int',
 			'required'        => true,
@@ -91,7 +91,7 @@ class ADD_ACTION_TO_RECIPE extends Action {
 	public function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
 		$action_code      = sanitize_text_field( $this->get_parsed_meta_value( $this->get_action_meta() ) );
-		$target_recipe_id = absint( $this->get_parsed_meta_value( 'RECIPE_ID' ) );
+		$target_recipe_id = absint( $this->get_parsed_meta_value( 'UOA_RECIPE_ID' ) );
 
 		$config = automator_get_action_by_code( $action_code );
 

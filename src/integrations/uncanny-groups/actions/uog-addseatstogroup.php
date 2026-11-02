@@ -22,9 +22,9 @@ class UOG_ADDSEATSTOGROUP extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_meta( 'UNCANNYGROUP' );
 		$this->set_requires_user( false );
 
-		// translators: %1$s is the number of seats, %2$s is the group.
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Number of seats, %2$s: Uncanny group */
 				esc_html_x( 'Add {{a number of:%1$s}} seats to {{an Uncanny group:%2$s}}', 'Uncanny Groups', 'uncanny-automator' ),
 				'NUMOFSEATS',
 				$this->get_action_meta()

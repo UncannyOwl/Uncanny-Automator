@@ -9,6 +9,7 @@ use UncannyPageBuilder\Domain\Binding\DynamicBindingRenderMode;
 use UncannyPageBuilder\Domain\Binding\BindingRegistry;
 use UncannyPageBuilder\Domain\Export\StaticExportPageIdentity;
 use UncannyPageBuilder\Domain\Exception\DeactivationFallbackCompilationFailed;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 
 /**
  * Parse data-ai-dynamic wrappers and replace with real content.
@@ -455,7 +456,7 @@ final class DynamicRenderer
      */
     private function rejectUnknownConditional(string $type): bool
     {
-        error_log(sprintf('[DynamicRenderer] Unknown conditional "%s" — failing closed (content hidden)', $type));
+        DiagnosticLog::write(sprintf('[DynamicRenderer] Unknown conditional "%s" — failing closed (content hidden)', $type));
         return false;
     }
 
@@ -511,7 +512,7 @@ final class DynamicRenderer
     private function reportExternalCallbackFailure(string $boundary, \Throwable $failure): void
     {
         try {
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] %s failed (%s).',
                 $boundary,
                 $failure::class,
@@ -567,6 +568,7 @@ final class DynamicRenderer
     private function markPageAsNonCacheable(): void
     {
         if (!\defined('DONOTCACHEPAGE')) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Cache plugins' shared constant.
             \define('DONOTCACHEPAGE', true);
         }
     }

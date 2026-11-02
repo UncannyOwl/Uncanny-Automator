@@ -76,6 +76,7 @@ class JETCRM_DELETE_CONTACT {
 		}
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Jetpack CRM's own table; the plugin offers no API for this query.
 		$contact_id = $wpdb->get_var( $wpdb->prepare( "SELECT `ID` FROM `{$wpdb->prefix}zbs_contacts` WHERE ID = %d OR zbsc_email LIKE %s", $contact, $contact ) );
 
 		if ( ! empty( $contact_id ) ) {

@@ -22,6 +22,7 @@ final class DatabaseOperationHistoryRepository implements OperationHistoryReposi
     {
         global $wpdb;
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table write.
         $result = $wpdb->insert(
             $this->table(),
             [
@@ -54,11 +55,13 @@ final class DatabaseOperationHistoryRepository implements OperationHistoryReposi
         $table = $this->table();
 
         $wpdb->last_error = '';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
         $row = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM {$table}
+            "SELECT * FROM %i
              WHERE scope_type = %s AND scope_id = %d AND undone_at IS NULL
              ORDER BY id DESC
              LIMIT 1",
+            $table,
             $scopeType,
             $scopeId,
         ));
@@ -73,11 +76,13 @@ final class DatabaseOperationHistoryRepository implements OperationHistoryReposi
         $table = $this->table();
 
         $wpdb->last_error = '';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
         $row = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM {$table}
+            "SELECT * FROM %i
              WHERE scope_type = %s AND scope_id = %d AND undone_at IS NOT NULL
              ORDER BY id ASC
              LIMIT 1",
+            $table,
             $scopeType,
             $scopeId,
         ));
@@ -91,8 +96,10 @@ final class DatabaseOperationHistoryRepository implements OperationHistoryReposi
         global $wpdb;
 
         $table = $this->table();
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $result = $wpdb->query($wpdb->prepare(
-            "UPDATE {$table} SET undone_at = %s WHERE id = %d AND undone_at IS NULL",
+            "UPDATE %i SET undone_at = %s WHERE id = %d AND undone_at IS NULL",
+            $table,
             $this->now(),
             $operationId,
         ));
@@ -107,8 +114,10 @@ final class DatabaseOperationHistoryRepository implements OperationHistoryReposi
         global $wpdb;
         $table = $this->table();
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $result = $wpdb->query($wpdb->prepare(
-            "UPDATE {$table} SET undone_at = NULL WHERE id = %d AND undone_at IS NOT NULL",
+            "UPDATE %i SET undone_at = NULL WHERE id = %d AND undone_at IS NOT NULL",
+            $table,
             $operationId,
         ));
 
@@ -122,9 +131,11 @@ final class DatabaseOperationHistoryRepository implements OperationHistoryReposi
         global $wpdb;
         $table = $this->table();
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $result = $wpdb->query($wpdb->prepare(
-            "DELETE FROM {$table}
+            "DELETE FROM %i
              WHERE scope_type = %s AND scope_id = %d AND undone_at IS NOT NULL",
+            $table,
             $scopeType,
             $scopeId,
         ));
@@ -139,9 +150,11 @@ final class DatabaseOperationHistoryRepository implements OperationHistoryReposi
         global $wpdb;
         $table = $this->table();
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $result = $wpdb->query($wpdb->prepare(
-            "DELETE FROM {$table}
+            "DELETE FROM %i
              WHERE scope_type = %s AND scope_id = %d",
+            $table,
             $scopeType,
             $scopeId,
         ));
@@ -157,10 +170,12 @@ final class DatabaseOperationHistoryRepository implements OperationHistoryReposi
         $table = $this->table();
 
         $wpdb->last_error = '';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
         $ids = $wpdb->get_col($wpdb->prepare(
-            "SELECT id FROM {$table}
+            "SELECT id FROM %i
              WHERE scope_type = %s AND scope_id = %d AND undone_at IS NULL
              ORDER BY id DESC",
+            $table,
             $scopeType,
             $scopeId,
         ));
@@ -174,10 +189,10 @@ final class DatabaseOperationHistoryRepository implements OperationHistoryReposi
         }
 
         $deleteIds = array_map('intval', array_slice($ids, $limit));
-        $placeholders = implode(',', array_fill(0, count($deleteIds), '%d'));
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
         $result = $wpdb->query($wpdb->prepare(
-            "DELETE FROM {$table} WHERE id IN ({$placeholders})",
-            ...$deleteIds,
+            'DELETE FROM %i WHERE id IN (' . implode(',', array_fill(0, count($deleteIds), '%d')) . ')',
+            ...array_merge([$table], $deleteIds),
         ));
 
         if ($result === false) {
@@ -191,7 +206,8 @@ final class DatabaseOperationHistoryRepository implements OperationHistoryReposi
         $table = $this->table();
 
         $wpdb->last_error = '';
-        $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $id));
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+        $row = $wpdb->get_row($wpdb->prepare('SELECT * FROM %i WHERE id = %d', $table, $id));
         $this->assertReadSucceeded('reload operation history');
 
         return $row ? $this->hydrate($row) : null;
@@ -242,7 +258,7 @@ final class DatabaseOperationHistoryRepository implements OperationHistoryReposi
         global $wpdb;
 
         if ((string) ($wpdb->last_error ?? '') !== '') {
-            throw new \RuntimeException(sprintf('Failed to %s.', $operation));
+            throw new \RuntimeException(sprintf('Failed to %s.', esc_html($operation)));
         }
     }
 

@@ -40,8 +40,9 @@ class PM_POPUPSHOW extends Action {
 			esc_html_x( 'Show {{a popup}}', 'Popup Maker', 'uncanny-automator' )
 		);
 
-		// Keep the popup_settings.triggers entry in sync whenever the user saves this action.
-		add_filter( 'automator_option_updated', array( $this, 'sync_popup_recipe_trigger' ), 10, 4 );
+		// Link the recipe in the popup when this action is added (a copy's included) or its popup changes.
+		add_action( 'automator_event_action_created', array( $this, 'sync_popup_from_saved_action' ) );
+		add_action( 'automator_event_action_fields_changed', array( $this, 'sync_popup_from_saved_action' ) );
 	}
 
 	/**
@@ -179,74 +180,60 @@ class PM_POPUPSHOW extends Action {
 	}
 
 	/**
-	 * Keep the chosen popup's `popup_settings.triggers` in sync when the user
-	 * saves this action's options. Adds an `auto_open` trigger entry linking the
-	 * popup to the parent recipe, if one isn't already present.
+	 * Link the saved action's recipe in its popup's auto_open trigger.
 	 *
-	 * @param mixed  $return     The pass-through value of the filter.
-	 * @param mixed  $item       The post object the option was saved against.
-	 * @param string $meta_key   The post meta key being updated.
-	 * @param mixed  $meta_value The new meta value.
+	 * Listens to `automator_event_action_created` (an added action, a copied recipe's
+	 * included) and to `automator_event_action_fields_changed` when `POPUPID` is among
+	 * the changed fields, so it runs for builder, MCP and automator_*() saves alike,
+	 * on requests that load this integration. It links the payload's recipe, not the
+	 * action's parent: an action inside a block has the block as its parent.
 	 *
-	 * @return mixed
+	 * @param object $change The action_created or action_fields_changed payload.
+	 *
+	 * @return void
 	 */
-	public function sync_popup_recipe_trigger( $return, $item, $meta_key, $meta_value ) {
-
-		if ( ! isset( $item->post_type ) ) {
-			return $return;
+	public function sync_popup_from_saved_action( $change ) {
+		$payload = $change->to_array();
+		if ( isset( $payload['fields'] ) && ! in_array( 'POPUPID', (array) $payload['fields'], true ) ) {
+			return;
 		}
 
-		if ( 'uo-action' !== $item->post_type ) {
-			return $return;
+		$action_id = (int) $payload['item_id'];
+		if ( 'POPUPSHOW' !== get_post_meta( $action_id, 'code', true ) ) {
+			return;
 		}
 
-		if ( is_array( $meta_value ) && ! array_key_exists( 'POPUPID', $meta_value ) ) {
-			return $return;
-		}
-
-		$pop_id = is_array( $meta_value ) ? $meta_value['POPUPID'] : $meta_value;
-
-		$popup = get_post( $pop_id );
-		if ( ! $popup instanceof \WP_Post ) {
-			return $return;
+		// get_post( 0 ) is the global post, so an empty POPUPID must not reach it.
+		$pop_id = absint( get_post_meta( $action_id, 'POPUPID', true ) );
+		$popup  = 0 < $pop_id ? get_post( $pop_id ) : null;
+		if ( ! $popup instanceof \WP_Post || 'popup' !== $popup->post_type ) {
+			return;
 		}
 
 		$settings = get_post_meta( $pop_id, 'popup_settings', true );
-		$found_it = false;
-
-		if ( isset( $settings['triggers'] ) ) {
-			foreach ( $settings['triggers'] as $trigger ) {
-				if ( 'auto_open' !== $trigger['type'] ) {
-					continue;
-				}
-				if ( ! isset( $trigger['settings']['recipe'] ) ) {
-					continue;
-				}
-				if ( empty( $trigger['settings']['recipe'] ) ) {
-					continue;
-				}
-				$popup_recipes = array_map( 'absint', $trigger['settings']['recipe'] );
-				if ( ! in_array( absint( $item->post_parent ), $popup_recipes, true ) ) {
-					continue;
-				}
-				$found_it = true;
-			}
+		if ( ! is_array( $settings ) ) {
+			return;
 		}
 
-		if ( true === $found_it ) {
-			return $return;
+		$recipe_id = (int) $payload['recipe_id'];
+
+		foreach ( (array) ( $settings['triggers'] ?? array() ) as $trigger ) {
+			if ( 'auto_open' !== ( $trigger['type'] ?? '' ) || empty( $trigger['settings']['recipe'] ) ) {
+				continue;
+			}
+			if ( in_array( $recipe_id, array_map( 'absint', (array) $trigger['settings']['recipe'] ), true ) ) {
+				return;
+			}
 		}
 
 		$settings['triggers'][] = array(
 			'type'     => 'auto_open',
 			'settings' => array(
 				'delay'  => '500',
-				'recipe' => array( $item->post_parent ),
+				'recipe' => array( $recipe_id ),
 			),
 		);
 
 		update_post_meta( $pop_id, 'popup_settings', $settings );
-
-		return $return;
 	}
 }

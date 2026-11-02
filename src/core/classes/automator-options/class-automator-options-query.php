@@ -73,37 +73,85 @@ final class Automator_Options_Query {
 	}
 
 	/**
+	 * The autoload column values WordPress treats as autoloaded.
+	 *
+	 * WordPress 6.6+ writes 'on', 'auto-on' and 'auto' as well as the earlier 'yes'; options it saved,
+	 * and options copied from wp_options, carry those values.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return string[]
+	 */
+	public function get_autoload_values() {
+		if ( function_exists( 'wp_autoload_values_to_autoload' ) ) {
+			return array_values( wp_autoload_values_to_autoload() );
+		}
+
+		// WordPress before 6.6 writes only 'yes'; the rest is the list WordPress 6.6 reads.
+		return array( 'yes', 'on', 'auto-on', 'auto' );
+	}
+
+	/**
 	 * Get all autoloaded options from UAP table.
 	 *
 	 * @return array Array of option data with option_name and option_value keys.
 	 */
 	public function get_autoloaded_uap_options() {
+		$autoload_values = $this->get_autoload_values();
+
+		if ( empty( $autoload_values ) ) {
+			return array();
+		}
+
+		$autoload_placeholders = implode( ',', array_fill( 0, count( $autoload_values ), '%s' ) );
+
 		return (array) $this->db->get_results(
-			"SELECT option_name, option_value FROM {$this->db->prefix}uap_options WHERE autoload = 'yes'",
+			$this->db->prepare(
+				"SELECT option_name, option_value FROM {$this->db->prefix}uap_options WHERE autoload IN ($autoload_placeholders)",
+				...$autoload_values
+			),
 			ARRAY_A
 		);
 	}
 
 	/**
-	 * Get specific autoloaded WordPress options.
+	 * Get specific autoloaded WordPress options that have no uap_options row.
+	 *
+	 * A uap_options row is the current value, whatever its autoload value, as in
+	 * get_option_value(). A row saved as not autoloaded isn't in the warm-up, so an
+	 * older wp_options copy here would replace it and later writes would build on
+	 * that old value.
+	 *
+	 * Trade-off: an option like that now takes one query of its own, because the
+	 * warm-up leaves it out, in place of arriving with the wrong value.
+	 *
+	 * Trade-off: the older wp_options copy stays in place. Deleting the uap_options
+	 * row brings its value back, as get_option_value() has always done.
 	 *
 	 * @param array $option_names Array of option names to retrieve.
 	 *
 	 * @return array Array of option data with option_name and option_value keys.
 	 */
 	public function get_autoloaded_wp_options( array $option_names ) {
-		if ( empty( $option_names ) ) {
+		$autoload_values = $this->get_autoload_values();
+
+		if ( empty( $option_names ) || empty( $autoload_values ) ) {
 			return array();
 		}
 
-		$placeholders = implode( ',', array_fill( 0, count( $option_names ), '%s' ) );
+		$autoload_placeholders = implode( ',', array_fill( 0, count( $autoload_values ), '%s' ) );
+		$placeholders          = implode( ',', array_fill( 0, count( $option_names ), '%s' ) );
 
 		return (array) $this->db->get_results(
 			$this->db->prepare(
-				"SELECT option_name, option_value 
-				 FROM {$this->db->prefix}options 
-				 WHERE autoload = 'yes' AND option_name IN ($placeholders)",
-				...$option_names
+				"SELECT option_name, option_value
+				 FROM {$this->db->prefix}options AS wp_row
+				 WHERE autoload IN ($autoload_placeholders) AND option_name IN ($placeholders)
+				 AND NOT EXISTS (
+					SELECT 1 FROM {$this->db->prefix}uap_options AS uap_row
+					WHERE uap_row.option_name = wp_row.option_name
+				 )",
+				...array_merge( $autoload_values, array_values( $option_names ) )
 			),
 			ARRAY_A
 		);

@@ -23,8 +23,8 @@ use Uncanny_Automator\App\Infrastructure\Database\Database;
 /**
  * Stage 4: Recipe Completion.
  *
- * Finalizes recipe status, handles error classification, runs closures,
- * and hydrates action tokens.
+ * Finalizes recipe status, handles error classification and hydrates
+ * action tokens.
  *
  * @package Uncanny_Automator\App\Recipe_Runner\Stages
  * @since   7.2
@@ -62,16 +62,10 @@ class Recipe_Complete_Stage implements Stage {
 	private $error_store;
 
 	/**
-	 * @var Closure_Stage
-	 */
-	private Closure_Stage $closure_stage;
-
-	/**
 	 * @param Execution_Log_Store|null  $log_store      Optional log store instance.
 	 * @param Integration_Registry|null $integrations   Optional integration registry.
 	 * @param Recipe_Data_Provider|null $data_provider  Optional data provider instance.
 	 * @param Action_Error_Store|null   $error_store    Optional error store instance.
-	 * @param Closure_Stage|null        $closure_stage  Optional closure stage for delegation.
 	 * @param Run_Number_Service|null   $run_number     Optional shared run number service.
 	 */
 	public function __construct(
@@ -79,14 +73,12 @@ class Recipe_Complete_Stage implements Stage {
 		?Integration_Registry $integrations = null,
 		?Recipe_Data_Provider $data_provider = null,
 		?Action_Error_Store $error_store = null,
-		?Closure_Stage $closure_stage = null,
 		?Run_Number_Service $run_number = null
 	) {
 		$this->log_store      = $log_store ?? Database::get_execution_log_store();
 		$this->integrations   = $integrations ?? new Integration_Registry();
 		$this->data_provider  = $data_provider ?? new Recipe_Data_Provider();
 		$this->error_store    = $error_store ?? Database::get_action_error_store();
-		$this->closure_stage  = $closure_stage ?? new Closure_Stage( $this->log_store, $this->integrations, $this->data_provider );
 		$this->run_number     = $run_number;
 	}
 
@@ -125,8 +117,7 @@ class Recipe_Complete_Stage implements Stage {
 			return $result;
 		}
 
-		// If async work was dispatched (loops, delays), don't finalize now.
-		// The async completion handler will call finalize_recipe() when done.
+		// A deferred block owns completion; the walker already recorded the run as in flight.
 		if ( $result->has_async_work() ) {
 			return $result;
 		}
@@ -376,27 +367,6 @@ class Recipe_Complete_Stage implements Stage {
 	}
 
 	/**
-	 * Run closures for a recipe.
-	 *
-	 * @deprecated 7.3 Closures now run in Closure_Stage (Stage 5) after recipe
-	 *             status is finalized. This method is kept for backward compat
-	 *             with the facade (Automator()->complete->closures()) and Pro's
-	 *             loop entry point.
-	 *
-	 * @param int|null   $recipe_id           The recipe ID.
-	 * @param int|null   $user_id             The user ID.
-	 * @param int|null   $recipe_log_id       The recipe log ID.
-	 * @param array      $args                Trigger args.
-	 * @param array|null $recipe_closure_data Pre-fetched closure data.
-	 *
-	 * @return bool
-	 */
-	public function closures( $recipe_id = null, $user_id = null, $recipe_log_id = null, $args = array(), $recipe_closure_data = null ): bool {
-		$this->closure_stage->run_closures( $recipe_closure_data, $recipe_id, $user_id, $recipe_log_id, $args );
-		return true;
-	}
-
-	/**
 	 * Get action completed status.
 	 *
 	 * @param int|null $user_id       The user ID.
@@ -625,6 +595,7 @@ class Recipe_Complete_Stage implements Stage {
 		}
 
 		// Priority order: do-nothing > errors > notice > completed.
+		// completed_awaiting: a background job was accepted for this action's write.
 		// Status is derived from FLAGS, not from error message content.
 		// $error_message is kept in the signature for backward compat but not read.
 		//
@@ -639,6 +610,10 @@ class Recipe_Complete_Stage implements Stage {
 
 		if ( ! empty( $action_data['complete_with_errors'] ) ) {
 			return Automator_Status::COMPLETED_WITH_ERRORS;
+		}
+
+		if ( ! empty( $action_data['completed_awaiting'] ) ) {
+			return Automator_Status::COMPLETED_AWAITING;
 		}
 
 		if ( ! empty( $action_data['complete_with_notice'] ) ) {

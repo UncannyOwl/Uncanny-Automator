@@ -12,7 +12,7 @@
 declare(strict_types=1);
 
 // Prevent direct access
-if ( ! defined( 'ABSPATH' ) && ! defined( 'PHPUNIT_COMPOSER_INSTALL' ) && ! defined( 'WP_TESTS_DIR' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
@@ -20,6 +20,8 @@ if ( ! defined( 'ABSPATH' ) && ! defined( 'PHPUNIT_COMPOSER_INSTALL' ) && ! defi
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Services\Trigger_CRUD_Service;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Services\Trigger_Registry_Service;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Services\Utilities\Trigger_Schema_Converter;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Id;
+use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Trigger_Code;
 
 // =============================================================================
 // TRIGGER REGISTRY
@@ -254,7 +256,9 @@ function automator_get_trigger( int $trigger_id ) {
 /**
  * Update trigger configuration.
  *
- * @param int   $recipe_id  Recipe ID.
+ * @since 8.0.0 Refuses a trigger of another recipe.
+ *
+ * @param int   $recipe_id  Recipe the trigger belongs to.
  * @param int   $trigger_id Trigger ID.
  * @param array $config     Updated configuration.
  * @return array|WP_Error Updated trigger data on success, WP_Error on failure.
@@ -275,13 +279,15 @@ function automator_update_trigger( int $recipe_id, int $trigger_id, array $confi
 	}
 
 	$crud_service = automator_get_trigger_crud_service();
-	return $crud_service->update_trigger( $trigger_id, $config );
+	return $crud_service->update_trigger( $trigger_id, $config, $recipe_id );
 }
 
 /**
  * Remove trigger from recipe.
  *
- * @param int $recipe_id  Recipe ID.
+ * @since 8.0.0 Refuses a trigger that does not exist or belongs to another recipe.
+ *
+ * @param int $recipe_id  Recipe the trigger belongs to.
  * @param int $trigger_id Trigger ID.
  * @return array|WP_Error Success confirmation on success, WP_Error on failure.
  */
@@ -364,6 +370,87 @@ function automator_get_recipe_trigger_count( int $recipe_id ) {
 
 	$crud_service = automator_get_trigger_crud_service();
 	return $crud_service->recipe_has_triggers( $recipe_id );
+}
+
+// =============================================================================
+// TRIGGER LOOKUP BY CODE
+// =============================================================================
+
+/**
+ * Get the post ID of a trigger in a recipe by its trigger code.
+ *
+ * The single, reusable "find a trigger by code in a recipe" entry point —
+ * a convenience lookup over the recipe-trigger store. Pro and other external
+ * consumers call this instead of hand-rolling SQL.
+ *
+ * @param int    $recipe_id    Recipe ID.
+ * @param string $trigger_code Trigger code (e.g. 'RECIPE_MANUAL_TRIGGER_ANON').
+ * @return int|null Trigger post ID, or null when the recipe has no such trigger
+ *                  (or on invalid input).
+ */
+function automator_get_recipe_trigger_id( int $recipe_id, string $trigger_code ): ?int {
+	if ( $recipe_id <= 0 || '' === $trigger_code ) {
+		return null;
+	}
+
+	try {
+		return automator_get_recipe_trigger_store()->get_trigger_id_by_code(
+			new Recipe_Id( $recipe_id ),
+			$trigger_code
+		);
+	} catch ( \Throwable $e ) {
+		return null;
+	}
+}
+
+/**
+ * Whether a recipe has a trigger with the given code.
+ *
+ * @param int    $recipe_id    Recipe ID.
+ * @param string $trigger_code Trigger code.
+ * @return bool
+ */
+function automator_recipe_has_trigger( int $recipe_id, string $trigger_code ): bool {
+	return null !== automator_get_recipe_trigger_id( $recipe_id, $trigger_code );
+}
+
+/**
+ * Get the post ID of a recipe's manual (Run Now) trigger.
+ *
+ * "Manual" means any trigger the Run Now route will fire: the manual trigger
+ * itself, plus run-now-style triggers that hook `automator_pro_run_now_recipe`
+ * — Pro's loopable CSV/JSON/XML/RSS triggers today, and anything added later
+ * without a change here. Matching on the hook rather than a code list is the
+ * point: consumers do not have to be told about new run-now triggers.
+ *
+ * This is the same predicate the base run-now route guards on, exposed so Pro
+ * can answer "is this a run-now recipe?" the same way instead of maintaining a
+ * parallel code list that has to be kept in sync by hand.
+ *
+ * @param int $recipe_id Recipe ID.
+ * @return int|null Trigger post ID, or null when the recipe has no manual
+ *                  trigger (or on invalid input).
+ */
+function automator_get_recipe_manual_trigger_id( int $recipe_id ): ?int {
+	if ( $recipe_id <= 0 ) {
+		return null;
+	}
+
+	try {
+		return automator_get_recipe_trigger_store()->get_manual_trigger_id( new Recipe_Id( $recipe_id ) );
+	} catch ( \Throwable $e ) {
+		return null;
+	}
+}
+
+/**
+ * Whether a recipe can be run with Run Now.
+ *
+ * @param int $recipe_id Recipe ID.
+ * @return bool
+ */
+function automator_recipe_has_manual_trigger( int $recipe_id ): bool {
+	return null !== automator_get_recipe_manual_trigger_id( $recipe_id );
 }
 
 // =============================================================================
@@ -451,6 +538,18 @@ function automator_create_trigger_from_schema( array $mcp_schema ) {
 		$trigger_code = $clean_trigger_data['trigger_code'];
 		$trigger_registry->register_trigger( $trigger_code, $clean_trigger_data );
 
+		// The registry logs and skips a definition it cannot build; say so instead of reporting success.
+		if ( ! $trigger_registry->is_registered( new Trigger_Code( $trigger_code ) ) ) {
+			return new WP_Error(
+				'schema_registration_failed',
+				sprintf(
+					/* translators: %s Trigger code. */
+					esc_html_x( "Trigger '%s' could not be registered from the MCP schema.", 'Trigger helper error', 'uncanny-automator' ),
+					$trigger_code
+				)
+			);
+		}
+
 		return array(
 			'success'      => true,
 			'trigger_code' => $trigger_code,
@@ -462,7 +561,7 @@ function automator_create_trigger_from_schema( array $mcp_schema ) {
 			),
 		);
 
-	} catch ( \Exception $e ) {
+	} catch ( \Throwable $e ) {
 		return new WP_Error(
 			'schema_creation_error',
 			sprintf(
@@ -517,6 +616,8 @@ function automator_validate_mcp_schema( array $mcp_schema ) {
 /**
  * Convert MCP schema to trigger data.
  *
+ * @since 8.0.0 A schema the conversion cannot read, such as a list-typed property, answers a WP_Error instead of raising a TypeError.
+ *
  * @param array $mcp_schema MCP schema.
  * @return array|WP_Error Trigger data on success, WP_Error on failure.
  */
@@ -546,6 +647,8 @@ function automator_convert_mcp_schema_to_trigger( array $mcp_schema ) {
 
 		return array(
 			'trigger_code'      => $trigger_code,
+			// A schema trigger has no option field of its own; an empty meta code is the valid "no meta".
+			'trigger_meta_code' => '',
 			'trigger_type'      => 'user',
 			'integration'       => 'CUSTOM',
 			'sentence'          => $description,
@@ -553,7 +656,8 @@ function automator_convert_mcp_schema_to_trigger( array $mcp_schema ) {
 			'hook'              => array(
 				'name'       => 'init',
 				'priority'   => 10,
-				'args_count' => 0,
+				// The trigger's Hook value object needs at least one argument; WordPress passes '' when the hook has none.
+				'args_count' => 1,
 			),
 			'fields'            => $fields,
 			'tokens'            => array(),
@@ -562,7 +666,7 @@ function automator_convert_mcp_schema_to_trigger( array $mcp_schema ) {
 			'_source'           => 'mcp_schema',
 		);
 
-	} catch ( \Exception $e ) {
+	} catch ( \Throwable $e ) {
 		return new WP_Error(
 			'schema_conversion_error',
 			sprintf(

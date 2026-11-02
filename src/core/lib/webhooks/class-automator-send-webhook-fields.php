@@ -245,40 +245,6 @@ class Automator_Send_Webhook_Fields {
 	}
 
 	/**
-	 * Return buttons for webhooks
-	 *
-	 * @param $action_meta
-	 * @param string $support_link
-	 *
-	 * @return array
-	 */
-	public function buttons( $action_meta, $support_link = 'https://automatorplugin.com/knowledge-base/send-data-to-a-webhook/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=automator-send-data-to-webhook-help-button' ) {
-		return array(
-			array(
-				'show_in'     => $action_meta,
-				'text'        => esc_attr__( 'Help', 'uncanny-automator' ),
-				'css_classes' => 'uap-btn uap-btn--transparent',
-				'on_click'    => 'function(){ window.open( "' . esc_url_raw( $support_link ) . '", "_blank" ); }',
-			),
-			array(
-				'show_in'     => $action_meta,
-				'text'        => esc_attr__( 'Check data format', 'uncanny-automator' ),
-				'css_classes' => 'uap-btn uap-btn--primary',
-				'on_click'    => Automator()->send_webhook->build_sample_data(),
-				'modules'     => array( 'markdown' ),
-			),
-			array(
-				'show_in'     => $action_meta,
-				/* translators: Non-personal infinitive verb */
-				'text'        => esc_attr__( 'Send test', 'uncanny-automator' ),
-				'css_classes' => 'uap-btn uap-btn--red',
-				'on_click'    => Automator()->send_webhook->send_test_js(),
-				'modules'     => array( 'markdown' ),
-			),
-		);
-	}
-
-	/**
 	 * @return mixed|null
 	 */
 	public function get_webhook_data_types() {

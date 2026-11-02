@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Api\AgentPageController\SectionSourcePatch;
 
 use UncannyPageBuilder\Api\AgentTextResponse;
+use UncannyPageBuilder\Infrastructure\WordPress\DiagnosticLog;
 
 /**
  * Orchestrates exact section source patch writes and previews.
@@ -37,7 +38,7 @@ final class SectionSourcePatchController
         try {
             return $this->previewSourcePatch($request, 'preview_change');
         } catch (\Throwable $failure) {
-            error_log(sprintf('[Uncanny Page Builder] preview_change failed (%s).', $failure::class));
+            DiagnosticLog::write(sprintf('[Uncanny Page Builder] preview_change failed (%s).', $failure::class));
 
             return $this->responses->error('preview_change', 500, 'preview_failed', [
                 'NEXT STEP',

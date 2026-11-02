@@ -1,22 +1,25 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects;
 
 /**
- * Recipe Times Per User Value Object.
+ * Recipe Times Per User Value Object — per-user execution limit.
  *
- * @since 7.0.0
+ * null = no limit (unset). A non-null value is a non-negative integer; a
+ * limit of 0 is a real (blocking) limit.
  */
 class Recipe_Times_Per_User {
+
+	/** Integer-boundary sentinel: the int that represents "no limit" (unset). */
+	const UNLIMITED = -1;
 
 	private $value;
 
 	/**
-	 * Constructor.
+	 * Wrap a per-user execution limit.
 	 *
-	 * @param int|null $value Number of allowed runs per user.
-	 * @throws \InvalidArgumentException If value is invalid.
+	 * @param int|null $value Allowed runs per user (>= 0), or null for no limit.
+	 * @throws \InvalidArgumentException If value is a negative or non-numeric scalar.
 	 */
 	public function __construct( $value = null ) {
 
@@ -26,27 +29,51 @@ class Recipe_Times_Per_User {
 		}
 
 		$this->validate( $value );
+
 		$this->value = (int) $value;
 	}
 
 	/**
-	 * Get the value.
+	 * Get the limit value.
 	 *
-	 * @return int
+	 * @return int|null Positive limit, or null when there is no limit.
 	 */
 	public function get_value() {
 		return $this->value;
 	}
 
 	/**
-	 * Validate the times per user value.
+	 * Integer representation for the service/wire boundary: the positive limit,
+	 * or UNLIMITED (-1) when there is no limit.
+	 *
+	 * @return int
+	 */
+	public function to_int(): int {
+		return $this->value ?? self::UNLIMITED;
+	}
+
+	/**
+	 * Wire/panel presentation rule (single authoritative source for the
+	 * settings projection): does a projected limit value render as "no limit"
+	 * in the publish panel? A non-positive value — the `-1` unset sentinel, or
+	 * a degenerate stored `0` — renders blank. Presentation only; enforcement
+	 * treats a stored `0` as a real, blocking limit.
+	 *
+	 * @param int $value Projected limit (positive = a limit; <= 0 = no limit shown).
+	 * @return bool
+	 */
+	public static function renders_as_no_limit( int $value ): bool {
+		return $value <= 0;
+	}
+
+	/**
+	 * Validate the per-user value (null, or a non-negative integer).
 	 *
 	 * @param mixed $value Value to validate.
-	 * @throws \InvalidArgumentException If invalid.
+	 * @throws \InvalidArgumentException When the value is negative or non-numeric.
 	 */
 	private function validate( $value ) {
 
-		// Null value is good.
 		if ( is_null( $value ) ) {
 			return;
 		}

@@ -14,6 +14,7 @@
 use UncannyPageBuilder\Infrastructure\WordPress\CanvasEditorChromeGate;
 
 defined('ABSPATH') || exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
 
 /*
  * Alpine auto-starts from the bundled runtime. This listener must exist
@@ -88,9 +89,10 @@ defined('ABSPATH') || exit;
  * HTML with temporary animation elements, so only Preview runs these scripts.
  * Responsive editing frames hide the chrome but retain the same restriction.
  */
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
 $isEditingCanvas = $showEditorChrome || isset($_GET['upb_editor_viewport']);
 if (!$isEditingCanvas && $runtimeScripts !== '') {
-    echo $runtimeScripts;
+    echo $runtimeScripts; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Script elements built server-side from stored page JavaScript by CanvasRenderer::renderCustomJavaScript().
 }
 ?>
 

@@ -21,15 +21,18 @@ class Add_Anon_Recipe_Type {
 	 */
 	public function add_anon_type_recipe() {
 
+		// The Uncanny Automator integration's icon, an SVG, serves every size.
+		$icon = Utilities::automator_get_integration_icon( UA_ABSPATH . 'src/integrations/uncanny-automator/img/automator-core-icon.svg' );
+
 		Automator()->register->recipe_type(
 			'anonymous',
 			array(
 				'name'        => 'Anonymous',
-				'icon_16'     => Utilities::automator_get_integration_icon( 'integration-uncannyautomator-icon-16.png' ),
-				'icon_32'     => Utilities::automator_get_integration_icon( 'integration-uncannyautomator-icon-32.png' ),
-				'icon_64'     => Utilities::automator_get_integration_icon( 'integration-uncannyautomator-icon-64.png' ),
-				'logo'        => Utilities::automator_get_integration_icon( 'integration-uncannyautomator.png' ),
-				'logo_retina' => Utilities::automator_get_integration_icon( 'integration-uncannyautomator@2x.png' ),
+				'icon_16'     => $icon,
+				'icon_32'     => $icon,
+				'icon_64'     => $icon,
+				'logo'        => $icon,
+				'logo_retina' => $icon,
 			)
 		);
 	}

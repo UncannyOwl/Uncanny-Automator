@@ -4,6 +4,10 @@ namespace Uncanny_Automator;
 
 use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Admin_Settings_Premium_Integrations
  *

@@ -4,11 +4,14 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Transports\Restful\Recipe\Blocks;
 
 use WP_Error;
+use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Type;
+use Uncanny_Automator\App\Recipe_Builder\Block\Services\Block_Crud_Service;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Portability\Recipe_Duplication_Service;
 
 /**
  * Delay Block REST handler.
  *
- * Handles CRUD operations for delay blocks.
+ * Handles CRUD operations for delay/schedule blocks stored as uo-block posts.
  *
  * @package Uncanny_Automator\App\Transports\Restful\Recipe\Blocks
  */
@@ -17,42 +20,90 @@ class Delay_Block_Rest extends Recipe_Block_Rest {
 	/**
 	 * Add a delay block to recipe.
 	 *
-	 * @return string|WP_Error Block ID on success.
+	 * Creates a new uo-block post with block_type 'delay_schedule'.
+	 *
+	 * @return int|WP_Error Block post ID on success.
 	 */
 	protected function do_add_block() {
-		// TODO: Implement delay block add logic
-		return $this->failure(
-			'Delay block add operation not yet implemented.',
-			501,
-			'automator_not_implemented'
+		$service = Block_Crud_Service::instance();
+		$result  = $service->add_block(
+			$this->get_recipe_id(),
+			Block_Type::DELAY_SCHEDULE,
+			(int) $this->get_parent_id(),
+			array(),
+			$this->get_path_code()
 		);
+
+		if ( is_wp_error( $result ) ) {
+			return $this->add_block_failure( $result, 'automator_add_delay_block_failed' );
+		}
+
+		return $result['id'];
 	}
 
 	/**
 	 * Update delay block configuration.
 	 *
+	 * Updates block fields (e.g. delay duration, schedule type).
+	 *
 	 * @return bool|WP_Error
 	 */
 	protected function do_update_block() {
-		// TODO: Implement delay block update logic
-		return $this->failure(
-			'Delay block update operation not yet implemented.',
-			501,
-			'automator_not_implemented'
+		$service = Block_Crud_Service::instance();
+		$result  = $service->update_block(
+			$this->get_post_id(),
+			array( 'fields' => $this->get_fields() )
 		);
+
+		if ( is_wp_error( $result ) ) {
+			return $this->failure(
+				$result->get_error_message(),
+				400,
+				'automator_update_delay_block_failed'
+			);
+		}
+
+		return true;
 	}
 
 	/**
 	 * Delete delay block from recipe.
 	 *
+	 * Removes the delay block post.
+	 *
 	 * @return bool|WP_Error
 	 */
 	protected function do_delete_block() {
-		// TODO: Implement delay block delete logic
-		return $this->failure(
-			'Delay block delete operation not yet implemented.',
-			501,
-			'automator_not_implemented'
-		);
+		$service = Block_Crud_Service::instance();
+		$result  = $service->delete_block( $this->get_post_id(), $this->get_delete_content() );
+
+		if ( is_wp_error( $result ) ) {
+			return $this->failure(
+				$result->get_error_message(),
+				400,
+				'automator_delete_delay_block_failed'
+			);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Duplicate this delay block (and its whole subtree) within the recipe.
+	 *
+	 * @return int|WP_Error New root block id.
+	 */
+	protected function do_duplicate_block() {
+		$service = new Recipe_Duplication_Service();
+		$result  = $service->duplicate_entity( $this->get_recipe_id(), $this->get_post_id() );
+		if ( is_wp_error( $result ) ) {
+			return $this->failure(
+				$result->get_error_message(),
+				400,
+				'automator_duplicate_delay_block_failed'
+			);
+		}
+
+		return (int) $result->get_root_id();
 	}
 }

@@ -19,6 +19,19 @@ use function Uncanny_Automator\App\Infrastructure\automator_feature_state_query;
 class Admin_Settings {
 
 	/**
+	 * Built-in Model Context Protocol subtab files, in display order.
+	 *
+	 * @var string[]
+	 */
+	private const MODEL_CONTEXT_PROTOCOL_SUBTABS = array(
+		'general',
+		'tools',
+		'automator-abilities',
+		'wordpress-abilities',
+		'authentication-log',
+	);
+
+	/**
 	 * Uncanny Agent settings access use case.
 	 *
 	 * @var Check_Uncanny_Agent_Settings_Access|null
@@ -55,6 +68,22 @@ class Admin_Settings {
 		// occurs after WordPress builds the admin menu.
 		include_once __DIR__ . DIRECTORY_SEPARATOR . 'tabs/uncanny-page-builder-tabs/general.php';
 		include_once __DIR__ . DIRECTORY_SEPARATOR . 'tabs/uncanny-agent-tabs/general.php';
+		include_once __DIR__ . DIRECTORY_SEPARATOR . 'tabs/model-context-protocol-tabs/assets.php';
+		foreach ( self::get_model_context_protocol_subtabs() as $subtab ) {
+			include_once __DIR__ . DIRECTORY_SEPARATOR . 'tabs/model-context-protocol-tabs/' . $subtab . '.php';
+		}
+	}
+
+	/**
+	 * Return the built-in Model Context Protocol subtab files in display order.
+	 *
+	 * The settings controller also uses this list when it is loaded directly,
+	 * while the constructor above keeps save handlers available before admin_init.
+	 *
+	 * @return string[]
+	 */
+	public static function get_model_context_protocol_subtabs(): array {
+		return self::MODEL_CONTEXT_PROTOCOL_SUBTABS;
 	}
 
 	/**
@@ -81,6 +110,7 @@ class Admin_Settings {
 		// Load the files
 		$this->load_tab( 'general' );
 		$this->load_tab( 'premium-integrations' );
+		$this->load_tab( 'model-context-protocol' );
 
 		if ( $this->can_access_uncanny_agent_settings() ) {
 			$this->load_tab( 'uncanny-agent' );

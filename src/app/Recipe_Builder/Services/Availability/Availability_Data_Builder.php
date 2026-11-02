@@ -82,6 +82,20 @@ class Availability_Data_Builder {
 	}
 
 	/**
+	 * Set whether the integration's plugin is installed, active or not.
+	 *
+	 * @param bool $is_installed Whether the plugin is installed.
+	 *
+	 * @return self
+	 */
+	public function plugin_installed( $is_installed ) {
+
+		$this->data->is_plugin_installed = $is_installed;
+
+		return $this;
+	}
+
+	/**
 	 * Set whether feature is registered.
 	 *
 	 * @param bool $is_registered Whether feature is registered.

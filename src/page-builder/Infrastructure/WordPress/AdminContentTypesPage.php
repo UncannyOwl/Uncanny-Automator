@@ -50,12 +50,11 @@ final class AdminContentTypesPage
      */
     private function saveSubmittedSettings(): array
     {
-        $postedNonce = $_POST[self::NONCE_FIELD] ?? null;
-        if (!is_scalar($postedNonce)) {
+        if (!isset($_POST[self::NONCE_FIELD]) || !is_scalar($_POST[self::NONCE_FIELD])) {
             return ['updated' => false, 'rejected' => false];
         }
 
-        $nonce = sanitize_text_field(wp_unslash((string) $postedNonce));
+        $nonce = sanitize_text_field(wp_unslash((string) $_POST[self::NONCE_FIELD]));
         if (
             $nonce === ''
             || !wp_verify_nonce($nonce, self::NONCE_ACTION)
@@ -64,14 +63,16 @@ final class AdminContentTypesPage
             return ['updated' => false, 'rejected' => false];
         }
 
-        $submittedValue = $_POST[self::FIELD_CONTENT_TYPES] ?? [];
-        $presentedValue = $_POST[self::FIELD_PRESENTED_CONTENT_TYPES] ?? null;
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- enabledSlugs() reduces every key and value to a sanitized slug.
+        $submittedValue = wp_unslash($_POST[self::FIELD_CONTENT_TYPES] ?? []);
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- ValidateContentTypeSelectionUseCase rejects any slug that is malformed or not a supported content type.
+        $presentedValue = wp_unslash($_POST[self::FIELD_PRESENTED_CONTENT_TYPES] ?? null);
         if (!is_array($submittedValue) || !is_array($presentedValue)) {
             return ['updated' => false, 'rejected' => true];
         }
 
-        $submitted = self::enabledSlugs(wp_unslash($submittedValue));
-        $presented = wp_unslash($presentedValue);
+        $submitted = self::enabledSlugs($submittedValue);
+        $presented = $presentedValue;
 
         try {
             ($this->saveContentTypes)(

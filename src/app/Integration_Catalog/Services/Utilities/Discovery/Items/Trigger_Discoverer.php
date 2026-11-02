@@ -66,6 +66,22 @@ class Trigger_Discoverer extends Integration_Item_Discoverer {
 	}
 
 	/**
+	 * The requires_user_data a registered trigger's catalog row carries, read
+	 * from its registry definition through the derivation discover() applies.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $code Trigger code.
+	 *
+	 * @return bool|null Null when the trigger is not registered in this request.
+	 */
+	public function registered_requires_user_data( string $code ): ?bool {
+		$trigger = $this->trigger_registry->get_trigger_definition( $code, false );
+
+		return is_wp_error( $trigger ) ? null : $this->requires_user_data( $trigger, 'trigger' );
+	}
+
+	/**
 	 * Get trigger code.
 	 *
 	 * @param array $item Trigger data

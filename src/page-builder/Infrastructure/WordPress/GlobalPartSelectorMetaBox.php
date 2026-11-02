@@ -75,7 +75,7 @@ final class GlobalPartSelectorMetaBox
         } catch (\Throwable $failure) {
             // Render nothing further; a metabox failure must not fail the
             // complete WordPress edit screen.
-            error_log('[Uncanny Page Builder] Header and footer metabox render failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Header and footer metabox render failed (' . $failure::class . ')');
             return;
         }
 
@@ -136,8 +136,14 @@ final class GlobalPartSelectorMetaBox
             return;
         }
 
-        $header = $this->parseSubmittedSelection($_POST['upb_page_header_id'] ?? null, GlobalPartType::Header);
-        $footer = $this->parseSubmittedSelection($_POST['upb_page_footer_id'] ?? null, GlobalPartType::Footer);
+        $header = $this->parseSubmittedSelection(
+            isset($_POST['upb_page_header_id']) ? sanitize_text_field(wp_unslash($_POST['upb_page_header_id'])) : null,
+            GlobalPartType::Header,
+        );
+        $footer = $this->parseSubmittedSelection(
+            isset($_POST['upb_page_footer_id']) ? sanitize_text_field(wp_unslash($_POST['upb_page_footer_id'])) : null,
+            GlobalPartType::Footer,
+        );
         if (!$header['valid'] || !$footer['valid']) {
             if ($this->nativePageSave instanceof NativePageSave) {
                 $this->nativePageSave->reject(
@@ -219,6 +225,7 @@ final class GlobalPartSelectorMetaBox
 
     public function renderSaveNotice(): void
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
         $postId = absint(sanitize_text_field(wp_unslash($_GET['post'] ?? '0')));
         if ($postId <= 0) {
             return;

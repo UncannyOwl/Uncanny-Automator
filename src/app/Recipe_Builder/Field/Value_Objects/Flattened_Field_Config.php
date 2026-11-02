@@ -57,28 +57,34 @@ class Flattened_Field_Config {
 	}
 
 	/**
-	 * Add readable field value.
+	 * Add readable field value. Only an empty string is skipped, so a
+	 * readable of `0` is kept.
+	 *
+	 * @since 8.0.0 Keeps a readable of `0`.
 	 *
 	 * @param string $field_code Field code.
 	 * @param string $readable    Readable value.
 	 * @return self
 	 */
 	public function add_readable( string $field_code, string $readable ): self {
-		if ( ! empty( $readable ) ) {
+		if ( '' !== $readable ) {
 			$this->config[ $field_code . '_readable' ] = $readable;
 		}
 		return $this;
 	}
 
 	/**
-	 * Add custom field value.
+	 * Add custom field value. Only an empty string is skipped, so a custom
+	 * value of `0` is kept.
+	 *
+	 * @since 8.0.0 Keeps a custom value of `0`.
 	 *
 	 * @param string $field_code Field code.
 	 * @param string $custom     Custom value.
 	 * @return self
 	 */
 	public function add_custom( string $field_code, string $custom ): self {
-		if ( ! empty( $custom ) ) {
+		if ( '' !== $custom ) {
 			$this->config[ $field_code . '_custom' ] = $custom;
 		}
 		return $this;

@@ -75,7 +75,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         ?int $sourceRootId = null,
     ): array {
         if (!$this->repository->pageExists($pageId)) {
-            throw new PageNotFoundException($pageId);
+            throw new PageNotFoundException((int) $pageId);
         }
 
         $sections = $this->repository->findByPageId($pageId);
@@ -182,6 +182,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         return [
             'section_id'   => $sectionId,
             'compiled_css' => (string) ($result['compiled_css'] ?? ''),
+            'source_generation' => $result['source_generation'],
             'warnings'     => $result['warnings'] ?? [],
         ];
     }
@@ -197,7 +198,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
      *     section_name: string,
      *     content: array{html: string, css: string, element_styles?: array<string, mixed>}
      * }> $updates
-     * @return array{compiled_css: string, warnings: string[]}
+     * @return array{compiled_css: string, source_generation: int, warnings: string[]}
      */
     public function replaceLoadedSectionSources(
         int $pageId,
@@ -206,7 +207,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         bool $requireExactCss = false,
     ): array {
         if (!$this->repository->pageExists($pageId)) {
-            throw new PageNotFoundException($pageId);
+            throw new PageNotFoundException((int) $pageId);
         }
         if ($updates === []) {
             throw new \InvalidArgumentException('At least one section update is required.');
@@ -261,6 +262,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
 
         return [
             'compiled_css' => $compiled->minifiedCss(),
+            'source_generation' => $sections->generation(),
             'warnings'     => $warnings,
         ];
     }
@@ -284,7 +286,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         bool $requireExactCss = false,
     ): array {
         if (!$this->repository->pageExists($pageId)) {
-            throw new PageNotFoundException($pageId);
+            throw new PageNotFoundException((int) $pageId);
         }
 
         $existing = $sections->getById($sectionId);
@@ -334,7 +336,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
     public function patchHtml(int $pageId, int $sectionId, string $html): array
     {
         if (!$this->repository->pageExists($pageId)) {
-            throw new PageNotFoundException($pageId);
+            throw new PageNotFoundException((int) $pageId);
         }
 
         $sections = $this->repository->findByPageId($pageId);
@@ -471,7 +473,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         bool $completeAfterCommit = true,
     ): array {
         if (!$this->repository->pageExists($pageId)) {
-            throw new PageNotFoundException($pageId);
+            throw new PageNotFoundException((int) $pageId);
         }
 
         // A restore is a full aggregate replacement. Carry the generation from
@@ -547,7 +549,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         foreach ($rawSections as $rawSection) {
             $id = (int) ($rawSection['id'] ?? 0);
             if ($id > 0 && !isset($currentIds[$id])) {
-                throw SectionNotFoundException::withId($id);
+                throw SectionNotFoundException::withId((int) $id);
             }
         }
     }
@@ -602,7 +604,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         array $sectionIds,
     ): array {
         if (!$this->repository->pageExists($pageId)) {
-            throw new PageNotFoundException($pageId);
+            throw new PageNotFoundException((int) $pageId);
         }
 
         $collection = $this->repository->findByPageId($pageId);
@@ -649,7 +651,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
     public function delete(int $pageId, int $sectionId): array
     {
         if (!$this->repository->pageExists($pageId)) {
-            throw new PageNotFoundException($pageId);
+            throw new PageNotFoundException((int) $pageId);
         }
 
         $sections = $this->repository->findByPageId($pageId);
@@ -745,12 +747,12 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
             $replaced = str_replace($patch['old'], $patch['new'], $subject, $count);
             if ($count === 0) {
                 throw new \InvalidArgumentException(
-                    "{$label} patch failed: 'old' string not found. Ensure exact match including whitespace."
+                    sprintf("%s patch failed: 'old' string not found. Ensure exact match including whitespace.", esc_html($label))
                 );
             }
             if ($count > 1) {
                 throw new \InvalidArgumentException(
-                    "{$label} patch failed: 'old' string matched {$count} times. Provide a more specific string."
+                    sprintf("%s patch failed: 'old' string matched %d times. Provide a more specific string.", esc_html($label), (int) $count)
                 );
             }
             $subject = $replaced;
@@ -920,7 +922,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         try {
             $existing = $this->repository->findById($sectionId);
         } catch (\Throwable) {
-            throw new BindingTargetNotFoundException(BindingTargetReference::forSection($sectionId)->token());
+            throw new BindingTargetNotFoundException(esc_html(BindingTargetReference::forSection((int) $sectionId)->token()));
         }
 
         $sections = $this->repository->findByPageId($existing->pageId());

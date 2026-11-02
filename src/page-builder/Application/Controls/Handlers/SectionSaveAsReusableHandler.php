@@ -31,7 +31,7 @@ final class SectionSaveAsReusableHandler implements ControlHandlerInterface
         }
 
         if ($this->sections->findSection($request->pageId(), $sectionId) === null) {
-            throw SectionNotFoundException::withId($sectionId);
+            throw SectionNotFoundException::withId((int) $sectionId);
         }
 
         $result = $this->globalParts->createFromSectionId($sectionId, $title, $type);
@@ -53,11 +53,11 @@ final class SectionSaveAsReusableHandler implements ControlHandlerInterface
         } elseif (is_string($value) && preg_match('/^[1-9][0-9]*$/', $value) === 1) {
             $int = (int) $value;
         } else {
-            throw new \InvalidArgumentException($message);
+            throw new \InvalidArgumentException(esc_html($message));
         }
 
         if ($int <= 0) {
-            throw new \InvalidArgumentException($message);
+            throw new \InvalidArgumentException(esc_html($message));
         }
 
         return $int;

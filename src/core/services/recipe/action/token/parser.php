@@ -72,7 +72,15 @@ class Parser {
 
 			list ( $type, $action_id, $parent, $meta_key ) = $token_pieces;
 
-			$action_log_id = $this->get_action_log_id( $action_id, $process_args['recipe_log_id'] );
+			$recipe_log_id = (int) ( $process_args['recipe_log_id'] ?? 0 );
+			if ( $recipe_log_id <= 0 ) {
+				// Defensive: some callers reach here with $process_args missing
+				// recipe_log_id. Log + skip rather than emit a PHP warning.
+				automator_log( sprintf( 'token-parser action=%d missing recipe_log_id in $process_args; skipping resolution', (int) $action_id ), 'Token_Parser' );
+				continue;
+			}
+
+			$action_log_id = $this->get_action_log_id( $action_id, $recipe_log_id );
 
 			// Action meta type.
 			if ( 'META' === $type ) {
@@ -132,7 +140,7 @@ class Parser {
 			// Do recursive magic ➰ for either of these action tokens.
 			$do_iterate = true;
 
-			while ( $do_iterate && ( strpos( $field_text, '{{ACTION_FIELD' ) || strpos( $field_text, '{{ACTION_META' ) ) ) {
+			while ( $do_iterate && ( false !== strpos( $field_text, '{{ACTION_FIELD' ) || false !== strpos( $field_text, '{{ACTION_META' ) ) ) {
 
 				++$count_iteration;
 
@@ -141,7 +149,14 @@ class Parser {
 					$do_iterate = false;
 				}
 
-				$field_text = strtr( $field_text, $this->get_replace_pairs( $field_text, $trigger_args, $args ) );
+				$replace_pairs = $this->get_replace_pairs( $field_text, $trigger_args, $args );
+
+				// Nothing left that reads as a complete action token (for example an unclosed "{{ACTION_META").
+				if ( empty( $replace_pairs ) ) {
+					break;
+				}
+
+				$field_text = strtr( $field_text, $replace_pairs );
 
 			}
 		}
@@ -172,6 +187,11 @@ class Parser {
 		$tokens = (array) json_decode( $action_meta_token, true );
 
 		$token_value = isset( $tokens[ $action_meta_key ] ) ? $tokens[ $action_meta_key ] : '';
+
+		// An output stored as a list reads as field tokens read a list.
+		if ( is_array( $token_value ) ) {
+			$token_value = $this->list_to_text( $token_value );
+		}
 
 		if ( ! empty( $args ) && isset( $args['action_data']['should_apply_extra_formatting'] ) ) {
 
@@ -331,18 +351,30 @@ class Parser {
 		// Handle non-repeater JSON values from field.
 		if ( Automator()->utilities->is_json_string( $meta_value ) ) {
 
-			$decoded = json_decode( $meta_value, true );
-
-			// Repeater field is classified as group 1.
-			if ( 'g1' === Array_Group_Classifier::classify_array( $decoded ) ) {
-				return wp_json_encode( $decoded );
-			}
-
-			return join( ', ', $decoded );
+			return $this->list_to_text( json_decode( $meta_value, true ) );
 
 		}
 
 		return ! empty( $meta_value ) ? $meta_value : '';
+	}
+
+	/**
+	 * The text a token shows for a list: a list of rows (a repeater) as JSON, any other list joined with ", ".
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param mixed[] $values The list.
+	 *
+	 * @return string
+	 */
+	private function list_to_text( array $values ) {
+
+		// Repeater field is classified as group 1.
+		if ( 'g1' === Array_Group_Classifier::classify_array( $values ) ) {
+			return wp_json_encode( $values );
+		}
+
+		return join( ', ', $values );
 	}
 
 	/**

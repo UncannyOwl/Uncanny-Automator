@@ -81,8 +81,10 @@ final class AdminCanvasPage
      */
     public function handleLoad(): void
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- Read-only display state; no change is made.
         $postId = self::canvasIdFromRequest($_GET, $_POST);
-        $editorMode = (string) ($_GET['editor_mode'] ?? 'fullscreen');
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        $editorMode = isset($_GET['editor_mode']) && is_string($_GET['editor_mode']) ? sanitize_key(wp_unslash($_GET['editor_mode'])) : 'fullscreen';
         $editorMode = $editorMode === 'windowed' ? 'windowed' : 'fullscreen';
 
         // The canvas is a long-lived editor surface, so it must never render as
@@ -186,7 +188,7 @@ final class AdminCanvasPage
                 try {
                     return $allowed === true || $this->allowedCapabilities->currentUserHasAllowedCapability();
                 } catch (\Throwable $failure) {
-                    error_log('[Uncanny Page Builder] Canvas Agent availability failed (' . $failure::class . ')');
+                    DiagnosticLog::write('[Uncanny Page Builder] Canvas Agent availability failed (' . $failure::class . ')');
                     return false;
                 }
             });
@@ -210,7 +212,7 @@ final class AdminCanvasPage
 
     private function terminateLoadFailure(\Throwable $failure): never
     {
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] Admin canvas load failed (%s).',
             $failure::class,
         ));
@@ -259,7 +261,7 @@ final class AdminCanvasPage
         }
 
         if ($enabled && $ownership->status() === EditorOwnershipStatus::Unavailable) {
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Editor lock entry unavailable target=%d actor=%d scope=%s reason=ownership_unavailable',
                 (int) $post->ID,
                 (int) get_current_user_id(),
@@ -321,7 +323,7 @@ final class AdminCanvasPage
 
     private function redirectPostLoadToCanonicalEditor(int $postId): void
     {
-        $requestMethod = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+        $requestMethod = strtoupper(sanitize_text_field(wp_unslash($_SERVER['REQUEST_METHOD'] ?? 'GET')));
 
         if (!self::shouldRedirectPostLoad($requestMethod, $postId)) {
             return;

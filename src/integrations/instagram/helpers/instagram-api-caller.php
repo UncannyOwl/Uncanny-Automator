@@ -57,7 +57,8 @@ class Instagram_Api_Caller extends Api_Caller {
 	}
 
 	/**
-	 * Check for errors in API response.
+	 * Check for errors in API response: any error the platform reports under data fails, with Meta's message,
+	 * else Meta's error code, else a fixed text; Instagram's "still processing" (9007) passes through.
 	 *
 	 * @param array $response The response.
 	 * @param array $args     Additional arguments.
@@ -66,10 +67,21 @@ class Instagram_Api_Caller extends Api_Caller {
 	 * @throws Exception If an error occurs.
 	 */
 	public function check_for_errors( $response, $args = array() ) {
-		$error = $response['data']['error']['message'] ?? false;
-		if ( $error ) {
-			throw new Exception( esc_html( $error ), absint( $response['statusCode'] ) );
+		$error = $response['data']['error'] ?? null;
+		if ( empty( $error ) || self::is_media_processing( $response ) ) {
+			return;
 		}
+
+		$message = is_array( $error ) && ! empty( $error['message'] ) ? (string) $error['message'] : '';
+		if ( '' === $message ) {
+			$message = is_array( $error ) && ! empty( $error['code'] )
+				// translators: %s is the error code Meta returned.
+				? sprintf( esc_html_x( 'Instagram returned error code %s.', 'Instagram', 'uncanny-automator' ), (string) $error['code'] )
+				: esc_html_x( 'Instagram returned an error.', 'Instagram', 'uncanny-automator' );
+		}
+
+		// A vendor rejection does not improve with waiting: 400, whatever status the envelope carried.
+		throw new Exception( esc_html( $message ), 400 );
 	}
 
 	////////////////////////////////////////////////////////////
@@ -83,7 +95,7 @@ class Instagram_Api_Caller extends Api_Caller {
 	 * @param string $image_uri    The image URI.
 	 * @param string $caption      The caption.
 	 * @param string $container_id Optional. Existing container ID for retry optimization.
-	 * @param array  $action_data  Optional. The action data for logging/retry.
+	 * @param array  $action_data  Optional. The action data of the write that may go to the background.
 	 *
 	 * @return array - The response from the Facebook API.
 	 * @throws Exception If any invalid data is provided or error occurs.
@@ -124,8 +136,33 @@ class Instagram_Api_Caller extends Api_Caller {
 			$body['container_id'] = $container_id;
 		}
 
-		// Make a direct API request.
-		return $this->api_request( $body, $action_data );
+		// A 202 job acceptance and a "still processing" answer go back to the action untouched: the transport hands
+		// the vendor's data.error back instead of throwing, and check_for_errors() lets the 9007 through.
+		$response = $this->api_request(
+			$body,
+			$action_data,
+			array(
+				'exclude_error_check'  => true,
+				'return_vendor_errors' => true,
+			)
+		);
+		$this->check_for_errors( $response );
+
+		return $response;
+	}
+
+	/**
+	 * Whether the platform answered that Instagram is still processing the media (Meta's 9007, "Media ID is not
+	 * available"): the container exists and the same container can be published later.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param mixed $response What publish_photo() returned.
+	 *
+	 * @return bool
+	 */
+	public static function is_media_processing( $response ) {
+		return is_array( $response ) && 9007 === (int) ( $response['data']['error']['code'] ?? 0 );
 	}
 
 	/**

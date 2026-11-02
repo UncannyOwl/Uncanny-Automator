@@ -54,7 +54,7 @@ final class Gemini_Provider implements AI_Provider_Interface {
 		$this->ensure_initialized();
 
 		return ( new Payload() )
-			// Gemini uses API key as a URL parameter
+			// The API key is added as the x-goog-api-key header when the request is sent.
 			->json_content();
 	}
 
@@ -76,9 +76,8 @@ final class Gemini_Provider implements AI_Provider_Interface {
 		$body    = $payload->get_body()->to_array();
 		$headers = $payload->get_headers()->to_array();
 
-		// Add API key to URL (Gemini uses query parameter authentication)
-		$api_key = $this->config->get( 'automator_gemini_api_key' );
-		$url     = add_query_arg( 'key', $api_key, $url );
+		// The API key goes in a header, never in the URL: a URL reaches logs and error messages.
+		$headers['x-goog-api-key'] = $this->config->get( 'automator_gemini_api_key' );
 
 		// Record metrics and log request
 		$this->logger->info(

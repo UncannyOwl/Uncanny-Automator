@@ -46,7 +46,6 @@ class ZAPIER_SENDWEBHOOK {
 				)
 			)
 		);
-		$this->set_buttons( Automator()->send_webhook->fields->buttons( $this->get_action_meta(), $this->get_support_link() ) );
 		$this->register_action();
 	}
 }

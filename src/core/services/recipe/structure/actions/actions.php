@@ -2,6 +2,7 @@
 
 namespace Uncanny_Automator\Services\Recipe\Structure\Actions;
 
+use Uncanny_Automator\App\Recipe_Builder\Block\Resolvers\Block_Resolver;
 use Uncanny_Automator\Services\Recipe\Structure;
 use Uncanny_Automator\Services\Recipe\Common;
 use Uncanny_Automator\Services\Recipe\Structure\Actions\User_Selector;
@@ -26,6 +27,15 @@ final class Actions implements \JsonSerializable {
 	 */
 	private static $recipe = null;
 
+	/**
+	 * Bind this actions collection to the recipe structure that owns it.
+	 *
+	 * The recipe is held statically so nested item objects built during
+	 * hydration can reach it without threading it through every level.
+	 *
+	 * @param \Uncanny_Automator\Services\Recipe\Structure $recipe Owning recipe structure.
+	 * @param array                                        $meta   Raw action meta rows.
+	 */
 	public function __construct( \Uncanny_Automator\Services\Recipe\Structure $recipe, $meta = array() ) {
 
 		self::$recipe = $recipe;
@@ -87,28 +97,62 @@ final class Actions implements \JsonSerializable {
 		 * The conditions are hooked into 'automator_recipe_main_object_action_items'.
 		 * We're querying the record from the database and wrap the action into its condition.
 		 *
-		 * @see Item/Conditions_Pluggable ~item/conditions-pluggable.php
+		 * Filter wrappers are produced by Legacy_Frontend_Translator; the
+		 * Conditions_Pluggable class that used to build them is retired.
 		 */
 		$items = apply_filters( 'automator_recipe_main_object_action_items', $action_items, self::$recipe, $this );
 
-		$recipe_closure = Automator()->get_recipe_closure( self::$recipe->get_recipe_id() );
-
-		if ( ! empty( $recipe_closure ) ) {
-			$items[] = new Structure\Closure( self::$recipe, $recipe_closure );
+		// Loops — only create legacy Loop objects if Block_Resolver didn't resolve them.
+		if ( ! Block_Resolver::loops_resolved() ) {
+			foreach ( $loops as $loop ) {
+				$items[] = new Structure\Actions\Item\Loop( self::$recipe, $this, $loop['ID'] );
+			}
 		}
-
-		// Loops
-		foreach ( $loops as $loop ) {
-			$items[] = new Structure\Actions\Item\Loop( self::$recipe, $this, $loop['ID'] );
-		}
-		// End Loops.
 
 		// Sort by ui_order.
 		$items = json_decode( wp_json_encode( $items ), true );
 
 		usort( $items, array( $this, 'sort_by_ui_order' ) );
 
-		$this->items = $items;
+		// Convert empty arrays to objects for specific keys after JSON round-trip.
+		$this->items = $this->normalize_empty_arrays( $items );
+	}
+
+	/**
+	 * Recursively normalizes the items array for frontend consumption.
+	 *
+	 * This method:
+	 * 1. Converts empty 'fields' arrays to stdClass for {} JSON serialization
+	 * 2. Removes '_ui_order' keys (used internally for sorting, not needed by frontend)
+	 *
+	 * @param mixed $data The data to normalize.
+	 *
+	 * @return mixed The normalized data.
+	 */
+	private function normalize_empty_arrays( $data ) {
+
+		if ( ! is_array( $data ) ) {
+			return $data;
+		}
+
+		// Remove _ui_order - it's only needed for sorting, not for frontend.
+		unset( $data['_ui_order'] );
+
+		// Only 'fields' should be {} when empty (key-value map).
+		// Properties like 'tokens', 'filters', 'items' are lists and should stay [].
+		$object_keys = array( 'fields' );
+
+		foreach ( $data as $key => $value ) {
+			// Convert empty arrays to stdClass for specific keys.
+			if ( in_array( $key, $object_keys, true ) && is_array( $value ) && empty( $value ) ) {
+				$data[ $key ] = new \stdClass();
+			} elseif ( is_array( $value ) ) {
+				// Recursively process nested arrays.
+				$data[ $key ] = $this->normalize_empty_arrays( $value );
+			}
+		}
+
+		return $data;
 	}
 
 	/**

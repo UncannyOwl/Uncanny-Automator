@@ -3,6 +3,7 @@
 namespace Uncanny_Automator\Recipe;
 
 use Exception;
+use Uncanny_Automator\App\Infrastructure\Api_Log\Api_Log_Compressor;
 use Uncanny_Automator\Automator_Send_Webhook;
 use Uncanny_Automator\Webhooks\Response_Validator;
 
@@ -64,12 +65,11 @@ trait Webhooks {
 		$new_tokens[] = array(
 			'tokenId'     => 'WEBHOOK_RESPONSE_BODY',
 			'tokenParent' => get_post_meta( $action_id, 'code', true ),
-			'tokenName'   => _x( 'Response - Body (raw)', 'Webhook', 'uncanny-automator' ),
+			'tokenName'   => esc_html_x( 'Response - Body (raw)', 'Webhook', 'uncanny-automator' ),
 			'tokenType'   => 'text',
 		);
 
 		return array_merge( $new_tokens, $tokens );
-
 	}
 
 	/**
@@ -148,7 +148,7 @@ trait Webhooks {
 			$this->set_log_properties(
 				array(
 					'type'       => 'code',
-					'label'      => _x( 'Response headers', 'Send webhook action response headers property', 'uncanny-automator' ),
+					'label'      => esc_html_x( 'Response headers', 'Send webhook action response headers property', 'uncanny-automator' ),
 					'value'      => wp_json_encode( $encoded_response_headers ),
 					'attributes' => array(
 						'code_language' => 'json',
@@ -157,7 +157,7 @@ trait Webhooks {
 				// Webhook response
 				array(
 					'type'       => 'code',
-					'label'      => _x( 'Response body', 'Send webhook action log response body property', 'uncanny-automator' ),
+					'label'      => esc_html_x( 'Response body', 'Send webhook action log response body property', 'uncanny-automator' ),
 					'value'      => wp_remote_retrieve_body( $response ),
 					'attributes' => array(
 						'code_language' => 'json',
@@ -245,7 +245,6 @@ trait Webhooks {
 		$this->elapsed_time_ms = ( $end_time - $start_time ) * 1000;
 
 		$this->log_webhook_request( $args, $webhook_url, $response, $action_data );
-
 	}
 
 	/**
@@ -273,7 +272,6 @@ trait Webhooks {
 			$action_log_id,
 			$log_parameters
 		);
-
 	}
 
 	/**
@@ -297,7 +295,6 @@ trait Webhooks {
 				'code' => $response_code,
 			),
 		);
-
 	}
 
 	/**
@@ -316,9 +313,9 @@ trait Webhooks {
 			'recipe_log_id' => $recipe_log_id,
 			'item_log_id'   => $action_log_id,
 			'endpoint'      => $logger_params['endpoint'],
-			'params'        => maybe_serialize( $logger_params['params'] ),
-			'request'       => maybe_serialize( $logger_params['request'] ),
-			'response'      => maybe_serialize( $logger_params['response'] ),
+			'params'        => Api_Log_Compressor::encode( $logger_params['params'] ),
+			'request'       => Api_Log_Compressor::encode( $logger_params['request'] ),
+			'response'      => Api_Log_Compressor::encode( $logger_params['response'] ),
 			'balance'       => null,
 			'price'         => null,
 			'status'        => $logger_params['response']['code'],
@@ -326,7 +323,6 @@ trait Webhooks {
 		);
 
 		Automator()->db->api->add( $log );
-
 	}
 
 	/**
@@ -341,7 +337,5 @@ trait Webhooks {
 	protected function validate_response( $response ) {
 
 		return Response_Validator::validate_webhook_response( $response );
-
 	}
-
 }

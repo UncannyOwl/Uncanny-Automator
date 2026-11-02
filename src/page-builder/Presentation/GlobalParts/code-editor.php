@@ -12,6 +12,7 @@
  */
 
 defined('ABSPATH') || exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
 
 $canEditCode = isset($canEditCode) ? (bool) $canEditCode : false;
 

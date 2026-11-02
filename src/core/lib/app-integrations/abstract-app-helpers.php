@@ -3,6 +3,8 @@
 namespace Uncanny_Automator\App_Integrations;
 
 use Exception;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Platform_Failure_Message;
+use Uncanny_Automator\App\Infrastructure\Connections\Connection_Not_Found_Exception;
 use Uncanny_Automator\Recipe\Abstract_Helpers;
 
 /**
@@ -292,13 +294,122 @@ abstract class App_Helpers extends Abstract_Helpers {
 	}
 
 	/**
-	 * Get credentials.
+	 * Whether this helper's api_endpoint targets the `/v3/*` surface.
 	 *
-	 * @return mixed - Array or string of credentials
+	 * Mirrors App_Integration::supports_v3() on the helper side so callers
+	 * that only hold the helper (typical for action/trigger handlers) can
+	 * route requests correctly. Default inspects the api_endpoint string.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool
+	 */
+	public function supports_v3() {
+		return 0 === strpos( (string) $this->api_endpoint, 'v3/' );
+	}
+
+	/**
+	 * Get credentials — MVP G.4 façade returning the standard envelope.
+	 *
+	 * Per Contract H §"Account-info envelope (display CII)", v3 dispatches
+	 * receive a flat array of four fields:
+	 *
+	 *   [
+	 *     'connection_id'        => 'cnx_<ULID>',                 // request body
+	 *     'connection_signature' => '<envelope_version>.<hmac>',  // request body
+	 *     'identity_id'          => '<uuid>',                     // platform Identity FK
+	 *     'external_user_id'     => '<id>',                       // vendor-scoped opaque id
+	 *                                                             // (dropbox account_id, google sub, etc.)
+	 *   ]
+	 *
+	 * `connection_id` + `connection_signature` are the dispatch credentials
+	 * (Contract G — Laravel reads both from request body); plugin's core
+	 * `Automator_Platform_Caller::api_request()` merges them directly into
+	 * v3+ request bodies. The signature is platform-issued at
+	 * OAuth-callback time and treated as opaque by the plugin.
+	 *
+	 * NO display PII (name, email, avatar) on this path — those live on
+	 * `get_account_info()` only, populated once at OAuth-callback time and
+	 * cached locally. Data minimization: the dispatch path stays
+	 * pseudonymous so `display.*` fields never propagate through audit
+	 * trails or per-request response envelopes.
+	 *
+	 * Three branches by registry row `platform_version`:
+	 *
+	 *  - **No row OR row is `'v2'` legacy (pre-lift)** + v2 endpoint:
+	 *    legacy uap_options path, returns whatever the integration
+	 *    historically stored. Identical to pre-MVP behaviour.
+	 *
+	 *  - **No usable row** + v3 endpoint: throws
+	 *    {@see Connection_Not_Found_Exception} rather than dispatching. Its
+	 *    message says why ({@see Connection_Registry::lookup_default()},
+	 *    worded by {@see Platform_Failure_Message::for_lookup()}): no `/v3`
+	 *    connection to dispatch with (none, only a `'v2'` row, or only
+	 *    active rows none of which is the default) gets the connect prompt;
+	 *    a failed database read is not read as a missing connection; a row
+	 *    that is switched off or being re-checked, revoked, or marked for
+	 *    re-authorization each gets its own sentence. It is an
+	 *    `Action_Error_Exception` carrying the error code the message owner
+	 *    gives that reason, so the action log records that code.
+	 *
+	 *  - **Row is `'v3'`** + v3 endpoint:
+	 *    returns the standard three-key envelope above. Auth on the wire
+	 *    is the per-Site signing_secret HMAC computed by the Client; no
+	 *    per-connection signature exists in MVP.
+	 *
+	 * Vendor-specific keys like `dropbox_id`, `google_user_id`,
+	 * `vault_signature` are NOT in the v3 return shape. Integration code
+	 * reads `external_user_id` for vendor-side correlation; legacy
+	 * `vault_signature` reads are dead code under MVP Contract G — Phase
+	 * C transition removes them.
+	 *
+	 * @since 8.0.0 MVP plan G.4 — drops `connection_signature`, adds
+	 *              legacy-row branch.
+	 * @since 8.0.0 Contract H envelope — v3 return reshaped to flat
+	 *              {connection_id, identity_id, external_user_id} array;
+	 *              `display` block moved to `get_account_info()`.
+	 *
+	 * @return mixed array/string (legacy v2 path) OR flat array with
+	 *               connection_id + identity_id + external_user_id (v3).
+	 *
+	 * @throws \Uncanny_Automator\App\Infrastructure\Connections\Connection_Not_Found_Exception
 	 */
 	public function get_credentials() {
-		$credentials = automator_get_option( $this->get_credentials_option_name(), '' );
-		return $this->validate_credentials( $credentials );
+
+		// V2 endpoint: always legacy uap_options path. A v3 row may
+		// coexist if a future Contract H lift signal hasn't fired yet;
+		// the v2 dispatch ignores the registry until the endpoint flips.
+		// Checked BEFORE the registry lookup so the (vast) v2 majority
+		// never pays the per-call connection query.
+		if ( ! $this->supports_v3() ) {
+			$credentials = automator_get_option( $this->get_credentials_option_name(), '' );
+			return $this->validate_credentials( $credentials );
+		}
+
+		$lookup = \Uncanny_Automator\App\Infrastructure\automator_connection_registry()->lookup_default( $this->integration )->for_v3_dispatch();
+
+		// No connection to dispatch with. Why decides what the customer is
+		// told, and the error code the action records: there is none (or
+		// only a pre-lift legacy row, or no default among the active rows),
+		// the lookup failed, or a row exists but is switched off, being
+		// re-checked, revoked or marked for re-authorization — each its own
+		// sentence.
+		if ( ! $lookup->is_found() ) {
+			$not_found = Platform_Failure_Message::for_lookup( $lookup, (string) $this->get_name() )->to_connection_not_found_exception();
+			throw $not_found;
+		}
+
+		$default  = $lookup->connection();
+		$metadata = $default->metadata();
+
+		return array(
+			'connection_id'        => $default->connection_id(),
+			'connection_signature' => (string) $default->connection_signature(),
+			'identity_id'          => (string) $default->identity_id(),
+			'external_user_id'     => isset( $metadata['external_user_id'] )
+				? (string) $metadata['external_user_id']
+				: '',
+		);
 	}
 
 	/**
@@ -349,6 +460,7 @@ abstract class App_Helpers extends Abstract_Helpers {
 	 * @return bool True if credentials were deleted, false otherwise.
 	 */
 	public function delete_credentials() {
+		$this->clear_account_info_cache();
 		$result = automator_delete_option( $this->get_credentials_option_name() );
 
 		return $result;
@@ -360,6 +472,15 @@ abstract class App_Helpers extends Abstract_Helpers {
 	 * @return mixed - Array or string of account info
 	 */
 	public function get_account_info() {
+		// V3 integrations have no local account_info — display CII lives in
+		// the platform vault, fetched on demand via the integration's
+		// `get-account-info` endpoint per Contract H. Route through the
+		// 7-day transient cache so settings pages don't hit the vault on
+		// every render.
+		if ( $this->supports_v3() ) {
+			return $this->get_account_info_from_vault_cached();
+		}
+
 		$account_info = automator_get_option( $this->get_account_option_name(), '' );
 		return $this->validate_account_info( $account_info );
 	}
@@ -403,10 +524,138 @@ abstract class App_Helpers extends Abstract_Helpers {
 	/**
 	 * Delete account info.
 	 *
+	 * Also clears the 7-day cached vault copy so a subsequent
+	 * {@see get_account_info_from_vault_cached()} re-fetches against the
+	 * current connection rather than serving a stale display block.
+	 *
 	 * @return bool True if account info was deleted, false otherwise.
 	 */
 	public function delete_account_info() {
+		$this->clear_account_info_cache();
 		return automator_delete_option( $this->get_account_option_name() );
+	}
+
+	/**
+	 * Cached display-CII fetch (G.8 — Contract H account-info envelope).
+	 *
+	 * Fetches the standard {@link https://contract-H} display block
+	 * `{name, email, avatar_url}` from the platform vault and caches it for
+	 * 7 days in a transient. The dispatch path
+	 * ({@see get_credentials()}) intentionally returns the four-key
+	 * pseudonymous envelope only — display PII never rides the per-request
+	 * wire. Settings pages that want to render the connected account call
+	 * this method instead of poking `automator_get_option`.
+	 *
+	 * Behaviour:
+	 *  - Cache hit  → returns the cached array.
+	 *  - Cache miss → POSTs `get-account-info` to the integration's modern
+	 *                 endpoint (core caller flips `action → URL suffix` on
+	 *                 v3+), caches the `data.display` block for 7 days,
+	 *                 returns it.
+	 *  - On error / no v3 connection → falls back to whatever
+	 *                 {@see get_account_info()} has stored locally so the
+	 *                 settings page still renders something.
+	 *
+	 * Invalidation: {@see clear_account_info_cache()} on disconnect /
+	 * reconnect, and automatically from {@see delete_account_info()}.
+	 *
+	 * @since 8.0.0 G.8 — replaces ad-hoc per-integration caching.
+	 *
+	 * @return array Display block `{name, email, avatar_url}` or whatever
+	 *               the local fallback returns when vault is unreachable.
+	 */
+	protected function get_account_info_from_vault_cached() {
+
+		$transient_key = $this->get_account_info_transient_key();
+
+		$cached = get_transient( $transient_key );
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
+		// Vault fetch only works on v3+ — bail to local fallback otherwise.
+		// Read the local option directly (NOT through `get_account_info()`)
+		// to avoid recursion: `get_account_info()` for v3 routes back here.
+		if ( ! $this->supports_v3() || null === $this->api ) {
+			return $this->read_local_account_info();
+		}
+
+		try {
+			$response = $this->api->api_request(
+				array( 'action' => 'get_account_info' )
+			);
+
+			// Standard CII envelope per Contract H — platform normalizes
+			// every vendor's userinfo into `{name, email, avatar_url}`
+			// (with optional vendor correlation IDs alongside) before
+			// returning. Plugin reads it flat.
+			$envelope = isset( $response['data'] ) && is_array( $response['data'] )
+				? $response['data']
+				: array();
+
+			if ( ! empty( $envelope ) ) {
+				set_transient( $transient_key, $envelope, 7 * DAY_IN_SECONDS );
+				return $envelope;
+			}
+		} catch ( \Exception $e ) {
+			// Silent fallback — settings page must still render.
+			unset( $e );
+		}
+
+		return $this->read_local_account_info();
+	}
+
+	/**
+	 * Direct read of the local-options account_info — used as the
+	 * vault-fetch fallback inside `get_account_info_from_vault_cached`.
+	 * Bypasses `get_account_info()` so the v3 routing in that public
+	 * method can't recurse back into the cached path.
+	 *
+	 * @return mixed Whatever was stored locally, or empty string if none.
+	 */
+	private function read_local_account_info() {
+
+		$account_info = automator_get_option( $this->get_account_option_name(), '' );
+		return $this->validate_account_info( $account_info );
+	}
+
+	/**
+	 * Build the transient key for the cached account-info envelope.
+	 *
+	 * MVP is single-connection-per-integration, so we key on the
+	 * integration slug only. This makes invalidation reliable on
+	 * disconnect: at the time `clear_account_info_cache()` is called
+	 * via `delete_account_info()`, the registry row has typically
+	 * already been hard-deleted by `Reconnect_Service`, so a
+	 * connection-id-based key would resolve to a stale fallback and
+	 * leak the previous account's display block into the next
+	 * connection. Multi-connection cache scoping is future work; will
+	 * key on connection_id when recipe steps gain connection pinning.
+	 *
+	 * @since 8.0.0 G.8.
+	 * @since 8.0.0 (post-MVP-disconnect-fix) keyed by integration only.
+	 *
+	 * @return string Transient key.
+	 */
+	protected function get_account_info_transient_key() {
+
+		$integration_code = strtolower( (string) $this->get_integration() );
+
+		return "automator_{$integration_code}_account_info";
+	}
+
+	/**
+	 * Clear the cached account-info envelope.
+	 *
+	 * Call on disconnect, reconnect, or any flow that invalidates the
+	 * displayed identity. Auto-fired from {@see delete_account_info()}.
+	 *
+	 * @since 8.0.0 G.8.
+	 *
+	 * @return void
+	 */
+	public function clear_account_info_cache() {
+		delete_transient( $this->get_account_info_transient_key() );
 	}
 
 	/**
@@ -440,15 +689,6 @@ abstract class App_Helpers extends Abstract_Helpers {
 	////////////////////////////////////////////////////////////
 
 	/**
-	 * Simple encryptions for data at rest ( emails etc )
-	 *
-	 * @param array  $data
-	 * @param int    $id
-	 * @param string $type
-	 *
-	 * @return string
-	 */
-	/**
 	 * Prefix marking the authenticated (AES-256-GCM) at-rest format. Legacy
 	 * blobs carry no prefix — they begin with a raw 16-byte IV — so this lets
 	 * decrypt_data() tell the two formats apart and stay backward compatible.
@@ -457,6 +697,15 @@ abstract class App_Helpers extends Abstract_Helpers {
 	 */
 	const ENCRYPTION_V2_PREFIX = 'uoa:v2:';
 
+	/**
+	 * Simple encryption for data at rest (emails etc).
+	 *
+	 * @param mixed  $data The data to encrypt.
+	 * @param int    $id   The record id the key is derived from.
+	 * @param string $type The data type the key is derived from.
+	 *
+	 * @return string
+	 */
 	public function encrypt_data( $data, $id, $type ) {
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Safe serialization for data at rest encryption
 		$serialized = serialize( $data );

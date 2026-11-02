@@ -31,6 +31,7 @@ class Tokens_Logger {
 			)
 		);
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Write to Automator's own table.
 		return $wpdb->insert(
 			$wpdb->prefix . 'uap_tokens_log',
 			array(

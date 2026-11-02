@@ -60,6 +60,7 @@ class Uoa_Helpers {
 
 		// post query arguments.
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Option list: reads only the ID and title columns; get_posts() would load every full post.
 		$results       = $wpdb->get_results( $wpdb->prepare( "SELECT ID, post_title, post_status FROM $wpdb->posts WHERE post_status IN ('publish', 'draft') AND post_type = %s ORDER BY post_title ASC", 'uo-recipe' ) );
 		$options       = array();
 		$options['-1'] = esc_attr__( 'Any recipe', 'uncanny-automator' );
@@ -80,6 +81,7 @@ class Uoa_Helpers {
 			//'custom_value_description' => esc_attr__( 'Recipe slug', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_get_recipes', $option );
 	}
 }

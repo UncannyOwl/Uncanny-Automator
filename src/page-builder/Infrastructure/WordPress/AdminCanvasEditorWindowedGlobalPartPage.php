@@ -94,12 +94,14 @@ final class AdminCanvasEditorWindowedGlobalPartPage
                 && $this->lockDialogRenderer instanceof EditorLockDialogRenderer
             ) {
                 echo '<div class="upb-canvas-editor-windowed-page__blocking-state">';
-                echo $this->lockDialogRenderer->blocked(
+                $blockedDialog = $this->lockDialogRenderer->blocked(
                     $this->ownership,
                     $selectedGlobalPartId,
                     'reusable',
                     'windowed',
                 );
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Dialog markup built by EditorLockDialogRenderer, which escapes every dynamic value.
+                echo $blockedDialog;
                 echo '</div>';
                 echo '</div>';
                 return;
@@ -110,6 +112,7 @@ final class AdminCanvasEditorWindowedGlobalPartPage
             echo '<div class="upb-canvas-editor-windowed-page__frame-stage">';
             echo '<iframe class="upb-canvas-editor-windowed-page__frame" src="' . esc_url($editorUrl) . '" title="' . esc_attr_x('Embedded Uncanny Page Builder manual editor', 'Page Builder', 'uncanny-automator') . '"></iframe>';
             echo '</div>';
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static inline script with no dynamic values; HTML escaping would break the JavaScript.
             echo $this->renderHostCanvasRefreshBridge();
             echo '</div>';
             return;
@@ -193,6 +196,7 @@ HTML;
 
     private function requestedCanvasId(): int
     {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
         return absint($_GET['canvas_id'] ?? 0);
     }
 

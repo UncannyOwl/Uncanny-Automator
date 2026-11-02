@@ -1,10 +1,8 @@
 <?php
-
-namespace Uncanny_Automator;
-
 /**
  * Advanced
- * Settings > General > Advanced
+ * Settings > Advanced > Background actions. Frozen since 8.0.0: nothing on
+ * this panel saves, so it has no form.
  *
  * @since   4.2
  * @version 4.2
@@ -12,40 +10,27 @@ namespace Uncanny_Automator;
  * @author  Ajay Verma.
  */
 
+namespace Uncanny_Automator;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 
-<form method="POST" action="options.php">
+<div class="uap-settings-panel">
 
-	<?php settings_fields( self::SETTINGSGROUP ); ?>
+	<div class="uap-settings-panel-top">
 
-	<div class="uap-settings-panel">
-
-		<div class="uap-settings-panel-top">
-
-			<div class="uap-settings-panel-title">
-				<?php esc_html_e( 'Background actions', 'uncanny-automator' ); ?>
-			</div>
-
-			<div class="uap-settings-panel-content">
-
-			<?php do_action( 'automator_settings_advanced_tab_view', self::SETTINGSGROUP ); ?>
-
-			</div>
+		<div class="uap-settings-panel-title">
+			<?php esc_html_e( 'Background actions', 'uncanny-automator' ); ?>
 		</div>
 
-		<div class="uap-settings-panel-bottom">
+		<div class="uap-settings-panel-content">
 
-			<div class="uap-settings-panel-bottom-left">
-				<uo-button type="submit">
-					<?php esc_html_e( 'Save settings', 'uncanny-automator' ); ?>
-				</uo-button>
-			<div>
+		<?php do_action( 'automator_settings_advanced_tab_view', self::SETTINGSGROUP ); ?>
 
 		</div>
+	</div>
 
-	</div><!--.uap-settings-panel-->
-
-</form>
-
-
-
+</div><!--.uap-settings-panel-->

@@ -14,6 +14,7 @@ use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Discovery_Ser
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
 use Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Discovery\Integration_Manifest_Resolver;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Block_Modifier_Types;
 
 /**
  * Merges data from complete.json feed with locally registered integrations.
@@ -121,57 +122,73 @@ class Integration_Feed_Registration_Merger {
 	 * @return array Merged integration data
 	 */
 	private function merge_standard( array $feed_entry, array $registered_data, string $code ) {
-		$feed_data        = $feed_entry['data'];
-		$feed_codes       = $feed_entry['item_codes'];
-		$registered_codes = $registered_data['item_codes'];
-		$discovery        = Integration_Discovery_Service::get_instance();
-		$item_types       = Integration_Item_Types::get_all();
+		$feed_data                 = $feed_entry['data'];
+		$feed_item_codes           = $feed_entry['item_codes'];
+		$feed_block_modifier_codes = $feed_entry['block_modifier_codes'];
+		$registered_item_codes     = $registered_data['item_codes'];
+		$registered_modifier_codes = $registered_data['block_modifier_codes'];
+		$discovery                 = Integration_Discovery_Service::get_instance();
+
+		$item_types           = array( Integration_Item_Types::TRIGGER, Integration_Item_Types::ACTION );
+		$block_modifier_types = Block_Modifier_Types::get_all();
 
 		// Step 1: Start with feed data.
 		$merged = $feed_data;
 
-		// Step 2: Check for missing items (in registration but not in feed).
-		$has_missing_items = false;
+		// Step 2: Check for missing entries (registered but not in feed).
+		$has_missing = false;
+
 		foreach ( $item_types as $type ) {
-
-			if ( Integration_Item_Types::CLOSURE === $type ) {
-				continue;
-			}
-
-			$missing_codes = array_diff( $registered_codes[ $type ], $feed_codes[ $type ] );
+			$missing_codes = array_diff( $registered_item_codes[ $type ], $feed_item_codes[ $type ] );
 			if ( ! empty( $missing_codes ) ) {
-				$has_missing_items = true;
-				// TODO @CURT - remove logging.
-				// error_log( sprintf( 'Feed_Registration_Merger: %s has missing %s codes - %s', $code, $type, implode( ', ', $missing_codes ) ) );
+				$has_missing = true;
 			}
 		}
 
-		// Step 3: Discover and add missing items on-demand.
-		if ( $has_missing_items ) {
+		foreach ( $block_modifier_types as $type ) {
+			$missing_codes = array_diff( $registered_modifier_codes[ $type ], $feed_block_modifier_codes[ $type ] );
+			if ( ! empty( $missing_codes ) ) {
+				$has_missing = true;
+			}
+		}
+
+		// Step 3: Discover and add missing entries on-demand.
+		if ( $has_missing ) {
 			$discovered_items = array(
-				Integration_Item_Types::TRIGGER          => $discovery->discover_triggers( $code, $feed_data['integration_name'] ),
-				Integration_Item_Types::ACTION           => $discovery->discover_actions( $code, $feed_data['integration_name'] ),
-				Integration_Item_Types::FILTER_CONDITION => $discovery->discover_conditions( $code, $feed_data['integration_name'] ),
-				Integration_Item_Types::LOOP_FILTER      => $discovery->discover_loop_filters( $code, $feed_data['integration_name'] ),
+				Integration_Item_Types::TRIGGER => $discovery->discover_triggers( $code, $feed_data['integration_name'] ),
+				Integration_Item_Types::ACTION  => $discovery->discover_actions( $code, $feed_data['integration_name'] ),
+			);
+
+			$discovered_modifiers = array(
+				Block_Modifier_Types::FILTER_CONDITION => $discovery->discover_conditions( $code, $feed_data['integration_name'] ),
+				Block_Modifier_Types::LOOP_FILTER      => $discovery->discover_loop_filters( $code, $feed_data['integration_name'] ),
 			);
 
 			foreach ( $item_types as $type ) {
-
-				if ( Integration_Item_Types::CLOSURE === $type ) {
-					continue;
-				}
-
-				$type_key = Integration_Item_Types::FILTER_CONDITION === $type
-					? 'integration_conditions'
-					: 'integration_' . $type . 's';
-
+				$type_key            = 'integration_' . $type . 's';
 				$merged[ $type_key ] = $merged[ $type_key ] ?? array();
-				$missing_codes       = array_diff( $registered_codes[ $type ], $feed_codes[ $type ] );
+				$missing_codes       = array_diff( $registered_item_codes[ $type ], $feed_item_codes[ $type ] );
 
 				foreach ( $missing_codes as $missing_code ) {
 					$item = $this->find_item_by_code( $discovered_items[ $type ], $missing_code );
 					if ( $item ) {
 						$merged[ $type_key ][] = $item;
+					}
+				}
+			}
+
+			foreach ( $block_modifier_types as $type ) {
+				$type_key = Block_Modifier_Types::FILTER_CONDITION === $type
+					? 'integration_conditions'
+					: 'integration_loop_filters';
+
+				$merged[ $type_key ] = $merged[ $type_key ] ?? array();
+				$missing_codes       = array_diff( $registered_modifier_codes[ $type ], $feed_block_modifier_codes[ $type ] );
+
+				foreach ( $missing_codes as $missing_code ) {
+					$modifier = $this->find_item_by_code( $discovered_modifiers[ $type ], $missing_code );
+					if ( $modifier ) {
+						$merged[ $type_key ][] = $modifier;
 					}
 				}
 			}

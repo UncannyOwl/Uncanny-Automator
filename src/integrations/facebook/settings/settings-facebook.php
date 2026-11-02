@@ -120,14 +120,16 @@ class Facebook_Settings extends App_Integration_Settings {
 	}
 
 	/**
-	 * Before Authorized Account Disconnect.
+	 * Once the platform confirmed the disconnect (handoff R8): remove the vault
+	 * entry on the API proxy and the legacy options. Errors are ignored and the
+	 * deletes are idempotent, so it is safe to run twice.
 	 *
 	 * @param array $response The current response array.
 	 * @param array $data The posted data.
 	 *
 	 * @return array The response array.
 	 */
-	protected function before_disconnect( $response = array(), $data = array() ) {
+	protected function after_platform_disconnect( $response = array(), $data = array() ) {
 		$this->facebook_bridge->disconnect( $this->api );
 		return $response;
 	}
@@ -242,7 +244,7 @@ class Facebook_Settings extends App_Integration_Settings {
 									'type' => 'icon',
 									'data' => array(
 										'integration' => 'FACEBOOK',
-										'size'        => 'small',
+										'size'        => 'sm',
 									),
 								),
 							),

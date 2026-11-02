@@ -63,6 +63,36 @@ class Filter_Condition_Discoverer extends Integration_Item_Discoverer {
 	}
 
 	/**
+	 * The requires_user_data a registered condition's catalog row carries, read
+	 * through the derivation discover() applies.
+	 *
+	 * Searches the integration's list, as discover() does: the single-condition
+	 * lookup also builds the condition's fields.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string $integration_code Owning integration code.
+	 * @param string $code             Condition code.
+	 *
+	 * @return bool|null Null when the condition is not registered in this request.
+	 */
+	public function registered_requires_user_data( string $integration_code, string $code ): ?bool {
+		$result = $this->condition_registry->list_conditions( array( 'integration' => $integration_code ) );
+
+		if ( is_wp_error( $result ) ) {
+			return null;
+		}
+
+		foreach ( $result['conditions'] as $condition ) {
+			if ( $code === $condition['condition_code'] ) {
+				return $this->requires_user_data( $condition, 'filter_condition' );
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * Get condition code.
 	 *
 	 * @param array $item Condition data

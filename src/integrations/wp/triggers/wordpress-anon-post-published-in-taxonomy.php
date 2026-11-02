@@ -34,9 +34,9 @@ class ANON_WP_POST_PUBLISHED_IN_TAXONOMY extends \Uncanny_Automator\Recipe\Trigg
 	protected function setup_trigger() {
 		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 		$this->set_is_login_required( false );
-		// translators: %1$s Post type, %2$s Taxonomy term, %3$s Taxonomy.
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Post type, %2$s: Taxonomy term, %3$s: Taxonomy */
 				esc_html_x( '{{A type of post:%1$s}} with {{a taxonomy term:%2$s}} in {{a taxonomy:%3$s}} is published', 'WordPress', 'uncanny-automator' ),
 				$this->get_trigger_meta(),
 				'WPTAXONOMYTERM:' . $this->get_trigger_meta(),

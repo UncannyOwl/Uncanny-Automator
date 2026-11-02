@@ -18,6 +18,7 @@ class Litespeed_Cache_Helpers {
 	 * @return void
 	 */
 	public function purge_all_caches() {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- LiteSpeed Cache's own hook.
 		do_action( 'litespeed_purge_all' );
 	}
 
@@ -29,6 +30,7 @@ class Litespeed_Cache_Helpers {
 	 * @return void
 	 */
 	public function purge_url_cache( $url ) {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- LiteSpeed Cache's own hook.
 		do_action( 'litespeed_purge_url', $url );
 	}
 
@@ -40,6 +42,7 @@ class Litespeed_Cache_Helpers {
 	 * @return void
 	 */
 	public function purge_post_cache( $post_id ) {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- LiteSpeed Cache's own hook.
 		do_action( 'litespeed_purge_post', $post_id );
 	}
 }

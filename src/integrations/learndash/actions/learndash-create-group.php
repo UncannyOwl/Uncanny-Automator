@@ -160,6 +160,7 @@ class LD_CREATEGROUP extends \Uncanny_Automator\Recipe\Action {
 
 		$ld_group_args = array(
 			'post_type'    => 'groups',
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 			'post_status'  => apply_filters( 'uo_create_new_group_status', 'publish' ),
 			'post_title'   => $group_title,
 			'post_content' => '',

@@ -78,10 +78,13 @@ class Integration_Registry_Service {
 	/**
 	 * Check if integration exists.
 	 *
+	 * Parameter left unhinted deliberately — under strict_types the cast is what
+	 * tolerates a loose caller that a `string` hint would reject.
+	 *
 	 * @param string $code The integration code
 	 * @return bool True if integration exists
 	 */
-	public function has_integration( $code ) {
+	public function has_integration( $code ): bool {
 		return $this->integrations()->has_integration( (string) $code );
 	}
 

@@ -77,10 +77,10 @@ class Armember_Helpers {
 			'supports_custom_value' => $args['supports_custom_value'],
 			'relevant_tokens'       => array(),
 			'options'               => $options,
-			'options_show_id'       => apply_filters( 'automator_options_show_id', true, $this ),
+			'options_show_id'       => apply_filters( 'automator_options_show_id', false, $this ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_get_all_plans', $option );
 	}
-
 }

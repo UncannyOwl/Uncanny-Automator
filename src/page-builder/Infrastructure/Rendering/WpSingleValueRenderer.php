@@ -986,6 +986,7 @@ final class WpSingleValueRenderer implements SectionRendererInterface
     private function markPageAsNonCacheable(): void
     {
         if (!\defined('DONOTCACHEPAGE')) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Cache plugins' shared constant.
             \define('DONOTCACHEPAGE', true);
         }
     }

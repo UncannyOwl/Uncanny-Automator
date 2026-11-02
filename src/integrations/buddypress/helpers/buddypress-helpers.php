@@ -77,14 +77,12 @@ class Buddypress_Helpers {
 				$options[- 1] = $args['uo_any_label'];
 			}
 
-			if ( $wpdb->query( $qry ) ) { // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-				// Previous solution was not preparing correct query.
-				$in_str_arr = array_fill( 0, count( $args['status'] ), '%s' );
-				$in_str     = join( ',', $in_str_arr );
-
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Checks that BuddyPress's groups table exists; a schema read that must not be cached.
+			if ( $wpdb->query( $qry ) ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- BuddyPress's own table; the plugin offers no API for this query.
 				$results = $wpdb->get_results(
 					$wpdb->prepare(
-						"SELECT * FROM {$wpdb->prefix}bp_groups WHERE status IN ($in_str)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+						"SELECT * FROM {$wpdb->prefix}bp_groups WHERE status IN (" . implode( ',', array_fill( 0, count( $args['status'] ), '%s' ) ) . ')',
 						$args['status']
 					)
 				);
@@ -106,6 +104,7 @@ class Buddypress_Helpers {
 			'custom_value_description' => _x( 'Group ID', 'BuddyPress', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_buddypress_groups', $option );
 	}
 
@@ -152,6 +151,7 @@ class Buddypress_Helpers {
 			'custom_value_description' => esc_attr__( 'User ID', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_buddypress_users', $option );
 	}
 

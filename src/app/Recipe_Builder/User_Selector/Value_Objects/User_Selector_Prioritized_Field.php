@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\User_Selector\Value_Objects;
 
@@ -45,8 +44,8 @@ class User_Selector_Prioritized_Field {
 			throw new \InvalidArgumentException(
 				sprintf(
 					'User selector prioritized field must be one of: %s. Given: %s',
-					implode( ', ', self::$allowed_values ),
-					$value
+					esc_html( implode( ', ', self::$allowed_values ) ),
+					esc_html( $value )
 				)
 			);
 		}

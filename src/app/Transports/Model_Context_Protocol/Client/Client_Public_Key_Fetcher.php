@@ -18,6 +18,8 @@ use WP_Error;
  */
 class Client_Public_Key_Fetcher {
 
+	private const MAX_RESPONSE_BYTES = 16384;
+
 	/**
 	 * HTTP client callback.
 	 *
@@ -39,7 +41,7 @@ class Client_Public_Key_Fetcher {
 	 * @param callable|null $logger    Logger callback.
 	 */
 	public function __construct( ?callable $http_post = null, ?callable $logger = null ) {
-		$this->http_post = $http_post ? $http_post : 'wp_remote_post';
+		$this->http_post = $http_post ? $http_post : 'wp_safe_remote_post';
 		$this->logger    = $logger;
 	}
 
@@ -61,9 +63,12 @@ class Client_Public_Key_Fetcher {
 			$this->http_post,
 			trailingslashit( $base_url ) . 'api/public-key',
 			array(
-				'timeout' => 15,
-				'headers' => array( 'Content-Type' => 'application/json' ),
-				'body'    => wp_json_encode( $license_data ),
+				'timeout'             => 15,
+				'redirection'         => 0,
+				'reject_unsafe_urls'  => true,
+				'limit_response_size' => self::MAX_RESPONSE_BYTES,
+				'headers'             => array( 'Content-Type' => 'application/json' ),
+				'body'                => wp_json_encode( $license_data ),
 			)
 		);
 

@@ -200,6 +200,7 @@ class Gemini_Chat_Generate extends App_Action {
 		$user_content_arr   = $this->build_gemini_user_content( $prompt );
 
 		$payload = $payload_builder
+			// phpcs:ignore PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- The site owner connects their own Gemini account; this integration calls the provider's API for them.
 			->endpoint( 'https://generativelanguage.googleapis.com/v1beta/models/' . $model . ':generateContent' )
 			->body( 'system_instruction', $system_content_obj )
 			->body( 'contents', $user_content_arr )

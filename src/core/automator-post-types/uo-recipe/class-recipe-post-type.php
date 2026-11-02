@@ -45,7 +45,7 @@ class Recipe_Post_Type {
 	public function uo_recipe_plain_permalink_notice() {
 		?>
 		<div class="uap notice notice-error" style="padding:0">
-			<uo-alert type="error" no-radius>
+			<uas-alert type="error" no-radius>
 				<strong>
 					<?php
 					echo wp_kses(
@@ -68,7 +68,7 @@ class Recipe_Post_Type {
 					);
 					?>
 				</strong>
-			</uo-alert>
+			</uas-alert>
 		</div>
 		<?php
 	}
@@ -90,7 +90,7 @@ class Recipe_Post_Type {
 				'archives'              => 'Recipe Archives',
 				'attributes'            => 'Recipe Attributes',
 				'parent_item_colon'     => 'Parent Recipe:',
-				'all_items'             => esc_attr__( 'All recipes', 'uncanny-automator' ),
+				'all_items'             => esc_attr__( 'Recipes', 'uncanny-automator' ),
 				/* translators: Non-personal infinitive verb */
 				'add_new_item'          => esc_attr__( 'Add new recipe', 'uncanny-automator' ),
 				/* translators: Non-personal infinitive verb */
@@ -122,7 +122,8 @@ class Recipe_Post_Type {
 				'label'               => esc_attr__( 'Recipe', 'uncanny-automator' ),
 				'description'         => 'Uncanny WordPress Automation',
 				'labels'              => $labels,
-				'supports'            => array( 'title', 'author' ),
+				// Title support is intentionally omitted: the recipe title is edited in the recipe builder UI, not the native WordPress title field. The post_title column and the recipe REST endpoints are unaffected.
+				'supports'            => array( 'author' ),
 				'hierarchical'        => false,
 				'public'              => false,
 				'show_ui'             => true,
@@ -135,7 +136,7 @@ class Recipe_Post_Type {
 				'taxonomies'          => array( 'recipe_category', 'recipe_tag' ),
 				'has_archive'         => false,
 				'exclude_from_search' => true,
-				'publicly_queryable'  => true,
+				'publicly_queryable'  => false,
 				'capabilities'        => array(
 					'publish_posts'       => automator_get_capability(),
 					'edit_posts'          => automator_get_capability(),

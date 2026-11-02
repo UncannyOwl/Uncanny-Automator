@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects;
 
@@ -41,13 +40,6 @@ class Recipe_Notes {
 	private function validate( $value ) {
 		if ( ! is_string( $value ) && ! is_null( $value ) ) {
 			throw new \InvalidArgumentException( 'Notes must be a string' );
-		}
-
-		if ( is_string( $value ) ) {
-			// Domain validation: Enforce length limits
-			if ( strlen( $value ) > 10000 ) {
-				throw new \InvalidArgumentException( 'Recipe notes must not exceed 10,000 characters' );
-			}
 		}
 	}
 }

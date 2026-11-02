@@ -430,18 +430,18 @@ final class SectionNodeUpdateService
     private function assertNodeIsNotBindingOwned(DOMNode $node, DOMElement $root, string $message): void
     {
         if ($this->isInsideDynamicBindingSubtree($node, $root)) {
-            throw new \InvalidArgumentException($message);
+            throw new \InvalidArgumentException(esc_html($message));
         }
     }
 
     private function assertCanPlaceRelativeToBinding(DOMElement $target, DOMElement $root, string $placement, string $message): void
     {
         if ($this->isInsideDynamicBindingSubtree($target, $root)) {
-            throw new \InvalidArgumentException($message);
+            throw new \InvalidArgumentException(esc_html($message));
         }
 
         if (in_array($placement, ['prepend', 'append'], true) && $this->isDynamicBindingRoot($target)) {
-            throw new \InvalidArgumentException($message);
+            throw new \InvalidArgumentException(esc_html($message));
         }
     }
 

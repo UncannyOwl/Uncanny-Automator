@@ -2,6 +2,10 @@
 
 namespace Uncanny_Automator\Migrations;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Sample_Migration.
  *

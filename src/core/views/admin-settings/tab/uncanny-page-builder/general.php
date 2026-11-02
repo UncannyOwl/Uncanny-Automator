@@ -10,6 +10,10 @@
 
 namespace Uncanny_Automator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 ?>
 
 <form method="POST">
@@ -35,11 +39,11 @@ namespace Uncanny_Automator;
 			<div class="uap-settings-panel-content">
 
 				<div class="uap-field uap-spacing-top--small">
-					<?php echo esc_html_x( 'Uncanny Page Builder is an AI page builder that runs on Uncanny Agent. Describe the page you need and Uncanny Agent builds it. Refine it through conversation, or fine-tune text and images right in the editor. Every page is clean HTML and CSS with no lock-in, so your pages stay yours.', 'page builder feature description', 'uncanny-automator' ); ?>
+					<?php echo esc_html_x( 'Your AI builds and updates pages in the page builder you already use: Gutenberg, Spectra, Elementor, Divi or WPBakery. No page builder? Uncanny Page Builder is built in: fast, light and AI-native. Describe the page you want and your AI designs the layout, writes the content and builds it in clean HTML and CSS that you own.', 'page builder feature description', 'uncanny-automator' ); ?>
 				</div>
 
 				<div class="uap-field uap-spacing-top">
-					<?php echo esc_html_x( "If you don't want to use Uncanny Page Builder, you may disable it below. This removes the Page Builder menu from the sidebar and the Uncanny Page Builder launcher button from the WordPress post editor. Pages already built with Uncanny Page Builder are unaffected by this setting and remain editable with Uncanny Agent.", 'page builder setting description', 'uncanny-automator' ); ?>
+					<?php echo esc_html_x( 'Switch Uncanny Page Builder on to add the Page Builder menu to the sidebar and its launcher button to the WordPress post editor. Pages already built with Uncanny Page Builder are unaffected by this setting and remain editable.', 'page builder setting description', 'uncanny-automator' ); ?>
 				</div>
 
 				<div class="uap-field uap-spacing-top">

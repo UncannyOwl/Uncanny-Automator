@@ -28,6 +28,13 @@ final class Action_Manager {
 	const OAUTH_CALLBACK_ACTION = 'automator_oauth_callback';
 
 	/**
+	 * Session locks held by this request; MySQL advisory locks otherwise allow re-entry.
+	 *
+	 * @var array<string, true>
+	 */
+	private static $oauth_key_locks = array();
+
+	/**
 	 * Constructor
 	 *
 	 * @return void
@@ -412,18 +419,25 @@ final class Action_Manager {
 	 *
 	 * @param string $integration_id
 	 * @return string The encryption key
+	 * @throws Exception When the session is busy or its key cannot be stored.
 	 */
 	public function get_oauth_key( $integration_id ) {
-		// Generate a secure random key for encryption (16 bytes for AES-128)
-		$encryption_key = bin2hex( random_bytes( 16 ) );
-		// Use the user ID to store the key in a transient.
-		$transient_key = sprintf( 'automator_oauth_key_%s_%d', $integration_id, get_current_user_id() );
-		set_transient( $transient_key, $encryption_key, MINUTE_IN_SECONDS * 5 );
-		return $encryption_key;
+		return $this->with_oauth_key_lock(
+			$integration_id,
+			static function ( $transient_key ) {
+				$encryption_key = bin2hex( random_bytes( 16 ) );
+				if ( ! set_transient( $transient_key, $encryption_key, MINUTE_IN_SECONDS * 5 ) ) {
+					throw new Exception( esc_html_x( 'Could not start the connection. Please try again.', 'Integration settings', 'uncanny-automator' ) );
+				}
+				return $encryption_key;
+			}
+		);
 	}
 
 	/**
 	 * Validate the OAuth session and return the decoded credentials
+	 *
+	 * The session ends once its message decodes, so a return link is used once.
 	 *
 	 * @param string $integration_id
 	 * @return array decoded credentials
@@ -435,19 +449,69 @@ final class Action_Manager {
 			throw new Exception( 'Invalid request' );
 		}
 
-		// Get the encryption key.
-		$transient_key  = sprintf( 'automator_oauth_key_%s_%d', $integration_id, get_current_user_id() );
-		$encryption_key = get_transient( $transient_key );
-		if ( empty( $encryption_key ) ) {
-			throw new Exception( 'OAuth session expired, please try again.' );
+		return $this->with_oauth_key_lock(
+			$integration_id,
+			function ( $transient_key ) {
+				$encryption_key = get_transient( $transient_key );
+				if ( empty( $encryption_key ) ) {
+					throw new Exception( esc_html_x( 'OAuth session expired, please try again.', 'Integration settings', 'uncanny-automator' ) );
+				}
+
+				$automator_message = automator_filter_has_var( 'automator_api_message' )
+					? sanitize_text_field( automator_filter_input( 'automator_api_message' ) )
+					: null;
+				$credentials       = $this->decode_oauth_response( $automator_message, $encryption_key );
+
+				// Failed decodes leave the key intact. Successful ones must consume it before returning credentials.
+				if ( ! delete_transient( $transient_key ) ) {
+					throw new Exception( esc_html_x( 'OAuth session expired, please try again.', 'Integration settings', 'uncanny-automator' ) );
+				}
+
+				return $credentials;
+			}
+		);
+	}
+
+	/**
+	 * Serialize Connect and callback operations for the same user, app and site.
+	 *
+	 * Advisory locks have no expiring lease and are released if the database connection closes.
+	 * No provider request runs while the lock is held. A contender retries through the settings page.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param string   $integration_id App settings ID.
+	 * @param callable $operation Operation receiving the transient name.
+	 * @return mixed The operation's result.
+	 * @throws Exception When another operation owns the session or the lock cannot be acquired.
+	 */
+	private function with_oauth_key_lock( $integration_id, callable $operation ) {
+		global $wpdb;
+
+		$transient_key = sprintf( 'automator_oauth_key_%s_%d', $integration_id, get_current_user_id() );
+		$lock_name     = 'automator_oauth_' . substr( hash( 'sha256', DB_NAME . ':' . $wpdb->options . ':' . $transient_key ), 0, 48 );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- A connection-owned mutex must be acquired directly, never cached.
+		$acquired = ! isset( self::$oauth_key_locks[ $lock_name ] ) && '1' === $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 0)', $lock_name ) );
+		if ( ! $acquired ) {
+			throw new Exception( esc_html_x( 'A connection for this app is already being processed. Please try again.', 'Integration settings', 'uncanny-automator' ) );
 		}
 
-		// Get the OAuth message
-		$automator_message = automator_filter_has_var( 'automator_api_message' )
-			? sanitize_text_field( automator_filter_input( 'automator_api_message' ) )
-			: null;
-
-		return $this->decode_oauth_response( $automator_message, $encryption_key );
+		self::$oauth_key_locks[ $lock_name ] = true;
+		try {
+			if ( wp_using_ext_object_cache() ) {
+				// Refresh any request-local cache from the shared cache after acquiring the lock.
+				wp_cache_get( $transient_key, 'transient', true );
+			} else {
+				wp_cache_delete( '_transient_' . $transient_key, 'options' );
+				wp_cache_delete( '_transient_timeout_' . $transient_key, 'options' );
+				wp_cache_delete( 'notoptions', 'options' );
+			}
+			return $operation( $transient_key );
+		} finally {
+			unset( self::$oauth_key_locks[ $lock_name ] );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Release this connection's mutex on success and every exception path.
+			$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $lock_name ) );
+		}
 	}
 
 	/**

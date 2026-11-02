@@ -2,6 +2,10 @@
 
 namespace Uncanny_Automator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Admin_Settings_General_Logs
  *
@@ -26,13 +30,13 @@ class Admin_Settings_General_Logs {
 		// Add the tab using the filter
 		add_filter(
 			'automator_settings_general_tabs',
-			function( $tabs ) {
+			function ( $tabs ) {
 				// General
 				$tabs['logs'] = (object) array(
 					'name'     => esc_html__( 'Data management', 'uncanny-automator' ),
 					'function' => array( $this, 'tab_output' ),
 					'preload'  => false, // Determines if the content should be loaded even if the tab is not selected
-					'icon'     => 'th-list',
+					'icon'     => 'list-radio',
 				);
 
 				return $tabs;

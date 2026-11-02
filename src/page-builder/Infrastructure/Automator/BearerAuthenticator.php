@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Infrastructure\Automator;
 
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Token_Manager;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Rest\Rest_Request_Scope;
 
 final class BearerAuthenticator
 {
@@ -46,7 +47,10 @@ final class BearerAuthenticator
      */
     public function hasBearerCredentials(\WP_REST_Request $request): bool
     {
-        return preg_match('/^Bearer\s+(.+)$/i', $this->bearerHeader($request)) === 1;
+        return preg_match('/^Bearer\s+(.+)$/i', $this->bearerHeader($request)) === 1
+            || (class_exists(Rest_Request_Scope::class)
+                && method_exists(Rest_Request_Scope::class, 'current_context_for_request')
+                && Rest_Request_Scope::current_context_for_request($request) !== null);
     }
 
     private function bearerHeader(\WP_REST_Request $request): string

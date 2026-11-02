@@ -10,6 +10,7 @@ use UncannyPageBuilder\Application\DesignStandardsService;
 use UncannyPageBuilder\Application\PageJavaScriptRuntimeService;
 use UncannyPageBuilder\Application\SectionService;
 use UncannyPageBuilder\Application\ShellModeService;
+use UncannyPageBuilder\Domain\ArrayShape;
 use UncannyPageBuilder\Domain\Concurrency\SourceGenerationSnapshot;
 use UncannyPageBuilder\Domain\Concurrency\SourceGenerationStoreInterface;
 use UncannyPageBuilder\Domain\Exception\StaleSourceGenerationException;
@@ -71,8 +72,8 @@ final class BuildPageArtifact implements PageArtifactBuilderInterface
             ) {
                 throw new StaleSourceGenerationException(
                     'page',
-                    $expectedPageGeneration,
-                    $capturedPageGeneration,
+                    (int) $expectedPageGeneration,
+                    (int) $capturedPageGeneration,
                 );
             }
             $state = $this->states->findForPage($pageId);
@@ -153,15 +154,15 @@ final class BuildPageArtifact implements PageArtifactBuilderInterface
         if ($currentPageGeneration !== $capturedPageGeneration) {
             throw new StaleSourceGenerationException(
                 'page',
-                $capturedPageGeneration,
-                $currentPageGeneration,
+                (int) $capturedPageGeneration,
+                (int) $currentPageGeneration,
             );
         }
 
         throw new StaleSourceGenerationException(
             'global',
-            $lastSnapshot?->globalGeneration() ?? 0,
-            $this->sourceGenerations->globalGeneration(),
+            (int) ($lastSnapshot?->globalGeneration() ?? 0),
+            (int) $this->sourceGenerations->globalGeneration(),
         );
     }
 
@@ -183,8 +184,10 @@ final class BuildPageArtifact implements PageArtifactBuilderInterface
         $safety = $export->staticRenderingReport();
         if (!$safety->isSafe()) {
             throw PagePublicationFailed::staticSafetyFailed(
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Structured report records go to the exception details, not its message.
                 $safety->records(),
-                $safety->message(),
+                // Strips markup without encoding: wp_kses() would turn & into &amp; in a binding source URL.
+                wp_strip_all_tags($safety->message()), // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned as JSON text, never rendered as HTML.
             );
         }
 
@@ -301,7 +304,7 @@ final class BuildPageArtifact implements PageArtifactBuilderInterface
     {
         $artifact = $export->artifact($path);
         if (!$artifact instanceof StaticExportArtifact) {
-            throw new \RuntimeException(sprintf('Page artifact output is missing: %s', $path));
+            throw new \RuntimeException(sprintf('Page artifact output is missing: %s', esc_html($path)));
         }
 
         return $artifact;
@@ -334,12 +337,12 @@ final class BuildPageArtifact implements PageArtifactBuilderInterface
         $runtime = $dependencies['public_runtime_manifest'] ?? null;
         $assets = is_array($runtime) ? ($runtime['assets'] ?? null) : null;
 
-        if (!is_array($assets) || $assets === [] || array_is_list($assets)) {
+        if (!is_array($assets) || $assets === [] || ArrayShape::isList($assets)) {
             throw new \RuntimeException('Page artifact output is missing its public runtime manifest.');
         }
 
         $fonts = $dependencies['font_assets'] ?? [];
-        if (!is_array($fonts) || ($fonts !== [] && array_is_list($fonts))) {
+        if (!is_array($fonts) || ($fonts !== [] && ArrayShape::isList($fonts))) {
             throw new \RuntimeException('Page artifact output contains an invalid font manifest.');
         }
 
@@ -377,7 +380,7 @@ final class BuildPageArtifact implements PageArtifactBuilderInterface
                 'status' => 'failed',
                 'code' => 'deactivation_fallback_contract_mismatch',
                 'source' => 'deactivation_fallback',
-                'field' => $field,
+                'field' => esc_html($field),
                 'message' => 'The deactivation fallback does not match the coherent publication export.',
             ]],
             'The deactivation fallback does not match the publication output.',

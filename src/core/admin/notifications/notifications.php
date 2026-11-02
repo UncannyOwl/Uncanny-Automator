@@ -67,7 +67,7 @@ class Automator_Notifications {
 	 */
 	public function hooks() {
 
-		add_action( 'wp_ajax_automator_notification_dismiss', array( $this, 'dismiss' ) );
+		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
 
 		add_action( 'automator_admin_notifications_update', array( $this, 'update' ) );
 
@@ -458,22 +458,44 @@ class Automator_Notifications {
 	}
 
 	/**
-	 * Dismiss notification via AJAX.
+	 * Register the notifications REST routes.
 	 *
 	 * @since 3.9.1.2
 	 */
-	public function dismiss() {
+	public function register_rest_routes() {
 
-		// Run a security check.
-		if ( ! wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
-			return;
-		}
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/notifications/dismiss/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'dismiss' ),
+				'permission_callback' => array( $this, 'has_access' ),
+				'args'                => array(
+					'id' => array(
+						'required' => true,
+						'type'     => 'string',
+					),
+				),
+			)
+		);
+	}
 
-		$notification_id = automator_filter_input( 'id', INPUT_POST );
+	/**
+	 * Dismiss notification via REST.
+	 *
+	 * @param \WP_REST_Request $request The request.
+	 *
+	 * @return \WP_REST_Response
+	 * @since {VERSION}
+	 */
+	public function dismiss( $request ) {
 
-		// Check for access and required param.
-		if ( ! $this->has_access() || empty( $notification_id ) ) {
-			wp_send_json_error();
+		$notification_id = $request->get_param( 'id' );
+
+		// Check for the required param.
+		if ( empty( $notification_id ) ) {
+			return new \WP_REST_Response( array( 'success' => false ), 400 );
 		}
 
 		$id = sanitize_text_field( wp_unslash( $notification_id ) );
@@ -513,7 +535,7 @@ class Automator_Notifications {
 
 		automator_update_option( $this->option_name, $option, true );
 
-		wp_send_json_success();
+		return new \WP_REST_Response( array( 'success' => true ), 200 );
 	}
 
 	/**

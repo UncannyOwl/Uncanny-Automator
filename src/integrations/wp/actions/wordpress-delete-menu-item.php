@@ -22,6 +22,7 @@ class WP_DELETE_MENU_ITEM extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Menu item */
 				esc_html_x( 'Delete {{an item:%1$s}} from a menu', 'WordPress', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)

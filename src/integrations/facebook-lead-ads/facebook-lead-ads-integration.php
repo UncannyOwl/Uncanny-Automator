@@ -5,6 +5,11 @@ namespace Uncanny_Automator\Integrations\Facebook_Lead_Ads;
 use Uncanny_Automator\App_Integrations\App_Integration;
 use Exception;
 
+use function Uncanny_Automator\App\Infrastructure\automator_connection_registry;
+use function Uncanny_Automator\App\Infrastructure\automator_disconnect_service;
+use function Uncanny_Automator\App\Infrastructure\automator_platform_connections_api;
+use function Uncanny_Automator\App\Infrastructure\automator_platform_site_registration;
+
 /**
  * Class Facebook_Lead_Ads_Integration
  *
@@ -73,24 +78,55 @@ class Facebook_Lead_Ads_Integration extends App_Integration {
 	}
 
 	/**
+	 * Build the parts that move each connected page to signed lead delivery.
+	 *
+	 * @return void
+	 */
+	protected function register_dependencies() {
+
+		$connections  = new Facebook_Lead_Ads_Page_Connections( automator_connection_registry() );
+		$subscription = new Facebook_Lead_Ads_Page_Subscription( $this->dependencies->api, $this->helpers, $connections, automator_disconnect_service() );
+
+		$this->set_dependency( 'page_connections', $connections );
+		$this->set_dependency( 'page_subscription', $subscription );
+		$this->set_dependency( 'lead_dedup', new Facebook_Lead_Ads_Lead_Dedup() );
+		$this->set_dependency(
+			'page_adoption',
+			new Facebook_Lead_Ads_Page_Adoption( automator_platform_connections_api(), automator_platform_site_registration(), $this->helpers, $connections, $subscription )
+		);
+	}
+
+	/**
 	 * Register hooks.
 	 *
 	 * @return void
 	 */
 	public function register_hooks() {
+
+		// Subscribes a page's connection that got a new connection id (R6).
+		$this->dependencies->page_subscription->register();
+
+		// Moves each connected page to signed lead delivery, owed until done.
+		$this->dependencies->page_adoption->register();
+
+		// Turns each signed lead the platform delivers into the trigger's hook.
+		// Attached whether or not the integration is connected, as the inbox
+		// may drain a lead delivered before a disconnect.
+		( new Facebook_Lead_Ads_Event_Fanout( $this->dependencies->lead_dedup, $this->dependencies->page_adoption ) )->register();
+
+		// Removes expired lead claims daily.
+		$this->dependencies->lead_dedup->register();
+
 		// Register AJAX handlers for recipe builder.
 		add_action(
 			'wp_ajax_automator_facebook_lead_ads_forms_handler',
 			array( $this->helpers, 'forms_handler_ajax' )
 		);
 
-		// Register token analysis for form field caching.
-		add_action(
-			'automator_recipe_before_update',
-			array( $this->helpers, 'analyze_tokens' ),
-			10,
-			2
-		);
+		// Cache the picked form's questions when the trigger is added or its page or form changes.
+		add_action( 'automator_event_trigger_created', array( $this->helpers, 'cache_form_fields' ) );
+		add_action( 'automator_event_trigger_fields_changed', array( $this->helpers, 'cache_form_fields' ) );
+		add_action( 'automator_event_trigger_status_changed', array( $this->helpers, 'cache_form_fields' ) );
 
 		// Register legacy endpoints.
 		add_action(

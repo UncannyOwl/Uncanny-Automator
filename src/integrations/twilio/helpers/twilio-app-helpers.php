@@ -5,6 +5,10 @@ namespace Uncanny_Automator\Integrations\Twilio;
 use Uncanny_Automator\App_Integrations\App_Helpers;
 use WP_Error;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Twilio_App_Helpers
  *

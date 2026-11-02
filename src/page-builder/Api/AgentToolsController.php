@@ -18,7 +18,7 @@ use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
  */
 final class AgentToolsController
 {
-    private const SCHEMA_VERSION = '1';
+    private const SCHEMA_VERSION = AgentToolRegistryAdapter::SCHEMA_VERSION;
 
     public function __construct(
         private readonly PermissionChecker $permissions,

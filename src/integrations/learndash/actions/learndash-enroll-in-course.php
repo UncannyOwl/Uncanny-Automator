@@ -24,6 +24,7 @@ class LD_ENRLCOURSE_A extends \Uncanny_Automator\Recipe\Action {
 
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Course */
 				esc_html_x( 'Enroll the user in {{a course:%1$s}}', 'LearnDash', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)

@@ -17,7 +17,6 @@
         "All Subscriptions": "Wszystkie subskrypcje",
         "All Topics": "Wszystkie tematy",
         "All Users": "Wszyscy użytkownicy",
-        "All integrations": "Wszystkie integracje",
         "All recipes": "Wszystkie przepisy",
         "App integrations": "Integracje aplikacji",
         "Assignments": "Zadania",
@@ -76,26 +75,6 @@
         "Automator.Addons.5": {
             "Starter": "Zaplanuj konfigurację dodatku",
             "Prompt": "Pomóż mi zaplanować instalację i konfigurację dodatku. Zapytaj, jaki przepływ pracy chcę zautomatyzować, a następnie zasugeruj kolejne kroki."
-        },
-        "Automator.All integrations.1": {
-            "Starter": "Polecaj integracje",
-            "Prompt": "Przejrzyj moje zainstalowane wtyczki i połączone integracje aplikacji, a następnie zasugeruj integracje Automator najbardziej odpowiednie dla mojej witryny."
-        },
-        "Automator.All integrations.2": {
-            "Starter": "Znajdź szanse na automatyzację",
-            "Prompt": "Zasugeruj przydatne pomysły na automatyzację na podstawie moich zainstalowanych wtyczek i połączonych integracji aplikacji."
-        },
-        "Automator.All integrations.3": {
-            "Starter": "Wyjaśnij integrację",
-            "Prompt": "Zapytaj, którą integracją jestem zainteresowany, a następnie wyjaśnij, jakie przepisy może odblokować."
-        },
-        "Automator.All integrations.4": {
-            "Starter": "Znajdź brakujące integracje",
-            "Prompt": "Porównaj moje zainstalowane wtyczki i połączone aplikacje z dostępnymi integracjami Automator, a następnie wskaż wszystko, co mogę potrzebować zainstalować, połączyć lub zaktualizować."
-        },
-        "Automator.All integrations.5": {
-            "Starter": "Buduj z integracją",
-            "Prompt": "Pomóż mi wybrać integrację Automator i przekształcić ją w przydatny pomysł na przepis dla mojej witryny."
         },
         "Automator.All recipes.1": {
             "Starter": "Pokaż moje najczęściej używane przepisy",

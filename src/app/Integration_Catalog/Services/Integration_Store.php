@@ -11,6 +11,7 @@
 namespace Uncanny_Automator\App\Integration_Catalog\Services;
 
 use Uncanny_Automator\App\Integration_Catalog\Integration\Integration;
+use Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Store\Catalog_Build_Report;
 use Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Store\Integration_Builder;
 use Uncanny_Automator\Traits\Singleton;
 
@@ -38,6 +39,17 @@ class Integration_Store {
 	private $builder = null;
 
 	/**
+	 * Per-request memo of built Integration objects, keyed by integration code.
+	 *
+	 * Building an Integration normalizes every item/modifier VO it owns —
+	 * repeat lookups within one request (suggestion eligibility, availability
+	 * resolution) must not pay that cost per call.
+	 *
+	 * @var array<string, \Uncanny_Automator\App\Integration_Catalog\Integration\Integration|null>
+	 */
+	private array $built_memo = array();
+
+	/**
 	 * Initialize dependencies lazily.
 	 *
 	 * Performance: Only instantiates services when first needed.
@@ -60,6 +72,8 @@ class Integration_Store {
 	 */
 	public function set_feed_service( Integration_Feed_Service $feed_service ): void {
 		$this->feed_service = $feed_service;
+		// Injected collaborators change what a build produces — drop memoized results.
+		$this->built_memo = array();
 	}
 
 	/**
@@ -71,6 +85,8 @@ class Integration_Store {
 	 */
 	public function set_builder( Integration_Builder $builder ): void {
 		$this->builder = $builder;
+		// Injected collaborators change what a build produces — drop memoized results.
+		$this->built_memo = array();
 	}
 
 	/**
@@ -102,6 +118,10 @@ class Integration_Store {
 	/**
 	 * Build integrations list from processed feed data.
 	 *
+	 * A record that cannot build is skipped rather than allowed to break the
+	 * catalog. Catalog_Build_Report collects what was skipped - here and in the
+	 * normalizer - and writes one snapshot per build when its gate is on.
+	 *
 	 * Performance: Feed data is static-cached in Feed_Service.
 	 *
 	 * @return array<Integration> Array of Integration objects
@@ -112,19 +132,24 @@ class Integration_Store {
 		$json_data    = $this->feed_service->get_processed();
 		$integrations = array();
 
+		Catalog_Build_Report::start();
+
 		foreach ( $json_data as $item ) {
 			$code = $item['integration_id'] ?? '';
 			if ( empty( $code ) ) {
+				Catalog_Build_Report::integration_skipped( 'post:' . ( $item['post_id'] ?? 'unknown' ), 'missing integration_id' );
 				continue;
 			}
 
 			try {
-				$integration    = $this->builder->build_from_json( $code, $item );
-				$integrations[] = $integration;
-			} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-				// Silently skip invalid integrations.
+				$integrations[] = $this->builder->build_from_json( $code, $item );
+			} catch ( \Throwable $e ) {
+				// A partially valid record must not reach the UI; the report says why it did not.
+				Catalog_Build_Report::integration_skipped( $code, $e->getMessage() );
 			}
 		}
+
+		Catalog_Build_Report::write( count( $json_data ), count( $integrations ), $this->feed_service->get_active_feed() );
 
 		return $integrations;
 	}
@@ -139,20 +164,27 @@ class Integration_Store {
 	 * @return Integration|null Integration object or null if not found
 	 */
 	public function get_by_code( string $code ): ?Integration {
+		if ( array_key_exists( $code, $this->built_memo ) ) {
+			return $this->built_memo[ $code ];
+		}
+
 		$this->init();
 
 		$item = $this->feed_service->find_in_processed( 'integration_id', $code );
 
 		if ( null === $item ) {
-			return null;
+			$this->built_memo[ $code ] = null;
+			return $this->built_memo[ $code ];
 		}
 
 		$integration_code = $item['integration_id'] ?? $code;
 
 		try {
-			return $this->builder->build_from_json( $integration_code, $item );
-		} catch ( \Exception $e ) {
-			return null;
+			$this->built_memo[ $code ] = $this->builder->build_from_json( $integration_code, $item );
+			return $this->built_memo[ $code ];
+		} catch ( \Throwable $e ) {
+			$this->built_memo[ $code ] = null;
+			return $this->built_memo[ $code ];
 		}
 	}
 }

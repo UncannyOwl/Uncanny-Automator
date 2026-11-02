@@ -94,7 +94,7 @@ class FLUENTCOMMUNITY_ADD_USER_TO_SPACE extends Action {
 		$status = 'active';
 
 		if ( ! $roles && 'public' !== $space->privacy ) {
-			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- FluentCommunity's own hook.
 			$status = apply_filters( 'fluent_community/space/join_status_for_private', 'pending', $space, $user );
 			if ( ! in_array( $status, array( 'active', 'pending' ), true ) ) {
 				$status = 'pending';
@@ -118,10 +118,10 @@ class FLUENTCOMMUNITY_ADD_USER_TO_SPACE extends Action {
 		$user->cacheAccessSpaces();
 
 		if ( 'pending' === $status ) {
-			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- FluentCommunity's own hook.
 			do_action( 'fluent_community/space/join_requested', $space, $user_id, 'by_automation' );
 		} else {
-			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- FluentCommunity's own hook.
 			do_action( 'fluent_community/space/joined', $space, $user_id, 'by_automation' );
 		}
 

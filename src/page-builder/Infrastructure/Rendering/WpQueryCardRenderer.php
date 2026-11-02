@@ -196,6 +196,7 @@ final class WpQueryCardRenderer implements SectionRendererInterface
     {
         foreach ($snapshot as $key => $state) {
             if ($state['present']) {
+                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Restores WordPress's own query globals from a snapshot taken earlier in this call.
                 $GLOBALS[$key] = $state['value'];
             } else {
                 unset($GLOBALS[$key]);
@@ -449,6 +450,7 @@ final class WpQueryCardRenderer implements SectionRendererInterface
         }
 
         if (!\defined('DONOTCACHEPAGE')) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Cache plugins' shared constant.
             \define('DONOTCACHEPAGE', true);
         }
     }

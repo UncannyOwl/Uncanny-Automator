@@ -1,6 +1,12 @@
 <?php
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\App\Presentation\Admin\App_Platform_Status_Tab;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Admin_Settings_Advanced
  *
@@ -76,8 +82,8 @@ class Admin_Settings_Advanced {
 		// Get the tabs
 		$advanced_tabs = $this->get_advanced_tabs();
 
-		// Get the current tab
-		$current_advanced_tab = automator_filter_has_var( 'advanced' ) ? sanitize_text_field( automator_filter_input( 'advanced' ) ) : 'background_actions';
+		// Get the current tab: the requested one, else the first in the list
+		$current_advanced_tab = automator_filter_has_var( 'advanced' ) ? sanitize_text_field( automator_filter_input( 'advanced' ) ) : $this->get_default_advanced_tab( $advanced_tabs );
 
 		// Check if the user is requesting the focus version
 		// This variable is used in the admin-settings/tab/advanced.php.
@@ -97,6 +103,26 @@ class Admin_Settings_Advanced {
 
 		// Load the view
 		include Utilities::automator_get_view( 'admin-settings/tab/advanced.php' );
+	}
+
+	/**
+	 * The sub-tab that opens when the address names none: App Platform status
+	 * when it is registered, else the first in the list. The legacy tabs register
+	 * at priority 99 and App Platform status places itself before Background app
+	 * actions, so the first key is Automator cache or the retired Background
+	 * actions, never App Platform status.
+	 *
+	 * @param array<string, object> $advanced_tabs The Advanced sub-tabs, in order.
+	 *
+	 * @return string
+	 */
+	public function get_default_advanced_tab( $advanced_tabs ) {
+
+		if ( isset( $advanced_tabs[ App_Platform_Status_Tab::TAB ] ) ) {
+			return App_Platform_Status_Tab::TAB;
+		}
+
+		return is_array( $advanced_tabs ) && array() !== $advanced_tabs ? (string) array_key_first( $advanced_tabs ) : '';
 	}
 
 	/**

@@ -17,7 +17,6 @@
         "All Subscriptions": "Tutti gli abbonamenti",
         "All Topics": "Tutti gli argomenti",
         "All Users": "Tutti gli utenti",
-        "All integrations": "Tutte le integrazioni",
         "All recipes": "Tutte le ricette",
         "App integrations": "Integrazioni app",
         "Assignments": "Compiti",
@@ -76,26 +75,6 @@
         "Automator.Addons.5": {
             "Starter": "Pianifica configurazione addon",
             "Prompt": "Aiutami a pianificare l'installazione e la configurazione di un addon. Chiedimi quale flusso di lavoro voglio automatizzare, poi suggerisci i passaggi successivi."
-        },
-        "Automator.All integrations.1": {
-            "Starter": "Consiglia integrazioni",
-            "Prompt": "Esamina i miei plugin installati e le integrazioni app collegate, poi suggerisci le integrazioni di Automator più rilevanti per il mio sito."
-        },
-        "Automator.All integrations.2": {
-            "Starter": "Trova opportunità di automazione",
-            "Prompt": "Suggerisci idee di automazione utili in base ai miei plugin installati e alle integrazioni app collegate."
-        },
-        "Automator.All integrations.3": {
-            "Starter": "Spiega un'integrazione",
-            "Prompt": "Chiedimi a quale integrazione sono interessato, poi spiegami quali tipi di ricette può sbloccare."
-        },
-        "Automator.All integrations.4": {
-            "Starter": "Trova integrazioni mancanti",
-            "Prompt": "Confronta i miei plugin installati e le app collegate con le integrazioni di Automator disponibili, poi identifica eventuali elementi che dovrei installare, collegare o aggiornare."
-        },
-        "Automator.All integrations.5": {
-            "Starter": "Costruisci con un'integrazione",
-            "Prompt": "Aiutami a scegliere un'integrazione di Automator e trasformala in un'idea di ricetta utile per il mio sito."
         },
         "Automator.All recipes.1": {
             "Starter": "Mostra le mie ricette più attive",

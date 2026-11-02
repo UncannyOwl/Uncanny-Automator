@@ -155,6 +155,7 @@ final class SectionSourceWriter
 
         return [
             'section_id' => (int) ($result['section_id'] ?? $section->id()),
+            'source_generation' => $result['source_generation'],
             'page_id' => $pageId,
             'position' => $section->position(),
             'name' => $name ?? $section->name(),

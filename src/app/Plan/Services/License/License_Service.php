@@ -62,6 +62,14 @@ class License_Service implements Mcp_License_Provider_Interface {
 	public function has_credits(): bool {
 		$credit_manager = $this->get_credit_manager_service();
 		if ( null !== $credit_manager ) {
+			// The credit manager reads the license through the manager, which
+			// fetches on a cold cache. A service that may not request remote
+			// data has no credits to count until the cache has the license.
+			$manager = $this->get_license_manager();
+			if ( ! $this->allow_remote_request && ( null === $manager || null === $this->read_license( $manager, false ) ) ) {
+				return false;
+			}
+
 			try {
 				return $credit_manager->has_credits();
 			} catch ( Exception $e ) {
@@ -83,7 +91,7 @@ class License_Service implements Mcp_License_Provider_Interface {
 	public function is_connected(): bool {
 		$manager = $this->get_license_manager();
 		if ( null !== $manager ) {
-			return $manager->is_connected();
+			return null !== $this->read_license( $manager, false );
 		}
 		return (bool) Api_Server::is_automator_connected();
 	}
@@ -100,8 +108,10 @@ class License_Service implements Mcp_License_Provider_Interface {
 	/**
 	 * Get license data.
 	 *
-	 * When enabled, use the legacy service request if the infrastructure
-	 * cache reader cannot refresh an empty cache.
+	 * A service that may request remote data fetches through the manager when
+	 * the cache is cold; one that may not reads the cache only. A forced
+	 * refresh always fetches, and the manager keeps the last good license
+	 * until the fetch succeeds.
 	 *
 	 * @param bool $force_refresh Whether to bypass cached license data.
 	 *
@@ -114,26 +124,33 @@ class License_Service implements Mcp_License_Provider_Interface {
 
 		$manager = $this->get_license_manager();
 
-		if ( $force_refresh && $this->allow_remote_request ) {
-			if ( null !== $manager ) {
-				$manager->reset_cache();
-			}
-
-			delete_transient( License_Manager::TRANSIENT_LICENSE );
-			delete_transient( Api_Server::TRANSIENT_LICENSE_CHECK_FAILED );
-
-			$this->license = $this->fetch_license();
+		if ( null === $manager ) {
+			$this->license = $this->allow_remote_request ? $this->fetch_license() : null;
 
 			return $this->license;
 		}
 
-		$this->license = null !== $manager ? $manager->get_license_data( $force_refresh ) : null;
-
-		if ( null === $this->license && $this->allow_remote_request ) {
-			$this->license = $this->fetch_license();
-		}
+		$this->license = $this->read_license( $manager, $force_refresh );
 
 		return $this->license;
+	}
+
+	/**
+	 * Read license data through the manager. The manager fetches by itself when
+	 * its cache is cold, so a service that may not request remote data reads the
+	 * cache only.
+	 *
+	 * @param License_Manager $manager       The license manager.
+	 * @param bool            $force_refresh Whether to bypass cached license data.
+	 *
+	 * @return array|null
+	 */
+	private function read_license( License_Manager $manager, bool $force_refresh ): ?array {
+		if ( $force_refresh || $this->allow_remote_request ) {
+			return $manager->get_license_data( $force_refresh );
+		}
+
+		return $manager->get_cached_license_data();
 	}
 
 	/**
@@ -182,7 +199,7 @@ class License_Service implements Mcp_License_Provider_Interface {
 	}
 
 	/**
-	 * Fetch license data with error handling.
+	 * Fetch license data with error handling, for an install without a License_Manager.
 	 *
 	 * @return array|null License data or null.
 	 */

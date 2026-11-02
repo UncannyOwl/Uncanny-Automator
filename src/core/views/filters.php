@@ -1,9 +1,15 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
+
 $post_type    = sanitize_text_field( automator_filter_input( 'post_type' ) );
 $form_action  = admin_url( 'edit.php' ) . '?post_type=uo-recipe';
 $search_query = automator_filter_has_var( 'search_key' ) ? sanitize_text_field( automator_filter_input( 'search_key' ) ) : '';
-$current_tab  = $GLOBALS['ua_current_tab'];
+$current_tab  = $GLOBALS['uncanny_automator_current_tab'];
 
 ?>
 

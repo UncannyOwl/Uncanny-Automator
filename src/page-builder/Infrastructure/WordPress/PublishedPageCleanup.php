@@ -57,7 +57,7 @@ final class PublishedPageCleanup
         }
 
         if ($failures !== []) {
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Permanent cleanup incomplete for page %d: %s',
                 $postId,
                 implode('; ', $failures),

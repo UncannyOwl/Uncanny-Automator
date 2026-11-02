@@ -2,65 +2,50 @@
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Loop\Services\Filter;
 
-use Uncanny_Automator\App\Bridge\Automator_Integration_Registry_Bridge;
-use Uncanny_Automator\App\Bridge\Integration_Registry_Bridge;
-use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Loop\Filter_Store;
-use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Loop\Loop_Store;
-use Uncanny_Automator\App\Infrastructure\Database\Stores\Loop\WP_Filter_Store;
-use Uncanny_Automator\App\Infrastructure\Database\Stores\Loop\WP_Loop_Store;
-use Uncanny_Automator\App\Recipe_Builder\Loop\Filter\Filter;
-use Uncanny_Automator\App\Recipe_Builder\Loop\Filter\Config as Filter_Config;
-use Uncanny_Automator\App\Recipe_Builder\Loop\Filter\Services\Field_Normalizer;
-use Uncanny_Automator\App\Recipe_Builder\Loop\Filter\Value_Objects\User_Type_Value;
-use Uncanny_Automator\App\Presentation\Recipe_Builder\Loop\Filters\Loop_Filter_Sentence_Composer;
+use Uncanny_Automator\App\Events\Recipe_Change_Events;
+use Uncanny_Automator\App\Events\Dtos\Recipe_Changed;
+use Uncanny_Automator\App\Infrastructure\Database\Database;
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Block_Modifier_Store;
+use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Type;
+use Uncanny_Automator\App\Events\Enums\Recipe_Change_Operation;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Wire_Node_Type;
+
 use WP_Error;
 
 /**
  * Filter CRUD Service.
  *
- * Handles CRUD operations for loop filters.
- * Hydrates entities with registry data before persistence.
- * Loop filter sentence HTML composition is owned by presentation layer
- * (`Loop_Filter_Sentence_Composer`).
+ * Handles CRUD operations for loop filters, persisted as
+ * `uo-block-modifier` rows (discriminator `loop_filter`) under unified
+ * `uo-block(loop)` parents.
  *
  * @since 7.0.0
  */
 class Filter_CRUD_Service {
 
 	private static ?Filter_CRUD_Service $instance = null;
-	private Filter_Store $filter_store;
-	private Loop_Store $loop_store;
 	private Filter_Registry_Service $registry_service;
-	private Field_Normalizer $field_normalizer;
-	private Loop_Filter_Sentence_Composer $sentence_composer;
-	private Integration_Registry_Bridge $integrations;
+
+	/**
+	 * Unified modifier persistence boundary — `uo-block(loop)` parents carry
+	 * their filters as `uo-block-modifier` rows.
+	 *
+	 * @var Block_Modifier_Store
+	 */
+	private Block_Modifier_Store $modifier_store;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Filter_Store|null                  $filter_store       Optional filter store instance.
-	 * @param Loop_Store|null                    $loop_store         Optional loop store instance.
-	 * @param Filter_Registry_Service|null       $registry_service   Optional registry service instance.
-	 * @param Field_Normalizer|null              $field_normalizer   Optional field normalizer instance.
-	 * @param Loop_Filter_Sentence_Composer|null $sentence_composer  Optional sentence composer instance.
-	 * @param Integration_Registry_Bridge|null   $integrations       Optional integration bridge override (tests).
+	 * @param Filter_Registry_Service|null $registry_service Optional registry service instance.
+	 * @param Block_Modifier_Store|null    $modifier_store   Optional unified modifier store (tests).
 	 */
 	private function __construct(
-		?Filter_Store $filter_store = null,
-		?Loop_Store $loop_store = null,
 		?Filter_Registry_Service $registry_service = null,
-		?Field_Normalizer $field_normalizer = null,
-		?Loop_Filter_Sentence_Composer $sentence_composer = null,
-		?Integration_Registry_Bridge $integrations = null
+		?Block_Modifier_Store $modifier_store = null
 	) {
-		global $wpdb;
-
-		$this->filter_store      = $filter_store ?? new WP_Filter_Store( $wpdb );
-		$this->loop_store        = $loop_store ?? new WP_Loop_Store( $wpdb, $this->filter_store );
-		$this->registry_service  = $registry_service ?? Filter_Registry_Service::instance();
-		$this->field_normalizer  = $field_normalizer ?? new Field_Normalizer();
-		$this->sentence_composer = $sentence_composer ?? new Loop_Filter_Sentence_Composer();
-		$this->integrations      = $integrations ?? new Automator_Integration_Registry_Bridge();
+		$this->registry_service = $registry_service ?? Filter_Registry_Service::instance();
+		$this->modifier_store   = $modifier_store ?? Database::get_block_modifier_store();
 	}
 	/**
 	 * Instance.
@@ -73,23 +58,15 @@ class Filter_CRUD_Service {
 	/**
 	 * Create with dependencies.
 	 *
-	 * @param Filter_Store                  $filter_store      The filter store.
-	 * @param Loop_Store                    $loop_store        The loop store.
-	 * @param Filter_Registry_Service       $registry_service  The registry service.
-	 * @param Field_Normalizer              $field_normalizer  The field normalizer.
-	 * @param Loop_Filter_Sentence_Composer $sentence_composer The sentence composer.
-	 * @param Integration_Registry_Bridge   $integrations      The integration bridge.
+	 * @param Filter_Registry_Service $registry_service The registry service.
+	 * @param Block_Modifier_Store    $modifier_store   The unified modifier store.
 	 * @return self
 	 */
 	public static function create_with_dependencies(
-		?Filter_Store $filter_store = null,
-		?Loop_Store $loop_store = null,
 		?Filter_Registry_Service $registry_service = null,
-		?Field_Normalizer $field_normalizer = null,
-		?Loop_Filter_Sentence_Composer $sentence_composer = null,
-		?Integration_Registry_Bridge $integrations = null
+		?Block_Modifier_Store $modifier_store = null
 	): self {
-		return new self( $filter_store, $loop_store, $registry_service, $field_normalizer, $sentence_composer, $integrations );
+		return new self( $registry_service, $modifier_store );
 	}
 	/**
 	 * Validate loop exists.
@@ -98,7 +75,107 @@ class Filter_CRUD_Service {
 	 * @return mixed
 	 */
 	public function validate_loop_exists( int $loop_id ) {
-		return $this->loop_store->get( $loop_id );
+		return $this->resolve_unified_loop( $loop_id );
+	}
+
+	/**
+	 * Resolve a unified `uo-block(loop)` row for the given id, or null when
+	 * the id isn't a unified loop block.
+	 *
+	 * @param int $loop_id Candidate loop block post id.
+	 * @return array|null Block row or null.
+	 */
+	private function resolve_unified_loop( int $loop_id ): ?array {
+		$block = Database::get_block_store()->get( $loop_id );
+
+		if ( null === $block || 'loop' !== (string) ( $block['block_type'] ?? '' ) ) {
+			return null;
+		}
+
+		return $block;
+	}
+
+	/**
+	 * Persist a loop filter as a `uo-block-modifier` row under a unified
+	 * loop block. Registry validation and the iteration-type check already
+	 * ran in {@see self::add_to_loop}.
+	 *
+	 * @param array  $loop             Unified loop block row.
+	 * @param string $filter_code      Loop-filter code.
+	 * @param string $integration_code Integration code.
+	 * @param array  $fields           Initial fields.
+	 * @param array  $backup           Initial backup payload.
+	 *
+	 * @return array|WP_Error
+	 */
+	private function add_to_unified_loop( array $loop, string $filter_code, string $integration_code, array $fields, array $backup ) {
+		try {
+			$loop_id     = (int) $loop['id'];
+			$menu_order  = count( $this->modifier_store->get_by_block( $loop_id, 'loop_filter' ) );
+			$modifier_id = $this->modifier_store->create(
+				(int) ( $loop['recipe_id'] ?? 0 ),
+				$loop_id,
+				'loop_filter',
+				$integration_code,
+				$filter_code,
+				$fields,
+				$backup,
+				$menu_order
+			);
+
+			return array(
+				'success'   => true,
+				'message'   => esc_html__( 'Filter successfully added to loop.', 'uncanny-automator' ),
+				'filter_id' => $modifier_id,
+				'filter'    => $this->modifier_store->get( $modifier_id ),
+			);
+		} catch ( \Exception $e ) {
+			return new WP_Error(
+				'filter_save_failed',
+				sprintf(
+					/* translators: %s Error message. */
+					esc_html__( 'Failed to save filter: %s', 'uncanny-automator' ),
+					$e->getMessage()
+				)
+			);
+		}
+	}
+
+	/**
+	 * Update a unified loop filter's fields/backup, merging into the
+	 * existing row payload (legacy update parity).
+	 *
+	 * @param int   $modifier_id Modifier row id.
+	 * @param array $modifier    Existing modifier row.
+	 * @param array $fields      Field values to merge.
+	 * @param array $backup      Backup payload to merge.
+	 *
+	 * @return array|WP_Error
+	 */
+	private function update_unified_filter( int $modifier_id, array $modifier, array $fields, array $backup ) {
+		try {
+			$this->modifier_store->update(
+				$modifier_id,
+				array(
+					'fields' => ! empty( $fields ) ? array_replace( (array) ( $modifier['fields'] ?? array() ), $fields ) : (array) ( $modifier['fields'] ?? array() ),
+					'backup' => ! empty( $backup ) ? array_replace( (array) ( $modifier['backup'] ?? array() ), $backup ) : (array) ( $modifier['backup'] ?? array() ),
+				)
+			);
+
+			return array(
+				'success' => true,
+				'filter'  => $this->modifier_store->get( $modifier_id ),
+			);
+		} catch ( \Exception $e ) {
+			return new WP_Error(
+				'filter_update_failed',
+				sprintf(
+					/* translators: %s Error message. */
+					esc_html__( 'Failed to update filter: %s', 'uncanny-automator' ),
+					$e->getMessage()
+				)
+			);
+		}
 	}
 
 	/**
@@ -113,7 +190,83 @@ class Filter_CRUD_Service {
 		array $fields = array(),
 		array $backup = array()
 	) {
-		if ( ! $this->validate_loop_exists( $loop_id ) ) {
+		return Recipe_Change_Events::operation(
+			function () use ( $loop_id, $filter_code, $integration_code, $fields, $backup ) {
+				$unified = $this->resolve_unified_loop( $loop_id );
+				if ( null === $unified ) {
+					return new WP_Error(
+						'loop_not_found',
+						sprintf(
+							/* translators: %d Loop ID. */
+							esc_html__( 'Loop not found with ID: %d', 'uncanny-automator' ),
+							$loop_id
+						)
+					);
+				}
+
+				// Validate filter code and integration code are not empty.
+				if ( empty( $filter_code ) ) {
+					return new WP_Error( 'invalid_filter_code', esc_html__( 'Filter code cannot be empty.', 'uncanny-automator' ) );
+				}
+
+				if ( empty( $integration_code ) ) {
+					return new WP_Error( 'invalid_integration_code', esc_html__( 'Integration code cannot be empty.', 'uncanny-automator' ) );
+				}
+
+				$definition = $this->registry_service->validate_filter_code_and_get_definition( $filter_code );
+				if ( is_wp_error( $definition ) ) {
+					return $definition;
+				}
+
+				// Reject filters incompatible with the loop's iteration type.
+				$type_mismatch = $this->check_iteration_type_mismatch( $loop_id, $definition );
+				if ( is_wp_error( $type_mismatch ) ) {
+					return $type_mismatch;
+				}
+
+				$result = $this->add_to_unified_loop( $unified, $filter_code, $integration_code, $fields, $backup );
+				if ( ! is_wp_error( $result ) ) {
+					$this->complete_filter_write( Recipe_Change_Operation::CREATED, $result['filter'] ?? null );
+				}
+
+				return $result;
+			}
+		);
+	}
+
+	/**
+	 * Fire the recipe_changed event for a loop-filter write.
+	 *
+	 * @param string     $operation A Recipe_Change_Operation value.
+	 * @param array|null $modifier  The modifier row as the store reads it (before the delete, for a delete).
+	 *
+	 * @return void
+	 */
+	private function complete_filter_write( string $operation, ?array $modifier ): void {
+		$recipe_id = (int) ( $modifier['recipe_id'] ?? 0 );
+		if ( null === $modifier || $recipe_id <= 0 ) {
+			return;
+		}
+
+		Recipe_Change_Events::changed( new Recipe_Changed( $operation, Wire_Node_Type::BLOCK_MODIFIER, (int) $modifier['id'], $recipe_id ) );
+	}
+	/**
+	 * Get a loop's filters as unified modifier rows.
+	 *
+	 * The read seam for filter discovery — runtime consumers (Pro's loop
+	 * entity resolution via `automator_get_loop_filters()`) and any other
+	 * outside-`src/app` caller get the store rows (id, code,
+	 * integration_code, decoded fields/backup, menu_order) in one shot
+	 * instead of re-assembling them from individual post meta.
+	 *
+	 * @param int $loop_id Unified loop block post id.
+	 *
+	 * @return array|WP_Error Modifier rows ordered by menu_order, or
+	 *                        WP_Error when $loop_id isn't a unified loop.
+	 */
+	public function get_loop_filters( int $loop_id ) {
+		$unified = $this->resolve_unified_loop( $loop_id );
+		if ( null === $unified ) {
 			return new WP_Error(
 				'loop_not_found',
 				sprintf(
@@ -124,51 +277,9 @@ class Filter_CRUD_Service {
 			);
 		}
 
-		// Validate filter code and integration code are not empty.
-		if ( empty( $filter_code ) ) {
-			return new WP_Error( 'invalid_filter_code', esc_html__( 'Filter code cannot be empty.', 'uncanny-automator' ) );
-		}
-
-		if ( empty( $integration_code ) ) {
-			return new WP_Error( 'invalid_integration_code', esc_html__( 'Integration code cannot be empty.', 'uncanny-automator' ) );
-		}
-
-		$definition = $this->registry_service->validate_filter_code_and_get_definition( $filter_code );
-		if ( is_wp_error( $definition ) ) {
-			return $definition;
-		}
-
-		// Reject filters incompatible with the loop's iteration type.
-		$type_mismatch = $this->check_iteration_type_mismatch( $loop_id, $definition );
-		if ( is_wp_error( $type_mismatch ) ) {
-			return $type_mismatch;
-		}
-
-		try {
-			// Hydrate entity with registry data.
-			$config = $this->build_hydrated_config( $filter_code, $integration_code, $fields, $backup, $definition );
-			$filter = new Filter( $config );
-
-			$existing_filters = $this->filter_store->get_loop_filters( $loop_id );
-			$saved_filter     = $this->filter_store->save( $loop_id, $filter, count( $existing_filters ) );
-
-			return array(
-				'success'   => true,
-				'message'   => esc_html__( 'Filter successfully added to loop.', 'uncanny-automator' ),
-				'filter_id' => $saved_filter->get_id()->get_value(),
-				'filter'    => $saved_filter->to_array(),
-			);
-		} catch ( \Exception $e ) {
-			return new WP_Error(
-				'filter_save_failed',
-				sprintf(
-					/* translators: %s Error message. */
-					esc_html__( 'Failed to save filter: %s', 'uncanny-automator' ),
-					$e->getMessage()
-				)
-			);
-		}
+		return $this->modifier_store->get_by_block( $loop_id, 'loop_filter' );
 	}
+
 	/**
 	 * Get filter.
 	 *
@@ -176,9 +287,9 @@ class Filter_CRUD_Service {
 	 * @return mixed
 	 */
 	public function get_filter( $filter_id ) {
-		$filter = $this->filter_store->get( (int) $filter_id );
+		$modifier = $this->modifier_store->get( (int) $filter_id );
 
-		if ( ! $filter ) {
+		if ( null === $modifier || 'loop_filter' !== (string) ( $modifier['block_modifier_type'] ?? '' ) ) {
 			return new WP_Error(
 				'filter_not_found',
 				sprintf(
@@ -191,46 +302,8 @@ class Filter_CRUD_Service {
 
 		return array(
 			'success' => true,
-			'filter'  => $filter->to_array(),
+			'filter'  => $modifier,
 		);
-	}
-	/**
-	 * Get loop filters.
-	 *
-	 * @param int $loop_id The ID.
-	 * @return mixed
-	 */
-	public function get_loop_filters( int $loop_id ) {
-		if ( ! $this->loop_store->get( $loop_id ) ) {
-			return new WP_Error(
-				'loop_not_found',
-				sprintf(
-					/* translators: %d Loop ID. */
-					esc_html__( 'Loop not found with ID: %d', 'uncanny-automator' ),
-					$loop_id
-				)
-			);
-		}
-
-		try {
-			$filters = $this->filter_store->get_loop_filters( $loop_id );
-
-			return array(
-				'success'      => true,
-				'loop_id'      => $loop_id,
-				'filter_count' => count( $filters ),
-				'filters'      => array_map( fn( $f ) => $f->to_array(), $filters ),
-			);
-		} catch ( \Exception $e ) {
-			return new WP_Error(
-				'loop_filters_error',
-				sprintf(
-					/* translators: %s Error message. */
-					esc_html__( 'Failed to retrieve filters: %s', 'uncanny-automator' ),
-					$e->getMessage()
-				)
-			);
-		}
 	}
 	/**
 	 * Update filter.
@@ -241,55 +314,28 @@ class Filter_CRUD_Service {
 	 * @return mixed
 	 */
 	public function update_filter( $filter_id, array $fields = array(), array $backup = array() ) {
-		$existing = $this->filter_store->get( (int) $filter_id );
+		return Recipe_Change_Events::operation(
+			function () use ( $filter_id, $fields, $backup ) {
+				$modifier = $this->modifier_store->get( (int) $filter_id );
+				if ( null === $modifier || 'loop_filter' !== (string) ( $modifier['block_modifier_type'] ?? '' ) ) {
+					return new WP_Error(
+						'filter_not_found',
+						sprintf(
+							/* translators: %d Filter ID. */
+							esc_html__( 'Filter not found with ID: %d', 'uncanny-automator' ),
+							$filter_id
+						)
+					);
+				}
 
-		if ( ! $existing ) {
-			return new WP_Error(
-				'filter_not_found',
-				sprintf(
-					/* translators: %d Filter ID. */
-					esc_html__( 'Filter not found with ID: %d', 'uncanny-automator' ),
-					$filter_id
-				)
-			);
-		}
+				$result = $this->update_unified_filter( (int) $filter_id, $modifier, $fields, $backup );
+				if ( ! is_wp_error( $result ) ) {
+					$this->complete_filter_write( Recipe_Change_Operation::UPDATED, $result['filter'] ?? null );
+				}
 
-		try {
-			$existing_data = $existing->to_array();
-			$definition    = $this->registry_service->validate_filter_code_and_get_definition( $existing_data['code'] );
-			$fields        = ! empty( $fields ) ? array_replace( $existing_data['fields'], $fields ) : $existing_data['fields'];
-			$backup        = ! empty( $backup ) ? array_replace( $existing_data['backup'], $backup ) : $existing_data['backup'];
-
-			$config = $this->build_hydrated_config(
-				$existing_data['code'],
-				$existing_data['integration_code'],
-				$fields,
-				$backup,
-				is_wp_error( $definition ) ? array() : $definition
-			);
-			$config->id( $existing_data['id'] );
-
-			$post = get_post( (int) $filter_id );
-			if ( ! $post ) {
-				return new WP_Error( 'filter_post_not_found', esc_html__( 'Filter post not found.', 'uncanny-automator' ) );
+				return $result;
 			}
-
-			$saved = $this->filter_store->save( $post->post_parent, new Filter( $config ), $post->menu_order );
-
-			return array(
-				'success' => true,
-				'filter'  => $saved->to_array(),
-			);
-		} catch ( \Exception $e ) {
-			return new WP_Error(
-				'filter_update_failed',
-				sprintf(
-					/* translators: %s Error message. */
-					esc_html__( 'Failed to update filter: %s', 'uncanny-automator' ),
-					$e->getMessage()
-				)
-			);
-		}
+		);
 	}
 	/**
 	 * Delete filter.
@@ -299,41 +345,46 @@ class Filter_CRUD_Service {
 	 * @return mixed
 	 */
 	public function delete_filter( $filter_id, bool $confirmed = false ) {
-		if ( ! $confirmed ) {
-			return new WP_Error( 'confirmation_required', esc_html__( 'Deletion must be confirmed.', 'uncanny-automator' ) );
-		}
+		return Recipe_Change_Events::operation(
+			function () use ( $filter_id, $confirmed ) {
+				if ( ! $confirmed ) {
+					return new WP_Error( 'confirmation_required', esc_html__( 'Deletion must be confirmed.', 'uncanny-automator' ) );
+				}
 
-		$filter = $this->filter_store->get( (int) $filter_id );
-		if ( ! $filter ) {
-			return new WP_Error(
-				'filter_not_found',
-				sprintf(
-					/* translators: %d Filter ID. */
-					esc_html__( 'Filter not found with ID: %d', 'uncanny-automator' ),
-					$filter_id
-				)
-			);
-		}
+				$modifier = $this->modifier_store->get( (int) $filter_id );
+				if ( null === $modifier || 'loop_filter' !== (string) ( $modifier['block_modifier_type'] ?? '' ) ) {
+					return new WP_Error(
+						'filter_not_found',
+						sprintf(
+							/* translators: %d Filter ID. */
+							esc_html__( 'Filter not found with ID: %d', 'uncanny-automator' ),
+							$filter_id
+						)
+					);
+				}
 
-		try {
-			$data = $filter->to_array();
-			$this->filter_store->delete( $filter );
+				try {
+					$this->modifier_store->delete( (int) $filter_id );
 
-			return array(
-				'success'           => true,
-				'deleted_filter_id' => $data['id'],
-				'filter_code'       => $data['code'],
-			);
-		} catch ( \Exception $e ) {
-			return new WP_Error(
-				'delete_filter_failed',
-				sprintf(
-					/* translators: %s Error message. */
-					esc_html__( 'Failed to delete filter: %s', 'uncanny-automator' ),
-					$e->getMessage()
-				)
-			);
-		}
+					$this->complete_filter_write( Recipe_Change_Operation::DELETED, $modifier );
+
+					return array(
+						'success'           => true,
+						'deleted_filter_id' => (int) $modifier['id'],
+						'filter_code'       => (string) ( $modifier['code'] ?? '' ),
+					);
+				} catch ( \Exception $e ) {
+					return new WP_Error(
+						'delete_filter_failed',
+						sprintf(
+							/* translators: %s Error message. */
+							esc_html__( 'Failed to delete filter: %s', 'uncanny-automator' ),
+							$e->getMessage()
+						)
+					);
+				}
+			}
+		);
 	}
 	/**
 	 * Delete loop filters.
@@ -343,133 +394,60 @@ class Filter_CRUD_Service {
 	 * @return mixed
 	 */
 	public function delete_loop_filters( int $loop_id, bool $confirmed = false ) {
-		if ( ! $confirmed ) {
-			return new WP_Error( 'confirmation_required', esc_html__( 'Deletion must be confirmed.', 'uncanny-automator' ) );
-		}
+		return Recipe_Change_Events::operation(
+			function () use ( $loop_id, $confirmed ) {
+				if ( ! $confirmed ) {
+					return new WP_Error( 'confirmation_required', esc_html__( 'Deletion must be confirmed.', 'uncanny-automator' ) );
+				}
 
-		if ( ! $this->validate_loop_exists( $loop_id ) ) {
-			return new WP_Error(
-				'loop_not_found',
-				sprintf(
-					/* translators: %d Loop ID. */
-					esc_html__( 'Loop not found with ID: %d', 'uncanny-automator' ),
-					$loop_id
-				)
-			);
-		}
+				if ( ! $this->validate_loop_exists( $loop_id ) ) {
+					return new WP_Error(
+						'loop_not_found',
+						sprintf(
+							/* translators: %d Loop ID. */
+							esc_html__( 'Loop not found with ID: %d', 'uncanny-automator' ),
+							$loop_id
+						)
+					);
+				}
 
-		try {
-			$count = count( $this->filter_store->get_loop_filters( $loop_id ) );
-			$this->filter_store->delete_loop_filters( $loop_id );
+				$loop      = Database::get_block_store()->get( $loop_id );
+				$recipe_id = (int) ( $loop['recipe_id'] ?? 0 );
+				$deleted   = 0;
 
-			return array(
-				'success'       => true,
-				'loop_id'       => $loop_id,
-				'deleted_count' => $count,
-			);
-		} catch ( \Exception $e ) {
-			return new WP_Error(
-				'delete_filters_failed',
-				sprintf(
-					/* translators: %s Error message. */
-					esc_html__( 'Failed to delete filters: %s', 'uncanny-automator' ),
-					$e->getMessage()
-				)
-			);
-		}
-	}
+				try {
+					$modifiers = $this->modifier_store->get_by_block( $loop_id, 'loop_filter' );
+					foreach ( $modifiers as $modifier ) {
+						$this->modifier_store->delete( (int) ( $modifier['id'] ?? 0 ) );
+						++$deleted;
+					}
 
-	/**
-	 * Build a fully hydrated config from registry data.
-	 */
-	private function build_hydrated_config(
-		string $filter_code,
-		string $integration_code,
-		array $fields,
-		array $backup,
-		array $definition
-	): Filter_Config {
-		$meta_structure    = $definition['meta_structure'] ?? array();
-		$normalized_fields = $this->normalize_fields_to_nested( $fields, $meta_structure );
-		$hydrated_backup   = $this->build_backup( $backup, $definition, $integration_code, $normalized_fields );
+					if ( $recipe_id > 0 && $deleted > 0 ) {
+						Recipe_Change_Events::changed( new Recipe_Changed( Recipe_Change_Operation::UPDATED, Wire_Node_Type::BLOCK, $loop_id, $recipe_id ) );
+					}
 
-		return ( new Filter_Config() )
-			->code( $filter_code )
-			->integration_code( $integration_code )
-			->integration_name( $this->get_integration_name( $integration_code ) )
-			->type( ! empty( $definition['is_pro'] ) ? 'pro' : 'lite' )
-			->user_type( $this->determine_user_type( $definition['iteration_types'] ?? array() ) )
-			->fields( $normalized_fields )
-			->backup( $hydrated_backup )
-			->version( defined( 'AUTOMATOR_PLUGIN_VERSION' ) ? AUTOMATOR_PLUGIN_VERSION : 'unknown' );
-	}
+					return array(
+						'success'       => true,
+						'loop_id'       => $loop_id,
+						'deleted_count' => count( $modifiers ),
+					);
+				} catch ( \Exception $e ) {
+					// The filters deleted before the failure stay deleted.
+					if ( $recipe_id > 0 && $deleted > 0 ) {
+						Recipe_Change_Events::changed( new Recipe_Changed( Recipe_Change_Operation::UPDATED, Wire_Node_Type::BLOCK, $loop_id, $recipe_id ) );
+					}
 
-	/**
-	 * Normalize fields to nested format expected by UI.
-	 *
-	 * Delegates to Field_Normalizer domain service.
-	 *
-	 * @param array $fields         Flat fields from API.
-	 * @param array $meta_structure Field definitions from registry.
-	 * @return array Normalized nested fields.
-	 */
-	private function normalize_fields_to_nested( array $fields, array $meta_structure ): array {
-		return $this->field_normalizer->normalize_to_nested( $fields, $meta_structure );
-	}
-
-	/**
-	 * Build backup with sentence from registry.
-	 */
-	private function build_backup( array $existing, array $definition, string $integration_code, array $fields ): array {
-		$existing_without_sentence = $this->strip_sentence_artifacts( $existing );
-		$sentence                  = $definition['sentence_readable'] ?? $definition['sentence'] ?? '';
-		if ( empty( $sentence ) ) {
-			return $existing_without_sentence;
-		}
-
-		$sentence_html = $this->sentence_composer->compose( $sentence, $fields );
-
-		return array_merge(
-			$existing_without_sentence,
-			array(
-				'integration_name' => $this->get_integration_name( $integration_code ),
-				'sentence'         => $sentence,
-				'sentence_html'    => htmlspecialchars( html_entity_decode( $sentence_html, ENT_QUOTES, 'UTF-8' ), ENT_QUOTES, 'UTF-8' ),
-			)
+					return new WP_Error(
+						'delete_filters_failed',
+						sprintf(
+							/* translators: %s Error message. */
+							esc_html__( 'Failed to delete filters: %s', 'uncanny-automator' ),
+							$e->getMessage()
+						)
+					);
+				}
+			}
 		);
-	}
-
-	/**
-	 * Remove sentence artifacts from incoming backup payload.
-	 *
-	 * @param array $backup Existing backup data.
-	 *
-	 * @return array
-	 */
-	private function strip_sentence_artifacts( array $backup ): array {
-		unset( $backup['sentence'], $backup['sentence_html'] );
-
-		return $backup;
-	}
-	/**
-	 * Get integration name.
-	 *
-	 * @param string $code The code.
-	 * @return string
-	 */
-	private function get_integration_name( string $code ): string {
-		return $this->integrations->get_integration_name_by_code( $code );
-	}
-	/**
-	 * Determine user type from iteration types.
-	 *
-	 * Delegates to User_Type_Value domain logic.
-	 *
-	 * @param array $iteration_types The iteration types (e.g., ['users'], ['posts'], ['token']).
-	 * @return string User type constant ('user' or 'anonymous').
-	 */
-	private function determine_user_type( array $iteration_types ): string {
-		return User_Type_Value::from_iteration_types( $iteration_types )->get_value();
 	}
 
 	/**
@@ -488,13 +466,11 @@ class Filter_CRUD_Service {
 			return null;
 		}
 
-		$loop = $this->loop_store->get( $loop_id );
-
-		if ( ! $loop ) {
+		$unified = $this->resolve_unified_loop( $loop_id );
+		if ( null === $unified ) {
 			return null;
 		}
-
-		$loop_type = $loop->to_array()['iterable_expression']['type'] ?? 'users';
+		$loop_type = $unified['iterable_expression']['type'] ?? 'users';
 
 		if ( in_array( $loop_type, $filter_types, true ) ) {
 			return null;

@@ -45,6 +45,7 @@ final class SourceStyleChange
     private static function assertChoice(mixed $value, array $choices, string $name): void
     {
         if (!in_array($value, $choices, true)) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Domain exception text; Domain has no WordPress dependency, and Page Builder returns these messages as JSON text, never as HTML.
             throw new \InvalidArgumentException('The element style ' . $name . ' is invalid.');
         }
     }

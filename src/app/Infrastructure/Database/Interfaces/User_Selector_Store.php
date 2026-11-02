@@ -46,4 +46,13 @@ interface User_Selector_Store {
 	 * @return bool True if user selector exists.
 	 */
 	public function exists_for_recipe( int $recipe_id ): bool;
+
+	/**
+	 * Whether any published Everyone recipe's run-as logs the user in.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool
+	 */
+	public function any_published_recipe_logs_user_in(): bool;
 }

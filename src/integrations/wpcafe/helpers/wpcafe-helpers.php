@@ -858,11 +858,13 @@ class Wpcafe_Helpers extends Abstract_Helpers {
 		}
 
 		if ( 'cancelled' === $new_status ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPCafe's own hook.
 			do_action( 'wpcafe_after_reservation_cancelled', $reservation );
 
 			return;
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPCafe's own hook.
 		do_action( 'wpcafe_after_reservation_status_changed', $reservation, $old_status );
 	}
 }

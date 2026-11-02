@@ -264,6 +264,7 @@ class Perplexity_Chat_Generate extends App_Action {
 
 		// Build the payload
 		$payload_builder = $payload_builder
+			// phpcs:ignore PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- The site owner connects their own Perplexity account; this integration calls the provider's API for them.
 			->endpoint( 'https://api.perplexity.ai/chat/completions' )
 			->model( $model )
 			->temperature( (float) $temperature )

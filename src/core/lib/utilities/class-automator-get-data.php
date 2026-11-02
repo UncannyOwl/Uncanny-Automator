@@ -2,8 +2,6 @@
 
 namespace Uncanny_Automator;
 
-use Uncanny_Automator\Services\Dashboard\Recipe_Using_Credits_Utils;
-
 /**
  * Class Automator_Get_Data
  *
@@ -34,47 +32,6 @@ class Automator_Get_Data {
 	}
 
 	/**
-	 * Accepts a trigger, action, or closure id and return the corresponding trigger_code, action_code, or closure_code
-	 *
-	 * @param null $item_id
-	 *
-	 * @return null|string
-	 */
-	public function item_code_from_item_id( $item_id = null ) {
-
-		$item_code = null;
-
-		$recipes_data = Automator()->get_recipes_data( true );
-
-		if ( empty( $recipes_data ) ) {
-			return null;
-		}
-
-		$item_codes = array();
-
-		foreach ( $recipes_data as $recipe_data ) {
-
-			foreach ( $recipe_data['triggers'] as $trigger ) {
-				$item_codes[ $trigger['ID'] ] = $trigger['meta']['code'];
-			}
-
-			foreach ( $recipe_data['actions'] as $action ) {
-				$item_codes[ $action['ID'] ] = $action['meta']['code'];
-			}
-
-			foreach ( $recipe_data['closures'] as $closure ) {
-				$item_codes[ $closure['ID'] ] = $closure['meta']['code'];
-			}
-		}
-
-		if ( isset( $item_codes[ $item_id ] ) ) {
-			$item_code = $item_codes[ $item_id ];
-		}
-
-		return $item_code;
-	}
-
-	/**
 	 * Accepts a trigger code(most like from trigger meta) and returns that associated trigger add_action hook
 	 *
 	 * @param $trigger_code null
@@ -100,38 +57,6 @@ class Automator_Get_Data {
 
 			if ( $system_trigger['code'] === $trigger_code ) {
 				return $system_trigger['action'];
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * Accepts a trigger code(most like from trigger meta) and returns that associated trigger add_action hook
-	 *
-	 * @param $trigger_code null
-	 *
-	 * @return bool
-	 * @deprecated 3.0
-	 */
-	public function trigger_meta_from_trigger_code( $trigger_code = null ) {
-
-		if ( null === $trigger_code || ! is_string( $trigger_code ) ) {
-			Automator()->wp_error->add_error( 'trigger_meta_from_trigger_code', 'ERROR: You are trying to get a trigger meta from a trigger code without providing a $trigger_code', $this );
-
-			return null;
-		}
-
-		// Load all default trigger settings
-		$system_triggers = Automator()->get_triggers();
-		if ( empty( $system_triggers ) ) {
-			return null;
-		}
-
-		foreach ( $system_triggers as $system_trigger ) {
-
-			if ( $system_trigger['code'] === $trigger_code ) {
-				return isset( $system_trigger['meta'] ) ? $system_trigger['meta'] : null;
 			}
 		}
 
@@ -215,6 +140,7 @@ class Automator_Get_Data {
 			return '';
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads the step's raw meta rows in one query; callers depend on these rows, which get_post_meta() returns in another shape.
 		$action_meta = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d",
@@ -308,6 +234,7 @@ class Automator_Get_Data {
 		global $wpdb;
 
 		// Integration is not active ... get integration from DB
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Finds a meta value through a subquery on core postmeta; no WordPress API returns this.
 		return $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT meta_value
@@ -356,6 +283,7 @@ class Automator_Get_Data {
 		global $wpdb;
 
 		// Integration is not active ... get integration from DB
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Finds a meta value through a subquery on core postmeta; no WordPress API returns this.
 		return $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT meta_value
@@ -368,54 +296,6 @@ class Automator_Get_Data {
 				)
 				AND meta_key = 'integration'",
 				$action_code
-			)
-		);
-	}
-
-	/**
-	 * Accepts a closure code(most like from closure meta) and returns that associated closure integration
-	 *
-	 * @param null $closure_code
-	 *
-	 * @return string
-	 */
-	public function closure_integration_from_closure_code( $closure_code = null ) {
-
-		if ( null === $closure_code || ! is_string( $closure_code ) ) {
-			Automator()->wp_error->add_error( 'closure_integration_from_closure_code', 'ERROR: You are trying to get a action integration code from a action code without providing an $action_code', $this );
-
-			return null;
-		}
-
-		// Load all default trigger settings
-		$system_closures = Automator()->get_closures();
-
-		if ( empty( $system_closures ) ) {
-			return null;
-		}
-
-		foreach ( $system_closures as $system_closure ) {
-
-			if ( $system_closure['code'] === $closure_code ) {
-				return $system_closure['integration'];
-			}
-		}
-
-		global $wpdb;
-
-		// Integration is not active ... get integration from DB
-		return $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT meta_value
-				FROM $wpdb->postmeta
-				WHERE post_id IN (
-				SELECT post_id
-				FROM $wpdb->postmeta
-				WHERE meta_key = 'code'
-				AND meta_value = %s
-				)
-				AND meta_key = 'integration'",
-				$closure_code
 			)
 		);
 	}
@@ -476,37 +356,6 @@ class Automator_Get_Data {
 			if ( $system_action['code'] === $action_code ) {
 
 				return $system_action['execution_function'];
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * Accepts an action code(most like from trigger meta) and returns that associated action execution function
-	 *
-	 * @param null $closure_code
-	 *
-	 * @return null|             |array String is the public function is not within a class and array if it is
-	 */
-	public function closure_execution_function_from_closure_code( $closure_code = null ) {
-
-		if ( null === $closure_code || ! is_string( $closure_code ) ) {
-			Automator()->wp_error->add_error( 'closure_execution_function_from_closure_code', 'ERROR: You are trying to get an action execution function from an action code without providing a $action_code', $this );
-
-			return null;
-		}
-
-		// Load all default trigger settings
-		$system_closures = Automator()->get_closures();
-		if ( empty( $system_closures ) ) {
-			return null;
-		}
-
-		foreach ( $system_closures as $system_closure ) {
-			if ( $system_closure['code'] === $closure_code ) {
-
-				return $system_closure['execution_function'];
 			}
 		}
 
@@ -774,6 +623,7 @@ class Automator_Get_Data {
 		}
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$results = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT ID FROM {$wpdb->prefix}uap_trigger_log WHERE user_id = %d AND automator_trigger_id = %d AND automator_recipe_id = %d AND automator_recipe_log_id = %d",
@@ -822,6 +672,7 @@ class Automator_Get_Data {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		return $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(meta_value) FROM {$wpdb->prefix}uap_trigger_log_meta WHERE user_id = %d AND meta_key LIKE %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d",
@@ -843,6 +694,7 @@ class Automator_Get_Data {
 	public function next_run_number( $recipe_id, $user_id, $fetch_current = false ) {
 		if ( 0 !== absint( $user_id ) ) {
 			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 			$run_number = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT MAX(run_number)
@@ -858,7 +710,7 @@ class Automator_Get_Data {
 
 			if ( is_numeric( $run_number ) ) {
 				if ( false === $fetch_current ) {
-					$run_number++;
+					++$run_number;
 				}
 
 				return $run_number;
@@ -877,6 +729,7 @@ class Automator_Get_Data {
 	public function trigger_sentence( $id, $type = '' ) {
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads the step's raw meta rows in one query; callers depend on these rows, which get_post_meta() returns in another shape.
 		$trigger_meta = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d",
@@ -912,6 +765,7 @@ class Automator_Get_Data {
 			return array();
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reads the step's raw meta rows in one query; callers depend on these rows, which get_post_meta() returns in another shape.
 		$metas = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d",
@@ -1001,6 +855,7 @@ class Automator_Get_Data {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$run_number = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT MAX(run_number)
@@ -1023,80 +878,25 @@ class Automator_Get_Data {
 	}
 
 	/**
-	 * @param      $check_trigger_code
-	 * @param null $recipe_id
+	 * The live recipes, and their live triggers, that listen for a trigger code.
 	 *
-	 * @return array
+	 * Reads Trigger_Index directly. The index is rebuilt whenever a recipe or
+	 * trigger changes status, is added or is deleted, so a second, time-based
+	 * cache in front of it could only serve a stale list: a recipe just set to
+	 * draft kept being entered, and one just set live was missed, until that
+	 * cache expired.
+	 *
+	 * @param string|null     $check_trigger_code The trigger code.
+	 * @param int|string|null $recipe_id          Only this recipe (a trigger that names its recipe).
+	 *
+	 * @return array Recipe ID => recipe with its matching triggers.
 	 */
 	public function recipes_from_trigger_code( $check_trigger_code = null, $recipe_id = null ) {
 		if ( null === $check_trigger_code ) {
 			return array();
 		}
-		$key = 'automator_recipes_of_' . $check_trigger_code;
-		// If recipe id is set then only specific recipe data needed instead of all recipes by code
-		if ( ! empty( $recipe_id ) ) {
-			$key .= '_' . $recipe_id;
-		}
 
-		$return = Automator()->cache->get( $key );
-		if ( ! empty( $return ) ) {
-			return $return;
-		}
-
-		// Escape hatch: fall back to legacy monolith if explicitly disabled.
-		if ( defined( 'AUTOMATOR_DISABLE_TRIGGER_INDEX' ) && AUTOMATOR_DISABLE_TRIGGER_INDEX ) {
-			$return = $this->recipes_from_trigger_code_legacy( $check_trigger_code, $recipe_id );
-			Automator()->cache->set( $key, $return );
-			return $return;
-		}
-
-		// Fast path: O(1) lookup from Trigger_Index.
-		$return = Trigger_Index::get_instance()->get_by_code( $check_trigger_code, $recipe_id );
-
-		Automator()->cache->set( $key, $return );
-
-		return $return;
-	}
-
-	/**
-	 * Legacy implementation of recipes_from_trigger_code() using get_recipes_data().
-	 * Retained as fallback behind AUTOMATOR_DISABLE_TRIGGER_INDEX constant.
-	 *
-	 * @param string   $check_trigger_code The trigger code.
-	 * @param int|null $recipe_id          Optional recipe ID filter.
-	 *
-	 * @return array
-	 */
-	private function recipes_from_trigger_code_legacy( $check_trigger_code, $recipe_id = null ) {
-
-		$return  = array();
-		$recipes = Automator()->get_recipes_data( false, $recipe_id );
-
-		if ( empty( $recipes ) ) {
-			return array();
-		}
-
-		foreach ( $recipes as $recipe ) {
-
-			if ( 'publish' !== (string) $recipe['post_status'] ) {
-				continue;
-			}
-
-			foreach ( $recipe['triggers'] as $trigger ) {
-
-				$trigger_code = $trigger['meta']['code'];
-
-				// Skip if the executed trigger doesn't match.
-				if ( (string) $check_trigger_code !== (string) $trigger_code ) {
-					continue;
-				}
-
-				$rid            = absint( $recipe['ID'] );
-				$return[ $rid ] = $recipe;
-			}
-		}
-
-		return $return;
+		return Trigger_Index::get_instance()->get_by_code( $check_trigger_code, $recipe_id );
 	}
 
 	/**
@@ -1149,6 +949,7 @@ class Automator_Get_Data {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		return $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT ID FROM {$wpdb->prefix}uap_trigger_log_meta
@@ -1183,6 +984,7 @@ class Automator_Get_Data {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		return $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta
@@ -1217,6 +1019,7 @@ class Automator_Get_Data {
 		}
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$meta_value = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta
@@ -1260,7 +1063,6 @@ class Automator_Get_Data {
 				AUTOMATOR_POST_TYPE_RECIPE,
 				AUTOMATOR_POST_TYPE_TRIGGER,
 				AUTOMATOR_POST_TYPE_ACTION,
-				AUTOMATOR_POST_TYPE_CLOSURE,
 			)
 		);
 
@@ -1278,22 +1080,16 @@ class Automator_Get_Data {
 	}
 
 	/**
-	 * @param $recipe_id
+	 * Whether the recipe has a run-as (user selector) configured.
 	 *
-	 * @return false|mixed
+	 * Delegates to {@see automator_recipe_has_user_selector()}.
+	 *
+	 * @param int $recipe_id Recipe ID.
+	 *
+	 * @return bool
 	 */
 	public function get_recipe_requires_user( $recipe_id ) {
-		$requires_user  = get_post_meta( $recipe_id, 'recipe_requires_user', true );
-		$recipe_version = get_post_meta( $recipe_id, 'uap_recipe_version', true );
-		if ( empty( $requires_user ) ) {
-			if ( version_compare( $recipe_version, 3.1, '>=' ) ) {
-				return false;
-			}
-
-			return true;
-		}
-
-		return $requires_user;
+		return automator_recipe_has_user_selector( absint( $recipe_id ) );
 	}
 
 	/**
@@ -1309,6 +1105,7 @@ class Automator_Get_Data {
 	public function mayabe_get_token_meta_value_from_trigger_log( $trigger_id, $run_number, $recipe_id, $meta_key, $user_id, $recipe_log_id ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		return $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT tm.meta_value
@@ -1344,6 +1141,7 @@ WHERE t.automator_trigger_id = %d
 	public function mayabe_get_real_trigger_log_id( $trigger_id, $run_number, $recipe_id, $user_id, $recipe_log_id ) {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		return $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT tm.automator_trigger_log_id
@@ -1374,7 +1172,8 @@ WHERE t.automator_trigger_id = %d
 
 		$tbl = Automator()->db->tables->recipe;
 
-		$results = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}{$tbl} WHERE completed=1" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$results = $wpdb->get_var( 'SELECT COUNT(*) FROM `' . esc_sql( $wpdb->prefix . $tbl ) . '` WHERE completed=1' );
 
 		return apply_filters( 'automator_total_completed_runs', absint( $results ) );
 	}
@@ -1389,17 +1188,18 @@ WHERE t.automator_trigger_id = %d
 	public function completed_runs( $seconds_to_include = null ) {
 		global $wpdb;
 
-		$tbl   = Automator()->db->tables->recipe;
-		$query = "SELECT COUNT(*) FROM {$wpdb->prefix}{$tbl} WHERE completed=1";
+		$tbl = Automator()->db->tables->recipe;
 
-		if ( null !== $seconds_to_include ) {
+		if ( null === $seconds_to_include ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+			$results = $wpdb->get_var( 'SELECT COUNT(*) FROM `' . esc_sql( $wpdb->prefix . $tbl ) . '` WHERE completed=1' );
+		} else {
 			$timestamp = current_time( 'timestamp' );
 			$time_ago  = strtotime( "-$seconds_to_include Seconds", $timestamp );
 			$date      = date_i18n( 'Y-m-d H:i:s', $time_ago );
-			$query    .= " AND date_time >= '$date'";
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+			$results = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM `' . esc_sql( $wpdb->prefix . $tbl ) . '` WHERE completed=1 AND date_time >= %s', $date ) );
 		}
-
-		$results = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		return apply_filters( 'automator_completed_runs', absint( $results ) );
 	}
@@ -1413,6 +1213,7 @@ WHERE t.automator_trigger_id = %d
 	 */
 	public function recipe_completed_times( $recipe_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(run_number) FROM {$wpdb->prefix}uap_recipe_log WHERE automator_recipe_id=%d AND completed = %d", $recipe_id, 1 ) );
 
 		return is_numeric( $count ) ? $count : 0;
@@ -1428,47 +1229,10 @@ WHERE t.automator_trigger_id = %d
 	 */
 	public function recipe_completed_times_by_user( $recipe_id, $user_id ) {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(run_number) FROM {$wpdb->prefix}uap_recipe_log WHERE automator_recipe_id=%d AND completed=%d AND user_id=%d", $recipe_id, 1, $user_id ) );
 
 		return is_numeric( $count ) ? $count : 0;
-	}
-
-	/**
-	 * Return all integration published actions.
-	 *
-	 * @param mixed $integration The integration.
-	 *
-	 * @return array The recipe data.
-	 */
-	public function get_integration_publish_actions( $integration = '' ) {
-
-		// Get all published recipes.
-		$published_recipes = array_filter(
-			Automator()->get_recipes_data(),
-			function ( $recipe ) {
-				return 'publish' === $recipe['post_status'];
-			}
-		);
-
-		// Map all published integration actions.
-		$published_actions = array_map(
-			function ( $published_recipe ) use ( $integration ) {
-				// Filter the actions by integration and publish staus.
-				$published_actions = array_filter(
-					$published_recipe['actions'],
-					function ( $action ) use ( $integration ) {
-						return 'publish' === $action['post_status'] && $integration === $action['meta']['integration'];
-					}
-				);
-
-				// Return the specific integration actions that are published.
-				return $published_actions;
-			},
-			$published_recipes
-		);
-
-		// Automatically remove empty elements.
-		return array_filter( $published_actions );
 	}
 
 	/**
@@ -1500,114 +1264,6 @@ WHERE t.automator_trigger_id = %d
 	}
 
 	/**
-	 * Retrieves all recipes that has an action that consumes a credit.
-	 *
-	 * @return mixed[]
-	 */
-	public function fetch_recipe_with_apps() {
-		return ( new Recipe_Using_Credits_Utils() )->fetch();
-	}
-
-	/**
-	 * How many recipes use a credit-consuming integration.
-	 *
-	 * Use this wherever only the number is wanted. fetch_recipe_with_apps()
-	 * builds titles, edit links, post meta and a run count for every recipe;
-	 * count()ing that was costing ~3 queries per recipe to produce one integer,
-	 * every usage report.
-	 *
-	 * @return int
-	 */
-	public function count_recipes_with_apps() {
-		return ( new Recipe_Using_Credits_Utils() )->count_recipes_with_apps();
-	}
-
-	/**
-	 * @deprecated 7.2 Use fetch_recipe_with_apps() instead.
-	 *
-	 * @return array|int
-	 */
-	public function recipes_using_credits( $count_only = false ) {
-		global $wpdb;
-		$integration_codes = array(
-			'ACTIVE_CAMPAIGN',
-			'FACEBOOK',
-			'GOOGLESHEET',
-			'GOOGLE_CALENDAR',
-			'GTT',
-			'GTW',
-			'HUBSPOT',
-			'INSTAGRAM',
-			'LINKEDIN',
-			'MAILCHIMP',
-			'SLACK',
-			'TWITTER',
-			'TWILIO',
-			'WHATSAPP',
-			'ZOOM',
-			'ZOOMWEBINAR',
-		);
-
-		$placeholders  = implode( ', ', array_fill( 0, count( $integration_codes ), '%s' ) );
-		$sql           = $wpdb->prepare(
-			"SELECT rp.ID as ID
-			FROM {$wpdb->posts} cp
-			LEFT JOIN {$wpdb->posts} rp ON rp.ID = cp.post_parent
-			WHERE cp.ID IN (
-				SELECT post_id FROM {$wpdb->postmeta}
-				WHERE meta_key = 'integration'
-				AND meta_value IN ({$placeholders})
-			)
-			AND cp.post_status = %s
-			AND rp.post_status = %s",
-			array_merge( $integration_codes, array( 'publish', 'publish' ) )
-		);
-		$check_recipes = $wpdb->get_col( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		if ( $count_only ) {
-			return count( $check_recipes );
-		}
-		$recipes = array();
-		if ( ! empty( $check_recipes ) ) {
-			foreach ( $check_recipes as $recipe_id ) {
-				// Get the title
-				$recipe_title = get_the_title( $recipe_id );
-				/* translators: 1. The recipe ID */
-				$recipe_title = ! empty( $recipe_title ) ? $recipe_title : sprintf( esc_html__( 'ID: %s (no title)', 'uncanny-automator' ), $recipe_id );
-
-				// Get the URL
-				$recipe_edit_url = get_edit_post_link( $recipe_id );
-
-				// Get the recipe type
-				$recipe_type = Automator()->utilities->get_recipe_type( $recipe_id );
-
-				// Get the times per user
-				$recipe_times_per_user = '';
-				if ( 'user' === $recipe_type ) {
-					$recipe_times_per_user = get_post_meta( $recipe_id, 'recipe_completions_allowed', true );
-				}
-
-				// Get the total allowed completions
-				$recipe_allowed_completions_total = get_post_meta( $recipe_id, 'recipe_max_completions_allowed', true );
-
-				// Get the number of runs
-				$recipe_number_of_runs = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(run_number) FROM {$wpdb->prefix}uap_recipe_log WHERE automator_recipe_id=%d AND completed = %d", $recipe_id, 1 ) );
-
-				$recipes[] = array(
-					'id'                        => $recipe_id,
-					'title'                     => $recipe_title,
-					'url'                       => $recipe_edit_url,
-					'type'                      => $recipe_type,
-					'times_per_user'            => $recipe_times_per_user,
-					'allowed_completions_total' => $recipe_allowed_completions_total,
-					'completed_runs'            => $recipe_number_of_runs,
-				);
-			}
-		}
-
-		return $recipes;
-	}
-
-	/**
 	 * @return mixed|null
 	 */
 	public function completed_recipes_count() {
@@ -1632,15 +1288,9 @@ WHERE t.automator_trigger_id = %d
 	 * @return float|int|string
 	 */
 	public function total_recipes( $status = 'all' ) {
-		global $wpdb;
-		if ( 'all' === $status ) {
-			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM $wpdb->posts WHERE post_type = %s", AUTOMATOR_POST_TYPE_RECIPE ) );
-		}
-		if ( 'all' !== $status ) {
-			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM $wpdb->posts WHERE post_type = %s AND post_status = %s", AUTOMATOR_POST_TYPE_RECIPE, $status ) );
-		}
+		$counts = (array) wp_count_posts( AUTOMATOR_POST_TYPE_RECIPE );
 
-		return is_numeric( $count ) ? $count : 0;
+		return 'all' === $status ? array_sum( $counts ) : (int) ( $counts[ $status ] ?? 0 );
 	}
 
 	/**
@@ -1649,8 +1299,10 @@ WHERE t.automator_trigger_id = %d
 	public function recipe_log_count( $any = true ) {
 		global $wpdb;
 		if ( $any ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 			$count = $wpdb->get_var( "SELECT COUNT(ID) FROM {$wpdb->prefix}uap_recipe_log" );
 		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM {$wpdb->prefix}uap_recipe_log WHERE completed != %d", 1 ) );
 		}
 

@@ -255,6 +255,7 @@ class Wpcafe_Create_Reservation extends Action {
 		// The model is silent; the controller is what normally announces a new
 		// booking. Re-fire so WPCafe's reservation emails and WP Cafe Pro's
 		// webhooks see this reservation too.
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPCafe's own hook.
 		do_action( 'wpcafe_after_reservation_create', $reservation );
 
 		$this->hydrate_tokens(

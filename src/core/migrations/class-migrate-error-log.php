@@ -4,6 +4,10 @@ namespace Uncanny_Automator\Migrations;
 
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Action_Error_Store;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Backfills uap_error_log from existing uap_action_log error messages.
  *
@@ -67,12 +71,24 @@ class Migrate_Error_Log extends Migration {
 	/**
 	 * Process one batch. Schedules next batch if rows remain.
 	 *
+	 * A batch with a row the database did not write leaves the backfill pending: a later
+	 * request runs it again, and the row is selected again.
+	 *
+	 * @since 8.0.0 A batch with an unwritten row neither records completion nor schedules the next batch.
+	 *
 	 * @return void
 	 */
 	public function run_batch() {
 
-		$store    = \Uncanny_Automator\App\Infrastructure\Database\Database::get_action_error_store();
-		$migrated = $store->migrate_legacy_errors( self::BATCH_SIZE );
+		$store = \Uncanny_Automator\App\Infrastructure\Database\Database::get_action_error_store();
+
+		try {
+			$migrated = $store->migrate_legacy_errors( self::BATCH_SIZE );
+		} catch ( \Uncanny_Automator\App\Infrastructure\Exceptions\Store_Exception $e ) {
+			automator_log( $e->getMessage(), $this->name, true );
+
+			return;
+		}
 
 		if ( $migrated >= self::BATCH_SIZE ) {
 			// More rows likely remain — schedule next batch.

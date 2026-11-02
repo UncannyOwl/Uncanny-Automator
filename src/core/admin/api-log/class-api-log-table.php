@@ -5,6 +5,10 @@ namespace Uncanny_Automator;
 use Uncanny_Automator_Pro\Pro_Filters;
 use WP_List_Table;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	include_once ABSPATH . '/wp-admin/includes/class-wp-list-table.php';
 }
@@ -91,7 +95,8 @@ class Api_Log_Table extends WP_List_Table {
 		$query .= " ORDER BY $orderby $order";
 
 		/* -- Pagination parameters -- */
-		$total_items = $wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Custom log views; live state read. The query is prepared in get_api_query(); ORDER BY is limited to a whitelist and LIMIT is cast to int.
+		$total_items = $wpdb->query( $query );
 
 		$perpage = 100;
 
@@ -117,10 +122,12 @@ class Api_Log_Table extends WP_List_Table {
 		);
 
 		/* -- Register the Columns -- */
-		$columns                           = $this->get_columns();
+		$columns = $this->get_columns();
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Core's list-table column headers global, set as WP_List_Table does.
 		$_wp_column_headers[ $screen->id ] = $columns;
 
-		$this->items = $this->format_api_data( $wpdb->get_results( $query ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Custom log views; live state read. The query is prepared in get_api_query(); ORDER BY is limited to a whitelist and LIMIT is cast to int.
+		$this->items = $this->format_api_data( $wpdb->get_results( $query ) );
 	}
 
 	/**
@@ -233,14 +240,13 @@ class Api_Log_Table extends WP_List_Table {
 	 */
 	private function format_api_data( $requests ) {
 
-		$data         = array();
-		$recipes_data = Automator()->get_recipes_data( false );
+		$data = array();
 
 		foreach ( $requests as $request ) {
 
 			$completed = Automator_Status::name( $request->completed );
 
-			$code = $this->item_code( $recipes_data, absint( $request->item_id ) );
+			$code = $this->item_code( absint( $request->item_id ) );
 			/* translators: 1. Action ID */
 			$name = sprintf( esc_attr__( 'Action deleted: %1$s', 'uncanny-automator' ), $request->item_id );
 
@@ -330,38 +336,17 @@ class Api_Log_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Format single item
+	 * The item's code, or '' when the item no longer exists.
 	 *
-	 * @param array $recipes_data
-	 * @param string $item_id
+	 * Read off the item's own post, so an action nested in a filter, delay or
+	 * loop block is found like one at the recipe root.
 	 *
-	 * @return array
+	 * @param int $item_id Action post id.
+	 *
+	 * @return string
 	 */
-	private function item_code( $recipes_data, $item_id ) {
-
-		$item_code  = null;
-		$item_codes = array();
-
-		foreach ( $recipes_data as $recipe_data ) {
-
-			foreach ( $recipe_data['triggers'] as $trigger ) {
-				$item_codes[ $trigger['ID'] ] = $trigger['meta']['code'];
-			}
-
-			foreach ( $recipe_data['actions'] as $action ) {
-				$item_codes[ $action['ID'] ] = $action['meta']['code'];
-			}
-
-			foreach ( $recipe_data['closures'] as $closure ) {
-				$item_codes[ $closure['ID'] ] = $closure['meta']['code'];
-			}
-		}
-
-		if ( isset( $item_codes[ $item_id ] ) ) {
-			$item_code = $item_codes[ $item_id ];
-		}
-
-		return $item_code;
+	private function item_code( $item_id ) {
+		return (string) get_post_meta( absint( $item_id ), 'code', true );
 	}
 
 	/**
@@ -406,7 +391,7 @@ class Api_Log_Table extends WP_List_Table {
 			if ( class_exists( '\uncanny_automator_pro\Pro_Filters' ) ) {
 				$filter_html = Pro_Filters::activities_filters_html( $this->tab );
 			} else {
-				$GLOBALS['ua_current_tab'] = $this->tab;
+				$GLOBALS['uncanny_automator_current_tab'] = $this->tab;
 
 				// Start output
 				ob_start();

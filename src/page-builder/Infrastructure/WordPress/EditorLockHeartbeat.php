@@ -100,7 +100,7 @@ final class EditorLockHeartbeat
             // The heartbeat response carries every plugin's payload. A Page
             // Builder projection failure must hand back the incoming response
             // instead of breaking the whole heartbeat request.
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Editor lock heartbeat refresh failed (%s).',
                 $failure::class,
             ));
@@ -153,7 +153,7 @@ final class EditorLockHeartbeat
 
     private function logUnavailable(int $postId, string $scope): void
     {
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] Editor lock refresh unavailable target=%d actor=%d scope=%s reason=ownership_unavailable',
             $postId,
             (int) get_current_user_id(),
@@ -163,7 +163,7 @@ final class EditorLockHeartbeat
 
     private function logSourceGenerationUnavailable(int $postId, string $scope): void
     {
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] Editor lock refresh unavailable target=%d actor=%d scope=%s reason=source_generation_unavailable',
             $postId,
             (int) get_current_user_id(),

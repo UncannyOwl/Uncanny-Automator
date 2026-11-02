@@ -6,6 +6,10 @@
  */
 namespace Uncanny_Automator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Admin_Logs_Recipe {
 
 	public function __construct() {

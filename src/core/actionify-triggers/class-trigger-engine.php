@@ -81,6 +81,8 @@ class Trigger_Engine {
 	 */
 	public function init() {
 
+		add_action( 'automator_refresh_trigger_hooks', array( $this, 'register_automation_hooks' ), 10, 0 );
+
 		// Eager pass: attach code-defined listeners at `plugins_loaded` (priority 0)
 		// so a monitored hook that an upstream plugin fires-and-exit()s during
 		// `plugins_loaded` — before Automator's normal `init`-time registration —

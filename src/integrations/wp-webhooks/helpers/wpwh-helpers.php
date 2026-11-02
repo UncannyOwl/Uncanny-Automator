@@ -182,11 +182,19 @@ class Wpwh_Helpers extends Abstract_Helpers {
 		$array = array();
 
 		foreach ( $parent as $name => $element ) {
-			( $node = &$array[ $name ] )
-				&& ( 1 === count( $node ) ? $node = array( $node ) : 1 )
-				&& $node = &$node[];
+			$value = $element->count() ? $this->xml_to_array( $element ) : trim( $element );
 
-			$node = $element->count() ? $this->xml_to_array( $element ) : trim( $element );
+			if ( empty( $array[ $name ] ) ) {
+				$array[ $name ] = $value;
+				continue;
+			}
+
+			// A repeated name becomes a list of its values. A text value counts as one, as count() did before PHP 8.
+			if ( 1 === ( is_array( $array[ $name ] ) ? count( $array[ $name ] ) : 1 ) ) {
+				$array[ $name ] = array( $array[ $name ] );
+			}
+
+			$array[ $name ][] = $value;
 		}
 
 		return $array;
@@ -203,12 +211,17 @@ class Wpwh_Helpers extends Abstract_Helpers {
 	public function decode_payload( $raw_body, $body_data_format = 'json' ) {
 
 		if ( 'xml' === $body_data_format ) {
+			// Malformed XML is answered with an empty array, not PHP warnings in the site's log.
+			$previous = libxml_use_internal_errors( true );
 			try {
 				$xml = new \SimpleXMLElement( $raw_body );
 				return $this->xml_to_array( $xml );
 			} catch ( \Throwable $e ) {
 				unset( $e );
 				return array();
+			} finally {
+				libxml_clear_errors();
+				libxml_use_internal_errors( $previous );
 			}
 		}
 

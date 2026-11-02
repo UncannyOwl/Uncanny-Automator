@@ -415,21 +415,6 @@ class Automator_Recipe_Process_Complete {
 	}
 
 	/**
-	 * Complete all closures in recipe
-	 *
-	 * @param null $recipe_id
-	 * @param null $user_id
-	 * @param null $recipe_log_id
-	 * @param array $args
-	 * @param array|null $recipe_closure_data Pre-fetched closure data to avoid redundant DB query.
-	 *
-	 * @return bool
-	 */
-	public function closures( $recipe_id = null, $user_id = null, $recipe_log_id = null, $args = array(), $recipe_closure_data = null ) {
-		return $this->get_recipe_complete()->closures( $recipe_id, $user_id, $recipe_log_id, $args, $recipe_closure_data );
-	}
-
-	/**
 	 * When there are multiple triggers in a recipe, $args only contains the last run trigger info.
 	 * It creates issues in the parsing of the tokens. This is an attempt to fix the issue by returning
 	 * all triggers of a recipe in an already passing $args.

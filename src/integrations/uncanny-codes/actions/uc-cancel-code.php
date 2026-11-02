@@ -92,6 +92,7 @@ class UC_CANCEL_CODE extends \Uncanny_Automator\Recipe\Action {
 		$group_id = $code_details->code_group;
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uncanny Codes' own table; write; the plugin offers no API for this query.
 		$result = $wpdb->update(
 			$wpdb->prefix . \uncanny_learndash_codes\Config::$tbl_codes,
 			array(

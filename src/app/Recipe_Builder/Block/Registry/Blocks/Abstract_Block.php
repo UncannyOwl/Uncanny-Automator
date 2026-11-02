@@ -3,8 +3,12 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Block\Registry\Blocks;
 
 use Uncanny_Automator\App\Recipe_Builder\Block\Block_Config;
+use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Layout;
+use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Default_Modifier;
 use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Details;
+use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Modifier_Type;
 use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Path;
+use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Sentence;
 use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Taxonomies;
 use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Block_Unsupported_Entity;
 
@@ -125,11 +129,47 @@ abstract class Abstract_Block {
 	protected $paths = array();
 
 	/**
+	 * How the block ENCLOSES the items placed inside it: a container the flow passes through ({@see Block_Layout::FRAME}), a set of branches drawn side by side ({@see Block_Layout::FAN_OUT}), or a body that runs later and is drawn apart from the flow ({@see Block_Layout::DEFERRED}).
+	 *
+	 * Declared, never inferred. A surface laying the recipe out reads this rather than counting paths or checking whether the block happens to accept modifiers - that inference is how Delay ended up enclosing nothing, from a `modifier_types()` call nobody had ever made.
+	 *
+	 * @var string
+	 */
+	protected string $layout = Block_Layout::DEFAULT_LAYOUT;
+
+	/**
+	 * Accepted modifier types as value objects.
+	 *
+	 * Each entry carries the wire `id` (e.g. `'filter_condition'`) and a display `name` contextual to the block (e.g. `"Condition"` inside Filter). Empty array means the block rejects modifiers (e.g. Delay). Each `id` must match a `block_modifier_type` registered by an integration item; the modifier catalog is assembled at REST time from the integrations registry.
+	 *
+	 * @var Block_Modifier_Type[]
+	 */
+	protected array $modifier_types = array();
+
+	/**
+	 * Skeletons of modifiers the backend auto-attaches when the block is created.
+	 *
+	 * Each entry conforms to {@link Block_Default_Modifier}. The frontend mirrors this list inside the optimistic temporary block so the placeholder render matches the eventual server response.
+	 *
+	 * @var Block_Default_Modifier[]
+	 */
+	protected array $default_modifiers = array();
+
+	/**
 	 * Dependency description.
 	 *
 	 * @var string
 	 */
 	protected $dependency_description = '';
+
+	/**
+	 * Sentence definition (short + dynamic + optional variants).
+	 *
+	 * Optional. Blocks that don't declare a sentence simply render no sentence row in the flow viewer.
+	 *
+	 * @var Block_Sentence|null
+	 */
+	protected ?Block_Sentence $sentence = null;
 
 	/**
 	 * Constructor.
@@ -451,6 +491,84 @@ abstract class Abstract_Block {
 	}
 
 	/**
+	 * Set how the block encloses the items placed inside it.
+	 *
+	 * @param string $layout One of {@see Block_Layout}.
+	 *
+	 * @return void
+	 */
+	protected function set_layout( string $layout ): void {
+		$this->layout = $layout;
+	}
+
+	/**
+	 * Get how the block encloses the items placed inside it.
+	 *
+	 * @return string One of {@see Block_Layout}.
+	 */
+	public function get_layout(): string {
+		return $this->layout;
+	}
+
+	/**
+	 * Set the modifier types the block accepts.
+	 *
+	 * Each entry can be a {@link Block_Modifier_Type} value object or a data array `['id' => ..., 'name' => ...]`; data arrays are converted via the value object's constructor (which validates the shape).
+	 *
+	 * @param array $types List of modifier-type data arrays or value objects.
+	 *
+	 * @return void
+	 */
+	protected function set_modifier_types( array $types ): void {
+		$this->modifier_types = array_map(
+			function ( $entry ) {
+				return $entry instanceof Block_Modifier_Type
+					? $entry
+					: new Block_Modifier_Type( $entry );
+			},
+			$types
+		);
+	}
+
+	/**
+	 * Get the accepted modifier types as value objects.
+	 *
+	 * @return Block_Modifier_Type[]
+	 */
+	public function get_modifier_types(): array {
+		return $this->modifier_types;
+	}
+
+	/**
+	 * Set the default modifiers auto-attached when the block is created.
+	 *
+	 * Each entry can be a {@link Block_Default_Modifier} or a data array; the value object validates the shape.
+	 *
+	 * @param array $defaults List of skeleton data or value objects.
+	 *
+	 * @return void
+	 */
+	protected function set_default_modifiers( array $defaults ): void {
+		$this->default_modifiers = array_map(
+			function ( $entry ) {
+				return $entry instanceof Block_Default_Modifier
+					? $entry
+					: new Block_Default_Modifier( $entry );
+			},
+			$defaults
+		);
+	}
+
+	/**
+	 * Get the default modifiers as value objects.
+	 *
+	 * @return Block_Default_Modifier[]
+	 */
+	public function get_default_modifiers(): array {
+		return $this->default_modifiers;
+	}
+
+	/**
 	 * Set dependency description.
 	 *
 	 * @param string $dependency_description Dependency description.
@@ -468,6 +586,36 @@ abstract class Abstract_Block {
 	 */
 	public function get_dependency_description(): string {
 		return $this->dependency_description;
+	}
+
+	/**
+	 * Set the block sentence (short + dynamic + optional variants).
+	 *
+	 * Concrete blocks call this from `setup_block()` with an array; the value object validates the shape. Pass `null` to clear.
+	 *
+	 * @param array|Block_Sentence|null $sentence Sentence data, value
+	 *                                            object, or null.
+	 *
+	 * @return void
+	 */
+	protected function set_sentence( $sentence ): void {
+		if ( null === $sentence ) {
+			$this->sentence = null;
+			return;
+		}
+
+		$this->sentence = $sentence instanceof Block_Sentence
+			? $sentence
+			: new Block_Sentence( $sentence );
+	}
+
+	/**
+	 * Get the block sentence.
+	 *
+	 * @return Block_Sentence|null
+	 */
+	public function get_sentence(): ?Block_Sentence {
+		return $this->sentence;
 	}
 
 	/**
@@ -517,6 +665,10 @@ abstract class Abstract_Block {
 			->details( $details )
 			->fields( $this->get_fields() )
 			->paths( $paths )
-			->dependency_description( $this->get_dependency_description() );
+			->layout( $this->get_layout() )
+			->modifier_types( $this->get_modifier_types() )
+			->default_modifiers( $this->get_default_modifiers() )
+			->dependency_description( $this->get_dependency_description() )
+			->sentence( $this->get_sentence() );
 	}
 }

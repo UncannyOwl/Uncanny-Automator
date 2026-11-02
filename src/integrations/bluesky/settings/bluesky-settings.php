@@ -109,14 +109,16 @@ class Bluesky_Settings extends App_Integration_Settings {
 	}
 
 	/**
-	 * Before disconnect
+	 * Once the platform confirmed the disconnect (handoff R8): delete the vault
+	 * credentials on the API proxy. Errors are ignored, so it is safe to run
+	 * twice.
 	 *
 	 * @param array $response The current response array
 	 * @param array $data The posted data
 	 *
 	 * @return array
 	 */
-	protected function before_disconnect( $response = array(), $data = array() ) {
+	protected function after_platform_disconnect( $response = array(), $data = array() ) {
 		// This deletes the vault credentials from the server.
 		$this->helpers->remove_credentials();
 

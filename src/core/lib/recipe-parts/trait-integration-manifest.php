@@ -104,18 +104,18 @@ trait Integration_Manifest {
 	protected $plugin_file_path = '';
 
 	/**
-	 * Required plugin file paths.
+	 * Required plugin file path.
 	 *
-	 * @var array
+	 * @var string
 	 */
-	protected $plugin_required = array();
+	protected $plugin_required = '';
 
 	/**
-	 * Required integration codes.
+	 * Required integration code.
 	 *
-	 * @var array
+	 * @var string
 	 */
-	protected $integration_required = array();
+	protected $integration_required = '';
 
 	/**
 	 * Distribution type ('wp_org', 'open_source', 'commercial' or 'saas').
@@ -340,64 +340,54 @@ trait Integration_Manifest {
 	}
 
 	/**
-	 * Set required plugins.
+	 * Set the required plugin.
 	 *
-	 * Accepts string or array, normalizes to array.
-	 * Empty strings result in empty arrays.
+	 * plugin_required and integration_required describe one parent between them:
+	 * its plugin file and its integration code. Anything but a string is
+	 * discarded rather than coerced into a value that could never resolve.
 	 *
-	 * @param string|array $plugins Plugin file path(s).
+	 * @param string $plugin Plugin file path.
 	 *
 	 * @return void
 	 */
-	public function set_plugin_required( $plugins ) {
-		if ( is_string( $plugins ) ) {
-			$this->plugin_required = ! empty( $plugins ) ? array( $plugins ) : array();
-		} elseif ( is_array( $plugins ) ) {
-			$this->plugin_required = $plugins;
-		} else {
-			$this->plugin_required = array();
-		}
+	public function set_plugin_required( $plugin ) {
+		$this->plugin_required = is_string( $plugin ) ? $plugin : '';
 	}
 
 	/**
-	 * Get required plugins.
+	 * Get the required plugin.
 	 *
 	 * Returns only values set via set_plugin_required(). Does NOT fetch from complete.json.
 	 * For internal integration data, use Integration_Store.
 	 *
-	 * @return array Array of plugin file paths.
+	 * @return string Plugin file path, empty when none is set.
 	 */
 	public function get_plugin_required() {
 		return $this->plugin_required;
 	}
 
 	/**
-	 * Set required integrations.
+	 * Set the required integration.
 	 *
-	 * Accepts string or array, normalizes to array.
-	 * Empty strings result in empty arrays.
+	 * Pairs with set_plugin_required(): the dependency's plugin file and, when it
+	 * is also an Automator integration, its code. Anything but a string is
+	 * discarded rather than coerced into a value that could never resolve.
 	 *
-	 * @param string|array $integrations Integration code(s).
+	 * @param string $integration Integration code.
 	 *
 	 * @return void
 	 */
-	public function set_integration_required( $integrations ) {
-		if ( is_string( $integrations ) ) {
-			$this->integration_required = ! empty( $integrations ) ? array( $integrations ) : array();
-		} elseif ( is_array( $integrations ) ) {
-			$this->integration_required = $integrations;
-		} else {
-			$this->integration_required = array();
-		}
+	public function set_integration_required( $integration ) {
+		$this->integration_required = is_string( $integration ) ? $integration : '';
 	}
 
 	/**
-	 * Get required integrations.
+	 * Get the required integration.
 	 *
 	 * Returns only values set via set_integration_required(). Does NOT fetch from complete.json.
 	 * For internal integration data, use Integration_Store.
 	 *
-	 * @return array Array of integration codes.
+	 * @return string Integration code, empty when none is set.
 	 */
 	public function get_integration_required() {
 		return $this->integration_required;

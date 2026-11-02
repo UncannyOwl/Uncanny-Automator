@@ -28,8 +28,8 @@ trait App_Integration_Settings_Setup {
 
 	/**
 	 * The icon of the integration
-	 * This expects a valid <uo-icon> ID.
-	 * Check the Design Guidelines to see the list of valid IDs.
+	 * This expects a valid <uas-icon> code.
+	 * Check the Design Guidelines to see the list of valid codes.
 	 *
 	 * @var String
 	 */
@@ -157,8 +157,8 @@ trait App_Integration_Settings_Setup {
 
 	/**
 	 * Sets the icon of the integration
-	 * This expects a valid <uo-icon> ID.
-	 * Check the Design Guidelines to see the list of valid IDs.
+	 * This expects a valid <uas-icon> code.
+	 * Check the Design Guidelines to see the list of valid codes.
 	 *
 	 * @param String $icon The icon
 	 */

@@ -10,6 +10,10 @@ namespace Uncanny_Automator;
  * - WordPress object cache (shared across requests)
  * - Miss caching (prevents redundant DB queries)
  *
+ * On a network every site has its own options. The in-process layers are kept per site (by blog ID),
+ * and switching to another site lets go of the other sites' layers. The object cache group is not a
+ * global group, so WordPress keeps its keys per site as well.
+ *
  * @since 5.0
  */
 final class Automator_Options_Cache {
@@ -58,16 +62,37 @@ final class Automator_Options_Cache {
 	private $miss_cache_prefix = 'miss_';
 
 	/**
-	 * In-process cache for option values.
-	 * Key: option_name, Value: decoded option value or null for misses.
+	 * In-process cache for option values, per site.
+	 * Key: blog ID, then option_name. Value: decoded option value or MISS.
+	 *
+	 * @var array<int,array<string,mixed>>
 	 */
 	private $cached_values = array();
 
 	/**
-	 * In-process cache for autoloaded options.
-	 * Key: option_name, Value: decoded option value.
+	 * In-process cache for autoloaded options, per site.
+	 * Key: blog ID, then option_name. Value: decoded option value.
+	 *
+	 * @var array<int,array<string,mixed>>
 	 */
 	private $autoloaded = array();
+
+	/**
+	 * Sites whose autoloaded options have been warmed in this request.
+	 * Key: blog ID. Value: true.
+	 *
+	 * @var array<int,true>
+	 */
+	private $warmed_sites = array();
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 8.0.0
+	 */
+	public function __construct() {
+		add_action( 'switch_blog', array( $this, 'forget_other_sites' ), 10, 1 );
+	}
 
 	/**
 	 * Get the cache group for WordPress object cache.
@@ -102,6 +127,7 @@ final class Automator_Options_Cache {
 	 * @return int Cache TTL in seconds.
 	 */
 	public function get_cache_ttl() {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_options_cache_ttl', self::CACHE_TTL );
 	}
 
@@ -111,6 +137,7 @@ final class Automator_Options_Cache {
 	 * @return int Miss cache TTL in seconds.
 	 */
 	public function get_cache_miss_ttl() {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_options_cache_miss_ttl', self::CACHE_MISS_TTL );
 	}
 
@@ -122,14 +149,16 @@ final class Automator_Options_Cache {
 	 * @return mixed Cached value or default.
 	 */
 	public function get_from_memory( $key, $default_value = self::ABSENT ) {
+		$site = get_current_blog_id();
+
 		// Check autoloaded cache first.
-		if ( array_key_exists( $key, $this->autoloaded ) ) {
-			return $this->autoloaded[ $key ];
+		if ( isset( $this->autoloaded[ $site ] ) && array_key_exists( $key, $this->autoloaded[ $site ] ) ) {
+			return $this->autoloaded[ $site ][ $key ];
 		}
 
 		// Check regular cache.
-		if ( array_key_exists( $key, $this->cached_values ) ) {
-			return $this->cached_values[ $key ];
+		if ( isset( $this->cached_values[ $site ] ) && array_key_exists( $key, $this->cached_values[ $site ] ) ) {
+			return $this->cached_values[ $site ][ $key ];
 		}
 
 		return $default_value;
@@ -147,7 +176,7 @@ final class Automator_Options_Cache {
 		$miss_cached = wp_cache_get( $this->get_miss_cache_prefix() . $key, $this->get_cache_group() );
 		if ( false !== $miss_cached ) {
 			// Remember the miss to prevent re-lookups this request.
-			$this->cached_values[ $key ] = self::MISS;
+			$this->cached_values[ get_current_blog_id() ][ $key ] = self::MISS;
 			// Return a recognizable sentinel so callers can short-circuit without DB hit.
 			return self::MISS;
 		}
@@ -156,8 +185,10 @@ final class Automator_Options_Cache {
 		$cached_value = wp_cache_get( $this->get_option_cache_prefix() . $key, $this->get_cache_group() );
 		if ( false !== $cached_value ) {
 			// Decode the cached value (use null default to make stored null observable) and store in memory.
-			$decoded_value               = Automator_Option_Formatter::format_value( $cached_value, null, null, $key );
-			$this->cached_values[ $key ] = $decoded_value;
+			$decoded_value = Automator_Option_Formatter::format_value( $cached_value, null, null, $key );
+
+			$this->cached_values[ get_current_blog_id() ][ $key ] = $decoded_value;
+
 			return $decoded_value;
 		}
 
@@ -174,11 +205,13 @@ final class Automator_Options_Cache {
 	 * @param bool   $update_object_cache Whether to update WordPress object cache.
 	 */
 	public function set( $key, $value, $serialized_value, $autoload = false, $update_object_cache = true ) {
+		$site = get_current_blog_id();
+
 		// Always store in memory cache.
 		if ( $autoload ) {
-			$this->autoloaded[ $key ] = $value;
+			$this->autoloaded[ $site ][ $key ] = $value;
 		} else {
-			$this->cached_values[ $key ] = $value;
+			$this->cached_values[ $site ][ $key ] = $value;
 		}
 
 		// Conditionally store in object cache (serialized for persistence).
@@ -194,7 +227,7 @@ final class Automator_Options_Cache {
 	 */
 	public function set_miss( $key ) {
 		// Remember miss in memory using MISS sentinel.
-		$this->cached_values[ $key ] = self::MISS;
+		$this->cached_values[ get_current_blog_id() ][ $key ] = self::MISS;
 
 		// Store miss in object cache with short TTL.
 		wp_cache_set( $this->get_miss_cache_prefix() . $key, true, $this->get_cache_group(), $this->get_cache_miss_ttl() );
@@ -206,9 +239,11 @@ final class Automator_Options_Cache {
 	 * @param string $key Option key.
 	 */
 	public function delete( $key ) {
+		$site = get_current_blog_id();
+
 		// Remove from memory caches.
-		unset( $this->cached_values[ $key ] );
-		unset( $this->autoloaded[ $key ] );
+		unset( $this->cached_values[ $site ][ $key ] );
+		unset( $this->autoloaded[ $site ][ $key ] );
 
 		// Remove from object cache.
 		wp_cache_delete( $this->get_option_cache_prefix() . $key, $this->get_cache_group() );
@@ -216,41 +251,79 @@ final class Automator_Options_Cache {
 	}
 
 	/**
-	 * Warm the autoloaded cache with database results.
+	 * Warm the current site's autoloaded cache with database results.
 	 *
 	 * @param array $autoloaded_options Array of option_name => option_value pairs.
 	 */
 	public function warm_autoloaded( array $autoloaded_options ) {
+		$site = get_current_blog_id();
+
 		foreach ( $autoloaded_options as $option_name => $option_value ) {
-			$this->autoloaded[ $option_name ] = Automator_Option_Formatter::format_value(
+			$this->autoloaded[ $site ][ $option_name ] = Automator_Option_Formatter::format_value(
 				$option_value,
 				null,
 				null,
 				$option_name
 			);
 		}
+
+		$this->warmed_sites[ $site ] = true;
 	}
 
 	/**
-	 * Clear all in-process caches.
+	 * Whether the current site's autoloaded options have been warmed in this request.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_warmed() {
+		return isset( $this->warmed_sites[ get_current_blog_id() ] );
+	}
+
+	/**
+	 * Let go of the in-process caches of every site but one.
+	 *
+	 * Hooked to switch_blog, so a request that switches between network sites keeps only the
+	 * current site's options in memory. The site switched back to is warmed again on its next read.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @param int $blog_id The site to keep.
+	 */
+	public function forget_other_sites( $blog_id ) {
+		$keep = array( (int) $blog_id => true );
+
+		$this->cached_values = array_intersect_key( $this->cached_values, $keep );
+		$this->autoloaded    = array_intersect_key( $this->autoloaded, $keep );
+		$this->warmed_sites  = array_intersect_key( $this->warmed_sites, $keep );
+	}
+
+	/**
+	 * Clear all in-process caches, for every site.
 	 * Useful for testing or when you need a fresh state.
 	 */
 	public function clear_memory() {
 		$this->cached_values = array();
 		$this->autoloaded    = array();
+		$this->warmed_sites  = array();
 	}
 
 	/**
-	 * Get statistics about current cache state.
+	 * Get statistics about the current site's cache state.
 	 * Useful for debugging and monitoring.
 	 *
 	 * @return array Cache statistics.
 	 */
 	public function get_stats() {
+		$site          = get_current_blog_id();
+		$cached_values = count( $this->cached_values[ $site ] ?? array() );
+		$autoloaded    = count( $this->autoloaded[ $site ] ?? array() );
+
 		return array(
-			'cached_values_count' => count( $this->cached_values ),
-			'autoloaded_count'    => count( $this->autoloaded ),
-			'total_memory_items'  => count( $this->cached_values ) + count( $this->autoloaded ),
+			'cached_values_count' => $cached_values,
+			'autoloaded_count'    => $autoloaded,
+			'total_memory_items'  => $cached_values + $autoloaded,
 		);
 	}
 }

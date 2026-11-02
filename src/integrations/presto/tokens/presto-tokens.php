@@ -2,6 +2,10 @@
 
 namespace Uncanny_Automator\Integrations\Presto;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Presto_Tokens
  *
@@ -54,6 +58,7 @@ class Presto_Tokens {
 							if ( '-1' === $trigger['meta'][ $piece ] ) {
 								$trigger_log_id = $replace_args['trigger_log_id'];
 								global $wpdb;
+								// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Automator's own table; no WordPress API for it. Live run state read; must not be cached.
 								$video_id = $wpdb->get_var(
 									$wpdb->prepare(
 										"SELECT meta_value

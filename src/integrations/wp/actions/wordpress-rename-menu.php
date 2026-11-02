@@ -22,6 +22,7 @@ class WP_RENAME_MENU extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Menu, %2$s: New menu name */
 				esc_html_x( 'Rename {{a menu:%1$s}} to {{a new name:%2$s}}', 'WordPress', 'uncanny-automator' ),
 				$this->get_action_meta(),
 				'WP_NEW_MENU_NAME:' . $this->get_action_meta()

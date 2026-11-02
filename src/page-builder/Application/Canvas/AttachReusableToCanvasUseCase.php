@@ -15,7 +15,7 @@ final class AttachReusableToCanvasUseCase
     {
         $canvas = $this->canvasPort->find($command->canvasId());
         if ($canvas === null) {
-            throw new CanvasNotFoundException($command->canvasId());
+            throw new CanvasNotFoundException((int) $command->canvasId());
         }
 
         if ($canvas->kind() !== CanvasKind::Page) {

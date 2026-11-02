@@ -5,6 +5,8 @@ namespace Uncanny_Automator;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Id;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Status;
 
 /**
  * Class Prune_Logs
@@ -101,73 +103,10 @@ class Prune_Logs {
 
 		add_action( 'admin_init', array( $this, 'maybe_update_automator_delete_data_on_uninstall' ) );
 
-		// Db size to prune notification.
-		add_action( 'automator_show_internal_admin_notice', array( $this, 'display_log_size_notification' ) );
-
-		// Log size notification.
-		add_action( 'wp_ajax_automator_dismiss_log_notification', array( $this, 'dismiss_log_notification' ) );
-
 		$this->schedule_table_size_calculation();
 
 		// Register settings.
 		$this->register_settings();
-	}
-
-	/**
-	 * Dismisses the log's notification.
-	 *
-	 * @return void
-	 */
-	public function dismiss_log_notification() {
-
-		if ( ! current_user_can( automator_get_admin_capability() ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'dismiss_log_notification' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined
-			wp_die( 'Unauthorized.' );
-		}
-
-		automator_update_option( 'automator_dismiss_log_last_dismissed', time() );
-
-		wp_safe_redirect( wp_get_referer() );
-
-		die;
-	}
-
-	/**
-	 * Display log notification.
-	 *
-	 * @return void
-	 */
-	public function display_log_size_notification() {
-
-		// Only display on areas where credits are also displayed.
-		if ( ! Automator_Review::can_display_credits_notif() ) {
-			return;
-		}
-
-		$table_size = automator_get_option( 'automator_db_size', 0 );
-
-		if ( 0 === (int) $table_size ) {
-			$table_size = $this->calculate_and_save_table_size();
-		}
-
-		$threshold_size = apply_filters( 'automator_display_log_size_notification_threshold_size_in_mb', 1024 );
-		$threshold_days = apply_filters( 'automator_display_log_size_notification_threshold_days', 30 );
-
-		$min_db_size = $table_size >= $threshold_size;
-
-		$days_last_dismissed = intval( automator_get_option( 'automator_dismiss_log_last_dismissed', 0 ) );
-
-		// Calculate the difference in seconds
-		$diff_in_seconds = time() - $days_last_dismissed;
-
-		// Convert seconds to days
-		$days_difference = ceil( $diff_in_seconds / ( 60 * 60 * 24 ) );
-
-		if ( $min_db_size && $days_difference >= $threshold_days ) {
-			// Load assets
-			Automator_Review::load_banner_assets();
-
-			include_once Utilities::automator_get_view( 'table-size-exceeds.php' );
-		}
 	}
 
 	/**
@@ -197,19 +136,22 @@ class Prune_Logs {
 	public function update_failed_recipes() {
 
 		$failed_recipes = Automator()->db->recipe->retrieve_failed_recipes();
+		$trigger_store  = automator_get_recipe_trigger_store();
 
 		foreach ( $failed_recipes as $failed_recipe ) {
 
 			$recipe_log_id = absint( $failed_recipe['ID'] );
 			$recipe_id     = absint( $failed_recipe['automator_recipe_id'] );
+			$recipe_post   = $recipe_id > 0 ? get_post( $recipe_id ) : null;
 
-			// Get the triggers logic.
-			try {
-				$recipe_object  = Automator()->get_recipe_object( $recipe_id, ARRAY_A );
-				$triggers_logic = strtolower( $recipe_object['triggers']['logic'] );
-			} catch ( Exception $e ) {
-				continue; // Skip. The recipe does not exists.
+			// A log whose recipe is gone or trashed has nothing to compare against.
+			if ( ! $recipe_post || AUTOMATOR_POST_TYPE_RECIPE !== $recipe_post->post_type || Recipe_Status::TRASH === $recipe_post->post_status ) {
+				continue;
 			}
+
+			// The triggers logic; an unset meta means every trigger must complete.
+			$recipe         = new Recipe_Id( $recipe_id );
+			$triggers_logic = strtolower( (string) $trigger_store->get_recipe_trigger_logic( $recipe ) );
 
 			// Retrieve the current triggers.
 			$current_triggers = (array) Automator()->db->recipe->retrieve_recipe_current_triggers( $recipe_log_id );
@@ -220,7 +162,7 @@ class Prune_Logs {
 			}
 
 			// Theoretically, the recipe should only fail if the number of triggers in the recipe matches with the completed triggers in the trigger log table, with the exception of any triggers. That only need to be any 1
-			if ( count( $current_triggers ) === count( $recipe_object['triggers']['items'] ) ) {
+			if ( count( $current_triggers ) === $trigger_store->count_recipe_triggers( $recipe ) ) {
 				$this->mark_recipe_log_as_failed( $recipe_log_id );
 				continue;
 			}
@@ -455,7 +397,7 @@ class Prune_Logs {
 		// Create a new instance of this class passing false as argument to the __construct so we dont reload the hooks.
 		$instance = new self( false );
 
-		// Retrieves all recipes that are not `in progress`, and are not `completed with notice`.
+		// Retrieves the finished runs older than the date; a run still waiting stays.
 		$recipe_logs = $instance->get_recipe_logs_from_date( $datetime_string );
 
 		// Delete all logs.
@@ -485,14 +427,17 @@ class Prune_Logs {
 		automator_purge_trigger_logs( $recipe_id, $log_id );
 		// Prune action logs.
 		automator_purge_action_logs( $recipe_id, $log_id );
-		// Prune closure logs.
-		automator_purge_closure_logs( $recipe_id, $log_id );
 
 		do_action( 'automator_recipe_log_deleted', $recipe_id, $log_id, $run_number );
 	}
 
 	/**
-	 * Retrieves all recipe logs from a specific date.
+	 * Retrieves the finished runs logged before a specific date.
+	 *
+	 * A run is finished when its status is one of Automator_Status::get_finished_statuses(), "Completed with notice"
+	 * included. Every other run is still waiting ("In progress", "In progress with errors", "Queued", "Blocked on
+	 * dependency", "Completed, awaiting", "Not completed") and is never returned, however old: its actions still have
+	 * to finish into it.
 	 *
 	 * @param string $datetime_string In the format of 'Y-m-d H:i:s'.
 	 *
@@ -502,15 +447,21 @@ class Prune_Logs {
 
 		global $wpdb;
 
+		$finished_statuses = array_values( array_unique( array_map( 'intval', (array) Automator_Status::get_finished_statuses() ) ) );
+
+		// A filter that leaves no finished status leaves no run to purge.
+		if ( empty( $finished_statuses ) ) {
+			return array();
+		}
+
+		$placeholders = implode( ', ', array_fill( 0, count( $finished_statuses ), '%d' ) );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		return (array) $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT `ID`, `automator_recipe_id`, `run_number`
-					FROM {$wpdb->prefix}uap_recipe_log
-					WHERE `date_time` < %s
-					AND ( `completed` <> %d AND `completed` <> %d )",
-				$datetime_string,
-				Automator_Status::IN_PROGRESS,
-				Automator_Status::COMPLETED_WITH_NOTICE
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is one %d per finished status; every value is bound below.
+				"SELECT `ID`, `automator_recipe_id`, `run_number` FROM {$wpdb->prefix}uap_recipe_log WHERE `date_time` < %s AND `completed` IN ( {$placeholders} )",
+				array_merge( array( $datetime_string ), $finished_statuses )
 			),
 			ARRAY_A
 		);
@@ -527,6 +478,7 @@ class Prune_Logs {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		return (array) $wpdb->get_results(
 			$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}uap_recipe_log WHERE user_id=%d", $user_id ),
 			ARRAY_A
@@ -612,8 +564,6 @@ class Prune_Logs {
 		$is_enabled = automator_filter_input( 'automator_delete_user_records_on_user_delete', INPUT_POST );
 
 		automator_update_option( 'automator_delete_user_records_on_user_delete', $is_enabled );
-
-		return;
 	}
 
 	/**
@@ -640,8 +590,6 @@ class Prune_Logs {
 		$is_enabled = automator_filter_input( 'automator_delete_data_on_uninstall', INPUT_POST );
 
 		automator_update_option( 'automator_delete_data_on_uninstall', $is_enabled );
-
-		return;
 	}
 
 	/**
@@ -668,8 +616,6 @@ class Prune_Logs {
 		$is_enabled = automator_filter_input( 'automator_delete_recipe_records_on_completion', INPUT_POST );
 
 		automator_update_option( 'automator_delete_recipe_records_on_completion', $is_enabled );
-
-		return;
 	}
 
 	/**

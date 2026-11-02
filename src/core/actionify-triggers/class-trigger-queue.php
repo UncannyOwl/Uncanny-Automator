@@ -77,6 +77,13 @@ class Trigger_Queue {
 	const SHUTDOWN_PRIORITY_FINAL = PHP_INT_MAX;
 
 	/**
+	 * Action that drains the queue synchronously.
+	 *
+	 * @var string
+	 */
+	const DRAIN_HOOK = 'automator_drain_trigger_queue';
+
+	/**
 	 * In-memory queue for current request.
 	 *
 	 * @var array
@@ -158,7 +165,7 @@ class Trigger_Queue {
 
 		$trigger_hash = $this->generate_trigger_hash( $trigger_code, $args );
 
-		// Skip if already processed in this request.
+		// Skip if already queued since the last drain.
 		if ( isset( $this->processed_hashes[ $trigger_hash ] ) ) {
 			return false;
 		}
@@ -173,7 +180,7 @@ class Trigger_Queue {
 
 		$this->processed_hashes[ $trigger_hash ] = true;
 
-		$this->memory_queue[] = array(
+		$queued_item          = array(
 			'hash'         => $trigger_hash,
 			'trigger_code' => $trigger_code,
 			'action_hook'  => $action_hook,
@@ -182,8 +189,13 @@ class Trigger_Queue {
 			'post_id'      => get_the_ID(),
 			'timestamp'    => time(),
 		);
+		$this->memory_queue[] = $queued_item;
 
 		$this->ensure_shutdown_hooks();
+
+		// This receipt confirms acceptance, not execution. The original arguments
+		// let a caller pick out its own event from anything else queued.
+		do_action( 'automator_enqueue_trigger_after_enqueue_trigger', $queued_item );
 
 		// The shutdown passes registered above can never run again in this
 		// request, so drain immediately.
@@ -265,6 +277,9 @@ class Trigger_Queue {
 		// here ensures that long-running processes (WP-CLI, Action Scheduler
 		// batch workers) don't carry stale hashes into the next iteration,
 		// which would silently drop legitimate trigger fires with matching args.
+		// The trade-off: an identical event fired after this drain in the same
+		// request runs again. This holds for the shutdown passes and explicit
+		// drains alike.
 		$this->processed_hashes = array();
 	}
 
@@ -581,6 +596,15 @@ class Trigger_Queue {
 		// @1000 dispatch itself): WP_Hook executes callbacks added at a not-yet-
 		// reached priority within the same do_action(), so PHP_INT_MAX still fires.
 		add_action( 'shutdown', array( $this, 'process_queue' ), self::SHUTDOWN_PRIORITY_FINAL );
+
+		// Explicit drain, for callers that must observe the run's results inside
+		// the same request instead of after it. Run Now is the case: it fires the
+		// trigger and then reads the new recipe log back to put its id in the REST
+		// response, which the shutdown passes are far too late for. Registered
+		// here rather than in the constructor so it exists only once something is
+		// actually queued, and safe to fire at any time — process_queue() returns
+		// immediately on an empty queue and guards against re-entry.
+		add_action( self::DRAIN_HOOK, array( $this, 'process_queue' ) );
 
 		$this->hooks_registered = true;
 	}

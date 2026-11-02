@@ -4,6 +4,10 @@ namespace Uncanny_Automator\Integrations\Charitable;
 
 use Uncanny_Automator\Recipe\Abstract_Helpers;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Charitable_Helpers
  *
@@ -731,7 +735,8 @@ class Charitable_Helpers extends Abstract_Helpers {
 		// Cap to keep dropdowns usable on large sites; filterable for outliers.
 		$limit = (int) apply_filters( 'automator_charitable_donor_select_limit', 500 );
 
-		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT donor_id, first_name, last_name, email FROM {$table} ORDER BY first_name ASC, last_name ASC LIMIT %d", $limit ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Charitable's own table; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
+		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT donor_id, first_name, last_name, email FROM {$table} ORDER BY first_name ASC, last_name ASC LIMIT %d", $limit ) );
 
 		foreach ( (array) $rows as $row ) {
 			$name = trim( $row->first_name . ' ' . $row->last_name );
@@ -739,7 +744,7 @@ class Charitable_Helpers extends Abstract_Helpers {
 				$name = $row->email;
 			}
 			$options[] = array(
-				'text'  => sprintf( '%s (%s) — #%d', $name, $row->email, (int) $row->donor_id ),
+				'text'  => sprintf( '%s (%s), #%d', $name, $row->email, (int) $row->donor_id ),
 				'value' => (int) $row->donor_id,
 			);
 		}
@@ -838,7 +843,8 @@ class Charitable_Helpers extends Abstract_Helpers {
 
 		global $wpdb;
 		$table = $wpdb->prefix . 'charitable_donor_terms';
-		$rows  = $wpdb->get_results( "SELECT donor_term_name FROM {$table} ORDER BY donor_term_name ASC" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Charitable's own table; the plugin offers no API for this query. Table name is $wpdb->prefix plus a fixed table name.
+		$rows = $wpdb->get_results( "SELECT donor_term_name FROM {$table} ORDER BY donor_term_name ASC" );
 
 		foreach ( (array) $rows as $row ) {
 			$options[] = array(

@@ -65,13 +65,12 @@ abstract class Universal_Loopable_Token extends Loopable_Token {
 		add_filter( $tokens_parser_hook, array( $this, 'hydrate_tokens' ), 10, 4 );
 		add_filter( $child_tokens_parser_hook, array( $this, 'hydrate_tokens_children' ), 10, 4 );
 
-		$closure = function( $tokens, $loop ) use ( $integration ) {
+		$closure = function ( $tokens, $loop ) use ( $integration ) {
 			return $this->loop_list( $tokens, $loop, $integration );
 		};
 
 		add_filter( 'automator_recipe_main_object_loop_tokens_items', $closure, 10, 2 );
 		add_action( 'automator_pro_before_loop_is_queued', array( $this, 'on_before_loop_is_queued' ), 10, 1 );
-
 	}
 
 	/**
@@ -101,7 +100,6 @@ abstract class Universal_Loopable_Token extends Loopable_Token {
 		}
 
 		return $items;
-
 	}
 
 	/**
@@ -123,12 +121,21 @@ abstract class Universal_Loopable_Token extends Loopable_Token {
 		// The single and unique process ID of the loop.
 		$process_id = $process_args['loop']['loop_item']['filter_id'] ?? '';
 
-		// Retrieve the actual token value.
-		$loop_entry_query = new Loop_Entry_Query();
-		$loop_entry       = $loop_entry_query->find_entry_by_process_id( $process_id );
-		$token_value      = $loop_entry->get_user_ids();
+		// The trigger token of the same id shares this hook. Leave text that holds none of this token's children alone.
+		if ( empty( $extracted_tokens ) ) {
+			return $field_text;
+		}
 
-		$tokens_reference = (array) json_decode( $token_value ?? '', true );
+		// Retrieve the actual token value from the loop entry. Loop entries exist only while Pro runs a loop, and Pro returns false for a process it has no entry for.
+		$tokens_reference = array();
+
+		if ( ! empty( $process_id ) && class_exists( Loop_Entry_Query::class ) ) {
+			$loop_entry_query = new Loop_Entry_Query();
+			$loop_entry       = $loop_entry_query->find_entry_by_process_id( $process_id );
+			if ( $loop_entry ) {
+				$tokens_reference = (array) json_decode( $loop_entry->get_user_ids() ?? '', true );
+			}
+		}
 
 		// Bail if the tokens cannot be decoded or if its empty.
 		if ( empty( $tokens_reference ) ) {
@@ -151,7 +158,6 @@ abstract class Universal_Loopable_Token extends Loopable_Token {
 
 		// Then use php's strtr to replace all tokens occurence with an actual value derived from the user_ids or entity_ids.
 		return strtr( $field_text, $key_value_pairs );
-
 	}
 
 	/**
@@ -183,7 +189,6 @@ abstract class Universal_Loopable_Token extends Loopable_Token {
 			$loopable              = $this->hydrate_token_loopable( $args );
 			$recipe_objects_logger->add_meta( $args, 'LOOPABLE_' . $this->get_id(), $loopable, false );
 		}
-
 	}
 
 	/**
@@ -204,10 +209,16 @@ abstract class Universal_Loopable_Token extends Loopable_Token {
 		}
 
 		$recipe_objects_logger = new Recipe_Objects_Logger();
-		$field_text            = $recipe_objects_logger->get_meta( $process_args, 'LOOPABLE_' . $this->get_id() );
+		$list                  = $recipe_objects_logger->get_meta( $process_args, 'LOOPABLE_' . $this->get_id() );
 
-		return $field_text;
+		// No loop saved the list for this run: leave the field for the parser to finish.
+		if ( ! is_string( $list ) || '' === $list ) {
+			return $field_text;
+		}
 
+		// The list takes the token's place only: a text field that holds the
+		// token among other content keeps that content.
+		return str_replace( '{{' . $match . '}}', $list, $field_text );
 	}
 
 	/**
@@ -270,7 +281,6 @@ abstract class Universal_Loopable_Token extends Loopable_Token {
 		}
 
 		return $tokens;
-
 	}
 
 	/**
@@ -295,7 +305,6 @@ abstract class Universal_Loopable_Token extends Loopable_Token {
 		}
 
 		return false; // Pattern did not match
-
 	}
 
 	/**
@@ -330,5 +339,4 @@ abstract class Universal_Loopable_Token extends Loopable_Token {
 
 		return $results;
 	}
-
 }

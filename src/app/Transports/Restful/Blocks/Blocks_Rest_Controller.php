@@ -1,76 +1,67 @@
 <?php
 declare(strict_types=1);
+
 namespace Uncanny_Automator\App\Transports\Restful\Blocks;
 
 use Uncanny_Automator\App\Recipe_Builder\Block\Services\Block_Store;
 use Uncanny_Automator\App\Transports\Restful\Utilities\Traits\Restful_Permissions;
-use Uncanny_Automator\App\Transports\Restful\Utilities\Traits\Rest_Responses;
-use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
 
 /**
- * Blocks REST Controller.
+ * Blocks REST registration hub.
  *
- * Provides REST API endpoints for Automator blocks (delay, filter, loop).
- *
- * @since 7.0
+ * Static-only. Provides the read-only `GET /uap/v2/blocks/get/` endpoint
+ * that returns the registered blocks (delay, filter, loop) used by the
+ * recipe-builder UI. Single endpoint — no `Routes/` split.
  */
-class Blocks_Rest_Controller {
+final class Blocks_Rest_Controller {
 
 	use Restful_Permissions;
-	use Rest_Responses;
 
 	/**
 	 * Namespace for the REST API.
 	 *
 	 * @var string
 	 */
-	protected $namespace = AUTOMATOR_REST_API_END_POINT;
+	private const NAMESPACE_ID = AUTOMATOR_REST_API_END_POINT;
 
 	/**
-	 * Base route.
+	 * Base route segment for the blocks surface.
 	 *
 	 * @var string
 	 */
-	protected $rest_base = 'blocks';
+	private const REST_BASE = 'blocks';
 
 	/**
-	 * Registers the routes for blocks.
-	 *
-	 * @since 7.0
+	 * Register every blocks REST route. Called once per process from
+	 * `Restful_Bootstrap::register_rest_routes()` on `rest_api_init`.
 	 *
 	 * @return void
 	 */
-	public function register_routes() {
-		// GET /wp-json/uap/v2/blocks/get/
-		// Returns scoped blocks (delay, filter, loop) for integrations.
+	public static function register_routes(): void {
+
+		// GET /uap/v2/blocks/get/
 		register_rest_route(
-			$this->namespace,
-			'/' . $this->rest_base . '/get/',
+			self::NAMESPACE_ID,
+			'/' . self::REST_BASE . '/get/',
 			array(
 				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_blocks' ),
-					'permission_callback' => array( $this, 'permissions_check' ),
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( self::class, 'get_blocks' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
 				),
 			)
 		);
 	}
 
 	/**
-	 * Get scoped blocks.
+	 * GET handler. Returns all registered blocks (delay, filter, loop).
 	 *
-	 * Returns all available blocks including delay, filter, and loop types.
-	 *
-	 * @since 7.0
-	 *
-	 * @param WP_REST_Request $request The request object.
-	 *
+	 * @param WP_REST_Request $request
 	 * @return WP_REST_Response
 	 */
-	public function get_blocks( WP_REST_Request $request ): WP_REST_Response {
-		$blocks = new Block_Store();
-		return new WP_REST_Response( $blocks->get_all(), 200 );
+	public static function get_blocks( WP_REST_Request $request ): WP_REST_Response {
+		return new WP_REST_Response( ( new Block_Store() )->get_all(), 200 );
 	}
 }

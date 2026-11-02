@@ -29,6 +29,12 @@ class Add_Wc_Integration {
 		$this->setup();
 		$this->create_loopable_tokens();
 
+		// MCP requests fully load active integrations; keep WooCommerce's REST
+		// rules here so core does not need to know its controllers or settings.
+		if ( $this->plugin_active() ) {
+			( new Integrations\Woocommerce\Mcp\Woocommerce_Rest_Operations() )->register();
+		}
+
 	}
 
 	/**

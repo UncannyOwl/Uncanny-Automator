@@ -66,7 +66,7 @@ final class GlobalPartMetaBox
         } catch (\Throwable $failure) {
             // Render nothing further; a metabox failure must not fail the
             // complete WordPress edit screen.
-            error_log('[Uncanny Page Builder] Reusable part type metabox render failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Reusable part type metabox render failed (' . $failure::class . ')');
         }
     }
 
@@ -86,7 +86,7 @@ final class GlobalPartMetaBox
             } catch (\Throwable $failure) {
                 // Meta-box rendering is part of the shared WordPress edit screen.
                 // A repository failure must not make the complete screen fatal.
-                error_log(sprintf(
+                DiagnosticLog::write(sprintf(
                     '[Uncanny Page Builder] Reusable part preview failed for post %d (%s).',
                     $post->ID,
                     $failure::class,
@@ -134,7 +134,7 @@ final class GlobalPartMetaBox
         } catch (\Throwable $failure) {
             // Render nothing further; a metabox failure must not fail the
             // complete WordPress edit screen.
-            error_log('[Uncanny Page Builder] Reusable part preview render failed (' . $failure::class . ')');
+            DiagnosticLog::write('[Uncanny Page Builder] Reusable part preview render failed (' . $failure::class . ')');
         }
     }
 
@@ -185,6 +185,7 @@ final class GlobalPartMetaBox
                         );
                     global $wpdb;
                     $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write; wp_update_post() would run save_post hooks.
                     $updated = $wpdb->update(
                         $postsTable,
                         ['post_title' => $title],
@@ -225,7 +226,7 @@ final class GlobalPartMetaBox
             // A reporting failure cannot escape this WordPress hook boundary.
         }
 
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] Reusable part save failed for post %d (%s).',
             $postId,
             $failure::class,
@@ -234,7 +235,8 @@ final class GlobalPartMetaBox
 
     public function renderSaveNotice(): void
     {
-        $postId = WordPressPostId::fromMixed($_GET['post'] ?? null);
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display state; no change is made.
+        $postId = WordPressPostId::fromMixed(isset($_GET['post']) ? sanitize_text_field(wp_unslash($_GET['post'])) : null);
         if ($postId === null) {
             return;
         }
@@ -298,10 +300,12 @@ final class GlobalPartMetaBox
         global $wpdb;
 
         $postmetaTable = isset($wpdb->postmeta) ? (string) $wpdb->postmeta : (string) $wpdb->prefix . 'postmeta';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Live state read; must not be cached.
         $stored = $wpdb->get_var($wpdb->prepare(
-            "SELECT meta_value FROM {$postmetaTable}
+            "SELECT meta_value FROM %i
              WHERE post_id = %d AND meta_key = %s
              ORDER BY meta_id DESC LIMIT 1",
+            $postmetaTable,
             $postId,
             self::META_KEY,
         ));
@@ -316,7 +320,7 @@ final class GlobalPartMetaBox
         } catch (\Throwable $failure) {
             // A diagnostic failure must not replace the original save failure
             // or terminate the shared save_post request.
-            error_log(sprintf(
+            DiagnosticLog::write(sprintf(
                 '[Uncanny Page Builder] Reusable part save notice failed for post %d (%s).',
                 $postId,
                 $failure::class,

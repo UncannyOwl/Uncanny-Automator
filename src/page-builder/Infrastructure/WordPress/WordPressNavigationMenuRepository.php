@@ -236,12 +236,13 @@ final class WordPressNavigationMenuRepository implements NavigationMenuRepositor
                     $failure,
                 );
                 if ($rollbackFailures !== []) {
-                    throw new \RuntimeException(
+                    $restoreFailure = new \RuntimeException(
                         'Could not save the navigation menu item, and its previous value could not be fully restored: '
-                        . implode('; ', $rollbackFailures),
+                        . implode('; ', array_map('esc_html', $rollbackFailures)),
                         0,
                         $failure,
                     );
+                    throw $restoreFailure;
                 }
 
                 throw $failure;
@@ -278,12 +279,13 @@ final class WordPressNavigationMenuRepository implements NavigationMenuRepositor
             }
             $cleanupFailures = [...$cleanupFailures, ...$this->removeCreatedMenuItems($createdItemIds)];
             if ($cleanupFailures !== []) {
-                throw new \RuntimeException(
+                $cleanupFailure = new \RuntimeException(
                     'Could not save the navigation menu item, and its incomplete creation could not be fully removed: '
-                    . implode('; ', $cleanupFailures),
+                    . implode('; ', array_map('esc_html', $cleanupFailures)),
                     0,
                     $failure,
                 );
+                throw $cleanupFailure;
             }
 
             throw $failure;
@@ -311,7 +313,7 @@ final class WordPressNavigationMenuRepository implements NavigationMenuRepositor
                 $before->items(),
             ))
         ) {
-            throw new StaleNavigationMenuException($menuId);
+            throw new StaleNavigationMenuException((int) $menuId);
         }
         $this->assertUntouchedTextSurvives($menuId, $before, $items);
 
@@ -441,12 +443,13 @@ final class WordPressNavigationMenuRepository implements NavigationMenuRepositor
                 $failure,
             );
             if ($rollbackFailures !== []) {
-                throw new \RuntimeException(
+                $restoreFailure = new \RuntimeException(
                     'Could not save the navigation menu tree, and the previous menu could not be fully restored: '
-                    . implode('; ', $rollbackFailures),
+                    . implode('; ', array_map('esc_html', $rollbackFailures)),
                     0,
                     $failure,
                 );
+                throw $restoreFailure;
             }
 
             throw $failure;
@@ -470,18 +473,21 @@ final class WordPressNavigationMenuRepository implements NavigationMenuRepositor
         try {
             $remaining = $this->storedPostExists($itemId);
         } catch (\Throwable $inspectionFailure) {
-            throw new \RuntimeException(
+            $inspectionError = new \RuntimeException(
                 'Could not inspect the navigation menu item after deletion.',
                 0,
                 $deleteFailure ?? $inspectionFailure,
             );
+            throw $inspectionError;
         }
         if ($remaining) {
             if ($deleted === false || $this->isWpError($deleted)) {
-                throw new \RuntimeException('Could not delete the navigation menu item.', 0, $deleteFailure);
+                $deleteError = new \RuntimeException('Could not delete the navigation menu item.', 0, $deleteFailure);
+                throw $deleteError;
             }
 
-            throw new \RuntimeException('Could not confirm deletion of the navigation menu item post.', 0, $deleteFailure);
+            $confirmError = new \RuntimeException('Could not confirm deletion of the navigation menu item post.', 0, $deleteFailure);
+            throw $confirmError;
         }
 
         $menu = $this->mutationMenu($menuId);
@@ -1167,7 +1173,8 @@ final class WordPressNavigationMenuRepository implements NavigationMenuRepositor
             try {
                 wp_cache_delete($itemId, 'posts');
             } catch (\Throwable $failure) {
-                throw new \RuntimeException('Could not invalidate the navigation item cache.', 0, $failure);
+                $invalidationError = new \RuntimeException('Could not invalidate the navigation item cache.', 0, $failure);
+                throw $invalidationError;
             }
 
             if ($this->storedCreationMarker($database, $itemId) !== '') {
@@ -1367,7 +1374,7 @@ final class WordPressNavigationMenuRepository implements NavigationMenuRepositor
         }
 
         if ($itemIds !== []) {
-            throw new NavigationItemTextNotSavableException($menuId, $itemIds);
+            throw new NavigationItemTextNotSavableException((int) $menuId, array_map('intval', $itemIds));
         }
     }
 
@@ -1592,11 +1599,12 @@ final class WordPressNavigationMenuRepository implements NavigationMenuRepositor
         try {
             $stored = get_post($itemId);
         } catch (\Throwable $failure) {
-            throw new \RuntimeException(
+            $positionError = new \RuntimeException(
                 'The stored navigation menu position could not be read.',
                 0,
                 $failure,
             );
+            throw $positionError;
         }
 
         $position = is_object($stored) ? (int) ($stored->menu_order ?? 0) : 0;
@@ -1785,12 +1793,13 @@ final class WordPressNavigationMenuRepository implements NavigationMenuRepositor
             $preservedItemIds !== []
             && count($rollbackFailures) === count($preservedItemIds) + count($unrestoredPositionItemIds)
         ) {
-            throw new NavigationChangedConcurrentlyException(
+            $concurrentChange = new NavigationChangedConcurrentlyException(
                 $menuId,
                 $preservedItemIds,
                 $unrestoredPositionItemIds,
                 $failure,
             );
+            throw $concurrentChange;
         }
     }
 

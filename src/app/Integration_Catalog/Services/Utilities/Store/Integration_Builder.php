@@ -15,6 +15,7 @@ use Uncanny_Automator\App\Integration_Catalog\Integration\Integration_Config;
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
 use Uncanny_Automator\App\Recipe_Builder\Token\Services\Integration\Integration_Token_Registry_Service;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Block_Modifier_Types;
 use InvalidArgumentException;
 
 /**
@@ -32,10 +33,29 @@ class Integration_Builder {
 	private $normalizer;
 
 	/**
-	 * Constructor.
+	 * Loop-filter ancestor-rule enricher.
+	 *
+	 * @var Loop_Filter_Ancestor_Rule_Enricher
 	 */
-	public function __construct() {
-		$this->normalizer = new Integration_Details_Normalizer();
+	private $ancestor_enricher;
+
+	/**
+	 * Action placement-rule enricher.
+	 *
+	 * @var Item_Ancestor_Rule_Enricher
+	 */
+	private $item_enricher;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param Loop_Filter_Ancestor_Rule_Enricher|null $ancestor_enricher Optional loop-filter enricher (lazy default: new instance).
+	 * @param Item_Ancestor_Rule_Enricher|null        $item_enricher     Optional action enricher (lazy default: new instance).
+	 */
+	public function __construct( ?Loop_Filter_Ancestor_Rule_Enricher $ancestor_enricher = null, ?Item_Ancestor_Rule_Enricher $item_enricher = null ) {
+		$this->normalizer        = new Integration_Details_Normalizer();
+		$this->ancestor_enricher = $ancestor_enricher ?? new Loop_Filter_Ancestor_Rule_Enricher();
+		$this->item_enricher     = $item_enricher ?? new Item_Ancestor_Rule_Enricher();
 	}
 
 	/**
@@ -54,19 +74,25 @@ class Integration_Builder {
 	public function build_from_json( string $code, array $json_data ) {
 
 		$config_data = array(
-			'code'          => $code,
-			'name'          => $json_data['integration_name'] ?? '',
-			'type'          => $this->determine_type( $json_data ),
-			'required_tier' => $this->determine_tier( $json_data ),
-			'details'       => $this->normalizer->normalize_details( $json_data ),
-			'items'         => array(
-				Integration_Item_Types::TRIGGER          => $this->normalizer->normalize_items( $json_data['integration_triggers'] ?? array() ),
-				Integration_Item_Types::ACTION           => $this->normalizer->normalize_items( $json_data['integration_actions'] ?? array() ),
-				Integration_Item_Types::LOOP_FILTER      => $this->normalizer->normalize_items( $json_data['integration_loop_filters'] ?? array() ),
-				Integration_Item_Types::FILTER_CONDITION => $this->normalizer->normalize_items( $json_data['integration_conditions'] ?? array() ),
-				Integration_Item_Types::CLOSURE          => 'WP' === $code ? $this->add_wp_closures( $json_data ) : array(),
+			'code'            => $code,
+			'name'            => $json_data['integration_name'] ?? '',
+			'type'            => $this->determine_type( $json_data ),
+			'required_tier'   => $this->determine_tier( $json_data ),
+			'details'         => $this->normalizer->normalize_details( $json_data ),
+			'items'           => array(
+				Integration_Item_Types::TRIGGER => $this->normalizer->normalize_items( $json_data['integration_triggers'] ?? array(), 'item', $code ),
+				Integration_Item_Types::ACTION  => $this->item_enricher->enrich(
+					$code,
+					$this->normalizer->normalize_items( $json_data['integration_actions'] ?? array(), 'item', $code )
+				),
 			),
-			'tokens'        => $this->get_integration_tokens( $code ),
+			'block_modifiers' => array(
+				Block_Modifier_Types::FILTER_CONDITION => $this->normalizer->normalize_items( $json_data['integration_conditions'] ?? array(), 'block_modifier', $code ),
+				Block_Modifier_Types::LOOP_FILTER      => $this->ancestor_enricher->enrich(
+					$this->normalizer->normalize_items( $json_data['integration_loop_filters'] ?? array(), 'block_modifier', $code )
+				),
+			),
+			'tokens'          => $this->get_integration_tokens( $code ),
 		);
 
 		// Add connected status for app integrations.
@@ -173,38 +199,11 @@ class Integration_Builder {
 	}
 
 	/**
-	 * Add WordPress closures to integration.
-	 *
-	 * @param array $data Integration data
-	 *
-	 * @return array Integration closures
-	 */
-	private function add_wp_closures( array $data ) {
-		return array(
-			'REDIRECT' => array(
-				'code'               => 'REDIRECT',
-				'type'               => 'closure',
-				'is_deprecated'      => false,
-				'meta'               => 'REDIRECTURL',
-				'sentence'           => array(
-					'short'   => esc_html_x( 'Redirect when recipe is completed', 'WordPress', 'uncanny-automator' ),
-					/* translators: %1$s: URL to redirect to */
-					'dynamic' => esc_html_x( 'Redirect to {{a link:%1$s}} when recipe is completed', 'WordPress', 'uncanny-automator' ),
-				),
-				'description'        => esc_html_x( 'At the completion of a recipe, you can choose to have users immediately redirect to a specific URL.', 'WordPress', 'uncanny-automator' ),
-				'required_tier'      => 'lite',
-				'requires_user_data' => false,
-				'url_support'        => 'https://automatorplugin.com/knowledge-base/working-with-redirects/',
-			),
-		);
-	}
-
-	/**
 	 * Get integration level tokens for integration ( Universal, Global, Extended etc. )
 	 *
 	 * @param string $code Integration code
 	 *
-	 * @return array Integration tokens in Integration_Token format (code, name, data_type, requires_user_data)
+	 * @return array Integration tokens in Integration_Token format (code, name, data_type, requires_user_data, plus the config-block pass-through: fields, id_template, name_template)
 	 */
 	private function get_integration_tokens( string $code ): array {
 		return Integration_Token_Registry_Service::get_instance()->get_tokens_for_integration( $code );

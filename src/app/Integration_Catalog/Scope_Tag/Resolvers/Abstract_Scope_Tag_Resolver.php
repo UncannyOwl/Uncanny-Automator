@@ -11,6 +11,7 @@
 namespace Uncanny_Automator\App\Integration_Catalog\Scope_Tag\Resolvers;
 
 use Uncanny_Automator\App\Integration_Catalog\Integration\Integration;
+use Uncanny_Automator\App\Integration_Catalog\Scope_Tag\License_Tag_Catalog;
 use Uncanny_Automator\App\Integration_Catalog\Scope_Tag\Scope_Tag_Evaluatable;
 
 /**
@@ -102,31 +103,6 @@ abstract class Abstract_Scope_Tag_Resolver {
 	 * @return array|null Tag array or null if tier not found
 	 */
 	protected function get_license_tag( string $tier ) {
-		$tag_map = array(
-			'pro-basic' => array(
-				'type'        => 'license',
-				'scenario_id' => 'license-pro-basic',
-				'label'       => esc_html__( 'Pro', 'uncanny-automator' ),
-				'color'       => 'success',
-				'helper'      => esc_html__( 'You must have a valid Pro Basic license or higher', 'uncanny-automator' ),
-			),
-			'pro-plus'  => array(
-				'type'        => 'license',
-				'scenario_id' => 'license-pro-plus',
-				'label'       => esc_html__( 'Pro Plus', 'uncanny-automator' ),
-				'color'       => 'success',
-				'helper'      => esc_html__( 'You must have a valid Pro Plus license or higher', 'uncanny-automator' ),
-			),
-			'pro-elite' => array(
-				'type'        => 'license',
-				'scenario_id' => 'license-pro-elite',
-				'label'       => esc_html__( 'Pro Elite', 'uncanny-automator' ),
-				'color'       => 'success',
-				'icon'        => 'gem',
-				'helper'      => esc_html__( 'You must have a valid Pro Elite license', 'uncanny-automator' ),
-			),
-		);
-
-		return $tag_map[ $tier ] ?? null;
+		return License_Tag_Catalog::for_tier( $tier );
 	}
 }

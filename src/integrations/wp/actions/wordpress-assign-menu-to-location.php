@@ -22,6 +22,7 @@ class WP_ASSIGN_MENU_TO_LOCATION extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Menu, %2$s: Location */
 				esc_html_x( 'Assign {{a menu:%1$s}} to {{a location:%2$s}}', 'WordPress', 'uncanny-automator' ),
 				$this->get_action_meta(),
 				'WP_MENU_LOCATION:' . $this->get_action_meta()

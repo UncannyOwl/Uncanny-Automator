@@ -1025,6 +1025,82 @@ return array(
 			),
 		),
 	),
+	'DROPBOX' => array(
+		'triggers' => array(
+			'DROPBOX_DROPBOX_FILE_FOLDER_CREATED' => array(
+				'code'  => 'DROPBOX_FILE_FOLDER_CREATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_File_Folder_Created',
+				'file'  => $baseDir . '/src/integrations/dropbox/triggers/dropbox-file-folder-created.php',
+			),
+			'DROPBOX_DROPBOX_FILE_FOLDER_DELETED' => array(
+				'code'  => 'DROPBOX_FILE_FOLDER_DELETED',
+				'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_File_Folder_Deleted',
+				'file'  => $baseDir . '/src/integrations/dropbox/triggers/dropbox-file-folder-deleted.php',
+			),
+			'DROPBOX_DROPBOX_FILE_FOLDER_MOVED' => array(
+				'code'  => 'DROPBOX_FILE_FOLDER_MOVED',
+				'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_File_Folder_Moved',
+				'file'  => $baseDir . '/src/integrations/dropbox/triggers/dropbox-file-folder-moved.php',
+			),
+			'DROPBOX_DROPBOX_FILE_FOLDER_RENAMED' => array(
+				'code'  => 'DROPBOX_FILE_FOLDER_RENAMED',
+				'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_File_Folder_Renamed',
+				'file'  => $baseDir . '/src/integrations/dropbox/triggers/dropbox-file-folder-renamed.php',
+			),
+			'DROPBOX_DROPBOX_FILE_UPDATED' => array(
+				'code'  => 'DROPBOX_FILE_UPDATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_File_Updated',
+				'file'  => $baseDir . '/src/integrations/dropbox/triggers/dropbox-file-updated.php',
+			),
+		),
+		'actions' => array(
+			'DROPBOX_DROPBOX_ADD_FILE_MEMBER' => array(
+				'code'  => 'DROPBOX_ADD_FILE_MEMBER',
+				'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_Add_File_Member',
+				'file'  => $baseDir . '/src/integrations/dropbox/actions/dropbox-add-file-member.php',
+			),
+			'DROPBOX_DROPBOX_ADD_FOLDER_MEMBER' => array(
+				'code'  => 'DROPBOX_ADD_FOLDER_MEMBER',
+				'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_Add_Folder_Member',
+				'file'  => $baseDir . '/src/integrations/dropbox/actions/dropbox-add-folder-member.php',
+			),
+			'DROPBOX_DROPBOX_COPY_FILE' => array(
+				'code'  => 'DROPBOX_COPY_FILE',
+				'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_Copy_File',
+				'file'  => $baseDir . '/src/integrations/dropbox/actions/dropbox-copy-file.php',
+			),
+			'DROPBOX_DROPBOX_CREATE_FOLDER' => array(
+				'code'  => 'DROPBOX_CREATE_FOLDER',
+				'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_Create_Folder',
+				'file'  => $baseDir . '/src/integrations/dropbox/actions/dropbox-create-folder.php',
+			),
+			'DROPBOX_DROPBOX_DELETE_ITEM' => array(
+				'code'  => 'DROPBOX_DELETE_ITEM',
+				'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_Delete_Item',
+				'file'  => $baseDir . '/src/integrations/dropbox/actions/dropbox-delete-item.php',
+			),
+			'DROPBOX_DROPBOX_GET_SHAREABLE_LINK' => array(
+				'code'  => 'DROPBOX_GET_SHAREABLE_LINK',
+				'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_Get_Shareable_Link',
+				'file'  => $baseDir . '/src/integrations/dropbox/actions/dropbox-get-shareable-link.php',
+			),
+			'DROPBOX_DROPBOX_MOVE_FILE' => array(
+				'code'  => 'DROPBOX_MOVE_FILE',
+				'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_Move_File',
+				'file'  => $baseDir . '/src/integrations/dropbox/actions/dropbox-move-file.php',
+			),
+			'DROPBOX_DROPBOX_SHARE_FOLDER' => array(
+				'code'  => 'DROPBOX_SHARE_FOLDER',
+				'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_Share_Folder',
+				'file'  => $baseDir . '/src/integrations/dropbox/actions/dropbox-share-folder.php',
+			),
+			'DROPBOX_DROPBOX_UPLOAD_FILE' => array(
+				'code'  => 'DROPBOX_UPLOAD_FILE',
+				'class' => 'Uncanny_Automator\\Integrations\\Dropbox\\Dropbox_Upload_File',
+				'file'  => $baseDir . '/src/integrations/dropbox/actions/dropbox-upload-file.php',
+			),
+		),
+	),
 	'DUPLICATOR' => array(
 		'triggers' => array(
 			'DUPLICATOR_BACKUP_COMPLETES_WITH_STATUS' => array(
@@ -3412,6 +3488,15 @@ return array(
 			),
 		),
 	),
+	'REDIRECT' => array(
+		'actions' => array(
+			'REDIRECT_REDIRECT_TO_URL' => array(
+				'code'  => 'REDIRECT_TO_URL',
+				'class' => 'Uncanny_Automator\\Integrations\\Redirect\\Redirect_To_Url',
+				'file'  => $baseDir . '/src/integrations/redirect/actions/redirect-to-url.php',
+			),
+		),
+	),
 	'REDIRECTION' => array(
 		'triggers' => array(
 			'REDIRECTION_REDIRECTION_404_LOGGED' => array(
@@ -4986,13 +5071,6 @@ return array(
 				'code'  => 'WP_UPDATE_TAX_TERM',
 				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_UPDATE_TAXONOMY_TERM',
 				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-update-taxonomy-term.php',
-			),
-		),
-		'closures' => array(
-			'WP_REDIRECT' => array(
-				'code'  => 'REDIRECT',
-				'class' => 'Uncanny_Automator\\Closure_Redirect',
-				'file'  => $baseDir . '/src/integrations/wp/closures/closure-redirect.php',
 			),
 		),
 	),

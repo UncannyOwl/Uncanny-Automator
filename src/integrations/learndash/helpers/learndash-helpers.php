@@ -144,6 +144,7 @@ class Learndash_Helpers {
 			'custom_value_description' => esc_html_x( 'Course ID', 'LearnDash', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_ld_courses', $option );
 	}
 
@@ -279,6 +280,7 @@ class Learndash_Helpers {
 			'custom_value_description' => esc_html_x( 'Lesson ID', 'LearnDash', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_ld_lessons', $option );
 	}
 
@@ -389,6 +391,7 @@ class Learndash_Helpers {
 			'custom_value_description' => esc_html_x( 'Topic ID', 'LearnDash', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_ld_topics', $option );
 	}
 
@@ -515,6 +518,7 @@ class Learndash_Helpers {
 			$option['supports_custom_value'] = true;
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_ld_groups', $option );
 	}
 
@@ -623,6 +627,7 @@ class Learndash_Helpers {
 			'custom_value_description' => esc_html_x( 'Quiz ID', 'LearnDash', 'uncanny-automator' ),
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_ld_quiz', $option );
 	}
 
@@ -1127,6 +1132,7 @@ class Learndash_Helpers {
 		}
 		global $wpdb;
 		// Get all post IDs where `code` = $code and `add_action` = `learndash_quiz_submitted`
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API finds posts by a raw meta value across post types.
 		$post_ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT post_id FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value = %s AND post_id IN (SELECT post_id FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value = %s)",
@@ -1148,7 +1154,8 @@ class Learndash_Helpers {
 				array( 'add_action', 'learndash_quiz_submitted' )
 			);
 
-			$wpdb->query( $wpdb->prepare( $sql, ...$params ) );// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API rewrites a meta key or value across posts.
+			$wpdb->query( $wpdb->prepare( $sql, ...$params ) );
 		}
 
 		// Update option flag.

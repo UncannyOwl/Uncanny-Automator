@@ -138,7 +138,7 @@ final class WorkingCanvasMenuChangeListener
 
     private function reportFailure(string $step, \Throwable $failure): void
     {
-        error_log(sprintf(
+        DiagnosticLog::write(sprintf(
             '[Uncanny Page Builder] Menu change post-save step "%s" failed (%s).',
             $step,
             $failure::class,

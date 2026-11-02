@@ -3,6 +3,12 @@
 namespace Uncanny_Automator;
 
 use Exception;
+use Uncanny_Automator\App\Infrastructure\Api_Log\Api_Log_Compressor;
+use Uncanny_Automator\App\Infrastructure\License\Payment_Required_Message;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Class Api.
@@ -15,11 +21,6 @@ class Api_Server {
 	 * @var string The key used for marking the failed license.
 	 */
 	const TRANSIENT_LICENSE_CHECK_FAILED = 'automator_license_check_failed';
-
-	/**
-	 * @var int The frequency of license check.
-	 */
-	private static $transient_api_license_expires = 60; // 1 minute by default.
 
 	/**
 	 * @var mixed|null
@@ -55,15 +56,9 @@ class Api_Server {
 
 		self::$url = apply_filters( 'automator_api_url', AUTOMATOR_API_URL );
 
-		/**
-		 * Set the cache expiry to 12 hours. The nightly check is 24 hours. This is a
-		 * safe number so the license check is atleast performed twice a day. One when actively
-		 * editing the recipe page, and two, when nightly checks are made.
-		 */
-		self::$transient_api_license_expires = HOUR_IN_SECONDS * 12;
-
-		add_filter( 'http_request_args', array( $this, 'add_api_headers' ), 10, 2 );
-		add_filter( 'http_request_timeout', array( $this, 'default_api_timeout' ), 10, 2 );
+		// The license headers of a platform request are Platform_Headers_Injector's
+		// and its default timeout Platform_Default_Timeout's, both registered by
+		// Application_Bootstrap. Only the trigger charge is still registered here.
 		add_filter( 'automator_trigger_should_complete', array( $this, 'maybe_log_trigger' ), 10, 3 );
 	}
 
@@ -83,6 +78,7 @@ class Api_Server {
 	 */
 	public static function reset_license_cache() {
 		self::$license = null;
+		self::get_license_manager()->reset_cache();
 	}
 
 	/**
@@ -100,171 +96,63 @@ class Api_Server {
 	}
 
 	/**
-	 * Method add_api_headers
+	 * The license this site speaks with: 'pro', 'free', or false when there is none.
 	 *
-	 * @param array $args
-	 * @param string $request_url
-	 *
-	 * @return array
-	 */
-	public function add_api_headers( $args, $request_url ) {
-
-		// If the request URL starts with the Automator API url
-		if ( ! $this->is_api_url( $request_url ) ) {
-			return $args;
-		}
-
-		$license_key = self::get_license_key();
-
-		if ( ! $license_key ) {
-			return $args;
-		}
-
-		$args['headers']['license-key'] = $license_key;
-		$args['headers']['site-name']   = self::get_site_name();
-		$args['headers']['item-name']   = self::get_item_name();
-
-		return $args;
-	}
-
-	/**
-	 * is_api_url
-	 *
-	 * @param mixed $url
-	 *
-	 * @return bool
-	 */
-	public function is_api_url( $url ) {
-		return substr( $url, 0, strlen( self::$url ) ) === self::$url;
-	}
-
-	/**
-	 * default_api_timeout
-	 *
-	 * @param int $timeout
-	 * @param string $request_url
-	 *
-	 * @return int
-	 */
-	public function default_api_timeout( $timeout, $request_url = '' ) {
-
-		if ( empty( $request_url ) || ! $this->is_api_url( $request_url ) ) {
-			return $timeout;
-		}
-
-		return apply_filters( 'automator_api_timeout', 60, $request_url );
-	}
-
-	/**
-	 * Method get_license_type
+	 * Delegates to License_Manager, which owns the one rule for which license
+	 * is in use. A second copy of it here once decided the license headers of
+	 * every request while the registration signed with the manager's answer.
+	 * `false` (not '') is what callers compare against.
 	 *
 	 * @deprecated Use License_Manager::get_type().
-	 * @return string
+	 * @return string|false
 	 */
 	public static function get_license_type() {
-		if ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === automator_get_option( 'uap_automator_pro_license_status' ) ) {
-			return 'pro';
-		} elseif ( 'valid' === automator_get_option( 'uap_automator_free_license_status' ) ) {
-			return 'free';
-		}
+		$type = self::get_license_manager()->get_type();
 
-		return false;
+		return '' === $type ? false : $type;
 	}
 
 	/**
-	 * Method get_license_key
+	 * The key of the license in use, or false when there is none.
 	 *
 	 * @deprecated Use License_Manager::get_key().
-	 * @return string
+	 * @return string|false
 	 */
 	public static function get_license_key() {
-		$license_type = self::get_license_type();
+		$key = self::get_license_manager()->get_key();
 
-		return automator_get_option( 'uap_automator_' . $license_type . '_license_key' );
+		return '' === $key ? false : $key;
 	}
 
 	/**
-	 * Method get_item_name
+	 * The item name of the license in use, or '' when there is none.
 	 *
 	 * @deprecated Use License_Manager::get_item_name().
 	 * @return string
 	 */
 	public static function get_item_name() {
-
-		$license_type = strtoupper( self::get_license_type() );
-
-		if ( ! $license_type ) {
-			return '';
-		}
-
-		if ( 'PRO' === $license_type ) {
-			if ( defined( 'AUTOMATOR_' . $license_type . '_ITEM_NAME' ) ) {
-				return constant( 'AUTOMATOR_' . $license_type . '_ITEM_NAME' );
-			} elseif ( defined( 'AUTOMATOR_AUTOMATOR_' . $license_type . '_ITEM_NAME' ) ) {
-				return constant( 'AUTOMATOR_AUTOMATOR_' . $license_type . '_ITEM_NAME' );
-			}
-		}
-
-		return constant( 'AUTOMATOR_' . $license_type . '_ITEM_NAME' );
+		return self::get_license_manager()->get_item_name();
 	}
 
 	/**
-	 * Method get_license_plan
+	 * The plan of the license in use ('' without a license).
 	 *
 	 * @deprecated Use License_Manager::get_plan().
 	 * @return string
 	 */
 	public static function get_license_plan() {
-
-		try {
-			$license = self::get_license();
-
-			// Check if we have the license_plan property.
-			if ( self::has_license_plan_property( $license ) ) {
-				return $license['license_plan'];
-			}
-
-			// If license exists but missing license_plan, try to refresh.
-			if ( $license ) {
-				$license = self::is_automator_connected( true );
-				if ( self::has_license_plan_property( $license ) ) {
-					return $license['license_plan'];
-				}
-			}
-		} catch ( Exception $e ) {
-			// Fall through to fallback logic.
-			unset( $e );
-		}
-
-		// Fallback to basic/lite based on license type.
-		$license_type = self::get_license_type();
-		if ( ! $license_type ) {
-			return '';
-		}
-
-		return 'pro' === $license_type ? 'basic' : 'lite';
+		return self::get_license_manager()->get_plan();
 	}
 
 	/**
-	 * Check if license has the license plan property.
-	 * - Temporary fallback to work around license caching.
-	 *
-	 * @param mixed $license
-	 * @return bool
-	 */
-	private static function has_license_plan_property( $license ) {
-		return is_array( $license ) && isset( $license['license_plan'] );
-	}
-
-	/**
-	 * Method get_site_name
+	 * The host the platform knows this site by: the home URL without its scheme.
 	 * For sites like https://your-site:8888/
 	 *
 	 * @deprecated Use License_Manager::get_site_name().
 	 * @return string
 	 */
 	public static function get_site_name() {
-		return preg_replace( '#^https?://#', '', get_home_url() );
+		return self::get_license_manager()->get_site_name();
 	}
 
 	/**
@@ -274,24 +162,7 @@ class Api_Server {
 	 * @return string Formatted date like "January 1, 2026" or empty string if lifetime/unavailable.
 	 */
 	public static function get_renewal_date_formatted(): string {
-		$license_type = self::get_license_type();
-
-		if ( ! $license_type ) {
-			return '';
-		}
-
-		$expiry = automator_get_option( 'uap_automator_' . $license_type . '_license_expiry', '' );
-
-		if ( empty( $expiry ) || 'lifetime' === $expiry ) {
-			return '';
-		}
-
-		try {
-			$date = new \DateTime( $expiry, wp_timezone() );
-			return $date->format( 'F j, Y' );
-		} catch ( Exception $e ) {
-			return '';
-		}
+		return self::get_license_manager()->get_renewal_date();
 	}
 
 	/**
@@ -411,9 +282,10 @@ class Api_Server {
 			throw new Exception( 'Invalid API response', 500 );
 		}
 
-		// Handle zero credits from client with upgrade to link.
-		if ( 402 === $code && false !== strpos( $response_body['error']['description'], 'Upgrade to Uncanny Automator Pro' ) ) {
-			throw new Exception( 'Credit required for action/trigger. Current credits: 0. {{automator_upgrade_link}}.', 402 );
+		// Handle zero credits from client with upgrade to link. The rule is
+		// shared with /v3, which shows the same thing for the same answer.
+		if ( 402 === $code && Payment_Required_Message::is_credit_limit( (string) ( $response_body['error']['description'] ?? '' ) ) ) {
+			throw new Exception( esc_html( Payment_Required_Message::CREDIT_LIMIT ), 402 );
 		}
 
 		if ( isset( $response_body['error'] ) && isset( $response_body['error']['description'] ) ) {
@@ -425,6 +297,10 @@ class Api_Server {
 		// Handle response body that has [data][error][message] (e.g. Instagram user media publish limit exceeded).
 		if ( isset( $response_body['data']['error'] ) && isset( $response_body['data']['error']['message'] ) ) {
 			throw new Exception( 'API has responded with an error message: ' . esc_html( $response_body['data']['error']['message'] ), absint( $response_body['statusCode'] ) );
+		}
+
+		if ( 500 <= (int) $code ) {
+			throw new Exception( sprintf( 'The app integration request failed (HTTP %d). Check the affected item in the connected app before running this action again. If the failure continues, contact Automator support with this HTTP code.', (int) $code ), (int) $code );
 		}
 	}
 
@@ -459,8 +335,8 @@ class Api_Server {
 
 		$time_before = microtime( true );
 
-		// Transient-failure retry: only provably-unsent failures (connection-class
-		// errors + CF origin-unreachable statuses) are retried — safe for POSTs.
+		// Retry only connection-stage failures; an HTTP status cannot establish
+		// that an action was not executed.
 		self::$last_response = \Uncanny_Automator\App\Infrastructure\Http\Transient_Retry::request(
 			(string) $params['url'],
 			$request
@@ -477,7 +353,8 @@ class Api_Server {
 		$api_log_id = $api->maybe_log_action( $params, $request, self::$last_response );
 
 		if ( is_wp_error( self::$last_response ) ) {
-			throw new Exception( esc_html( 'WordPress was not able to make a request: ' . self::$last_response->get_error_message() ), 500 );
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plain-text API error; escape only at HTML rendering boundaries.
+			throw new Exception( \Uncanny_Automator\App\Infrastructure\Http\Transport_Failure::message( self::$last_response ), 500 );
 		}
 
 		self::$last_response['api_log_id'] = $api_log_id;
@@ -526,70 +403,20 @@ class Api_Server {
 	/**
 	 * get_license
 	 *
+	 * Delegates to License_Manager, the one place that reads the license
+	 * cache, fetches v2/credits and decides what a failed fetch costs (a
+	 * backoff for a temporary failure, the one-hour latch for a verdict).
+	 * This facade keeps no failure state of its own: a second writer of the
+	 * latch is how a paid license was once stopped for an hour by a blip.
+	 *
 	 * @deprecated Use License_Manager::get_license_data().
-	 * @return mixed false||array
+	 * @return array|false The license data, or false when it is unavailable.
 	 */
 	public static function get_license() {
 
-		$cached_license = get_transient( 'automator_api_license' );
+		$license = self::get_license_manager()->get_license_data();
 
-		$has_failed = false !== get_transient( self::TRANSIENT_LICENSE_CHECK_FAILED );
-
-		// Early bail if failing.
-		if ( true === $has_failed ) {
-			return false;
-		}
-
-		// Serve the cached license if its there.
-		if ( false !== $cached_license ) {
-			return $cached_license;
-		}
-
-		$params = array(
-			'endpoint' => 'v2/credits',
-			'body'     => array(
-				'action' => 'get_credits',
-			),
-		);
-
-		try {
-
-			// Fail early with a clear message if no license key is configured.
-			// Without this check, the API call proceeds without auth headers
-			// and returns a cryptic "missing required headers" error.
-			if ( ! self::get_license_key() ) {
-				throw new Exception( 'Invalid license key.' );
-			}
-
-			$response = self::api_call( $params );
-
-			$license = $response['data'] ?? null;
-
-			if ( ! is_array( $license ) ) {
-				throw new Exception( 'Invalid license response.' );
-			}
-
-			self::$license = $license;
-
-			// Save the license.
-			set_transient( 'automator_api_license', $license, self::$transient_api_license_expires );
-
-			// Removes any failed license checks.
-			delete_transient( self::TRANSIENT_LICENSE_CHECK_FAILED );
-
-			// do action?
-
-			return $license;
-
-		} catch ( Exception $e ) {
-
-			$error_message = 'Unable to fetch the license: ' . $e->getMessage();
-
-			set_transient( self::TRANSIENT_LICENSE_CHECK_FAILED, $error_message, HOUR_IN_SECONDS );
-
-			throw new Exception( esc_html( $error_message ) );
-
-		}
+		return is_array( $license ) ? $license : false;
 	}
 
 	/**
@@ -612,56 +439,59 @@ class Api_Server {
 	/**
 	 * has_credits
 	 *
+	 * The credit rule (a paid plan has no cap, the free plan stops at its
+	 * limit) is Credit_Manager's. The license is checked first, here, so an
+	 * unavailable one keeps the message this method has always thrown.
+	 *
 	 * @deprecated Use Credit_Manager::has_credits().
 	 * @return bool
 	 */
 	public static function has_credits() {
 
-		$license = self::has_valid_license();
+		self::has_valid_license();
 
-		// Entitlement is the plan tier (all paid tiers = unlimited credits), not
-		// the license item_name. Routed through the single src/app seam so this
-		// deprecated gate can never drift from Credit_Manager / the dashboard.
-		if ( automator_has_unlimited_credits() ) {
-			return true;
-		}
-
-		if ( intval( $license['paid_usage_count'] ) >= intval( $license['usage_limit'] ) ) {
-			throw new Exception( esc_html__( 'Not enough credits', 'uncanny-automator' ) );
-		}
-
-		return true;
+		return self::get_credit_manager()->has_credits();
 	}
 
 	/**
 	 * charge_credit
 	 *
+	 * Credit_Manager checks the credits and charges them. The only thing kept
+	 * here is how this method has always reported the free account's
+	 * credit-limit refusal: as the upgrade message, not the platform's text.
+	 *
 	 * @deprecated Use Credit_Manager::charge().
-	 * @return mixed false||array
+	 * @return array The platform's answer: statusCode, data, credits.
 	 */
 	public function charge_usage( $trigger_data = null ) {
+
 		self::has_credits();
 
-		$params = array(
-			'endpoint' => 'v2/credits',
-			'body'     => array(
-				'action' => 'reduce_credits',
-			),
-		);
+		try {
+			return self::get_credit_manager()->charge( is_array( $trigger_data ) ? $trigger_data : null );
+		} catch ( Exception $e ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- The platform's own message, as every caller has always received it; the action log escapes on output.
+			throw self::credit_limit_as_upgrade_message( $e );
+		}
+	}
 
-		$response = self::api_call( $params );
+	/**
+	 * The exception a /v2 call has always thrown for a refusal: the free
+	 * account's credit-limit 402 becomes the upgrade message, every other
+	 * failure is untouched. The words that mark the refusal are
+	 * Payment_Required_Message's, shared with /v3.
+	 *
+	 * @param Exception $e The failure.
+	 *
+	 * @return Exception
+	 */
+	private static function credit_limit_as_upgrade_message( Exception $e ): Exception {
 
-		/*
-		 * DO NOT RE-ENABLE:
-		 * set_transient( 'automator_api_license', $response['data'], self::$transient_api_license_expires );
-		 *
-		 * reduce_credits returns only a command acknowledgement. Caching it here
-		 * destroys the complete get_credits snapshot, while already-loaded request
-		 * state can hide that damage until the next request. It also renews the bad
-		 * value for 12 hours. Only the get_credits read path may replace this transient.
-		 */
+		if ( 402 === (int) $e->getCode() && Payment_Required_Message::is_credit_limit( $e->getMessage() ) ) {
+			return new Exception( esc_html( Payment_Required_Message::CREDIT_LIMIT ), 402 );
+		}
 
-		return $response;
+		return $e;
 	}
 
 	/**
@@ -697,14 +527,30 @@ class Api_Server {
 
 		$credits = $this->get_response_credits( $response );
 
+		// Bare-minimum replay payload — endpoint / method / body /
+		// action are everything Api_Server::api_call needs to refire
+		// the call sync from `Recipe_Post_Rest_Api::resend_api_request()`.
+		// Headers (license-key, site-name, etc.) are rebuilt fresh
+		// from current site state at resend time, so storing them is
+		// pure bloat. `url` is a function of base + endpoint and gets
+		// recomputed too. `time_spent` lives in its own column. Net
+		// effect on uap_api_log row size: ~10x smaller for typical
+		// rows after gzip compression.
+		$compact_params = array(
+			'endpoint' => isset( $params['endpoint'] ) ? $params['endpoint'] : '',
+			'method'   => isset( $params['method'] ) ? $params['method'] : 'POST',
+			'body'     => isset( $params['body'] ) && is_array( $params['body'] ) ? $params['body'] : array(),
+			'action'   => isset( $params['action'] ) ? $params['action'] : null,
+		);
+
 		$log = array(
 			'type'          => 'action',
 			'recipe_log_id' => $params['action']['recipe_log_id'],
 			'item_log_id'   => isset( $params['action']['action_log_id'] ) ? $params['action']['action_log_id'] : '',
 			'endpoint'      => $params['endpoint'],
-			'params'        => maybe_serialize( $params ),
-			'request'       => maybe_serialize( $request ),
-			'response'      => maybe_serialize( apply_filters( 'automator_log_api_responses', false, $response ) ),
+			'params'        => Api_Log_Compressor::encode( $compact_params ),
+			'request'       => '', // headers/timeout no longer persisted; rebuilt at resend.
+			'response'      => Api_Log_Compressor::encode( apply_filters( 'automator_log_api_responses', false, $response ) ),
 			'balance'       => isset( $credits['balance'] ) ? $credits['balance'] : null,
 			'price'         => isset( $credits['price'] ) ? $credits['price'] : null,
 			'status'        => $this->get_response_code( $response ),
@@ -796,7 +642,8 @@ class Api_Server {
 			'type'          => 'trigger',
 			'recipe_log_id' => $recipe_log_id,
 			'item_log_id'   => $trigger_log_id,
-			'params'        => $args['trigger_args'],
+			// No params: nothing reads them for a trigger, and webhook payloads may hold personal data and webhook keys.
+			'params'        => '',
 		);
 
 		try {
@@ -843,39 +690,44 @@ class Api_Server {
 	/**
 	 * is_automator_connected
 	 *
+	 * A forced check reaches the platform once per request; the license it
+	 * fetched answers the rest of them. Everything else is License_Manager's.
+	 *
 	 * @deprecated Use License_Manager::is_connected().
-	 * @return void
+	 * @return array|false The license data, or false when it is unavailable.
 	 */
 	public static function is_automator_connected( $force_refresh = false ) {
 
-		// Limit to only one call per session
+		// Limit to only one call per session.
 		if ( null !== self::$license ) {
 			return self::$license;
 		}
 
-		if ( $force_refresh ) {
-			delete_transient( 'automator_api_license' );
-			delete_transient( self::TRANSIENT_LICENSE_CHECK_FAILED );
-		}
+		$manager = self::get_license_manager();
 
-		$license_key = self::get_license_key();
-
-		if ( false === $license_key ) {
+		if ( '' === $manager->get_key() ) {
 			self::set_connection_error_message( 'Unable to fetch the license key.' );
 
 			return false;
 		}
 
-		try {
-			return self::get_license();
-		} catch ( Exception $e ) {
-			automator_log( $e->getMessage() );
-			self::set_connection_error_message( 'API error exception: ' . $e->getCode() . ' ' . $e->getMessage() );
+		$license = $manager->get_license_data( (bool) $force_refresh );
 
-			return false;
+		if ( is_array( $license ) ) {
+			if ( $force_refresh ) {
+				self::$license = $license;
+			}
+
+			return $license;
 		}
 
-		self::set_connection_error_message( 'An error has occured while connecting. Please try again later.' );
+		$reason = get_transient( self::TRANSIENT_LICENSE_CHECK_FAILED );
+
+		self::set_connection_error_message(
+			is_string( $reason ) && '' !== $reason
+				? 'API error exception: ' . $reason
+				: 'An error has occured while connecting. Please try again later.'
+		);
 
 		return false;
 	}
@@ -895,7 +747,7 @@ class Api_Server {
 	/**
 	 * Get the API client service.
 	 *
-	 * @return \Uncanny_Automator\App\Infrastructure\Api_Client\Api_Client
+	 * @return \Uncanny_Automator\App\Infrastructure\Automator_Platform\Client
 	 */
 	public static function get_api_client() {
 		return \Uncanny_Automator\App\Infrastructure\automator_api_client();

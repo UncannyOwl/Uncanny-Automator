@@ -3,6 +3,12 @@ namespace Uncanny_Automator;
 
 use Uncanny_Automator\Logs_List_Table;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
+
 $current_tab = 'recipe-log';
 $current     = $current_tab;
 

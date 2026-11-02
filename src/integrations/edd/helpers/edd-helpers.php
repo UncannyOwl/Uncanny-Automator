@@ -4,6 +4,10 @@ namespace Uncanny_Automator\Integrations\Easy_Digital_Downloads;
 
 use Uncanny_Automator_Pro\Edd_Pro_Helpers;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Edd_Helpers
  *
@@ -283,6 +287,7 @@ class Edd_Helpers {
 			'relevant_tokens' => ( false === $is_relevant_tokens ) ? array() : $relevant_tokens,
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		return apply_filters( 'uap_option_all_edd_downloads', $option );
 	}
 

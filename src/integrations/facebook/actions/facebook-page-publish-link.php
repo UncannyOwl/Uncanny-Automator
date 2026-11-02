@@ -24,9 +24,9 @@ class FACEBOOK_PAGE_PUBLISH_LINK extends \Uncanny_Automator\Recipe\App_Action {
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/facebook/' ) );
 		$this->set_requires_user( false );
 
-		// translators: %1$s is the Facebook page title.
 		$this->set_sentence(
 			sprintf(
+				/* translators: %1$s: Facebook page */
 				esc_attr_x( 'Share a link with a message to {{a Facebook page:%1$s}}', 'Facebook', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)

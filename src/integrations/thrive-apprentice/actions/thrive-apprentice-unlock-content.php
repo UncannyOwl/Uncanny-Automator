@@ -136,6 +136,7 @@ class THRIVE_APPRENTICE_UNLOCK_CONTENT extends Action {
 				$customer->set_drip_content_unlocked( $id );
 			}
 
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Thrive Apprentice's own hook.
 			do_action( 'tva_drip_content_unlocked_for_specific_user', $customer->get_user(), $content, array() );
 
 			return true;

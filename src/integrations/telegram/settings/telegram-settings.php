@@ -246,17 +246,19 @@ class Telegram_Settings extends App_Integration_Settings {
 	}
 
 	/**
-	 * Called before disconnect to clean up webhooks
+	 * Once the platform confirmed the disconnect (handoff R8): delete the bot's
+	 * webhook at Telegram, while the bot token is still on file, and forget the
+	 * registered channels. Telegram's deleteWebhook succeeds when no webhook is
+	 * set, and the webhook is skipped once its key is gone, so it is safe to
+	 * run twice.
 	 *
 	 * @param array $response The current response array
 	 * @param array $data The posted data
 	 *
 	 * @return array Modified response array
 	 */
-	protected function before_disconnect( $response = array(), $data = array() ) {
-		// Delete webhook when disconnecting
+	protected function after_platform_disconnect( $response = array(), $data = array() ) {
 		$this->webhooks->delete_telegram_webhook();
-		// Clear out registered channels
 		$this->helpers->delete_channel_data();
 
 		return $response;
@@ -608,6 +610,10 @@ class Telegram_Settings extends App_Integration_Settings {
 										'name'                      => 'automator_action',
 										'value'                     => 'channel_remove',
 										'label'                     => esc_html_x( 'Remove', 'Telegram', 'uncanny-automator' ),
+										'icon'                      => array(
+											'code' => 'trash',
+											'size' => 'xs',
+										),
 										'color'                     => 'secondary',
 										'type'                      => 'submit',
 										'row-submission'            => true,

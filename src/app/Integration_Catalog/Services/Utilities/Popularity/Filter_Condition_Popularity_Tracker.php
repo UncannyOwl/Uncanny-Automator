@@ -2,7 +2,7 @@
 /**
  * Condition Popularity Tracker
  *
- * Tracks condition usage for integration popularity scoring.
+ * Tracks legacy filter-condition usage for the stored usage census.
  * Handles parsing, caching, and querying of recipe conditions.
  *
  * @package Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Popularity
@@ -16,11 +16,12 @@ use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Status;
 /**
  * Tracks condition usage data for popularity calculation.
  *
- * Conditions are stored as JSON in recipe postmeta (actions_conditions).
- * This utility provides a clean interface for tracking which integrations
- * are used in conditions, with per-recipe caching for performance.
- *
- * Handles both data management and cache invalidation through WordPress hooks.
+ * Conditions are stored as JSON in recipe postmeta (actions_conditions) —
+ * read-only legacy storage draining via fix-on-request migration. Counts
+ * rebuild lazily from a full published-recipes scan; invalidation lives in
+ * Automator_Cache_Handler (entity saves + recipe status changes),
+ * so there is no incremental per-recipe maintenance here. The handle_*()
+ * methods at the end only answer 7.x's calls during the upgrade request.
  *
  * @since 7.0.0
  */
@@ -29,11 +30,20 @@ class Filter_Condition_Popularity_Tracker {
 	use Singleton;
 
 	/**
-	 * Cache key for storing per-recipe condition counts.
+	 * Legacy 7.x integration-level cache key. Nothing reads or writes it
+	 * anymore — integration counts derive from the entity counts — but
+	 * clear_cache() keeps deleting it so upgraded sites shed the residue.
 	 *
 	 * @var string
 	 */
 	const UAP_OPTION_KEY = 'uap_condition_usage_counts';
+
+	/**
+	 * Cache key for per-recipe entity-level (integration:code) counts.
+	 *
+	 * @var string
+	 */
+	const UAP_ENTITY_OPTION_KEY = 'uap_condition_entity_usage_counts';
 
 	/**
 	 * Action meta_key.
@@ -43,73 +53,101 @@ class Filter_Condition_Popularity_Tracker {
 	const ACTION_META_KEY = 'actions_conditions';
 
 	/**
-	 * Get usage counts for all integrations used in conditions.
+	 * Entity-level usage counts ("INTEGRATION:CODE" => count) over the residual
+	 * actions_conditions JSON.
 	 *
-	 * Returns aggregated counts from cached per-recipe data.
-	 *
-	 * @return array Array of integration code => count
+	 * @return array<string,int>
 	 */
-	public function get_usage_counts() {
+	public function get_entity_usage_counts() {
+		// Option existence is the built marker: a stored empty array means
+		// "built, legitimately zero legacy conditions" and must not retrigger
+		// the full published-recipes rescan (clear_cache deletes the option).
+		$cached = automator_get_option( self::UAP_ENTITY_OPTION_KEY, false );
 
-		$cached_data = $this->get_cache();
-
-		if ( empty( $cached_data ) ) {
-			// No cache, build it from scratch.
-			$this->rebuild_cache();
-			$cached_data = $this->get_cache();
+		if ( ! is_array( $cached ) ) {
+			$this->rebuild_entity_cache();
+			$cached = automator_get_option( self::UAP_ENTITY_OPTION_KEY, array() );
 		}
 
-		// Aggregate per-recipe data into total counts.
-		return $this->aggregate_counts( $cached_data );
+		return $this->aggregate_counts( $cached );
 	}
 
 	/**
-	 * Update cache for a single recipe.
+	 * Fetch raw (recipe_id, actions_conditions JSON) rows for all published recipes.
 	 *
-	 * Called when a recipe's conditions are modified.
-	 *
-	 * @param int $recipe_id Recipe ID
-	 * @param string $conditions_json JSON string from actions_conditions meta
-	 *
-	 * @return void
+	 * @return array<int,array<string,mixed>>
 	 */
-	public function update_recipe_cache( $recipe_id, $conditions_json ) {
+	private function fetch_published_recipe_conditions() {
+		global $wpdb;
 
-		$cached_data = $this->get_cache();
-		$recipe_key  = 'recipe_' . $recipe_id;
-
-		// Parse this recipe's conditions
-		$recipe_data = $this->parse_conditions( $conditions_json );
-
-		if ( empty( $recipe_data ) ) {
-			// No conditions, remove from cache.
-			unset( $cached_data[ $recipe_key ] );
-		} else {
-			// Update cache with this recipe's data.
-			$cached_data[ $recipe_key ] = $recipe_data;
-		}
-
-		$this->save_cache( $cached_data );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return (array) $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT p.ID as recipe_id, pm.meta_value
+				FROM {$wpdb->posts} p
+				INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
+				WHERE p.post_type = %s
+					AND p.post_status = %s
+					AND pm.meta_key = %s
+					AND pm.meta_value != ''",
+				AUTOMATOR_POST_TYPE_RECIPE,
+				Recipe_Status::PUBLISH,
+				self::ACTION_META_KEY
+			),
+			ARRAY_A
+		);
 	}
 
 	/**
-	 * Remove recipe from cache.
-	 *
-	 * Called when a recipe is deleted or unpublished.
-	 *
-	 * @param int $recipe_id Recipe ID
+	 * Rebuild the per-recipe entity cache from published recipes' actions_conditions.
 	 *
 	 * @return void
 	 */
-	public function remove_recipe_from_cache( $recipe_id ) {
+	private function rebuild_entity_cache() {
 
-		$cached_data = $this->get_cache();
-		$recipe_key  = 'recipe_' . $recipe_id;
-
-		if ( isset( $cached_data[ $recipe_key ] ) ) {
-			unset( $cached_data[ $recipe_key ] );
-			$this->save_cache( $cached_data );
+		$per_recipe = array();
+		foreach ( $this->fetch_published_recipe_conditions() as $row ) {
+			$entity = $this->parse_conditions_entities( $row['meta_value'] );
+			if ( ! empty( $entity ) ) {
+				$per_recipe[ 'recipe_' . absint( $row['recipe_id'] ) ] = $entity;
+			}
 		}
+
+		// Unbounded per-recipe map, read at most once per rebuild — never autoload.
+		automator_update_option( self::UAP_ENTITY_OPTION_KEY, $per_recipe, false );
+	}
+
+	/**
+	 * Parse one recipe's conditions JSON into "INTEGRATION:CODE" => count.
+	 *
+	 * @param string|array $conditions_data
+	 * @return array<string,int>
+	 */
+	private function parse_conditions_entities( $conditions_data ) {
+		if ( ! is_string( $conditions_data ) && ! is_array( $conditions_data ) ) {
+			return array();
+		}
+		$groups = is_string( $conditions_data ) ? json_decode( $conditions_data, true ) : $conditions_data;
+		if ( ! is_array( $groups ) ) {
+			return array();
+		}
+
+		$counts = array();
+		foreach ( $groups as $group ) {
+			if ( empty( $group['conditions'] ) || ! is_array( $group['conditions'] ) ) {
+				continue;
+			}
+			foreach ( $group['conditions'] as $condition ) {
+				$integration = is_string( $condition['integration'] ?? null ) ? $condition['integration'] : '';
+				$code        = is_string( $condition['condition'] ?? null ) ? $condition['condition'] : '';
+				if ( '' === $integration || '' === $code ) {
+					continue;
+				}
+				$key            = $integration . ':' . $code;
+				$counts[ $key ] = ( $counts[ $key ] ?? 0 ) + 1;
+			}
+		}
+		return $counts;
 	}
 
 	/**
@@ -141,249 +179,84 @@ class Filter_Condition_Popularity_Tracker {
 	}
 
 	/**
-	 * Parse recipe conditions and count integrations.
-	 *
-	 * Handles both array (from tests/direct access) and JSON string (from meta hooks).
-	 *
-	 * @param string|array $conditions_data Conditions data from actions_conditions meta.
-	 *
-	 * @return array Integration counts for this recipe.
-	 */
-	private function parse_conditions( $conditions_data ) {
-
-		// Guard: reject unexpected types (null, object, etc).
-		if ( ! is_string( $conditions_data ) && ! is_array( $conditions_data ) ) {
-			return array();
-		}
-
-		// Normalize to array format.
-		$condition_groups = is_string( $conditions_data )
-			? json_decode( $conditions_data, true )
-			: $conditions_data;
-
-		// Guard: handle malformed JSON or invalid data.
-		if ( ! is_array( $condition_groups ) || empty( $condition_groups ) ) {
-			return array();
-		}
-
-		$counts = array();
-
-		foreach ( $condition_groups as $condition_group ) {
-
-			// Skip groups without conditions array.
-			if ( empty( $condition_group['conditions'] ) || ! is_array( $condition_group['conditions'] ) ) {
-				continue;
-			}
-
-			foreach ( $condition_group['conditions'] as $condition ) {
-
-				// Skip conditions without integration code.
-				if ( empty( $condition['integration'] ) || ! is_string( $condition['integration'] ) ) {
-					continue;
-				}
-
-				$integration_code = $condition['integration'];
-
-				if ( ! isset( $counts[ $integration_code ] ) ) {
-					$counts[ $integration_code ] = 0;
-				}
-
-				++$counts[ $integration_code ];
-			}
-		}
-
-		return $counts;
-	}
-
-	/**
-	 * Rebuild entire cache from database.
-	 *
-	 * Queries all published recipes and parses their conditions.
-	 *
-	 * @return void
-	 */
-	private function rebuild_cache() {
-		global $wpdb;
-
-		$results = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT p.ID as recipe_id, pm.meta_value
-				FROM {$wpdb->posts} p
-				INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
-				WHERE p.post_type = %s
-					AND p.post_status = %s
-					AND pm.meta_key = %s
-					AND pm.meta_value != ''",
-				AUTOMATOR_POST_TYPE_RECIPE,
-				Recipe_Status::PUBLISH,
-				self::ACTION_META_KEY
-			),
-			ARRAY_A
-		);
-
-		if ( empty( $results ) ) {
-			$this->save_cache( array() );
-			return;
-		}
-
-		$per_recipe_data = array();
-
-		foreach ( $results as $row ) {
-			$recipe_id   = absint( $row['recipe_id'] );
-			$recipe_data = $this->parse_conditions( $row['meta_value'] );
-
-			if ( ! empty( $recipe_data ) ) {
-				$per_recipe_data[ 'recipe_' . $recipe_id ] = $recipe_data;
-			}
-		}
-
-		$this->save_cache( $per_recipe_data );
-	}
-
-	/**
-	 * Get cached data.
-	 *
-	 * @return array Per-recipe condition counts
-	 */
-	private function get_cache() {
-		return automator_get_option( self::UAP_OPTION_KEY, array() );
-	}
-
-	/**
-	 * Save cache data.
-	 *
-	 * @param array $data Per-recipe condition counts
-	 *
-	 * @return void
-	 */
-	private function save_cache( $data ) {
-		automator_update_option( self::UAP_OPTION_KEY, $data );
-	}
-
-	/**
 	 * Clear entire cache.
 	 *
-	 * Used for testing or manual cache invalidation.
+	 * Deletes the entity option (the built marker) and the legacy 7.x
+	 * integration-level option so upgraded sites shed the residue.
 	 *
 	 * @return void
 	 */
 	public function clear_cache() {
 		automator_delete_option( self::UAP_OPTION_KEY );
+		automator_delete_option( self::UAP_ENTITY_OPTION_KEY );
 	}
 
 	/**
-	 * Handle postmeta update/add hook.
+	 * Answer 7.x's postmeta add and update call. Does nothing.
 	 *
-	 * Updates cache for the specific recipe when conditions are modified.
+	 * Exists only for the request that upgrades from 7.x. When Upload Plugin
+	 * replaces 7.x with this version, 7.x's Automator_Cache_Handler stays
+	 * hooked on added_post_meta and updated_post_meta for the rest of that
+	 * request, and this class autoloads from the new files. The 7.x option
+	 * that call maintained is never read here, and from the next request
+	 * Automator_Cache_Handler invalidates the counts itself. Do not remove
+	 * this method until upgrades from 7.x are no longer supported.
 	 *
-	 * @param int $meta_id Meta ID
-	 * @param int $post_id Post ID (recipe ID)
-	 * @param string $meta_key Meta key
-	 * @param mixed $meta_value Meta value (JSON string)
+	 * @since 8.0.0
+	 *
+	 * @param int    $meta_id    Meta ID.
+	 * @param int    $post_id    Post ID.
+	 * @param string $meta_key   Meta key.
+	 * @param mixed  $meta_value Meta value.
 	 *
 	 * @return void
 	 */
 	public function handle_meta_update( $meta_id, $post_id, $meta_key, $meta_value ) {
-
-		if ( ! $this->is_condition_meta( $meta_key ) ) {
-			return;
-		}
-
-		if ( ! $this->is_recipe_post_type( $post_id ) ) {
-			return;
-		}
-
-		// Only cache published recipes
-		$post = get_post( $post_id );
-
-		if ( ! $post || Recipe_Status::PUBLISH !== $post->post_status ) {
-			$this->remove_recipe_from_cache( $post_id );
-			return;
-		}
-
-		// Update cache for just this recipe
-		$this->update_recipe_cache( $post_id, $meta_value );
 	}
 
 	/**
-	 * Handle postmeta deletion hook.
+	 * Answer 7.x's postmeta delete call. Does nothing.
 	 *
-	 * Removes the specific recipe from cache when conditions are deleted.
+	 * Exists only for the request that upgrades from 7.x. When Upload Plugin
+	 * replaces 7.x with this version, 7.x's Automator_Cache_Handler stays
+	 * hooked on deleted_post_meta for the rest of that request, and WordPress
+	 * then deletes the uploaded zip's attachment meta. The 7.x option that
+	 * call maintained is never read here, and from the next request
+	 * Automator_Cache_Handler invalidates the counts itself. Do not remove
+	 * this method until upgrades from 7.x are no longer supported.
 	 *
-	 * @param array $meta_ids Meta IDs
-	 * @param int $post_id Post ID (recipe ID)
-	 * @param string $meta_key Meta key
-	 * @param mixed $meta_value Meta value
+	 * @since 8.0.0
+	 *
+	 * @param int[]  $meta_ids   Meta IDs.
+	 * @param int    $post_id    Post ID.
+	 * @param string $meta_key   Meta key.
+	 * @param mixed  $meta_value Meta value.
 	 *
 	 * @return void
 	 */
 	public function handle_meta_delete( $meta_ids, $post_id, $meta_key, $meta_value ) {
-
-		if ( ! $this->is_condition_meta( $meta_key ) ) {
-			return;
-		}
-
-		if ( ! $this->is_recipe_post_type( $post_id ) ) {
-			return;
-		}
-
-		// Remove this recipe from cache
-		$this->remove_recipe_from_cache( $post_id );
 	}
 
 	/**
-	 * Handle recipe status change hook.
+	 * Answer 7.x's recipe status change call. Does nothing.
 	 *
-	 * Updates or removes recipe from cache based on new status.
-	 * Only processes when the recipe post itself changes status, not child items.
+	 * Exists only for the request that upgrades from 7.x. When Upload Plugin
+	 * replaces 7.x with this version, 7.x's Automator_Cache_Handler stays
+	 * hooked on automator_recipe_status_updated and
+	 * automator_cache_recipe_post_status_changed for the rest of that
+	 * request. The 7.x option that call maintained is never read here, and
+	 * from the next request Automator_Cache_Handler invalidates the counts
+	 * itself. Do not remove this method until upgrades from 7.x are no
+	 * longer supported.
 	 *
-	 * @param int $post_id Post ID (could be recipe or recipe item)
-	 * @param int $recipe_id Recipe ID (parent recipe)
-	 * @param string $post_status New status
+	 * @since 8.0.0
+	 *
+	 * @param int    $post_id     Post ID.
+	 * @param int    $recipe_id   Recipe ID.
+	 * @param string $post_status New post status.
 	 *
 	 * @return void
 	 */
 	public function handle_status_change( $post_id, $recipe_id, $post_status ) {
-
-		// Only process if the recipe itself is changing status (not triggers/actions/etc)
-		if ( ! $this->is_recipe_post_type( $post_id ) ) {
-			return;
-		}
-
-		if ( Recipe_Status::PUBLISH === $post_status ) {
-			// Recipe published - update cache with its conditions
-			$conditions_json = get_post_meta( $recipe_id, self::ACTION_META_KEY, true );
-
-			if ( ! empty( $conditions_json ) ) {
-				$this->update_recipe_cache( $recipe_id, $conditions_json );
-			}
-
-			return;
-		}
-
-		// Recipe unpublished - remove from cache
-		$this->remove_recipe_from_cache( $recipe_id );
-	}
-
-	/**
-	 * Check if meta key is for conditions.
-	 *
-	 * @param string $meta_key Meta key to check
-	 *
-	 * @return bool True if meta key is for conditions
-	 */
-	private function is_condition_meta( $meta_key ) {
-		return self::ACTION_META_KEY === $meta_key;
-	}
-
-	/**
-	 * Check if post is a recipe.
-	 *
-	 * @param int $post_id Post ID to check
-	 *
-	 * @return bool True if post is a recipe
-	 */
-	private function is_recipe_post_type( $post_id ) {
-		return AUTOMATOR_POST_TYPE_RECIPE === get_post_type( $post_id );
 	}
 }

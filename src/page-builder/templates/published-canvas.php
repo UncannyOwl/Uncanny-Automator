@@ -12,6 +12,7 @@ use UncannyPageBuilder\Infrastructure\Rendering\StyleElementCss;
 use UncannyPageBuilder\Infrastructure\WordPress\CanvasEditorChromeGate;
 
 defined('ABSPATH') || exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
 
 if (
     !isset($publishedPage)
@@ -34,7 +35,7 @@ if (
     <?php wp_head(); ?>
 
     <?php if ($publishedRuntimeEnabled && $publishedPage->css() !== '') : ?>
-    <style id="uncanny-page-builder-published-css"><?php echo StyleElementCss::escape($publishedPage->css()); ?></style>
+    <style id="uncanny-page-builder-published-css"><?php echo StyleElementCss::escape($publishedPage->css()); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS of the immutable published artifact; StyleElementCss::escape() neutralizes a closing style tag. ?></style>
     <?php endif; ?>
 </head>
 <body <?php body_class('uncanny-canvas'); ?>>

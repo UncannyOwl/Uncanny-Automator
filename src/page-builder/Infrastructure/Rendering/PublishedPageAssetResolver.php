@@ -9,6 +9,7 @@ use UncannyPageBuilder\Application\Publishing\PageDeactivationFallbackAssetResol
 use UncannyPageBuilder\Application\Rendering\PublishedPageAssetResolverInterface;
 use UncannyPageBuilder\Application\Rendering\PublishedPageAssets;
 use UncannyPageBuilder\Application\Rendering\PublishedPageRuntimeUnavailable;
+use UncannyPageBuilder\Domain\ArrayShape;
 use UncannyPageBuilder\Domain\Publishing\PageDeactivationFallback;
 use UncannyPageBuilder\Domain\Publishing\PublishedPageArtifact;
 
@@ -40,7 +41,7 @@ final class PublishedPageAssetResolver implements PublishedPageAssetResolverInte
     {
         $records = $manifest['assets'] ?? null;
 
-        if (!is_array($records) || $records === [] || array_is_list($records)) {
+        if (!is_array($records) || $records === [] || ArrayShape::isList($records)) {
             throw $this->unavailable('runtime_manifest_invalid', 'The published artifact runtime manifest is invalid.');
         }
 
@@ -97,7 +98,7 @@ final class PublishedPageAssetResolver implements PublishedPageAssetResolverInte
      */
     private function fonts(mixed $manifest): array
     {
-        if (!is_array($manifest) || ($manifest !== [] && array_is_list($manifest))) {
+        if (!is_array($manifest) || ($manifest !== [] && ArrayShape::isList($manifest))) {
             throw $this->unavailable('font_manifest_invalid', 'The published font manifest is invalid.');
         }
 

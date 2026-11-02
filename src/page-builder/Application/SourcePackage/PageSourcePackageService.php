@@ -43,7 +43,7 @@ final class PageSourcePackageService
         $customJavaScript = $this->javaScriptRuntime->readForPage($pageId);
         $currentGeneration = $this->sourceGenerations->pageGeneration($pageId);
         if ($currentGeneration !== $generation) {
-            throw new StaleSourceGenerationException('page', $generation, $currentGeneration);
+            throw new StaleSourceGenerationException('page', (int) $generation, (int) $currentGeneration);
         }
 
         $package = PageSourcePackage::fromPage(

@@ -32,6 +32,9 @@ final class AgentWritePageOwnerResolver
             'manage_binding' => $this->sectionOwnerId($request->get_param('section_id')),
             'manage_canvas' => $this->canvasWritePageId($request),
             'manage_reusable' => $this->reusableConversionPageId($request),
+            'manage_page_parts' => $request->get_param('scope') === 'page'
+                ? $this->pageId($request->get_param('page_id'))
+                : 0,
             default => 0,
         };
     }

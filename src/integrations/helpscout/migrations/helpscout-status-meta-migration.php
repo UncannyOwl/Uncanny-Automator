@@ -48,9 +48,10 @@ class Helpscout_Status_Meta_Migration extends Migration {
 		global $wpdb;
 
 		// Action posts for the affected action code.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; no WordPress API finds posts by a raw meta value across post types.
 		$post_ids = $wpdb->get_col(
 			$wpdb->prepare(
-				"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'code' AND meta_value = %s", // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'code' AND meta_value = %s",
 				self::ACTION_CODE
 			)
 		);
@@ -81,9 +82,10 @@ class Helpscout_Status_Meta_Migration extends Migration {
 		// A literal 'STATUS' field row is unreadable via get_post_meta() (the
 		// case-insensitive match returns the reserved 'status' row instead), so
 		// read it with a binary comparison; fall back to the unambiguous label.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; the case-sensitive BINARY match on a meta key has no WordPress API.
 		$status_value = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = BINARY %s LIMIT 1", // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = BINARY %s LIMIT 1",
 				$post_id,
 				'STATUS'
 			)
@@ -103,9 +105,10 @@ class Helpscout_Status_Meta_Migration extends Migration {
 		// Remove the stale field meta. The binary delete is essential — a plain
 		// delete_post_meta( 'STATUS' ) would case-insensitively wipe the reserved
 		// 'status' row too.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off migration; the case-sensitive BINARY match on a meta key has no WordPress API.
 		$wpdb->query(
 			$wpdb->prepare(
-				"DELETE FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = BINARY %s", // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"DELETE FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = BINARY %s",
 				$post_id,
 				'STATUS'
 			)

@@ -5,6 +5,10 @@
 namespace Uncanny_Automator\Integrations\Bluesky;
 
 use Exception;
+use WP_Error;
+use Uncanny_Automator\App\Infrastructure\Http\Non_Public_Ranges;
+use Uncanny_Automator\App\Infrastructure\Http\Redirect_Hop_Check;
+use Uncanny_Automator\App\Infrastructure\Remote_File\Remote_File_Client;
 
 /**
  * Class Bluesky_Media
@@ -31,6 +35,15 @@ class Bluesky_Media {
 	 * @var string
 	 */
 	const EMBED_TYPE_EXTERNAL = 'app.bsky.embed.external';
+
+	/**
+	 * Seconds a direct media download may take: download_url()'s default, which it used before.
+	 *
+	 * @since 8.0.0
+	 *
+	 * @var int
+	 */
+	private const DOWNLOAD_TIMEOUT = 300;
 
 	/**
 	 * The media value passed to the constructor.
@@ -169,13 +182,32 @@ class Bluesky_Media {
 			require_once ABSPATH . 'wp-includes/embed.php';
 		}
 
-		$oembed = wp_oembed_get( $url );
-		if ( ! $oembed ) {
-			return false;
-		}
+		// WordPress fetches the URL to discover its oEmbed endpoint, then the endpoint, following
+		// redirects. Each redirect is checked, so a public URL cannot hand those fetches on to an
+		// address get_valid_url() would refuse.
+		$check_endpoint = static function ( $preempt, $args, $endpoint ) {
+			if ( Non_Public_Ranges::url_resolves_into( (string) $endpoint ) ) {
+				return new WP_Error( 'automator_ssrf_blocked', esc_html_x( 'The URL resolves to a private or reserved IP address and cannot be used.', 'Bluesky', 'uncanny-automator' ) );
+			}
 
-		$provider      = _wp_oembed_get_object();
-		$provider_data = $provider->get_data( $url );
+			return $preempt;
+		};
+
+		// Discovery chooses another URL; check its first request as well as every redirect.
+		add_filter( 'pre_http_request', $check_endpoint, PHP_INT_MAX, 3 );
+		try {
+			$provider_data = Redirect_Hop_Check::around(
+				static function () use ( $url ) {
+					if ( ! wp_oembed_get( $url ) ) {
+						return false;
+					}
+
+					return _wp_oembed_get_object()->get_data( $url );
+				}
+			);
+		} finally {
+			remove_filter( 'pre_http_request', $check_endpoint, PHP_INT_MAX );
+		}
 
 		if ( ! $provider_data || empty( $provider_data->thumbnail_url ) ) {
 			return false;
@@ -207,15 +239,15 @@ class Bluesky_Media {
 	 */
 	private function process_direct_media( $url, $file_type ) {
 
-		if ( ! function_exists( 'download_url' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/file.php';
-		}
+		// One GET that follows no redirect, after the address check: a public URL must not hand the
+		// download on to an address get_valid_url() would refuse.
+		$download = ( new Remote_File_Client() )->download( $url, self::DOWNLOAD_TIMEOUT );
 
-		$tmp = download_url( $url );
-
-		if ( is_wp_error( $tmp ) ) {
+		if ( is_wp_error( $download ) ) {
 			return array();
 		}
+
+		$tmp = $download->path();
 
 		try {
 			$media = array(
@@ -419,8 +451,8 @@ class Bluesky_Media {
 		// SSRF guard. The embed URL can originate from a recipe token fed by
 		// untrusted trigger data, and this method is the single validation
 		// choke-point for the website, oEmbed and direct-media fetches, so
-		// block anything resolving to a private / reserved IP here.
-		if ( automator_resolves_to_private_ip( $url ) ) {
+		// block anything resolving to a range that is not public here.
+		if ( Non_Public_Ranges::url_resolves_into( $url ) ) {
 			return false;
 		}
 

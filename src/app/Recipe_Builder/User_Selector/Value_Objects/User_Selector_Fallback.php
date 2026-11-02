@@ -1,5 +1,4 @@
 <?php
-// phpcs:disable WordPress.Security.EscapeOutput, WordPress.WP.I18n
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\User_Selector\Value_Objects;
 
@@ -65,8 +64,8 @@ class User_Selector_Fallback {
 			throw new \InvalidArgumentException(
 				sprintf(
 					'User selector fallback must be one of: %s. Given: %s',
-					implode( ', ', array_unique( $all_allowed ) ),
-					$value
+					esc_html( implode( ', ', array_unique( $all_allowed ) ) ),
+					esc_html( $value )
 				)
 			);
 		}
