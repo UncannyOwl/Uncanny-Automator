@@ -28,9 +28,15 @@ use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
  *    credentials. A raw header string is read the way WP_Http will parse
  *    it ({@see Request_Headers::from_args()}), so the caller's headers
  *    survive.
- *  - License lookup failures (no license set, etc.) are silent — we
- *    don't synthesize empty headers, the platform still 401s with
- *    "Missing license headers" and the user knows to activate.
+ *  - No license key (no active license) adds nothing — we don't
+ *    synthesize empty headers. A request sent through the platform
+ *    client or `Api_Server::api_call()` never gets here without one:
+ *    both refuse it first
+ *    ({@see Dispatch\Platform_Dispatch_Guard::refuse_without_a_license_key()}).
+ *    Any other request (a site-signed `/app/v1` call, a raw
+ *    `wp_remote_*` call) goes out without the headers, and production's
+ *    edge refuses a POST that lacks them (403) before the platform's
+ *    own 401 "Missing license headers".
  *  - Hook priority is late (priority 9999) so it runs AFTER any
  *    third-party header customization.
  *
@@ -126,7 +132,7 @@ final class Platform_Headers_Injector {
 		$item_name = (string) $license->get_item_name();
 
 		if ( '' === $key ) {
-			return $args; // unlicensed — let the platform 401 surface naturally
+			return $args; // unlicensed — an app call was refused before it got here; anything else goes out as it is
 		}
 
 		$existing = Request_Headers::from_args( $args );

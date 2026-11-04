@@ -164,6 +164,39 @@ final class Mcp_Rest_Controller extends WP_REST_Controller {
 				'permission_callback' => '__return_true',
 			)
 		);
+
+		// Before any other listener reads WordPress's verdict on the body.
+		add_filter( 'rest_request_before_callbacks', array( $this, 'answer_invalid_json_as_parse_error' ), 0, 2 );
+	}
+
+	/**
+	 * Let the endpoint answer a body WordPress could not parse as JSON.
+	 *
+	 * WordPress decodes a body labelled as JSON before the route runs, and when
+	 * it does not decode it answers with its own rest_invalid_json object. The
+	 * endpoint decodes the same body with the same json_decode() call and
+	 * answers JSON-RPC -32700 Parse error, as it does for any other content
+	 * type. So only that one WordPress error, on this controller's POST
+	 * handler, is set aside: the endpoint still refuses the body, in the
+	 * JSON-RPC envelope its other errors use.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param mixed $response Result so far: null, or the error WordPress found.
+	 * @param mixed $handler  Matched route handler.
+	 * @return mixed
+	 */
+	public function answer_invalid_json_as_parse_error( $response, $handler ) {
+		if (
+			! $response instanceof WP_Error
+			|| array( 'rest_invalid_json' ) !== $response->get_error_codes()
+			|| ! is_array( $handler )
+			|| array( $this, 'handle_post_request' ) !== ( $handler['callback'] ?? null )
+		) {
+			return $response;
+		}
+
+		return null;
 	}
 
 	/**
@@ -226,6 +259,8 @@ final class Mcp_Rest_Controller extends WP_REST_Controller {
 			return $this->error_response( null, -32700, 'Request body must contain one bounded JSON-RPC object.', 400 );
 		}
 
+		// A body of any content type gets this answer: for one labelled as JSON,
+		// answer_invalid_json_as_parse_error() set WordPress's own error aside.
 		$message = json_decode( $raw_body, true );
 		if ( JSON_ERROR_NONE !== json_last_error() ) {
 			return $this->error_response( null, -32700, 'Request body contains invalid JSON.', 400 );
@@ -994,6 +1029,14 @@ final class Mcp_Rest_Controller extends WP_REST_Controller {
 	/**
 	 * Compare a decoded routing header to its primitive body value.
 	 *
+	 * An integer header must be the integer's canonical decimal text, the way
+	 * JSON writes it: digits with no leading zero, a leading "-" only for a
+	 * negative value, and zero as "0". Another spelling of the same number
+	 * ("42.0", "4.2e1", "+42", "042", "-0") is refused, so a gateway that reads
+	 * the header text sees the value the server runs.
+	 *
+	 * @since 8.0.1 An integer header no longer matches another numeric spelling.
+	 *
 	 * @param mixed $value Body value.
 	 */
 	private function header_value_matches( string $decoded, $value, string $type ): bool {
@@ -1005,11 +1048,11 @@ final class Mcp_Rest_Controller extends WP_REST_Controller {
 			return is_bool( $value ) && ( $value ? 'true' : 'false' ) === $decoded;
 		}
 
-		if ( ! is_int( $value ) || abs( $value ) > Tool_Header_Map::get_max_safe_integer() || ! is_numeric( $decoded ) ) {
+		if ( ! is_int( $value ) || abs( $value ) > Tool_Header_Map::get_max_safe_integer() ) {
 			return false;
 		}
 
-		return (float) $value === (float) $decoded;
+		return (string) $value === $decoded;
 	}
 	/**
 	 * Is valid accept header.

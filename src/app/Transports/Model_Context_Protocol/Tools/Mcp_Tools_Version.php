@@ -44,5 +44,5 @@ namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools;
 final class Mcp_Tools_Version {
 
 	/** The current tools version. */
-	public const VERSION = '6.4.1';
+	public const VERSION = '6.5.0';
 }

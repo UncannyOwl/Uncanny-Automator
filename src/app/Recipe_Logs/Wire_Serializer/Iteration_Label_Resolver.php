@@ -38,7 +38,8 @@ final class Iteration_Label_Resolver {
 
 	/**
 	 * Best-effort token-loop label: the entity_ids JSON element at the
-	 * entity_id index, stringified (scalar) or JSON-encoded (array).
+	 * entity_id index, stringified (scalar) or JSON-encoded (array) with
+	 * non-ASCII text and slashes as written, so it can be searched as it reads.
 	 *
 	 * @param int    $entity_id   Positional index into the entity list.
 	 * @param string $entity_ids  The parent row's raw entity_ids JSON.
@@ -53,7 +54,56 @@ final class Iteration_Label_Resolver {
 		if ( is_scalar( $entity ) ) {
 			return (string) $entity;
 		}
-		$encoded = wp_json_encode( $entity );
+		$encoded = wp_json_encode( $entity, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 		return is_string( $encoded ) ? $encoded : null;
+	}
+
+	/**
+	 * Entity ids of a token loop whose label text contains the search term.
+	 * Reads the entity's values, not its JSON, so a key every entity shares
+	 * matches none of them.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param string $search     Non-empty search term.
+	 * @param string $entity_ids The parent row's raw entity_ids JSON.
+	 * @return array<int,int> The matching positional entity ids.
+	 */
+	public function token_entity_ids_matching( string $search, string $entity_ids ): array {
+		$entities = json_decode( $entity_ids, true );
+		if ( ! is_array( $entities ) || '' === wp_check_invalid_utf8( $search ) ) {
+			return array();
+		}
+		// PCRE folds case across Unicode without mbstring, which WordPress does not guarantee.
+		$pattern = '/' . preg_quote( $search, '/' ) . '/iu';
+		$matched = array();
+		foreach ( $entities as $entity_id => $entity ) {
+			if ( is_int( $entity_id ) && $this->entity_value_matches( $entity, $pattern ) ) {
+				$matched[] = $entity_id;
+			}
+		}
+		return $matched;
+	}
+
+	/**
+	 * Whether a token-loop entity, or any value nested in it, matches the
+	 * pattern. Nulls and booleans carry no text to search.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param mixed  $value   Decoded entity or nested value.
+	 * @param string $pattern Compiled search pattern.
+	 * @return bool True when a value matches.
+	 */
+	private function entity_value_matches( $value, string $pattern ): bool {
+		if ( is_array( $value ) ) {
+			foreach ( $value as $nested ) {
+				if ( $this->entity_value_matches( $nested, $pattern ) ) {
+					return true;
+				}
+			}
+			return false;
+		}
+		return ( is_string( $value ) || is_int( $value ) || is_float( $value ) ) && 1 === preg_match( $pattern, (string) $value );
 	}
 }

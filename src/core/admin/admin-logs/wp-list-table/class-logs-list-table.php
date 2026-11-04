@@ -2,6 +2,7 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\App\Infrastructure\Database\Database;
 use Uncanny_Automator_Pro\Pro_Filters;
 use WP_List_Table;
 
@@ -365,11 +366,14 @@ class Logs_List_Table extends WP_List_Table {
 		$view_exists       = Automator_DB::is_view_exists( 'action' );
 		$search_conditions = ' 1=1 ';
 		if ( automator_filter_has_var( 'search_key' ) && '' !== automator_filter_input( 'search_key' ) ) {
-			$search_like = '%' . $wpdb->esc_like( sanitize_text_field( automator_filter_input( 'search_key' ) ) ) . '%';
+			$search      = sanitize_text_field( automator_filter_input( 'search_key' ) );
+			$search_like = '%' . $wpdb->esc_like( $search ) . '%';
 			if ( $view_exists ) {
-				$search_conditions .= $wpdb->prepare( ' AND ( (recipe_title LIKE %s) OR (action_title LIKE %s) OR (display_name LIKE %s ) OR (user_email LIKE %s ) OR (error_message LIKE %s ) ) ', $search_like, $search_like, $search_like, $search_like, $search_like );
+				$notes_match        = Database::get_action_error_store()->notes_search_sql( "{$wpdb->prefix}uap_action_logs_view.action_log_id", "{$wpdb->prefix}uap_action_logs_view.error_message", $search );
+				$search_conditions .= $wpdb->prepare( ' AND ( (recipe_title LIKE %s) OR (action_title LIKE %s) OR (display_name LIKE %s ) OR (user_email LIKE %s ) OR ', $search_like, $search_like, $search_like, $search_like ) . $notes_match . ' ) ';
 			} else {
-				$search_conditions .= $wpdb->prepare( ' AND ( (p.post_title LIKE %s) OR (pa.post_title LIKE %s) OR (u.display_name LIKE %s ) OR (u.user_email LIKE %s ) OR (a.error_message LIKE %s ) ) ', $search_like, $search_like, $search_like, $search_like, $search_like );
+				$notes_match        = Database::get_action_error_store()->notes_search_sql( 'a.ID', 'a.error_message', $search );
+				$search_conditions .= $wpdb->prepare( ' AND ( (p.post_title LIKE %s) OR (pa.post_title LIKE %s) OR (u.display_name LIKE %s ) OR (u.user_email LIKE %s ) OR ', $search_like, $search_like, $search_like, $search_like ) . $notes_match . ' ) ';
 			}
 		}
 
@@ -843,7 +847,8 @@ class Logs_List_Table extends WP_List_Table {
 	 */
 	private function format_action_data( $actions ) {
 
-		$data = array();
+		$data  = array();
+		$notes = Database::get_action_error_store()->get_messages_by_action_logs( array_column( $actions, 'action_log_id' ) );
 
 		foreach ( $actions as $action ) {
 
@@ -918,7 +923,7 @@ class Logs_List_Table extends WP_List_Table {
 			}
 
 			$action_status = apply_filters( 'automator_action_log_status', $action_status_html, $action );
-			$error_message = apply_filters( 'automator_action_log_error', $action->error_message, $action );
+			$error_message = apply_filters( 'automator_action_log_error', $this->action_notes( $notes[ absint( $action->action_log_id ) ] ?? array(), (string) $action->error_message ), $action );
 
 			/**
 			 * Replaced get_edit_post_link() to get_edit_link
@@ -1011,6 +1016,36 @@ class Logs_List_Table extends WP_List_Table {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * The Notes text of an action log: the errors the run recorded for it, or, for an action logged before 8.0 with
+	 * none recorded, its legacy message. The recorded errors keep the markup a legacy message could hold.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param string[] $messages       The errors recorded for the action log, oldest first.
+	 * @param string   $legacy_message The action log's legacy message.
+	 *
+	 * @return string
+	 */
+	private function action_notes( array $messages, string $legacy_message ) {
+
+		if ( empty( $messages ) ) {
+			return $legacy_message;
+		}
+
+		return wp_kses(
+			implode( ' ', $messages ),
+			array(
+				'a'  => array(
+					'href'   => array(),
+					'title'  => array(),
+					'target' => array(),
+				),
+				'br' => array(),
+			)
+		);
 	}
 
 	/**

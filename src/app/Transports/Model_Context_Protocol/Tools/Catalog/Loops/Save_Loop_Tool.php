@@ -57,7 +57,7 @@ class Save_Loop_Tool extends Abstract_Loop_Tool {
 	public function get_description(): string {
 		return 'Create or update a loop that repeats its actions for each matching user, post, or token item. '
 			. 'To create, pass recipe_id and type (users/posts/token), omitting loop_id. To update, pass recipe_id and loop_id. Changing type reconciles incompatible filters automatically, and an update that leaves the loop with no filter adds its type\'s default filter. '
-			. 'For token loops, also pass loopable_token: a registry token found with search(type="loopable_token"), or a loopable token from a saved trigger or action. '
+			. 'For token loops, also pass loopable_token: a registry token found with search(type="loopable_token"), a loopable token of a trigger, or one of an action that runs before the loop, at its level or in a block the loop is in. A new loop goes at the end of the recipe, so any top-level action before it counts; an action inside another block does not. get_recipe lists the valid ones of each loop as loopable_token_ids. '
 			. 'Loop filters select which items run. After creation, use get_recipe to inspect the loop and its automatically added default filter. User loops initially exclude administrators. '
 			. 'Find compatible filters with search(type="loop_filter", mode="list", loop_id=the returned loop_id). '
 			. 'Use save_loop_filter to configure them: include filter_id to update an existing filter, or omit it to add one. Multiple filters must all match; adding a filter does not replace the default. A loop with no filters cannot be published or run. '
@@ -84,7 +84,7 @@ class Save_Loop_Tool extends Abstract_Loop_Tool {
 	protected function schema_definition() {
 		$loopable_token_schema = array(
 			'type'        => 'string',
-			'description' => 'Required when type=token. Loopable token ID to iterate over. Use search with type=loopable_token for registry sources, or pass a loopable token exposed by an existing saved trigger or action in the recipe.',
+			'description' => 'Required when type=token. Loopable token ID to iterate over. Use search with type=loopable_token for registry sources, or pass a loopable token of a trigger, or of an action that runs before the loop at its level or in a block the loop is in.',
 		);
 
 		return array(
@@ -197,7 +197,7 @@ class Save_Loop_Tool extends Abstract_Loop_Tool {
 				),
 			);
 
-			$validation = ( new Token_Validator() )->validate( $recipe_id, array( 'TOKEN' => $token_value ) );
+			$validation = ( new Token_Validator() )->validate_loopable( $recipe_id, $token_value );
 			if ( ! $validation['valid'] ) {
 				return Json_Rpc_Response::create_error_response( $validation['message'] );
 			}
@@ -300,7 +300,7 @@ class Save_Loop_Tool extends Abstract_Loop_Tool {
 				),
 			);
 
-			$validation = ( new Token_Validator() )->validate( $recipe_id, array( 'TOKEN' => $token_value ) );
+			$validation = ( new Token_Validator() )->validate_loopable( $recipe_id, $token_value, $loop_id );
 			if ( ! $validation['valid'] ) {
 				return Json_Rpc_Response::create_error_response( $validation['message'] );
 			}

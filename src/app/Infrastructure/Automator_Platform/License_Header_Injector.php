@@ -30,6 +30,17 @@ class License_Header_Injector {
 	}
 
 	/**
+	 * The license whose key this injector sends.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @return License_Provider_Interface
+	 */
+	public function license(): License_Provider_Interface {
+		return $this->license_provider;
+	}
+
+	/**
 	 * Inject license headers into wp_remote_request arguments.
 	 *
 	 * @param array $wp_args The WordPress HTTP API arguments.

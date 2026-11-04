@@ -157,14 +157,41 @@ class Rest_Bearer_Route_Authorizer {
 					$request
 				)
 			) {
-				return new WP_Error( 'rest_invalid_token', 'The Automator bearer token is invalid or expired.', array( 'status' => 401 ) );
+				return $this->refuse_credential_without_identity( $request );
 			}
 			return $response;
 		}
 
-		$method = strtoupper( (string) $request->get_method() );
-		$route  = $this->normalize_route( (string) $request->get_route() );
+		$refusal = $this->credential_refusal(
+			$context,
+			$this->normalize_route( (string) $request->get_route() ),
+			strtoupper( (string) $request->get_method() ),
+			$request
+		);
+		if ( null !== $refusal ) {
+			return $refusal;
+		}
 
+		// Automator has approved the exact route, method and scope. Install
+		// identity only at this boundary so core may safely validate arguments
+		// and, after the second check, run the permission callback and handler.
+		wp_set_current_user( $context->get_user()->ID );
+		return $response;
+	}
+
+	/**
+	 * Why a valid credential may not use this route, method and scope, or null when it may.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param Authenticated_Token_Context $context Valid bearer credential.
+	 * @param string                      $route   Normalized route.
+	 * @param string                      $method  Upper-case HTTP method.
+	 * @param WP_REST_Request             $request REST request object.
+	 *
+	 * @return WP_Error|null
+	 */
+	private function credential_refusal( Authenticated_Token_Context $context, string $route, string $method, WP_REST_Request $request ): ?WP_Error {
 		// Standards OAuth access tokens are audience-bound to the MCP endpoint.
 		// Only the proprietary first-party Agent credential may reach the
 		// separately allowlisted WordPress REST surfaces used by the product.
@@ -185,20 +212,54 @@ class Rest_Bearer_Route_Authorizer {
 		}
 
 		$required_scope = $this->get_required_bearer_scope( $method );
-		if ( $context->has_scope( $required_scope ) ) {
-			// Automator has approved the exact route, method and scope. Install
-			// identity only at this boundary so core may safely validate arguments
-			// and, after the second check, run the permission callback and handler.
-			wp_set_current_user( $context->get_user()->ID );
-			return $response;
+		if ( ! $context->has_scope( $required_scope ) ) {
+			return new WP_Error(
+				'rest_insufficient_scope',
+				'Bearer token does not grant the required REST scope.',
+				array(
+					'status'         => 403,
+					'required_scope' => $required_scope,
+				)
+			);
 		}
 
-		return new WP_Error(
-			'rest_insufficient_scope',
-			'Bearer token does not grant the required REST scope.',
+		return null;
+	}
+
+	/**
+	 * Refuse an Automator credential that gives no identity on an allowlisted route.
+	 *
+	 * A token that is not valid, or revoked, is unauthenticated. A valid one
+	 * whose user lacks manage_options is refused as a valid credential would be
+	 * for its purpose or scope, and otherwise for the capability: a new token
+	 * would not help, so it is never told its token is invalid. It never
+	 * becomes the current user.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param WP_REST_Request $request REST request object.
+	 *
+	 * @return WP_Error
+	 */
+	private function refuse_credential_without_identity( WP_REST_Request $request ): WP_Error {
+		$context = $this->authenticator->resolve_unprivileged_request_context( $request );
+		if ( null === $context ) {
+			return new WP_Error( 'rest_invalid_token', 'The Automator bearer token is invalid or expired.', array( 'status' => 401 ) );
+		}
+
+		$refusal = $this->credential_refusal(
+			$context,
+			$this->normalize_route( (string) $request->get_route() ),
+			strtoupper( (string) $request->get_method() ),
+			$request
+		);
+
+		return $refusal ?? new WP_Error(
+			'rest_forbidden',
+			'The WordPress user this Bearer token belongs to lacks the manage_options capability (Administrator) that Uncanny Agent needs for this REST route.',
 			array(
-				'status'         => 403,
-				'required_scope' => $required_scope,
+				'status'              => 403,
+				'required_capability' => 'manage_options',
 			)
 		);
 	}

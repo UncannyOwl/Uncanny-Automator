@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 8.0.0\n"
+"Project-Id-Version: Uncanny Automator 8.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-02T20:46:04+00:00\n"
+"POT-Creation-Date: 2026-11-04T15:07:11+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -2495,9 +2495,9 @@ msgid "Edit"
 msgstr ""
 
 #: src/assets/build/main.js:1
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:539
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:671
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:857
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:543
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:675
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:862
 #: src/core/views/admin-settings/tab/model-context-protocol/authentication-log.php:168
 #: src/core/views/admin-settings/tab/model-context-protocol/authentication-log.php:206
 msgid "Details"
@@ -4295,358 +4295,363 @@ msgid "Failed to get addon download URL."
 msgstr ""
 
 #. translators: %s: app name, e.g. "Dropbox"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:172
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:174
 #, php-format
 msgctxt "Automator App Platform"
 msgid "Automator could not read this site's %s connection from the database. Run the step again; if this keeps happening, check the site's database."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:201
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:203
 msgctxt "Automator App Platform"
 msgid "This site is registered with the Automator App Platform."
 msgstr ""
 
 #. translators: %s: this site's wp-admin URL
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:212
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:214
 #, php-format
 msgctxt "Automator App Platform"
 msgid "This site's address changed, so its app actions are paused until an administrator answers the site-address notice at %s."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:214
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:216
 msgctxt "Automator App Platform"
 msgid "This site is being registered as a copy, so its app actions are paused until that finishes. That usually takes under a minute."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:216
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:218
 msgctxt "Automator App Platform"
 msgid "This site is moving to its new address, so its app actions are paused until the Automator App Platform confirms the move."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:224
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:226
 msgctxt "Automator App Platform"
 msgid "This site has not registered with the Automator App Platform yet. It registers on the next admin page load, or when an administrator re-checks the registration."
 msgstr ""
 
 #. translators: %s: how long ago, e.g. "2 mins"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:242
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:244
 #, php-format
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform is confirming this site (started %s ago). This usually takes under a minute."
 msgstr ""
 
 #. translators: 1: how long ago, e.g. "2 mins"; 2: what the last check got, e.g. "it answered HTTP 403"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:244
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:246
 #, php-format
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform is confirming this site (started %1$s ago), but its last check could not reach it: %2$s. It tries again on its own."
 msgstr ""
 
 #. translators: %s: this site's registration challenge URL
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:263
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:265
 #, php-format
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform could not reach this site to confirm it (at %s). Make sure this site's REST API is reachable from the internet, then re-check the registration. Security plugins, firewalls and password protection can block it."
 msgstr ""
 
 #. translators: 1: this site's registration challenge URL; 2: what the last check got, e.g. "it answered HTTP 403"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:265
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:267
 #, php-format
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform could not reach this site to confirm it (at %1$s): %2$s. Make sure this site's REST API is reachable from the internet, then re-check the registration. Security plugins, firewalls and password protection can block it."
 msgstr ""
 
 #. translators: %d: the HTTP status this site answered, e.g. 403
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:283
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:285
 #, php-format
 msgctxt "Automator App Platform"
 msgid "it answered HTTP %d"
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:287
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:289
 msgctxt "Automator App Platform"
 msgid "it did not answer in time"
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:288
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:290
 msgctxt "Automator App Platform"
 msgid "its HTTPS certificate was not accepted"
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:289
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:291
 msgctxt "Automator App Platform"
 msgid "the connection to it failed"
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:290
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:292
 msgctxt "Automator App Platform"
 msgid "its address was not found in DNS"
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:291
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:293
 msgctxt "Automator App Platform"
 msgid "another site answered at its address"
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:292
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:294
 msgctxt "Automator App Platform"
 msgid "its answer could not be verified"
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:362
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:364
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform did not accept this request. Check that this site's license is active and includes this site."
 msgstr ""
 
 #. translators: %s: the platform's reason
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:364
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:366
 #, php-format
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform did not accept this request (%s). Check that this site's license is active and includes this site."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:397
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:399
 msgctxt "Automator App Platform"
 msgid "This site's registration with the Automator App Platform is being repaired. Run the step again in a minute."
 msgstr ""
 
 #. translators: %s: the platform's sentence, ending in its own full stop
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:425
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:427
 #, php-format
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform refused this site's registration. %s"
 msgstr ""
 
 #. translators: %s: the platform's reason
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:427
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:429
 #, php-format
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform refused this site's registration: %s."
 msgstr ""
 
 #. translators: %s: how long until the next attempt, e.g. "45 mins"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:431
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:433
 #, php-format
 msgctxt "Automator App Platform"
 msgid "It is tried again on its own in %s; an administrator can re-check it sooner once the cause is fixed."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:432
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:434
 msgctxt "Automator App Platform"
 msgid "An administrator can re-check it once the cause is fixed."
 msgstr ""
 
 #. translators: %s: this site's host, e.g. "shop.internal"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:474
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:476
 #, php-format
 msgctxt "Automator App Platform"
 msgid "This site's address (%s) is not a public address, so the Automator App Platform can't confirm it. Use the site's public address, then re-check the registration."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:476
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:478
 msgctxt "Automator App Platform"
 msgid "This site's address uses HTTP, and the Automator App Platform confirms a site only over HTTPS. Serve the site over HTTPS (it needs an SSL certificate), then re-check the registration."
 msgstr ""
 
 #. translators: %s: this site's IP address, e.g. "203.0.113.7"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:479
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:481
 #, php-format
 msgctxt "Automator App Platform"
 msgid "This site's address is an IP address (%s), and the Automator App Platform confirms a site only at a domain name. Give the site a domain name, then re-check the registration."
 msgstr ""
 
 #. translators: %s: this site's host, e.g. "shop.example.com"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:482
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:484
 #, php-format
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform couldn't find a public address for this site (%s) in DNS, so it couldn't confirm it. If the domain changed recently, DNS can take a while to update everywhere; re-check the registration once it has."
 msgstr ""
 
 #. translators: 1: this site's host as WordPress has it, e.g. "münchen-shop.de", 2: its ASCII form, e.g. "xn--mnchen-shop-thb.de"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:527
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:529
 #, php-format
 msgctxt "Automator App Platform"
 msgid "This site's address (%1$s) has characters the Automator App Platform can't use. Set WordPress Address (URL) and Site Address (URL) in Settings, General to its ASCII form, %2$s, then re-check the registration."
 msgstr ""
 
 #. translators: %s: this site's host as WordPress has it
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:529
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:531
 #, php-format
 msgctxt "Automator App Platform"
 msgid "This site's address (%s) isn't a host name the Automator App Platform can use. Check WordPress Address (URL) and Site Address (URL) in Settings, General, then re-check the registration."
 msgstr ""
 
 #. translators: %s: how long until the next attempt, e.g. "1 min"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:548
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:550
 #, php-format
 msgctxt "Automator App Platform"
 msgid "It is tried again on its own in %s."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:549
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:551
 msgctxt "Automator App Platform"
 msgid "It is tried again on the next admin page load."
 msgstr ""
 
 #. translators: %s: this site's host, e.g. "shop.example.com"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:571
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:573
 #, php-format
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform couldn't find a public address for this site (%s) in DNS yet, so it couldn't confirm it. If the domain changed recently, DNS can take a while to update everywhere."
 msgstr ""
 
 #. translators: %s: the platform's reason
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:576
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:578
 #, php-format
 msgctxt "Automator App Platform"
 msgid "The last attempt to register this site with the Automator App Platform failed: %s."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:577
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:579
 msgctxt "Automator App Platform"
 msgid "The last attempt to register this site with the Automator App Platform failed."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:592
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:594
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform refused this request because this server's clock is more than 5 minutes off. App connections need an accurate server clock: ask your host to synchronize it, then run the step again."
 msgstr ""
 
 #. translators: %s: a duration, e.g. "10 minutes"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:595
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:597
 #, php-format
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform refused this request because this server's clock is %s ahead of its own. App connections need an accurate server clock: ask your host to synchronize it, then run the step again."
 msgstr ""
 
 #. translators: %s: a duration, e.g. "10 minutes"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:598
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:600
 #, php-format
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform refused this request because this server's clock is %s behind its own. App connections need an accurate server clock: ask your host to synchronize it, then run the step again."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:611
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:613
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform received this request twice and refused the second copy. Run the step again."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:626
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:628
 msgctxt "Automator App Platform"
 msgid "Too many requests were made in a short time. Run the step again in a few minutes."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:641
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:643
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform is busy. Run the step again in a few minutes."
 msgstr ""
 
 #. translators: %s: app name, e.g. "Dropbox"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:660
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:662
 #, php-format
 msgctxt "Automator App Platform"
 msgid "%s returned an unexpected error. Run the step again."
 msgstr ""
 
 #. translators: %s: app name, e.g. "Dropbox"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:747
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:749
 #, php-format
 msgctxt "Automator App Platform"
 msgid "%s did not answer the Automator App Platform in time. Run the step again."
 msgstr ""
 
 #. translators: %d: HTTP status, e.g. 503
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:772
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:774
 #, php-format
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform is not answering right now (HTTP %d). Run the step again in a few minutes."
 msgstr ""
 
 #. translators: %d: HTTP status, e.g. 200
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:774
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:776
 #, php-format
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform's answer could not be read (HTTP %d). Run the step again in a few minutes. If it keeps happening, check that no proxy or firewall between this site and the Automator App Platform changes its answers."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:786
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:788
 msgctxt "Automator App Platform"
 msgid "The upload link expired or could not be verified. Run the step again."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:813
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:815
 msgctxt "Automator App Platform"
 msgid "Webhooks need the site at a public URL, and this site is local."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:829
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:843
+msgctxt "Automator App Platform"
+msgid "This site needs your free Automator account linked before it can connect apps. On the Dashboard, click Link account under Connect your AI, or open Guest and choose Link your account."
+msgstr ""
+
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:849
 msgctxt "Automator App Platform"
 msgid "This site needs an active Automator license before it can connect apps. Activate it on the License screen."
 msgstr ""
 
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:847
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:867
 msgctxt "Automator App Platform"
 msgid "This site is local, so the Automator App Platform cannot fetch the file from it. Run this step on a site at a public URL."
 msgstr ""
 
 #. translators: 1: app name, e.g. "Dropbox"; 2: HTTP status
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:864
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:884
 #, php-format
 msgctxt "Automator App Platform"
 msgid "The %1$s request failed (HTTP %2$d)."
 msgstr ""
 
 #. translators: %s: app name, e.g. "Dropbox"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:902
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:922
 #, php-format
 msgctxt "Automator App Platform"
 msgid "%1$s no longer accepts the account this site is connected to. Reconnect your %1$s account on the %1$s settings page."
 msgstr ""
 
 #. translators: %s: app name, e.g. "Dropbox"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:917
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:937
 #, php-format
 msgctxt "Automator App Platform"
 msgid "Your %1$s account has not granted a permission this step needs. Authorize %1$s again on the %1$s settings page and allow every permission it asks for."
 msgstr ""
 
 #. translators: %s: app name, e.g. "Dropbox"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:934
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:954
 #, php-format
 msgctxt "Automator App Platform"
 msgid "This site's %1$s connection must be authorized again before the step can run. Authorize %1$s again on the %1$s settings page."
 msgstr ""
 
 #. translators: %s: app name, e.g. "Dropbox"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:952
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:972
 #, php-format
 msgctxt "Automator App Platform"
 msgid "Automator is re-checking this site's %s connection with the Automator App Platform. Run the step again in a minute."
 msgstr ""
 
 #. translators: %s: app name, e.g. "Dropbox"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:974
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:994
 #, php-format
 msgctxt "Automator App Platform"
 msgid "The Automator App Platform no longer holds this site's %1$s connection. Connect %1$s again on the %1$s settings page."
 msgstr ""
 
 #. translators: %1$s: app name, e.g. "Dropbox"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:998
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:1018
 #, php-format
 msgctxt "Automator App Platform"
 msgid "No %1$s account is chosen for this site's recipes yet. Choose one on the %1$s settings page."
 msgstr ""
 
 #. translators: %s: app name, e.g. "Dropbox"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:1013
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:1033
 #, php-format
 msgctxt "Automator App Platform"
 msgid "No %1$s account is connected to this site. Connect one on the %1$s settings page."
 msgstr ""
 
 #. translators: %s: app name, e.g. "Dropbox"
-#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:1049
+#: src/app/Infrastructure/Automator_Platform/Platform_Failure_Message.php:1069
 #, php-format
 msgctxt "Automator App Platform"
 msgid "This site's %1$s connection is switched off or is being re-checked, so the step did not run. Open the %1$s settings page to see its state."
@@ -4675,7 +4680,7 @@ msgid "Webhook body is not a JSON object"
 msgstr ""
 
 #. translators: 1: rows not copied, 2: rows in the batch.
-#: src/app/Infrastructure/Database/Stores/WP_Action_Error_Store.php:259
+#: src/app/Infrastructure/Database/Stores/WP_Action_Error_Store.php:313
 #, php-format
 msgctxt "Action error store migration error"
 msgid "Could not copy %1$d of %2$d legacy action errors into the error log."
@@ -5040,16 +5045,16 @@ msgstr ""
 msgid "Not enough credits"
 msgstr ""
 
-#: src/app/Infrastructure/License/License_Manager.php:401
+#: src/app/Infrastructure/License/License_Manager.php:433
 msgid "Invalid license response."
 msgstr ""
 
-#: src/app/Infrastructure/License/License_Manager.php:634
+#: src/app/Infrastructure/License/License_Manager.php:743
 msgid "Unable to fetch the license."
 msgstr ""
 
-#: src/app/Infrastructure/License/License_Manager.php:638
-#: src/core/classes/class-api-server.php:433
+#: src/app/Infrastructure/License/License_Manager.php:747
+#: src/core/classes/class-api-server.php:438
 msgid "License is not valid"
 msgstr ""
 
@@ -6653,7 +6658,7 @@ msgstr ""
 
 #. translators: %d Action ID.
 #: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:741
-#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:1295
+#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:1322
 #, php-format
 msgctxt "Action CRUD error"
 msgid "Action instance not found with ID: %d"
@@ -6669,57 +6674,57 @@ msgctxt "Action CRUD error"
 msgid "Nothing in this request was saved."
 msgstr ""
 
-#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:863
+#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:865
 msgctxt "Action CRUD message"
 msgid "Action successfully updated. The recipe was switched off because it no longer has both a live trigger and a live action."
 msgstr ""
 
-#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:868
+#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:870
 msgctxt "Action CRUD error"
 msgid "The field changes in this request were saved."
 msgstr ""
 
 #. translators: %s Error message.
-#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:900
+#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:903
 #, php-format
 msgctxt "Action CRUD error"
 msgid "Failed to update action: %s"
 msgstr ""
 
 #. translators: %1$d Action ID, %2$d Recipe ID.
-#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:947
-#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:1224
+#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:974
+#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:1251
 #, php-format
 msgctxt "Action CRUD error"
 msgid "Action %1$d not found in recipe %2$d."
 msgstr ""
 
 #. translators: %s Error message.
-#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:970
+#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:997
 #, php-format
 msgctxt "Action CRUD error"
 msgid "Failed to update action status: %s"
 msgstr ""
 
-#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:1056
+#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:1083
 msgctxt "Action CRUD error"
 msgid "This action can’t be switched on yet."
 msgstr ""
 
 #. translators: %1$s Current code, %2$s Requested code.
-#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:1084
+#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:1111
 #, php-format
 msgctxt "Action CRUD error"
 msgid "Cannot change action_code from \"%1$s\" to \"%2$s\" on an existing action. Delete and recreate instead."
 msgstr ""
 
-#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:1116
+#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:1143
 msgctxt "Automator"
 msgid "Action instance successfully deleted from recipe"
 msgstr ""
 
 #. translators: %s Error message.
-#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:1177
+#: src/app/Recipe_Builder/Action/Services/Action_CRUD_Service.php:1204
 #, php-format
 msgctxt "Action CRUD error"
 msgid "Failed to delete action: %s"
@@ -7609,21 +7614,28 @@ msgctxt "Node tests"
 msgid "Enter a webhook URL and try again."
 msgstr ""
 
-#: src/app/Recipe_Builder/Node_Tests/Providers/Send_Webhook_Tests_Provider.php:200
+#: src/app/Recipe_Builder/Node_Tests/Providers/Send_Webhook_Tests_Provider.php:202
 msgctxt "Node tests"
 msgid "The webhook could not be reached."
 msgstr ""
 
+#: src/app/Recipe_Builder/Node_Tests/Providers/Send_Webhook_Tests_Provider.php:222
+msgctxt "Node tests"
+msgid "Data was sent to the webhook successfully."
+msgstr ""
+
 #. translators: %d: HTTP status code
-#: src/app/Recipe_Builder/Node_Tests/Providers/Send_Webhook_Tests_Provider.php:217
+#: src/app/Recipe_Builder/Node_Tests/Providers/Send_Webhook_Tests_Provider.php:239
+#, php-format
+msgctxt "Node tests"
+msgid "The server responded with code %d, but its answer reports an error."
+msgstr ""
+
+#. translators: %d: HTTP status code
+#: src/app/Recipe_Builder/Node_Tests/Providers/Send_Webhook_Tests_Provider.php:246
 #, php-format
 msgctxt "Node tests"
 msgid "The server responded with error code %d."
-msgstr ""
-
-#: src/app/Recipe_Builder/Node_Tests/Providers/Send_Webhook_Tests_Provider.php:225
-msgctxt "Node tests"
-msgid "Data was sent to the webhook successfully."
 msgstr ""
 
 #: src/app/Recipe_Builder/Node_Tests/Services/Node_Tests_Service.php:244
@@ -8095,30 +8107,30 @@ msgctxt "Recipe node kind"
 msgid "item"
 msgstr ""
 
-#: src/app/Recipe_Builder/Recipe/Wire_Serializer/Recipe_Entity_Token_Resolver.php:144
+#: src/app/Recipe_Builder/Recipe/Wire_Serializer/Recipe_Entity_Token_Resolver.php:146
 msgctxt "Token"
 msgid "May be empty"
 msgstr ""
 
-#: src/app/Recipe_Builder/Recipe/Wire_Serializer/Recipe_Entity_Token_Resolver.php:340
+#: src/app/Recipe_Builder/Recipe/Wire_Serializer/Recipe_Entity_Token_Resolver.php:342
 msgctxt "Token"
 msgid "Field value"
 msgstr ""
 
-#: src/app/Recipe_Builder/Recipe/Wire_Serializer/Recipe_Entity_Token_Resolver.php:393
-#: src/core/services/recipe/structure/triggers/trigger/tokens.php:198
+#: src/app/Recipe_Builder/Recipe/Wire_Serializer/Recipe_Entity_Token_Resolver.php:395
+#: src/core/services/recipe/structure/triggers/trigger/tokens.php:200
 msgctxt "Trigger"
 msgid "Trigger ID"
 msgstr ""
 
-#: src/app/Recipe_Builder/Recipe/Wire_Serializer/Recipe_Entity_Token_Resolver.php:394
-#: src/core/services/recipe/structure/triggers/trigger/tokens.php:203
+#: src/app/Recipe_Builder/Recipe/Wire_Serializer/Recipe_Entity_Token_Resolver.php:396
+#: src/core/services/recipe/structure/triggers/trigger/tokens.php:205
 msgctxt "Trigger"
 msgid "Trigger title"
 msgstr ""
 
-#: src/app/Recipe_Builder/Recipe/Wire_Serializer/Recipe_Entity_Token_Resolver.php:395
-#: src/core/services/recipe/structure/triggers/trigger/tokens.php:208
+#: src/app/Recipe_Builder/Recipe/Wire_Serializer/Recipe_Entity_Token_Resolver.php:397
+#: src/core/services/recipe/structure/triggers/trigger/tokens.php:210
 msgctxt "Trigger"
 msgid "Trigger completion date"
 msgstr ""
@@ -8465,7 +8477,7 @@ msgctxt "Run-as"
 msgid "Use the existing user"
 msgstr ""
 
-#: src/app/Recipe_Logs/Services/Recipe_Log_Query_Service.php:457
+#: src/app/Recipe_Logs/Services/Recipe_Log_Query_Service.php:462
 msgctxt "Recipe log REST error"
 msgid "Recipe log not found."
 msgstr ""
@@ -8610,7 +8622,7 @@ msgid "Ran early by %1$s on %2$s, before its scheduled time of %3$s."
 msgstr ""
 
 #: src/app/Recipe_Runner/Cron/Background_Job_Poll.php:107
-#: src/app/Recipe_Runner/Cron/Stuck_Recipe_Recovery.php:108
+#: src/app/Recipe_Runner/Cron/Stuck_Recipe_Recovery.php:118
 msgid "Every 15 minutes"
 msgstr ""
 
@@ -8652,7 +8664,7 @@ msgctxt "Recipe run log"
 msgid "Not run: %s"
 msgstr ""
 
-#: src/app/Recipe_Runner/Stages/Action_Run_Stage.php:1440
+#: src/app/Recipe_Runner/Stages/Action_Run_Stage.php:1443
 #: src/core/lib/process/class-automator-recipe-process-complete.php:229
 msgctxt "Uncanny Automator"
 msgid "Stacktrace"
@@ -9710,8 +9722,8 @@ msgstr ""
 #. translators: 1: Ad ID
 #. translators: 1: Plan ID
 #. translators: 1: Event ID
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:441
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:677
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:445
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:681
 #: src/integrations/advanced-ads/helpers/advanced-ads-helpers.php:43
 #: src/integrations/armember/helpers/armember-helpers.php:57
 #: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:214
@@ -9721,72 +9733,72 @@ msgid "ID: %1$s (no title)"
 msgstr ""
 
 #. translators: Recipe type. Logged-in recipes are triggered only by logged-in users
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:510
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:515
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:514
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:519
 msgctxt "Recipe"
 msgid "Logged-in"
 msgstr ""
 
 #. translators: Recipe type. Anonymous recipes can be triggered by logged-in or anonymous users. Anonymous recipes can create new users or modify existing users.
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:518
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:522
 msgctxt "Recipe"
 msgid "Anonymous"
 msgstr ""
 
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:637
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:641
 msgid "Replayed"
 msgstr ""
 
 #. translators: 1. Trigger ID
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:695
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:699
 #, php-format
 msgid "Trigger deleted: %1$s"
 msgstr ""
 
 #. translators: The run number
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:702
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:706
 #, php-format
 msgid "Run #: %1$d of %2$d"
 msgstr ""
 
 #. translators: 1. Trademarked term
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:712
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:878
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:716
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:883
 #: src/core/admin/api-log/class-api-log-table.php:261
 #, php-format
 msgid "(Reactivate %1$s to view)"
 msgstr ""
 
 #. translators: 1. Trigger run number 2. Trigger total times
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:777
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:781
 #, php-format
 msgid "%1$d of %2$d"
 msgstr ""
 
 #. translators: 1. Action ID
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:868
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:873
 #: src/core/admin/api-log/class-api-log-table.php:251
 #, php-format
 msgid "Action deleted: %1$s"
 msgstr ""
 
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1027
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1062
 msgid "Please upgrade for unlimited app credits"
 msgstr ""
 
 #. translators: %s is a human-readable time difference, e.g. "17 minutes"
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1174
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1209
 #, php-format
 msgctxt "Recipe log relative time"
 msgid "%s ago"
 msgstr ""
 
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1220
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1255
 msgid "Deleted user"
 msgstr ""
 
 #. translators: Recipe log user ID column row value.
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1222
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1257
 #, php-format
 msgid "User ID #%1$s"
 msgstr ""
@@ -12396,13 +12408,13 @@ msgid "Use Uncanny Automator to connect with %1$s"
 msgstr ""
 
 #. translators: %s: Settings page URL
-#: src/core/lib/app-integrations/abstract-automator-platform-caller.php:142
+#: src/core/lib/app-integrations/abstract-automator-platform-caller.php:151
 #, php-format
 msgctxt "API error message"
 msgid "Your connection has expired or is invalid. [reconnect your account](%s)"
 msgstr ""
 
-#: src/core/lib/app-integrations/abstract-automator-platform-caller.php:992
+#: src/core/lib/app-integrations/abstract-automator-platform-caller.php:1022
 msgctxt "API error message"
 msgid "This action may only be used in an Automator action context."
 msgstr ""
@@ -12419,13 +12431,13 @@ msgstr ""
 msgid "Automator uses object caching to accelerate some processes. Disable when troubleshooting recipes."
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-email-helpers.php:113
-#: src/core/lib/helpers/class-automator-email-helpers.php:121
+#: src/core/lib/helpers/class-automator-email-helpers.php:115
+#: src/core/lib/helpers/class-automator-email-helpers.php:123
 msgid "\"To\" address is empty."
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-email-helpers.php:116
-#: src/core/lib/helpers/class-automator-email-helpers.php:124
+#: src/core/lib/helpers/class-automator-email-helpers.php:118
+#: src/core/lib/helpers/class-automator-email-helpers.php:126
 msgid "\"To\" address is invalid."
 msgstr ""
 
@@ -12443,9 +12455,9 @@ msgstr ""
 msgid "Example: 1.1"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers-field.php:427
-#: src/core/lib/helpers/class-automator-recipe-helpers-field.php:523
-#: src/core/lib/helpers/class-automator-recipe-helpers-field.php:598
+#: src/core/lib/helpers/class-automator-recipe-helpers-field.php:429
+#: src/core/lib/helpers/class-automator-recipe-helpers-field.php:525
+#: src/core/lib/helpers/class-automator-recipe-helpers-field.php:600
 msgid "Option"
 msgstr ""
 
@@ -12746,16 +12758,16 @@ msgid "Response - Body (raw)"
 msgstr ""
 
 #. translators: 1. Webhook URL
-#: src/core/lib/recipe-parts/trait-webhooks.php:115
+#: src/core/lib/recipe-parts/trait-webhooks.php:124
 msgid "Webhook URL is empty."
 msgstr ""
 
-#: src/core/lib/recipe-parts/trait-webhooks.php:151
+#: src/core/lib/recipe-parts/trait-webhooks.php:160
 msgctxt "Send webhook action response headers property"
 msgid "Response headers"
 msgstr ""
 
-#: src/core/lib/recipe-parts/trait-webhooks.php:160
+#: src/core/lib/recipe-parts/trait-webhooks.php:169
 msgctxt "Send webhook action log response body property"
 msgid "Response body"
 msgstr ""
@@ -12926,25 +12938,25 @@ msgid "Refreshed %s from the connected account."
 msgstr ""
 
 #. translators: %s: error message
-#: src/core/lib/settings/trait-oauth-app-integration-v3.php:162
+#: src/core/lib/settings/trait-oauth-app-integration-v3.php:166
 #, php-format
 msgctxt "OAuth init"
 msgid "Could not reach the Automator App Platform: %s"
 msgstr ""
 
 #. translators: %d: HTTP status code
-#: src/core/lib/settings/trait-oauth-app-integration-v3.php:182
+#: src/core/lib/settings/trait-oauth-app-integration-v3.php:186
 #, php-format
 msgctxt "OAuth init"
 msgid "Unexpected response from the Automator App Platform (status %d)."
 msgstr ""
 
-#: src/core/lib/settings/trait-oauth-app-integration-v3.php:254
+#: src/core/lib/settings/trait-oauth-app-integration-v3.php:258
 msgctxt "OAuth callback"
 msgid "Incomplete connection response from the Automator App Platform."
 msgstr ""
 
-#: src/core/lib/settings/trait-oauth-app-integration-v3.php:261
+#: src/core/lib/settings/trait-oauth-app-integration-v3.php:265
 msgctxt "OAuth callback"
 msgid "OAuth state could not be verified. Please try connecting again."
 msgstr ""
@@ -13308,8 +13320,12 @@ msgstr ""
 msgid "NULL"
 msgstr ""
 
-#: src/core/lib/webhooks/class-automator-send-webhook.php:616
+#: src/core/lib/webhooks/class-automator-send-webhook.php:657
 msgid "XML body wrapper cannot be empty. Please use `automator_send_webhook_xml_body` filter to define a wrapper."
+msgstr ""
+
+#: src/core/lib/webhooks/class-automator-send-webhook.php:835
+msgid "A GET request sends the webhook data as key/value pairs in the URL, so it cannot send a body formatted as text."
 msgstr ""
 
 #. translators: %s will be replaced with the actual type of the response.
@@ -13619,8 +13635,8 @@ msgstr ""
 msgid "No recipe found with ID: %d"
 msgstr ""
 
-#: src/core/services/resend/class-resend-action-service.php:144
-#: src/core/services/resend/class-resend-action-service.php:229
+#: src/core/services/resend/class-resend-action-service.php:163
+#: src/core/services/resend/class-resend-action-service.php:248
 msgid "The request has been successfully resent"
 msgstr ""
 
@@ -13648,14 +13664,14 @@ msgstr ""
 
 #. translators: %s is a human-readable time difference, e.g. "17 minutes"
 #. translators: %s Human readable time difference.
-#: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:145
+#: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:147
 #: src/core/views/admin-settings/tab/model-context-protocol/authentication-log.php:192
 #, php-format
 msgid "%s ago"
 msgstr ""
 
 #. translators: Units of time (seconds)
-#: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:223
+#: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:222
 #, php-format
 msgid "%1$s second"
 msgid_plural "%1$s seconds"
@@ -13663,7 +13679,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: Units of time (minutes)
-#: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:225
+#: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:224
 #, php-format
 msgid "%1$s minute"
 msgid_plural "%1$s minutes"
@@ -13671,7 +13687,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: Units of time (hours)
-#: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:227
+#: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:226
 #, php-format
 msgid "%1$s hour"
 msgid_plural "%1$s hours"
@@ -13679,7 +13695,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: Units of time (days)
-#: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:229
+#: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:228
 #, php-format
 msgid "%1$s day"
 msgid_plural "%1$s days"
@@ -13687,7 +13703,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: Units of time (years)
-#: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:231
+#: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:230
 #, php-format
 msgid "%1$s year"
 msgid_plural "%1$s years"
@@ -56380,7 +56396,7 @@ msgstr ""
 #. translators: Publish box date format, see https://www.php.net/manual/datetime.format.php
 #: src/integrations/wp-discuz/helpers/wp-discuz-helpers.php:250
 #: src/integrations/wp/tokens/wp-post-tokens.php:635
-#: src/integrations/wp/tokens/wp-shared-tokens.php:927
+#: src/integrations/wp/tokens/wp-shared-tokens.php:906
 msgctxt "publish box date format"
 msgid "M j, Y"
 msgstr ""
@@ -56388,7 +56404,7 @@ msgstr ""
 #. translators: Publish box time format, see https://www.php.net/manual/datetime.format.php
 #: src/integrations/wp-discuz/helpers/wp-discuz-helpers.php:254
 #: src/integrations/wp/tokens/wp-post-tokens.php:637
-#: src/integrations/wp/tokens/wp-shared-tokens.php:932
+#: src/integrations/wp/tokens/wp-shared-tokens.php:911
 msgctxt "publish box time format"
 msgid "H:i"
 msgstr ""
@@ -57753,7 +57769,7 @@ msgstr ""
 #: src/integrations/wp/actions/wordpress-delete-comment.php:59
 #: src/integrations/wp/actions/wordpress-set-comment-status.php:35
 #: src/integrations/wp/actions/wordpress-set-comment-status.php:59
-#: src/integrations/wp/tokens/wp-shared-tokens.php:834
+#: src/integrations/wp/tokens/wp-shared-tokens.php:813
 msgctxt "WordPress"
 msgid "Comment ID"
 msgstr ""
@@ -57784,7 +57800,7 @@ msgid "A numerical value is required."
 msgstr ""
 
 #: src/integrations/wp/actions/wordpress-add-reply-to-comment.php:61
-#: src/integrations/wp/tokens/wp-shared-tokens.php:859
+#: src/integrations/wp/tokens/wp-shared-tokens.php:838
 msgctxt "WordPress"
 msgid "Parent comment ID"
 msgstr ""
@@ -57842,8 +57858,8 @@ msgstr ""
 #: src/integrations/wp/actions/wordpress-set-user-role.php:52
 #: src/integrations/wp/helpers/wp-helpers-new.php:457
 #: src/integrations/wp/helpers/wp-helpers.php:276
-#: src/integrations/wp/tokens/wp-shared-tokens.php:707
-#: src/integrations/wp/tokens/wp-shared-tokens.php:746
+#: src/integrations/wp/tokens/wp-shared-tokens.php:686
+#: src/integrations/wp/tokens/wp-shared-tokens.php:725
 #: src/integrations/wp/triggers/wordpress-user-role-added.php:57
 #: src/integrations/wp/triggers/wordpress-user-role-updated.php:57
 msgctxt "WordPress"
@@ -58202,7 +58218,7 @@ msgstr ""
 
 #: src/integrations/wp/actions/wordpress-create-taxonomy-term.php:35
 #: src/integrations/wp/actions/wordpress-update-taxonomy-term.php:35
-#: src/integrations/wp/tokens/wp-shared-tokens.php:1082
+#: src/integrations/wp/tokens/wp-shared-tokens.php:1061
 msgctxt "WordPress"
 msgid "Term ID"
 msgstr ""
@@ -58313,7 +58329,7 @@ msgid "Comment author"
 msgstr ""
 
 #: src/integrations/wp/actions/wordpress-delete-comment.php:40
-#: src/integrations/wp/tokens/wp-shared-tokens.php:839
+#: src/integrations/wp/tokens/wp-shared-tokens.php:818
 msgctxt "WordPress"
 msgid "Comment content"
 msgstr ""
@@ -58493,7 +58509,7 @@ msgstr ""
 #: src/integrations/wp/actions/wordpress-delete-post-meta.php:86
 #: src/integrations/wp/actions/wordpress-get-post-meta.php:50
 #: src/integrations/wp/actions/wordpress-get-user-meta.php:55
-#: src/integrations/wp/tokens/wp-shared-tokens.php:1155
+#: src/integrations/wp/tokens/wp-shared-tokens.php:1134
 msgctxt "WordPress"
 msgid "Meta value"
 msgstr ""
@@ -58767,7 +58783,7 @@ msgstr ""
 
 #: src/integrations/wp/actions/wordpress-generate-password-reset-link.php:44
 #: src/integrations/wp/actions/wordpress-get-user-meta.php:45
-#: src/integrations/wp/tokens/wp-shared-tokens.php:610
+#: src/integrations/wp/tokens/wp-shared-tokens.php:589
 msgctxt "WordPress"
 msgid "User email"
 msgstr ""
@@ -58779,7 +58795,7 @@ msgstr ""
 
 #: src/integrations/wp/actions/wordpress-generate-password-reset-link.php:54
 #: src/integrations/wp/actions/wordpress-get-user-meta.php:40
-#: src/integrations/wp/tokens/wp-shared-tokens.php:600
+#: src/integrations/wp/tokens/wp-shared-tokens.php:579
 msgctxt "WordPress"
 msgid "User ID"
 msgstr ""
@@ -59007,7 +59023,7 @@ msgid "Set the status of {{a comment}} to {{a status}}"
 msgstr ""
 
 #: src/integrations/wp/actions/wordpress-set-comment-status.php:40
-#: src/integrations/wp/tokens/wp-shared-tokens.php:854
+#: src/integrations/wp/tokens/wp-shared-tokens.php:833
 msgctxt "WordPress"
 msgid "Comment status"
 msgstr ""
@@ -59668,7 +59684,7 @@ msgstr ""
 
 #. translators: 1: Comment date, 2: Comment time.
 #: src/integrations/wp/tokens/wp-post-tokens.php:633
-#: src/integrations/wp/tokens/wp-shared-tokens.php:924
+#: src/integrations/wp/tokens/wp-shared-tokens.php:903
 #, php-format
 msgctxt "WordPress"
 msgid "%1$s at %2$s"
@@ -59749,102 +59765,92 @@ msgctxt "WordPress"
 msgid "Post status (after change, specific type)"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:486
+#: src/integrations/wp/tokens/wp-shared-tokens.php:485
 msgctxt "WordPress"
 msgid "Post taxonomies"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:491
+#: src/integrations/wp/tokens/wp-shared-tokens.php:490
 msgctxt "WordPress"
 msgid "All post taxonomy terms"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:496
+#: src/integrations/wp/tokens/wp-shared-tokens.php:495
 msgctxt "WordPress"
 msgid "Post categories"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:501
+#: src/integrations/wp/tokens/wp-shared-tokens.php:500
 msgctxt "WordPress"
 msgid "Post tags"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:577
-msgctxt "WordPress"
-msgid "Post categories (loop)"
-msgstr ""
-
-#: src/integrations/wp/tokens/wp-shared-tokens.php:582
-msgctxt "WordPress"
-msgid "Post tags (loop)"
-msgstr ""
-
-#: src/integrations/wp/tokens/wp-shared-tokens.php:605
+#: src/integrations/wp/tokens/wp-shared-tokens.php:584
 msgctxt "WordPress"
 msgid "User username"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:615
+#: src/integrations/wp/tokens/wp-shared-tokens.php:594
 msgctxt "WordPress"
 msgid "User display name"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:620
+#: src/integrations/wp/tokens/wp-shared-tokens.php:599
 msgctxt "WordPress"
 msgid "User first name"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:625
+#: src/integrations/wp/tokens/wp-shared-tokens.php:604
 msgctxt "WordPress"
 msgid "User last name"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:630
+#: src/integrations/wp/tokens/wp-shared-tokens.php:609
 msgctxt "WordPress"
 msgid "User registered date"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:635
+#: src/integrations/wp/tokens/wp-shared-tokens.php:614
 msgctxt "WordPress"
 msgid "User roles"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:751
+#: src/integrations/wp/tokens/wp-shared-tokens.php:730
 msgctxt "WordPress"
 msgid "Role (new)"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:756
+#: src/integrations/wp/tokens/wp-shared-tokens.php:735
 msgctxt "WordPress"
 msgid "Role (old)"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:844
+#: src/integrations/wp/tokens/wp-shared-tokens.php:823
 msgctxt "WordPress"
 msgid "Comment URL"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:849
+#: src/integrations/wp/tokens/wp-shared-tokens.php:828
 msgctxt "WordPress"
 msgid "Comment submitted date"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:973
+#: src/integrations/wp/tokens/wp-shared-tokens.php:952
 msgctxt "WordPress"
 msgid "Commenter name"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:978
+#: src/integrations/wp/tokens/wp-shared-tokens.php:957
 msgctxt "WordPress"
 msgid "Commenter email"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:983
+#: src/integrations/wp/tokens/wp-shared-tokens.php:962
 msgctxt "WordPress"
 msgid "Commenter website"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:1030
+#: src/integrations/wp/tokens/wp-shared-tokens.php:1009
 #: src/integrations/wp/triggers/wordpress-user-login.php:56
 #: src/integrations/wp/triggers/wordpress-user-submits-comment.php:76
 #: src/integrations/wp/triggers/wordpress-user-views-custom-post.php:70
@@ -59854,32 +59860,32 @@ msgctxt "WordPress"
 msgid "Number of times"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:1077
+#: src/integrations/wp/tokens/wp-shared-tokens.php:1056
 msgctxt "WordPress"
 msgid "Archive URL"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:1087
+#: src/integrations/wp/tokens/wp-shared-tokens.php:1066
 msgctxt "WordPress"
 msgid "Term post count"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:1145
+#: src/integrations/wp/tokens/wp-shared-tokens.php:1124
 msgctxt "WordPress"
 msgid "Post meta key"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:1150
+#: src/integrations/wp/tokens/wp-shared-tokens.php:1129
 msgctxt "WordPress"
 msgid "Post meta value"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:1216
+#: src/integrations/wp/tokens/wp-shared-tokens.php:1195
 msgctxt "WordPress"
 msgid "User meta key"
 msgstr ""
 
-#: src/integrations/wp/tokens/wp-shared-tokens.php:1221
+#: src/integrations/wp/tokens/wp-shared-tokens.php:1200
 msgctxt "WordPress"
 msgid "User meta value"
 msgstr ""
@@ -59908,8 +59914,8 @@ msgctxt "WordPress"
 msgid "If checked, children of the selected term will also trigger the recipe."
 msgstr ""
 
-#: src/integrations/wp/triggers/wordpress-anon-post-published-in-taxonomy.php:268
-#: src/integrations/wp/triggers/wordpress-anon-post-updated-in-taxonomy.php:319
+#: src/integrations/wp/triggers/wordpress-anon-post-published-in-taxonomy.php:267
+#: src/integrations/wp/triggers/wordpress-anon-post-updated-in-taxonomy.php:318
 #: src/integrations/wp/triggers/wordpress-user-creates-post.php:195
 msgctxt "WordPress"
 msgid "Matched Child Term"

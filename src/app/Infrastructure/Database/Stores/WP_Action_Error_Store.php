@@ -216,6 +216,60 @@ final class WP_Action_Error_Store implements Action_Error_Store {
 	/**
 	 * @inheritDoc
 	 */
+	public function get_messages_by_action_logs( array $action_log_ids ): array {
+
+		$ids = array_values( array_unique( array_filter( array_map( 'absint', $action_log_ids ) ) ) );
+
+		if ( empty( $ids ) ) {
+			return array();
+		}
+
+		$wpdb         = $this->wpdb;
+		$placeholders = implode( ', ', array_fill( 0, count( $ids ), '%d' ) );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- One %d placeholder per ID, built above.
+				"SELECT action_log_id, error_message FROM {$wpdb->prefix}uap_error_log WHERE action_log_id IN ( {$placeholders} ) ORDER BY ID ASC",
+				$ids
+			)
+		);
+
+		$messages = array();
+
+		foreach ( is_array( $rows ) ? $rows : array() as $row ) {
+			$messages[ (int) $row->action_log_id ][] = (string) $row->error_message;
+		}
+
+		return $messages;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function notes_search_sql( string $action_log_id_column, string $legacy_message_column, string $search ): string {
+
+		foreach ( array( $action_log_id_column, $legacy_message_column ) as $column ) {
+			if ( 1 !== preg_match( '/^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)?$/', $column ) ) {
+				throw new \InvalidArgumentException( 'The notes search needs plain column references.' );
+			}
+		}
+
+		$wpdb = $this->wpdb;
+		$like = '%' . $wpdb->esc_like( $search ) . '%';
+
+		return $wpdb->prepare(
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- The columns are checked plain references from the caller's own query.
+			"( {$action_log_id_column} IN ( SELECT e.action_log_id FROM {$wpdb->prefix}uap_error_log e WHERE e.action_log_id > 0 AND e.error_message LIKE %s ) OR ( {$legacy_message_column} LIKE %s AND NOT EXISTS ( SELECT 1 FROM {$wpdb->prefix}uap_error_log l WHERE l.action_log_id = {$action_log_id_column} ) ) )",
+			$like,
+			$like
+		);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public function migrate_legacy_errors( int $batch_size = 500 ): int {
 
 		$wpdb = $this->wpdb;

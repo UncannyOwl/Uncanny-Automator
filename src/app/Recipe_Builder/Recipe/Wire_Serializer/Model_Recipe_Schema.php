@@ -156,11 +156,11 @@ final class Model_Recipe_Schema {
 		return array(
 			'type'       => 'object',
 			'properties' => array(
-				Wire_Key::TYPE           => array(
+				Wire_Key::TYPE               => array(
 					'type' => 'string',
 					'enum' => array( Wire_Node_Type::BLOCK ),
 				),
-				Wire_Key::BLOCK_TYPE     => array(
+				Wire_Key::BLOCK_TYPE         => array(
 					'type' => 'string',
 					'enum' => array(
 						Block_Type::FILTER,
@@ -168,14 +168,14 @@ final class Model_Recipe_Schema {
 						Block_Type::LOOP,
 					),
 				),
-				Wire_Key::ID             => array( 'type' => array( 'integer', 'string' ) ),
-				Wire_Key::FIELDS         => array( 'type' => 'object' ),
-				Wire_Key::MODIFIERS      => array(
+				Wire_Key::ID                 => array( 'type' => array( 'integer', 'string' ) ),
+				Wire_Key::FIELDS             => array( 'type' => 'object' ),
+				Wire_Key::MODIFIERS          => array(
 					'type'        => 'array',
 					'description' => 'Conditions on a filter block; loop filters on a loop block.',
 					'items'       => self::modifier(),
 				),
-				Wire_Key::PATHS          => array(
+				Wire_Key::PATHS              => array(
 					'type'        => 'array',
 					'description' => 'The block\'s branches in order. path_code is what save_action and save_block accept as path_code.',
 					'items'       => array(
@@ -191,20 +191,25 @@ final class Model_Recipe_Schema {
 						'required'   => array( Wire_Key::PATH_CODE, Wire_Key::CONTENT ),
 					),
 				),
-				Wire_Key::TOKENS         => array(
+				Wire_Key::TOKENS             => array(
 					'type'        => 'array',
 					'description' => 'Loop iteration tokens; always empty on filter and delay blocks.',
 					'items'       => self::token(),
 				),
-				Wire_Key::AVAILABILITY   => self::availability(),
-				Wire_Key::TAGS           => array(
+				Wire_Key::AVAILABILITY       => self::availability(),
+				Wire_Key::TAGS               => array(
 					'type'  => 'array',
 					'items' => self::tag(),
 				),
-				Wire_Key::DEFERRED_ORDER => array(
+				Wire_Key::DEFERRED_ORDER     => array(
 					'type'        => 'integer',
 					'minimum'     => 0,
 					'description' => 'Present on a block drawn apart from the flow (catalog layout deferred): its position among the recipe\'s deferred blocks, lowest first.',
+				),
+				Wire_Key::LOOPABLE_TOKEN_IDS => array(
+					'type'        => 'array',
+					'items'       => array( 'type' => 'string' ),
+					'description' => 'Present on a loop block: the ids of the loopable tokens a token loop here can iterate. They are the recipe\'s triggers\' loopable tokens, those of the actions that run before the loop at its level or in a block it is in, and the active integrations\' universal ones. save_loop accepts only these.',
 				),
 			),
 			'required'   => Wire_Key::BLOCK_KEYS,

@@ -4,6 +4,8 @@ namespace Uncanny_Automator;
 
 use Exception;
 use Uncanny_Automator\App\Infrastructure\Api_Log\Api_Log_Compressor;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Dispatch\License_Key_Requirement;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Request;
 use Uncanny_Automator\App\Infrastructure\License\Payment_Required_Message;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -251,6 +253,9 @@ class Api_Server {
 		$params['body']['plugin_ver'] = AUTOMATOR_PLUGIN_VERSION;
 
 		$params = $api->filter_params( $params );
+
+		// Forwarded: a site with no license key sends nothing. The params are filtered already.
+		( new License_Key_Requirement() )->enforce( Request::from_filtered_legacy_params( $params ), (string) $params['url'] );
 
 		$response = self::call( $params );
 

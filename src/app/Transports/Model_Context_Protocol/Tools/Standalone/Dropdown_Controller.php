@@ -1572,6 +1572,8 @@ class Dropdown_Controller extends WP_REST_Controller {
 	 * Validates the OAuth Bearer token from the Authorization header
 	 * and sets the current WordPress user for the request.
 	 *
+	 * @since 8.0.1 A valid Agent token whose user lacks manage_options is a 403 naming the capability, not a 401.
+	 *
 	 * @param \WP_REST_Request $request Request object.
 	 * @return bool|WP_Error True if authenticated, WP_Error otherwise.
 	 */
@@ -1591,26 +1593,15 @@ class Dropdown_Controller extends WP_REST_Controller {
 			$token   = $matches[1];
 			$context = $this->token_manager->get_context_from_token( $token );
 
-			if (
-				$context instanceof Authenticated_Token_Context
-				&& $context->is_first_party_agent()
-				&& $context->has_scope( Authenticated_Token_Context::SCOPE_AGENT_READ )
-				&& user_can( $context->get_user(), 'manage_options' )
-			) {
-				$user = $context->get_user();
-				// Set current user for the request.
-				wp_set_current_user( $user->ID );
-				$this->authenticated_user_id = (int) $user->ID;
-				return true;
+			if ( ! $context instanceof Authenticated_Token_Context ) {
+				return new WP_Error(
+					'rest_forbidden',
+					'Invalid or expired Bearer token',
+					array( 'status' => 401 )
+				);
 			}
 
-			if (
-				$context instanceof Authenticated_Token_Context
-				&& (
-					! $context->is_first_party_agent()
-					|| ! $context->has_scope( Authenticated_Token_Context::SCOPE_AGENT_READ )
-				)
-			) {
+			if ( ! $context->is_first_party_agent() || ! $context->has_scope( Authenticated_Token_Context::SCOPE_AGENT_READ ) ) {
 				return new WP_Error(
 					'rest_forbidden',
 					'Bearer token does not grant MCP tool access.',
@@ -1621,11 +1612,23 @@ class Dropdown_Controller extends WP_REST_Controller {
 				);
 			}
 
-			return new WP_Error(
-				'rest_forbidden',
-				'Invalid or expired Bearer token',
-				array( 'status' => 401 )
-			);
+			// The token is valid, so a new one would not help: the connected user lacks the capability.
+			if ( ! user_can( $context->get_user(), 'manage_options' ) ) {
+				return new WP_Error(
+					'rest_forbidden',
+					'The WordPress user this Bearer token belongs to lacks the manage_options capability (Administrator) that reading field options needs.',
+					array(
+						'status'              => 403,
+						'required_capability' => 'manage_options',
+					)
+				);
+			}
+
+			$user = $context->get_user();
+			// Set current user for the request.
+			wp_set_current_user( $user->ID );
+			$this->authenticated_user_id = (int) $user->ID;
+			return true;
 		}
 
 		// No valid Bearer token provided.

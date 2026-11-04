@@ -2,7 +2,9 @@
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Bridge;
 
+use Exception;
 use Uncanny_Automator\Automator_Send_Webhook;
+use Uncanny_Automator\Webhooks\Response_Validator;
 
 /**
  * Send_Webhook_Bridge over the live `Automator()->send_webhook` facade.
@@ -90,5 +92,25 @@ final class Automator_Send_Webhook_Bridge implements Send_Webhook_Bridge {
 		$response_leafs = Automator_Send_Webhook::get_leafs( json_decode( wp_remote_retrieve_body( $response ), true ) );
 
 		return array_merge( (array) $header_leafs, (array) $response_leafs );
+	}
+
+	/**
+	 * Whether the answer is a success as a run judges it: the run's response
+	 * validator calls it successful (a 2xx whose body reports no error) and
+	 * attaches no notice (a 3xx is completed with one).
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param array|\WP_Error $response HTTP response.
+	 * @return bool
+	 */
+	public function is_successful_response( $response ): bool {
+		try {
+			$validated = Response_Validator::validate_webhook_response( $response );
+		} catch ( Exception $e ) {
+			return false;
+		}
+
+		return is_array( $validated ) && empty( $validated['error_message'] );
 	}
 }

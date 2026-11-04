@@ -42,7 +42,7 @@ class Loop_Block_Rest extends Recipe_Block_Rest {
 		);
 
 		if ( is_wp_error( $result ) ) {
-			return $this->add_block_failure( $result, 'automator_add_loop_block_failed' );
+			return $this->add_failure( $result, 'automator_add_loop_block_failed' );
 		}
 
 		return (int) $result['id'];

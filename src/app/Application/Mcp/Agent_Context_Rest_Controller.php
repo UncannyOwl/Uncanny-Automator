@@ -65,6 +65,8 @@ class Agent_Context_Rest_Controller {
 	/**
 	 * Authenticate via Bearer token.
 	 *
+	 * @since 8.0.1 A valid Agent token whose user lacks manage_options is a 403 naming the capability, not a 401.
+	 *
 	 * @param WP_REST_Request $request Request.
 	 *
 	 * @return bool|WP_Error
@@ -82,24 +84,15 @@ class Agent_Context_Rest_Controller {
 			$context    = $this->token_manager->get_context_from_token( $token );
 			$capability = $this->context_service->get_client_access_capability();
 
-			if (
-				$context instanceof Authenticated_Token_Context
-				&& $context->is_first_party_agent()
-				&& $context->has_scope( Authenticated_Token_Context::SCOPE_AGENT_READ )
-				&& user_can( $context->get_user(), $capability ) // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- Uncanny Agent uses a dedicated capability constant.
-			) {
-				$user = $context->get_user();
-				wp_set_current_user( $user->ID );
-				return true;
+			if ( ! $context instanceof Authenticated_Token_Context ) {
+				return new WP_Error(
+					'agent_context_invalid_token',
+					'Invalid or expired Bearer token.',
+					array( 'status' => 401 )
+				);
 			}
 
-			if (
-				$context instanceof Authenticated_Token_Context
-				&& (
-					! $context->is_first_party_agent()
-					|| ! $context->has_scope( Authenticated_Token_Context::SCOPE_AGENT_READ )
-				)
-			) {
+			if ( ! $context->is_first_party_agent() || ! $context->has_scope( Authenticated_Token_Context::SCOPE_AGENT_READ ) ) {
 				return new WP_Error(
 					'agent_context_insufficient_scope',
 					'Bearer token does not grant read access.',
@@ -110,11 +103,21 @@ class Agent_Context_Rest_Controller {
 				);
 			}
 
-			return new WP_Error(
-				'agent_context_invalid_token',
-				'Invalid or expired Bearer token.',
-				array( 'status' => 401 )
-			);
+			// The token is valid, so a new one would not help: the connected user lacks the capability.
+			if ( ! user_can( $context->get_user(), $capability ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- Uncanny Agent uses a dedicated capability constant.
+				return new WP_Error(
+					'agent_context_insufficient_capability',
+					sprintf( 'The WordPress user this Bearer token belongs to lacks the %s capability (Administrator) that reading the Agent context needs.', $capability ),
+					array(
+						'status'              => 403,
+						'required_capability' => $capability,
+					)
+				);
+			}
+
+			$user = $context->get_user();
+			wp_set_current_user( $user->ID );
+			return true;
 		}
 
 		return new WP_Error(

@@ -86,6 +86,7 @@ final class CanvasHijacker
         }
 
         $this->prepareCanvasResponse();
+        $this->assetAllowlist->registerPrintGuards();
 
         $filteredCanvas = apply_filters('uncanny_page_builder_canvas_template', $canvas, $postId);
 
@@ -102,6 +103,9 @@ final class CanvasHijacker
         }
 
         $this->prepareCanvasResponse();
+        // Visitor output keeps the assets that core and plugins queue for its
+        // content. The editor allowlist applies only to working canvases.
+        $this->assetAllowlist->registerPublishedPageGuards();
 
         /*
          * The immutable public loader is not filterable through the legacy
@@ -122,8 +126,6 @@ final class CanvasHijacker
                 define('DONOTCACHEPAGE', true);
             }
         }
-
-        $this->assetAllowlist->registerPrintGuards();
     }
 
     private function denyGlobalPartAccess(string $fallback): string

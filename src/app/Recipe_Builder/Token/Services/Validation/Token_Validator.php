@@ -16,6 +16,9 @@ namespace Uncanny_Automator\App\Recipe_Builder\Token\Services\Validation;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
 use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Type;
 use Uncanny_Automator\App\Recipe_Builder\Block\Migration\Legacy_Storage_Migration_Exception;
+use Uncanny_Automator\App\Recipe_Builder\Loop\Enums\Loop_Token_Refusal;
+use Uncanny_Automator\App\Recipe_Builder\Loop\Services\Loop_Token_Scope_Service;
+use Uncanny_Automator\App\Recipe_Builder\Loop\Value_Objects\Loop_Token_Scope;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Wire_Key;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Wire_Node_Type;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Flow_Walker;
@@ -48,12 +51,21 @@ class Token_Validator {
 	private Recipe_Wire_Service $wire;
 
 	/**
+	 * The loop token rule the recipe builder's loop Token field also follows.
+	 *
+	 * @var Loop_Token_Scope_Service
+	 */
+	private Loop_Token_Scope_Service $loop_scopes;
+
+	/**
 	 * Lazy-default DI: production reads the shared wire service; tests inject one over a fixture tree.
 	 *
-	 * @param Recipe_Wire_Service|null $wire Wire read seam.
+	 * @param Recipe_Wire_Service|null      $wire        Wire read seam.
+	 * @param Loop_Token_Scope_Service|null $loop_scopes Loop token rule.
 	 */
-	public function __construct( ?Recipe_Wire_Service $wire = null ) {
-		$this->wire = $wire ?? Recipe_Wire_Service::instance();
+	public function __construct( ?Recipe_Wire_Service $wire = null, ?Loop_Token_Scope_Service $loop_scopes = null ) {
+		$this->wire        = $wire ?? Recipe_Wire_Service::instance();
+		$this->loop_scopes = $loop_scopes ?? new Loop_Token_Scope_Service();
 	}
 
 	/**
@@ -69,26 +81,107 @@ class Token_Validator {
 		$used_tokens = $this->extract_tokens_from_fields( $fields );
 
 		if ( empty( $used_tokens ) ) {
+			return $this->valid_result();
+		}
+
+		return $this->validate_used_tokens( $used_tokens, $this->collect_recipe_tokens( $recipe_id ) );
+	}
+
+	/**
+	 * Validate the token a token loop iterates over.
+	 *
+	 * A token loop iterates only over a loopable token that is valid at the
+	 * loop, by the rule the recipe builder's loop Token field follows
+	 * (`Loop_Token_Scope_Service`): any kind of loopable token (a trigger's,
+	 * an action's, or an integration's universal one) whose trigger or action
+	 * has run when the loop starts. A token that holds a single value, such
+	 * as {{admin_email}}, is refused as not loopable; a loopable token from an
+	 * action inside the loop, after it, or inside another block is refused
+	 * with the reason. A token the recipe does not have is refused as
+	 * validate() refuses it.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param int      $recipe_id Recipe ID the loop belongs to.
+	 * @param string   $token     The loop's token, braced: {{TOKEN_EXTENDED:...}}.
+	 * @param int|null $loop_id   The loop being changed, or null for the loop save_loop adds at the end of the recipe.
+	 *
+	 * @return array{valid: bool, invalid_tokens: array, message: string}
+	 */
+	public function validate_loopable( int $recipe_id, string $token, ?int $loop_id = null ): array {
+		$recipe      = $this->collect_recipe_tokens( $recipe_id );
+		$used_tokens = $this->extract_tokens_from_fields( array( $token ) );
+
+		if ( ! empty( $used_tokens ) ) {
+			$available = $this->validate_used_tokens( $used_tokens, $recipe );
+			if ( ! $available['valid'] ) {
+				return $available;
+			}
+		}
+
+		$scope = null === $loop_id
+			? $this->loop_scopes->at_new_loop( $recipe['flow'] )
+			: $this->loop_scopes->at_loop( $recipe['flow'], $loop_id );
+
+		if ( null === $scope ) {
 			return array(
-				'valid'          => true,
-				'invalid_tokens' => array(),
-				'message'        => '',
+				'valid'          => false,
+				'invalid_tokens' => array( $token ),
+				'message'        => sprintf( 'Loop %1$d is not in recipe %2$d. Use get_recipe to verify loop IDs.', $loop_id, $recipe_id ),
 			);
 		}
 
-		// Get valid tokens for this recipe
-		$recipe       = $this->collect_recipe_tokens( $recipe_id );
-		$valid_tokens = $this->get_valid_tokens( $recipe );
+		$token_id = $this->unbraced( $token );
 
-		// Find invalid tokens
+		if ( $scope->allows( $token_id ) ) {
+			return $this->valid_result();
+		}
+
+		return array(
+			'valid'          => false,
+			'invalid_tokens' => array( $token ),
+			'message'        => $this->build_loop_token_message( $token, $token_id, $scope ),
+		);
+	}
+
+	/**
+	 * A token's id without its braces.
+	 *
+	 * @param string $token A braced token, or an id.
+	 *
+	 * @return string
+	 */
+	private function unbraced( string $token ): string {
+		return 1 === preg_match( '/^\{\{(.+)\}\}$/s', $token, $matches ) ? $matches[1] : $token;
+	}
+
+	/**
+	 * The answer for tokens that all passed.
+	 *
+	 * @return array{valid: bool, invalid_tokens: array, message: string}
+	 */
+	private function valid_result(): array {
+		return array(
+			'valid'          => true,
+			'invalid_tokens' => array(),
+			'message'        => '',
+		);
+	}
+
+	/**
+	 * Check used tokens against the tokens available to a recipe.
+	 *
+	 * @param array $used_tokens Token patterns found in field values.
+	 * @param array{has_recipe: bool, read_error: string, flow: array, trigger: string[], action: string[], loop: string[]} $recipe What collect_recipe_tokens() returned.
+	 *
+	 * @return array{valid: bool, invalid_tokens: array, message: string}
+	 */
+	private function validate_used_tokens( array $used_tokens, array $recipe ): array {
+		$valid_tokens   = $this->get_valid_tokens( $recipe );
 		$invalid_tokens = $this->find_invalid_tokens( $used_tokens, $valid_tokens );
 
 		if ( empty( $invalid_tokens ) ) {
-			return array(
-				'valid'          => true,
-				'invalid_tokens' => array(),
-				'message'        => '',
-			);
+			return $this->valid_result();
 		}
 
 		// A token the static sets cannot vouch for, on a recipe that could not be
@@ -212,7 +305,7 @@ class Token_Validator {
 	 * - Trigger tokens from recipe triggers
 	 * - Trigger, action and loop-block tokens from the wire flow at any depth
 	 *
-	 * @param array{has_recipe: bool, read_error: string, trigger: string[], action: string[], loop: string[]} $recipe What collect_recipe_tokens() returned.
+	 * @param array{has_recipe: bool, read_error: string, flow: array, trigger: string[], action: string[], loop: string[]} $recipe What collect_recipe_tokens() returned.
 	 *
 	 * @return array List of valid token patterns.
 	 */
@@ -232,16 +325,18 @@ class Token_Validator {
 	 * Triggers, items at any depth and loop blocks each publish `tokens[]` on
 	 * the wire; filter and delay blocks never do. A failed read (missing
 	 * recipe, failed legacy migration) yields no recipe tokens and the caller
-	 * validates against the common and registry sets alone.
+	 * validates against the common and registry sets alone. `flow` is the
+	 * wire flow read, empty when there is none.
 	 *
 	 * @param int $recipe_id Recipe ID.
 	 *
-	 * @return array{has_recipe: bool, read_error: string, trigger: string[], action: string[], loop: string[]} read_error is the agent-facing sentence when the tree could not be read, else ''.
+	 * @return array{has_recipe: bool, read_error: string, flow: array, trigger: string[], action: string[], loop: string[]} read_error is the agent-facing sentence when the tree could not be read, else ''.
 	 */
 	private function collect_recipe_tokens( int $recipe_id ): array {
 		$out = array(
 			'has_recipe' => false,
 			'read_error' => '',
+			'flow'       => array(),
 			'trigger'    => array(),
 			'action'     => array(),
 			'loop'       => array(),
@@ -265,6 +360,7 @@ class Token_Validator {
 
 		$out['has_recipe'] = true;
 		$flow              = is_array( $wire[ Wire_Key::FLOW ] ?? null ) ? $wire[ Wire_Key::FLOW ] : array();
+		$out['flow']       = $flow;
 
 		foreach ( Flow_Walker::nodes( $flow ) as $entry ) {
 			$node = $entry['node'];
@@ -296,9 +392,10 @@ class Token_Validator {
 		$item_tokens = is_array( $item[ Wire_Key::TOKENS ] ?? null ) ? $item[ Wire_Key::TOKENS ] : array();
 
 		foreach ( $item_tokens as $token ) {
-			if ( is_array( $token ) && isset( $token[ Wire_Key::ID ] ) && '' !== (string) $token[ Wire_Key::ID ] ) {
-				$tokens[] = '{{' . $token[ Wire_Key::ID ] . '}}';
+			if ( ! is_array( $token ) || ! isset( $token[ Wire_Key::ID ] ) || '' === (string) $token[ Wire_Key::ID ] ) {
+				continue;
 			}
+			$tokens[] = '{{' . $token[ Wire_Key::ID ] . '}}';
 		}
 
 		return $tokens;
@@ -351,6 +448,22 @@ class Token_Validator {
 	 * @return array List of token patterns.
 	 */
 	private function get_registry_tokens(): array {
+		// Include Universal Tokens (UT:) and Loopable Tokens (TOKEN_EXTENDED:).
+		return $this->registry_tokens_where(
+			static function ( string $token_id, string $token_type ): bool {
+				return strpos( $token_id, 'UT:' ) === 0 || 'loopable' === $token_type;
+			}
+		);
+	}
+
+	/**
+	 * Get the integration registry's tokens a test keeps.
+	 *
+	 * @param callable(string, string): bool $keep Whether to keep a token, given its ID and type.
+	 *
+	 * @return array List of token patterns.
+	 */
+	private function registry_tokens_where( callable $keep ): array {
 		$tokens = array();
 
 		try {
@@ -358,10 +471,7 @@ class Token_Validator {
 			$all_tokens = $registry->get_available_tokens();
 
 			foreach ( $all_tokens as $token_id => $token_data ) {
-				$token_type = $token_data['type'] ?? '';
-
-				// Include Universal Tokens (UT:) and Loopable Tokens (TOKEN_EXTENDED:).
-				if ( strpos( $token_id, 'UT:' ) === 0 || 'loopable' === $token_type ) {
+				if ( $keep( (string) $token_id, (string) ( $token_data['type'] ?? '' ) ) ) {
 					$tokens[] = '{{' . $token_id . '}}';
 				}
 			}
@@ -493,5 +603,63 @@ class Token_Validator {
 		);
 
 		return $message;
+	}
+
+	/**
+	 * Build the refusal for a loop token the loop cannot iterate.
+	 *
+	 * Says why: the token holds a single value, or its trigger or action has
+	 * not run when the loop starts. Then names where a valid one comes from,
+	 * and the recipe's own loopable tokens valid at this loop.
+	 *
+	 * @param string           $token    The refused token, braced.
+	 * @param string           $token_id The refused token's id.
+	 * @param Loop_Token_Scope $scope    The loopable tokens valid at the loop.
+	 *
+	 * @return string Error message.
+	 */
+	private function build_loop_token_message( string $token, string $token_id, Loop_Token_Scope $scope ): string {
+		$recipe_tokens = array();
+		foreach ( $scope->get_recipe_token_ids() as $id ) {
+			$recipe_tokens[] = '{{' . $id . '}}';
+		}
+
+		$from_recipe = empty( $recipe_tokens )
+			? ' This recipe\'s triggers and actions provide none this loop can iterate.'
+			: sprintf( ' From this recipe\'s triggers and actions, this loop can iterate: %s.', implode( ', ', $recipe_tokens ) );
+
+		return sprintf(
+			'%1$s Pass a loopable token valid at this loop: one found with search(type="loopable_token"), one a trigger of this recipe provides, or one an action provides that runs before the loop, at its level or in a block the loop is in.%2$s',
+			$this->loop_token_problem( $token, $token_id, $scope ),
+			$from_recipe
+		);
+	}
+
+	/**
+	 * Why a loop cannot iterate a token, in one sentence.
+	 *
+	 * @param string           $token    The refused token, braced.
+	 * @param string           $token_id The refused token's id.
+	 * @param Loop_Token_Scope $scope    The loopable tokens valid at the loop.
+	 *
+	 * @return string
+	 */
+	private function loop_token_problem( string $token, string $token_id, Loop_Token_Scope $scope ): string {
+		$block_id = (string) $scope->get_refusal_block_id( $token_id );
+
+		switch ( $scope->get_refusal_reason( $token_id ) ) {
+			case Loop_Token_Refusal::INSIDE_LOOP:
+				return sprintf( '%s is produced by an action inside this loop, so it has no value when the loop starts.', $token );
+			case Loop_Token_Refusal::AFTER_LOOP:
+				return sprintf( '%s is produced by an action that runs after this loop, so it has no value when the loop starts.', $token );
+			case Loop_Token_Refusal::INSIDE_OTHER_BLOCK:
+				return sprintf( '%1$s is produced by an action inside block %2$s, and a token from inside a block is not available after that block.', $token, $block_id );
+			case Loop_Token_Refusal::OTHER_PATH:
+				return sprintf( '%1$s is produced by an action in another path of block %2$s, which does not run in the same run as this loop.', $token, $block_id );
+			case Loop_Token_Refusal::PRODUCER_UNAVAILABLE:
+				return sprintf( '%s is produced by a trigger or action this site cannot run, so it never has a value.', $token );
+			default:
+				return sprintf( '%s is not a loopable token, so a token loop cannot iterate over it.', $token );
+		}
 	}
 }

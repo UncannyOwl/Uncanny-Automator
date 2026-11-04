@@ -68,6 +68,24 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 	 */
 	public function register_hooks( $action ) {
 
+		$this->register_listing_hooks( $action );
+
+		add_filter( 'automator_action_token_input_parser_text_field_text', array( $this, 'hydrate_loopable_parent_action_token' ), 10, 3 );
+	}
+
+	/**
+	 * Registers only the hook that lists a loop's child tokens, for code that lists a recipe's tokens.
+	 *
+	 * A listing must leave no run-time hook behind: the action's parser hook comes from the action's own registration.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param mixed[] $action The action definition.
+	 *
+	 * @return void
+	 */
+	public function register_listing_hooks( $action ) {
+
 		$this->action = $action;
 
 		$closure = function ( $tokens, $loop ) use ( $action ) {
@@ -76,8 +94,6 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 
 		// Renders the child tokens inside recipe object.
 		add_filter( 'automator_recipe_main_object_loop_tokens_items', $closure, 10, 2 );
-
-		add_filter( 'automator_action_token_input_parser_text_field_text', array( $this, 'hydrate_loopable_parent_action_token' ), 10, 3 );
 	}
 
 	/**

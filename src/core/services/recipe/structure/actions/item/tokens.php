@@ -2,6 +2,7 @@
 namespace Uncanny_Automator\Services\Recipe\Structure\Actions\Item;
 
 use stdClass;
+use Uncanny_Automator\Services\Loopable\Action_Loopable_Token;
 use Uncanny_Automator\Services\Recipe\Common;
 
 /**
@@ -28,7 +29,6 @@ final class Tokens implements \JsonSerializable {
 
 		self::$action    = $action;
 		self::$action_id = $action['ID'];
-
 	}
 
 	/**
@@ -167,6 +167,11 @@ final class Tokens implements \JsonSerializable {
 		return $tokens;
 	}
 
+	/**
+	 * The action's loop tokens: one row per loopable token class the action declares.
+	 *
+	 * @return stdClass[]
+	 */
 	public function generate_loopable_tokens() {
 
 		$action_code = self::$action['meta']['code'] ?? null;
@@ -195,8 +200,10 @@ final class Tokens implements \JsonSerializable {
 			// Handle new framework.
 			if ( is_string( $token_class ) ) {
 				$token_class = new $token_class( absint( $action_id ) );
-				$token_class->set_action( $action );
-				$token_class->register_hooks( $action );
+				// The listing hook only: the parser hook comes from the action's own registration.
+				if ( $token_class instanceof Action_Loopable_Token ) {
+					$token_class->register_listing_hooks( $action );
+				}
 			}
 
 			$definitions = $token_class->get_definitions();
@@ -214,7 +221,6 @@ final class Tokens implements \JsonSerializable {
 		}
 
 		return $tokens_collection;
-
 	}
 
 	/**
@@ -234,5 +240,4 @@ final class Tokens implements \JsonSerializable {
 
 		return $this->tokens;
 	}
-
 }

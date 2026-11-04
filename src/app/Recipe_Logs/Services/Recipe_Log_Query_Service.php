@@ -5,6 +5,7 @@ namespace Uncanny_Automator\App\Recipe_Logs\Services;
 
 use Uncanny_Automator\App\Infrastructure\Database\Database;
 use Uncanny_Automator\App\Recipe_Builder\Block\Migration\Legacy_Storage_Migration_Exception;
+use Uncanny_Automator\App\Recipe_Builder\Loop\Iterable_Expression\Enums\Iteration_Type;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Schema\Recipe_Schema_Reader;
 use Uncanny_Automator\App\Recipe_Logs\Wire_Serializer\Iteration_Label_Resolver;
 use Uncanny_Automator\App\Recipe_Logs\Wire_Serializer\Log_Iteration_Serializer;
@@ -188,8 +189,12 @@ final class Recipe_Log_Query_Service {
 		$parent    = $loop_entries[ $loop_id ] ?? null;
 		$loop_type = (string) ( $parent['loop_type'] ?? '' );
 
-		$total = $store->count_action_iteration_rows( $recipe_id, $log_id, $run_number, $action_id, $search, $loop_type );
-		$rows  = $store->get_action_iteration_rows( $recipe_id, $log_id, $run_number, $action_id, $per_page, $offset, $search, $loop_type );
+		$matched_entity_ids = Iteration_Type::TOKEN === $loop_type && '' !== $search
+			? $this->labels->token_entity_ids_matching( $search, (string) ( $parent['entity_ids'] ?? '' ) )
+			: array();
+
+		$total = $store->count_action_iteration_rows( $recipe_id, $log_id, $run_number, $action_id, $search, $loop_type, $matched_entity_ids );
+		$rows  = $store->get_action_iteration_rows( $recipe_id, $log_id, $run_number, $action_id, $per_page, $offset, $search, $loop_type, $matched_entity_ids );
 
 		$ctx = $this->item_field_context( $resolved );
 

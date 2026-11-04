@@ -19,12 +19,23 @@ use WP_REST_Request;
 
 /**
  * No authority is encoded in a model argument, header or persistent option.
- * Nested requests are refused until their own policy has been reviewed.
+ * Nested requests are refused until their own policy has been reviewed, with
+ * one reviewed exception: another plugin's ability, run through its REST run
+ * route or through run_ability, makes its own internal REST requests natively
+ * (see run_plugin_ability()).
  */
 final class Rest_Request_Scope {
 
 	/** @var self|null The synchronous MCP tool dispatch, never the HTTP session. */
 	private static ?self $active = null;
+
+	/**
+	 * MCP callers whose plugin ability run_ability is executing now, innermost
+	 * last (see run_plugin_ability()).
+	 *
+	 * @var User_Context[]
+	 */
+	private static array $plugin_ability_callers = array();
 
 	private WP_REST_Request $request;
 	private User_Context $context;
@@ -61,10 +72,121 @@ final class Rest_Request_Scope {
 	}
 
 	/**
-	 * Whether native dispatch currently belongs to the REST MCP tool.
+	 * Whether native dispatch currently belongs to an MCP tool: rest_request, or
+	 * run_ability while it executes another plugin's ability.
 	 */
 	public static function is_active(): bool {
-		return null !== self::$active;
+		return null !== self::$active || array() !== self::$plugin_ability_callers;
+	}
+
+	/**
+	 * Execute another plugin's ability for run_ability under the rule its REST
+	 * run route already follows. run_ability only executes other plugins'
+	 * abilities: the catalog never offers it an Automator operation.
+	 *
+	 * Keep this scope. Plugins such as LifterLMS (every one of its abilities)
+	 * and WooCommerce implement abilities with internal REST requests through
+	 * rest_do_request(). Those requests carry no header, so
+	 * Rest_Bearer_Route_Authorizer judges them by the MCP call's own token,
+	 * which only reaches the MCP endpoint. Without this scope every such
+	 * ability fails through run_ability with "MCP OAuth tokens are restricted
+	 * to the MCP resource." (403), or, for the Agent, with its REST route
+	 * allowlist refusal.
+	 *
+	 * The rule (authorize_plugin_ability_request()):
+	 * - the internal requests run natively as the WordPress user already
+	 *   serving this MCP call, and each one still meets its own permission
+	 *   check;
+	 * - a caller that may only read makes only GET and HEAD requests, whatever
+	 *   the ability's own annotations claim;
+	 * - while it runs, is_active() is true, so Automator's own abilities refuse
+	 *   to fall back to that user, and the ability receives no MCP context.
+	 *
+	 * The rule is checked first, on both paths (plugin_ability_guard()): on
+	 * rest_pre_dispatch at PHP_INT_MIN, before another plugin can answer the
+	 * request itself and write, and again last before the callback. WordPress
+	 * runs equal priorities in registration order, so a callback another
+	 * plugin registered at PHP_INT_MIN before the ability ran still runs
+	 * first; no filter can order itself ahead of that.
+	 *
+	 * Eligible abilities from other plugins start switched on: the site owner
+	 * can switch each one off, and its provider can opt out. The ability
+	 * chooses which routes it requests: Automator's reviewed REST policy does
+	 * not narrow them. Pinned by Run_Ability_Tool_Test (the "internal REST"
+	 * tests).
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param User_Context $context The MCP caller.
+	 * @param callable     $run     Executes the ability.
+	 * @return mixed The ability's result.
+	 */
+	public static function run_plugin_ability( User_Context $context, callable $run ) {
+		$guard = self::plugin_ability_guard();
+
+		self::$plugin_ability_callers[] = $context;
+		add_filter( 'rest_pre_dispatch', $guard, PHP_INT_MIN, 3 );
+		add_filter( 'rest_request_before_callbacks', $guard, PHP_INT_MAX, 3 );
+		try {
+			return $run();
+		} finally {
+			remove_filter( 'rest_pre_dispatch', $guard, PHP_INT_MIN );
+			remove_filter( 'rest_request_before_callbacks', $guard, PHP_INT_MAX );
+			array_pop( self::$plugin_ability_callers );
+		}
+	}
+
+	/**
+	 * A REST filter that applies the plugin-ability rule to an internal request
+	 * another plugin's ability makes, and leaves every other request to its own
+	 * guard. See run_plugin_ability().
+	 *
+	 * @since 8.0.1
+	 *
+	 * @return \Closure For rest_pre_dispatch and rest_request_before_callbacks.
+	 */
+	private static function plugin_ability_guard(): \Closure {
+		return static function ( $response, $server_or_handler, $candidate ) {
+			if ( ! $candidate instanceof WP_REST_Request || ! self::is_plugin_ability_request( $candidate ) ) {
+				return $response;
+			}
+			return self::authorize( $candidate ) ?? $response;
+		};
+	}
+
+	/**
+	 * Whether this request is an internal request made by another plugin's
+	 * ability: through run_ability, or nested inside its REST run route.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param WP_REST_Request $request The request.
+	 * @return bool
+	 */
+	private static function is_plugin_ability_request( WP_REST_Request $request ): bool {
+		$scope = self::$active;
+		if ( null === $scope ) {
+			return array() !== self::$plugin_ability_callers;
+		}
+		return $scope->request !== $request && $scope->runs_plugin_ability;
+	}
+
+	/**
+	 * An internal REST request made by another plugin's ability. See
+	 * run_plugin_ability().
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param WP_REST_Request $request The internal request.
+	 * @param User_Context    $caller  The MCP caller running the ability.
+	 * @return WP_Error|null Null when the request may run natively.
+	 */
+	private static function authorize_plugin_ability_request( WP_REST_Request $request, User_Context $caller ): ?WP_Error {
+		// WP_REST_Request::set_method() upper-cases the method.
+		if ( $caller->can_write() || in_array( $request->get_method(), array( 'GET', 'HEAD' ), true ) ) {
+			return null;
+		}
+		return new WP_Error( 'rest_insufficient_scope', 'This access token only allows reading, so the ability cannot make changes.', array( 'status' => 403 ) );
 	}
 
 	/** Verified caller for the exact native ability, never an ambient WP login. */
@@ -90,12 +212,9 @@ final class Rest_Request_Scope {
 	 */
 	public static function authorize( WP_REST_Request $request, ?array $handler = null ): ?WP_Error {
 		$scope = self::$active;
-		if ( null !== $scope && $scope->request !== $request && $scope->runs_plugin_ability ) {
-			// Plugins such as WooCommerce implement abilities with internal REST
-			// requests. They run natively as the same administrator, exactly as
-			// through run_ability. They receive no MCP context: Automator
-			// operations and Page Builder routes still require their own scope.
-			return null;
+		// Another plugin's ability, through run_ability or its REST run route.
+		if ( self::is_plugin_ability_request( $request ) ) {
+			return self::authorize_plugin_ability_request( $request, null === $scope ? end( self::$plugin_ability_callers ) : $scope->context );
 		}
 		if ( null !== $scope && $scope->request !== $request && Post_Content_Request_Scope::owns( $request ) ) {
 			return $scope->authorize_content_request( $request, $handler );
@@ -272,6 +391,9 @@ final class Rest_Request_Scope {
 			}
 			return $result;
 		};
+		// A plugin ability's internal requests meet their rule before any plugin can answer them.
+		$plugin_ability_guard = self::plugin_ability_guard();
+		add_filter( 'rest_pre_dispatch', $plugin_ability_guard, PHP_INT_MIN, 3 );
 		add_filter( 'rest_pre_dispatch', $guard, 1, 3 );
 		add_filter( 'rest_request_before_callbacks', $guard, PHP_INT_MAX, 3 );
 		add_filter( 'rest_dispatch_request', $started, PHP_INT_MIN, 2 );
@@ -290,6 +412,7 @@ final class Rest_Request_Scope {
 			$response->set_data( $server->response_to_data( $response, false ) );
 			return $response;
 		} finally {
+			remove_filter( 'rest_pre_dispatch', $plugin_ability_guard, PHP_INT_MIN );
 			remove_filter( 'rest_pre_dispatch', $guard, 1 );
 			remove_filter( 'rest_request_before_callbacks', $guard, PHP_INT_MAX );
 			remove_filter( 'rest_dispatch_request', $started, PHP_INT_MIN );

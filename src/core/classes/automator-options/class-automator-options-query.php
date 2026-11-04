@@ -142,18 +142,39 @@ final class Automator_Options_Query {
 		$autoload_placeholders = implode( ',', array_fill( 0, count( $autoload_values ), '%s' ) );
 		$placeholders          = implode( ',', array_fill( 0, count( $option_names ), '%s' ) );
 
-		return (array) $this->db->get_results(
+		$wp_rows = (array) $this->db->get_results(
 			$this->db->prepare(
 				"SELECT option_name, option_value
-				 FROM {$this->db->prefix}options AS wp_row
-				 WHERE autoload IN ($autoload_placeholders) AND option_name IN ($placeholders)
-				 AND NOT EXISTS (
-					SELECT 1 FROM {$this->db->prefix}uap_options AS uap_row
-					WHERE uap_row.option_name = wp_row.option_name
-				 )",
+				 FROM {$this->db->prefix}options
+				 WHERE autoload IN ($autoload_placeholders) AND option_name IN ($placeholders)",
 				...array_merge( $autoload_values, array_values( $option_names ) )
 			),
 			ARRAY_A
+		);
+
+		if ( empty( $wp_rows ) ) {
+			return array();
+		}
+
+		// Two queries, not a join: the two tables can differ in collation (utf8mb4_unicode_520_ci against
+		// utf8mb4_unicode_ci), and comparing their columns in SQL fails with "Illegal mix of collations".
+		// Each table is compared only with literals here, which never conflicts.
+		$uap_names = $this->db->get_col(
+			$this->db->prepare(
+				"SELECT option_name FROM {$this->db->prefix}uap_options WHERE option_name IN ($placeholders)",
+				...array_values( $option_names )
+			)
+		);
+
+		$uap_names = array_flip( array_map( 'strtolower', (array) $uap_names ) );
+
+		return array_values(
+			array_filter(
+				$wp_rows,
+				function ( $row ) use ( $uap_names ) {
+					return ! isset( $uap_names[ strtolower( $row['option_name'] ) ] );
+				}
+			)
 		);
 	}
 

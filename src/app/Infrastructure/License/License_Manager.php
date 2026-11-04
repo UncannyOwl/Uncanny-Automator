@@ -72,6 +72,30 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 	private $license_cache = null;
 
 	/**
+	 * Store for the license from the last good fetch, which outlives the 12-hour cache.
+	 * Built on first use, by snapshots().
+	 *
+	 * @var License_Snapshot_Store|null
+	 */
+	private $snapshots = null;
+
+	/**
+	 * Whether data is a license document: an array that states the license status.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param mixed $data The data.
+	 *
+	 * @return bool
+	 */
+	public static function is_license_document( $data ): bool {
+		return is_array( $data )
+			&& isset( $data['license'] )
+			&& is_string( $data['license'] )
+			&& '' !== $data['license'];
+	}
+
+	/**
 	 * Set the API client (called after both License_Manager and Api_Client are constructed).
 	 *
 	 * @param Client_Interface $api_client The API client instance.
@@ -351,6 +375,12 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 	 * cannot defeat the backoff. After a verdict it does fetch, so a site can
 	 * recover once the cause is fixed.
 	 *
+	 * The last good license outlives the 12-hour cache: every good fetch also
+	 * stores it as a snapshot, for at most License_Snapshot::MAX_AGE (7 days).
+	 * The cache is empty exactly when a fetch is due, so without the snapshot
+	 * a site whose fetch failed then (an outage, a firewall that started
+	 * blocking the platform) had no license until the platform answered again.
+	 *
 	 * @param bool $force_refresh Whether to bypass cache and fetch fresh data.
 	 *
 	 * @return array|null License data array, or null if unavailable.
@@ -369,9 +399,11 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 				return $cached;
 			}
 
-			// Check failure transient to avoid hammering a failing API.
+			// Check failure transient to avoid hammering a failing API. A
+			// temporary backoff keeps serving the last good license; a verdict
+			// left none to serve.
 			if ( false !== get_transient( self::TRANSIENT_LICENSE_FAILED ) ) {
-				return null;
+				return $this->is_backing_off() ? $this->last_good_license() : null;
 			}
 		}
 
@@ -397,12 +429,13 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 			$license  = $response->data();
 
 			// An answer with no license document is no license: never cache it.
-			if ( array() === $license ) {
+			if ( ! self::is_license_document( $license ) ) {
 				throw new Api_Exception( esc_html__( 'Invalid license response.', 'uncanny-automator' ) );
 			}
 
 			$this->license_cache = $license;
 			set_transient( self::TRANSIENT_LICENSE, $license, self::CACHE_DURATION );
+			$this->snapshots()->save( $this->key_hash( $key ), new License_Snapshot( $license, time() ) );
 			delete_transient( self::TRANSIENT_LICENSE_FAILED );
 			delete_transient( self::TRANSIENT_LICENSE_FAILURE_STREAK );
 
@@ -443,11 +476,11 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 	/**
 	 * What a failed fetch costs.
 	 *
-	 * A verdict on the license drops the cached license and holds the next
-	 * fetch back for an hour. Any other failure is temporary: the next fetch
-	 * waits one minute, doubling per consecutive failure up to an hour, or the
-	 * platform's Retry-After if that is longer, and the last good license
-	 * stays.
+	 * A verdict on the license drops the cached license and its snapshot, so
+	 * a refused license never comes back, and holds the next fetch back for an
+	 * hour. Any other failure is temporary: the next fetch waits one minute,
+	 * doubling per consecutive failure up to an hour, or the platform's
+	 * Retry-After if that is longer, and the last good license stays.
 	 *
 	 * @param \Exception $e The failure the API client threw.
 	 *
@@ -457,6 +490,7 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 		if ( $this->is_verdict( $e ) ) {
 			delete_transient( self::TRANSIENT_LICENSE );
 			delete_transient( self::TRANSIENT_LICENSE_FAILURE_STREAK );
+			$this->snapshots()->delete();
 			$this->license_cache = null;
 			set_transient( self::TRANSIENT_LICENSE_FAILED, $e->getMessage(), self::FAILED_CACHE_DURATION );
 
@@ -469,7 +503,7 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 		set_transient( self::TRANSIENT_LICENSE_FAILURE_STREAK, $attempt, self::CACHE_DURATION );
 		set_transient( self::TRANSIENT_LICENSE_FAILED, $e->getMessage(), $delay );
 
-		return $this->last_good_license();
+		return $this->last_good_license( $delay );
 	}
 
 	/**
@@ -485,12 +519,77 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 	}
 
 	/**
-	 * The last license this site fetched and has not been told to drop.
+	 * The last license this site fetched and has not been told to drop: the
+	 * copy in memory, else the 12-hour cache, else the snapshot of the last
+	 * good fetch for this license key, while it is under License_Snapshot::MAX_AGE.
+	 *
+	 * A snapshot served after a failed fetch goes back into the 12-hour cache
+	 * until the backoff ends (or the snapshot ages out, if sooner), so every
+	 * reader of that cache sees the license the site runs on, and the next
+	 * fetch is due when the backoff ends.
+	 *
+	 * @param int $backoff Seconds until the next fetch is due; 0 leaves the 12-hour cache alone.
 	 *
 	 * @return array|null
 	 */
-	private function last_good_license(): ?array {
-		return $this->license_cache ?? $this->read_cached_license();
+	private function last_good_license( int $backoff = 0 ): ?array {
+		$license = $this->license_cache ?? $this->read_cached_license();
+
+		if ( null !== $license ) {
+			return $license;
+		}
+
+		$snapshot = $this->usable_snapshot();
+
+		if ( null === $snapshot ) {
+			return null;
+		}
+
+		$hold = min( $backoff, $snapshot->get_expires_at() - time() );
+
+		if ( 0 < $hold ) {
+			set_transient( self::TRANSIENT_LICENSE, $snapshot->get_license(), $hold );
+		}
+
+		$this->license_cache = $snapshot->get_license();
+
+		return $this->license_cache;
+	}
+
+	/**
+	 * The snapshot of the last good fetch for the current license key, while it is usable.
+	 *
+	 * A fetch never runs without a key, so no snapshot is ever stored for the
+	 * empty key, and a site whose license was deactivated finds none.
+	 *
+	 * @return License_Snapshot|null Null when the snapshot is another key's, malformed or too old.
+	 */
+	private function usable_snapshot(): ?License_Snapshot {
+		return $this->snapshots()->find( $this->key_hash( $this->get_key() ), time() );
+	}
+
+	/**
+	 * The hash a snapshot is bound to, so a key change is detected without storing a second copy of the key.
+	 *
+	 * @param string $key The license key.
+	 *
+	 * @return string
+	 */
+	private function key_hash( string $key ): string {
+		return hash( 'sha256', $key );
+	}
+
+	/**
+	 * The snapshot store, built on first use.
+	 *
+	 * @return License_Snapshot_Store
+	 */
+	private function snapshots(): License_Snapshot_Store {
+		if ( null === $this->snapshots ) {
+			$this->snapshots = new License_Snapshot_Store();
+		}
+
+		return $this->snapshots;
 	}
 
 	/**
@@ -587,7 +686,9 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 	 * Get only license data that is already cached locally.
 	 *
 	 * Unlike get_license_data(), this method never refreshes from Automator
-	 * Platform and never mutates a malformed shared transient.
+	 * Platform and never mutates a malformed shared transient. While a failed
+	 * fetch is backed off it serves the last good license's snapshot, as
+	 * get_license_data() does, when the 12-hour cache no longer holds it.
 	 *
 	 * @return array|null Cached license data, or null when unavailable.
 	 */
@@ -598,13 +699,21 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 
 		$cached = get_transient( self::TRANSIENT_LICENSE );
 
-		if ( ! is_array( $cached ) ) {
+		if ( is_array( $cached ) ) {
+			$this->license_cache = $cached;
+
+			return $cached;
+		}
+
+		$snapshot = $this->is_backing_off() ? $this->usable_snapshot() : null;
+
+		if ( null === $snapshot ) {
 			return null;
 		}
 
-		$this->license_cache = $cached;
+		$this->license_cache = $snapshot->get_license();
 
-		return $cached;
+		return $this->license_cache;
 	}
 
 	/**

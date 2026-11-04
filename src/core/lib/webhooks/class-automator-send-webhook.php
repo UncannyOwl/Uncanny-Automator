@@ -33,7 +33,12 @@ class Automator_Send_Webhook {
 	private $field_separator;
 
 	/**
-	 * @var
+	 * The multipart boundary of the current form-data request.
+	 *
+	 * get_content_type() sets a new one for each request, and the body is built after the
+	 * headers, so its parts are delimited by the boundary the Content-Type header names.
+	 *
+	 * @var string|null
 	 */
 	private $boundary;
 
@@ -186,7 +191,10 @@ class Automator_Send_Webhook {
 	 * @return mixed|void
 	 */
 	public function request_type( $data ) {
-		switch ( $data['ACTION_EVENT'] ) {
+		// A webhook saved by Pro 1.x–2.1 stored no method: it was always a POST.
+		$method = isset( $data['ACTION_EVENT'] ) ? $data['ACTION_EVENT'] : 'POST';
+
+		switch ( $method ) {
 			case 'GET':
 				$request_type = apply_filters( 'automator_outgoing_webhook_request_type', 'GET', $data );
 				break;
@@ -215,7 +223,7 @@ class Automator_Send_Webhook {
 			case 'POST':
 			case 'CUSTOM':
 			default:
-				if ( 'POST' !== $data['ACTION_EVENT'] && isset( $data['ACTION_EVENT_custom'] ) ) {
+				if ( 'POST' !== $method && isset( $data['ACTION_EVENT_custom'] ) ) {
 					$request_type = apply_filters( 'automator_outgoing_webhook_request_type', $data['ACTION_EVENT_custom'], $data );
 					break;
 				}
@@ -234,6 +242,12 @@ class Automator_Send_Webhook {
 	 * @return mixed|string
 	 */
 	public function get_data_type( $data ) {
+		// GET sends the Body as URL-encoded query parameters. The builder hides "Data format" for GET,
+		// so a format stored before the owner chose GET does not apply.
+		if ( isset( $data['ACTION_EVENT'] ) && 'GET' === $data['ACTION_EVENT'] ) {
+			return 'x-www-form-urlencoded';
+		}
+
 		if ( ! isset( $data['DATA_FORMAT'] ) ) {
 			return 'x-www-form-urlencoded';
 		}
@@ -415,24 +429,30 @@ class Automator_Send_Webhook {
 	 * @return string|array
 	 */
 	public function get_content_type( $data_type, $headers ) {
+		// Data format => the Content-Type it is sent with.
 		$supported_data_types = array(
-			'application/x-www-form-urlencoded' => 'x-www-form-urlencoded',
-			'multipart/form-data'               => 'form-data',
-			'application/json'                  => 'json',
-			'text/plain'                        => 'plain',
-			'application/binary'                => 'binary',
-			'text/html'                         => 'html',
-			'xml'                               => 'xml',
-			'GraphQL'                           => 'GraphQL',
-			'raw'                               => 'raw',
+			'x-www-form-urlencoded' => 'application/x-www-form-urlencoded',
+			'form-data'             => 'multipart/form-data',
+			'json'                  => 'application/json',
+			'plain'                 => 'text/plain',
+			'binary'                => 'application/binary',
+			'html'                  => 'text/html',
+			'xml'                   => 'application/xml',
+			// GraphQL over HTTP: a JSON object of the query, its variables and the operation name.
+			'GraphQL'               => 'application/json',
+			'raw'                   => 'text/plain',
 		);
 		if ( 'none' === $data_type ) {
 			$data_type = 'raw';
 		}
-		if ( in_array( $data_type, $supported_data_types, true ) ) {
-			$type = array_search( $data_type, $supported_data_types, true );
+		// A Raw body is sent as typed, so a Content-Type header the owner added describes it.
+		if ( 'raw' === $data_type && $this->has_header( $headers, 'Content-Type' ) ) {
+			return $headers;
+		}
+		if ( is_string( $data_type ) && isset( $supported_data_types[ $data_type ] ) ) {
+			$type = $supported_data_types[ $data_type ];
 			if ( 'form-data' === $data_type ) {
-				$this->boundary = sha1( time() );
+				$this->boundary = $this->new_boundary();
 				$type           = $type . '; boundary=' . $this->boundary;
 			}
 			$headers['Content-Type'] = $type;
@@ -443,6 +463,26 @@ class Automator_Send_Webhook {
 		$headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
 		return $headers;
+	}
+
+	/**
+	 * Whether the headers hold one with this name, in any letter case.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param array  $headers Header name => value.
+	 * @param string $name    Header name.
+	 *
+	 * @return bool
+	 */
+	private function has_header( $headers, $name ) {
+		foreach ( array_keys( (array) $headers ) as $key ) {
+			if ( 0 === strcasecmp( (string) $key, $name ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -541,7 +581,7 @@ class Automator_Send_Webhook {
 			'automator_send_webhook_data_tree_required',
 			array(
 				'json',
-				'graph',
+				'GraphQL',
 				'xml',
 			),
 			$data_type
@@ -567,7 +607,7 @@ class Automator_Send_Webhook {
 		$original = $fields;
 		switch ( $data_type ) {
 			case 'json':
-			case 'graph':
+			case 'GraphQL':
 				if ( $is_check_sample ) {
 					$fields = wp_json_encode( $fields, JSON_PRETTY_PRINT );
 				} else {
@@ -610,27 +650,24 @@ class Automator_Send_Webhook {
 				$fields = $this->build_html_table( $fields, $is_check_sample );
 				break;
 			case 'xml':
-				try {
-					$xml_body_wrapper = apply_filters( 'automator_send_webhook_xml_body', '<body></body>', $fields );
-					if ( empty( $xml_body_wrapper ) ) {
-						$fields = esc_html__( 'XML body wrapper cannot be empty. Please use `automator_send_webhook_xml_body` filter to define a wrapper.', 'uncanny-automator' );
-						break;
-					}
-					$xml_data = new SimpleXMLElement( $xml_body_wrapper );
-					$this->array_to_xml( $fields, $xml_data );
-					$fields = $xml_data->asXML();
+				// A wrapper that is empty or not XML fails the request with the reason (SimpleXMLElement throws
+				// for one that is not XML); it is never sent as the body.
+				$xml_body_wrapper = apply_filters( 'automator_send_webhook_xml_body', '<body></body>', $fields );
+				if ( empty( $xml_body_wrapper ) ) {
+					throw new \Exception( esc_html__( 'XML body wrapper cannot be empty. Please use `automator_send_webhook_xml_body` filter to define a wrapper.', 'uncanny-automator' ) );
+				}
+				$xml_data = new SimpleXMLElement( $xml_body_wrapper );
+				$this->array_to_xml( $fields, $xml_data );
+				$fields = $xml_data->asXML();
 
-					if ( $is_check_sample ) {
-						$dom                     = new DOMDocument( '1.0' );
-						$dom->preserveWhiteSpace = true; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-						$dom->formatOutput       = true; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-						$dom->loadXML( trim( $fields ) );
-						$fields = $dom->saveXML();
-					} else {
-						$fields = str_replace( PHP_EOL, '', $fields );
-					}
-				} catch ( \Exception $e ) {
-					$fields = $e->getMessage();
+				if ( $is_check_sample ) {
+					$dom                     = new DOMDocument( '1.0' );
+					$dom->preserveWhiteSpace = true; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					$dom->formatOutput       = true; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					$dom->loadXML( trim( $fields ) );
+					$fields = $dom->saveXML();
+				} else {
+					$fields = str_replace( PHP_EOL, '', $fields );
 				}
 				break;
 			case 'x-www-form-urlencoded':
@@ -639,6 +676,11 @@ class Automator_Send_Webhook {
 				} else {
 					$fields = $original;
 				}
+				break;
+			case 'raw':
+			case 'none':
+				// The values as typed, one per line, without their keys.
+				$fields = implode( "\n", $fields );
 				break;
 		}
 
@@ -785,8 +827,17 @@ class Automator_Send_Webhook {
 				$response = wp_safe_remote_post( $webhook_url, $args );
 				break;
 			case 'GET':
-				$url      = add_query_arg( $args['body'], $webhook_url );
-				$response = wp_safe_remote_get( $url, $args );
+				// A GET has no body: its fields go in the query string, URL-encoded once.
+				$fields = isset( $args['body'] ) ? $args['body'] : null;
+				if ( null !== $fields && '' !== $fields && ! is_array( $fields ) ) {
+					return new \WP_Error(
+						'invalid_get_body',
+						esc_html__( 'A GET request sends the webhook data as key/value pairs in the URL, so it cannot send a body formatted as text.', 'uncanny-automator' )
+					);
+				}
+				$url          = self::add_query_fields( $webhook_url, is_array( $fields ) ? $fields : array() );
+				$args['body'] = null;
+				$response     = wp_safe_remote_get( $url, $args );
 				break;
 			case 'HEAD':
 				$response = wp_safe_remote_head( $webhook_url, $args );
@@ -809,6 +860,33 @@ class Automator_Send_Webhook {
 		}
 
 		return $response;
+	}
+
+	/**
+	 * The URL with the fields added to its query string, URL-encoded the way WordPress encodes a
+	 * form body. A field whose name the URL already carries replaces that parameter.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param string  $url    Webhook URL.
+	 * @param mixed[] $fields Body fields.
+	 *
+	 * @return string
+	 */
+	private static function add_query_fields( $url, array $fields ) {
+		$query = http_build_query( $fields, '', '&' );
+		if ( '' === $query ) {
+			return $url;
+		}
+
+		// add_query_arg() leaves what it is given unencoded, so it gets the pairs already encoded.
+		$pairs = array();
+		foreach ( explode( '&', $query ) as $pair ) {
+			list( $key, $value ) = array_pad( explode( '=', $pair, 2 ), 2, '' );
+			$pairs[ $key ]       = $value;
+		}
+
+		return add_query_arg( $pairs, $url );
 	}
 
 	/**
@@ -887,11 +965,13 @@ class Automator_Send_Webhook {
 	 */
 	public function build_multipart_form_data( $data ) {
 
-		$boundary = $this->boundary;
-
-		if ( empty( $boundary ) ) {
-			$boundary = '--' . sha1( time() );
+		// The parts are delimited by the boundary the request's Content-Type header names. A body built
+		// without headers (the builder's payload preview) gets a boundary of its own.
+		if ( empty( $this->boundary ) ) {
+			$this->boundary = $this->new_boundary();
 		}
+
+		$delimiter = '--' . $this->boundary;
 
 		/**
 		 * @see <https://proxyman.io/posts/2021-06-24-preview-multipart-formdata>
@@ -899,7 +979,7 @@ class Automator_Send_Webhook {
 		$separator = "\r\n";
 
 		// Build the form-data body.
-		$body_start = 'Content-Type: multipart/form-data; boundary=' . $boundary . $separator . $separator;
+		$body_start = 'Content-Type: multipart/form-data; boundary=' . $this->boundary . $separator . $separator;
 
 		$form_data_body = $body_start;
 
@@ -910,7 +990,7 @@ class Automator_Send_Webhook {
 		foreach ( (array) $data as $key => $value ) {
 
 			$form_data_body .=
-				$boundary
+				$delimiter
 				. $separator
 				. 'Content-Disposition: form-data; name="' . $key . '"'
 				. $separator
@@ -928,9 +1008,20 @@ class Automator_Send_Webhook {
 			++$counter;
 		}
 
-		$form_data_body .= $boundary . '--';
+		$form_data_body .= $delimiter . '--';
 
 		return trim( $form_data_body );
+	}
+
+	/**
+	 * A multipart boundary no other request shares.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @return string
+	 */
+	private function new_boundary() {
+		return sha1( uniqid( '', true ) );
 	}
 
 	/**

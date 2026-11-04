@@ -7,6 +7,7 @@ use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Execution_Log_Store
 use Uncanny_Automator\App\Infrastructure\Database\Database;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\Traits\Error_Message_Like;
 use Uncanny_Automator\App\Infrastructure\Exceptions\Store_Exception;
+use Uncanny_Automator\App\Recipe_Builder\Loop\Iterable_Expression\Enums\Iteration_Type;
 use Uncanny_Automator\App\Recipe_Runner\Services\Error_Code;
 use Uncanny_Automator\App\Recipe_Runner\Value_Objects\Action_Error;
 use Uncanny_Automator\Automator_Status;
@@ -583,6 +584,65 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 	}
 
 	/**
+	 * Mark a single uap_action_log row complete only while it is still IN_PROGRESS.
+	 *
+	 * For a caller deciding from a row it read earlier: a worker that finished since keeps its result. Only a real
+	 * change dispatches the status events.
+	 *
+	 * @param int $action_log_id The uap_action_log primary key.
+	 * @param int $completed     Completion status constant.
+	 *
+	 * @return bool True when this call changed the row.
+	 */
+	public function mark_action_complete_if_in_progress( int $action_log_id, int $completed ): bool {
+
+		$wpdb = $this->wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$row = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT automator_action_id, automator_recipe_log_id FROM {$wpdb->prefix}uap_action_log WHERE ID = %d",
+				$action_log_id
+			)
+		);
+
+		if ( null === $row ) {
+			return false;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table write.
+		$updated = $wpdb->query(
+			$wpdb->prepare(
+				"UPDATE {$wpdb->prefix}uap_action_log
+				SET completed = %d, date_time = %s
+				WHERE ID = %d
+				AND completed = %d",
+				$completed,
+				current_time( 'mysql' ),
+				$action_log_id,
+				Automator_Status::IN_PROGRESS
+			)
+		);
+
+		if ( ! $updated ) {
+			return false;
+		}
+
+		$action_id     = (int) $row->automator_action_id;
+		$recipe_log_id = (int) $row->automator_recipe_log_id;
+
+		Dispatcher::action( 'automator_action_completion_status_changed', $action_id, $recipe_log_id, Automator_Status::IN_PROGRESS, $completed, '' );
+
+		$status_name = Automator_Status::get_class_name( $completed );
+		if ( '' !== $status_name ) {
+			$status_name = str_replace( '-', '_', $status_name );
+			Dispatcher::action( "automator_action_marked_{$status_name}", $action_id, $recipe_log_id, Automator_Status::IN_PROGRESS, $completed, '' );
+		}
+
+		return true;
+	}
+
+	/**
 	 * @param int $recipe_log_id The recipe log ID.
 	 *
 	 * @return array
@@ -1104,6 +1164,10 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 	 * idle for $threshold_seconds and finalized. Add a new wait state on the
 	 * right side of that line.
 	 *
+	 * A background dispatch owns such a row with nothing behind it that is sure
+	 * to finish it, so this query alone would leave its run open for good.
+	 * find_lost_background_dispatches() finds those rows for recovery to fail.
+	 *
 	 * Trade-off: a run that died before writing its first action row is not
 	 * recovered. From uap_recipe_log alone it is indistinguishable from a
 	 * recipe awaiting triggers, and leaving it open is far cheaper than
@@ -1159,6 +1223,50 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 			)
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return is_array( $results ) ? $results : array();
+	}
+
+	/**
+	 * Action rows still In progress on a background dispatch past the threshold.
+	 *
+	 * The worker is a request nothing tracks: it can be refused, expire in a queue or die, and none of those
+	 * writes anything. Only a row marked at dispatch qualifies. A row with a job behind it finishes through the
+	 * job, and an In progress row with neither mark could be anything, so it is left alone.
+	 *
+	 * @param int $threshold_seconds Time since the dispatch.
+	 * @param int $batch_size        Maximum rows.
+	 *
+	 * @return object[] Rows with ID, automator_recipe_log_id, automator_recipe_id, user_id, date_time.
+	 */
+	public function find_lost_background_dispatches( int $threshold_seconds, int $batch_size ): array {
+
+		$wpdb = $this->wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT al.ID, al.automator_recipe_log_id, rl.automator_recipe_id, rl.user_id, al.date_time
+				FROM {$wpdb->prefix}uap_action_log al
+				INNER JOIN {$wpdb->prefix}uap_recipe_log rl
+				        ON rl.ID = al.automator_recipe_log_id
+				WHERE al.completed = %d
+				  AND al.date_time < %s
+				  AND EXISTS (
+				      SELECT 1
+				      FROM {$wpdb->prefix}uap_action_log_meta m
+				      WHERE m.automator_action_log_id = al.ID
+				        AND m.meta_key = %s
+				  )
+				ORDER BY al.date_time ASC
+				LIMIT %d",
+				Automator_Status::IN_PROGRESS,
+				// Row times are site time, which can be hours from MySQL's NOW().
+				wp_date( 'Y-m-d H:i:s', time() - $threshold_seconds ),
+				self::ACTION_META_BACKGROUND_DISPATCH,
+				$batch_size
+			)
+		);
 
 		return is_array( $results ) ? $results : array();
 	}
@@ -1336,7 +1444,8 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 	/**
 	 * Get the next AUTO_INCREMENT value without inserting a row.
 	 *
-	 * Handles MySQL 8's cached INFORMATION_SCHEMA stats.
+	 * Handles MySQL 8's cached INFORMATION_SCHEMA stats: the session's information_schema_stats_expiry is set to 0
+	 * for the read and put back to its own value after it. The caller's wpdb error suppression is left as it was.
 	 *
 	 * @param string $table_name The unprefixed table name (e.g. 'uap_recipe_log').
 	 *
@@ -1347,26 +1456,66 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 		$wpdb = $this->wpdb;
 
 		// MySQL 8+ caches INFORMATION_SCHEMA stats. Try to disable for fresh read.
-		// Suppressed — restricted hosting may lack SET SESSION privilege.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$has_expiry = $wpdb->get_results( "SHOW VARIABLES LIKE 'information_schema_stats_expiry'" );
+		$previous_expiry = $this->session_stats_expiry();
+		$expiry_changed  = null !== $previous_expiry && 0 !== $previous_expiry && $this->set_session_stats_expiry( 0 );
 
-		if ( ! empty( $has_expiry ) ) {
-			$wpdb->suppress_errors( true );
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Session setting, not a table read; nothing to cache.
-			$wpdb->query( 'SET information_schema_stats_expiry = 0;' );
-			$wpdb->suppress_errors( false );
+		try {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$next_id = $wpdb->get_var(
+				$wpdb->prepare(
+					'SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = %s',
+					$wpdb->prefix . $table_name
+				)
+			);
+		} finally {
+			if ( $expiry_changed ) {
+				$this->set_session_stats_expiry( $previous_expiry );
+			}
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$next_id = $wpdb->get_var(
-			$wpdb->prepare(
-				'SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = %s',
-				$wpdb->prefix . $table_name
-			)
-		);
-
 		return null !== $next_id ? (int) $next_id : null;
+	}
+
+	/**
+	 * The session's information_schema_stats_expiry, in seconds.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @return int|null Null when the server has no such variable (before MySQL 8.0, MariaDB).
+	 */
+	private function session_stats_expiry(): ?int {
+
+		$wpdb = $this->wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Session setting, not a table read; nothing to cache.
+		$row = $wpdb->get_row( "SHOW SESSION VARIABLES LIKE 'information_schema_stats_expiry'", ARRAY_A );
+
+		return is_array( $row ) && isset( $row['Value'] ) && is_numeric( $row['Value'] ) ? (int) $row['Value'] : null;
+	}
+
+	/**
+	 * Set the session's information_schema_stats_expiry.
+	 *
+	 * The SET runs with wpdb errors suppressed, since restricted hosting may lack the SET SESSION privilege, and the
+	 * caller's suppression setting is put back after it.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param int $seconds The expiry.
+	 *
+	 * @return bool Whether the server took the value.
+	 */
+	private function set_session_stats_expiry( int $seconds ): bool {
+
+		$wpdb     = $this->wpdb;
+		$suppress = $wpdb->suppress_errors( true );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Session setting, not a table read; nothing to cache.
+		$result = $wpdb->query( $wpdb->prepare( 'SET SESSION information_schema_stats_expiry = %d', $seconds ) );
+
+		$wpdb->suppress_errors( $suppress );
+
+		return false !== $result;
 	}
 
 	/**
@@ -1948,7 +2097,7 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 	/**
 	 * @inheritDoc
 	 */
-	public function get_action_iteration_rows( int $recipe_id, int $recipe_log_id, int $run_number, int $action_id, int $per_page, int $offset, string $search, string $loop_type ): array {
+	public function get_action_iteration_rows( int $recipe_id, int $recipe_log_id, int $run_number, int $action_id, int $per_page, int $offset, string $search, string $loop_type, array $matched_entity_ids = array() ): array {
 
 		$wpdb = $this->wpdb;
 
@@ -1956,7 +2105,7 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 		if ( ! $this->table_exists( $table ) ) {
 			return array();
 		}
-		list( $join_sql, $search_sql, $search_params ) = $this->iteration_search_fragments( $search, $loop_type );
+		list( $join_sql, $search_sql, $search_params ) = $this->iteration_search_fragments( $search, $loop_type, $matched_entity_ids );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table; live state read, must not be cached. $join_sql and $search_sql are literal fragments from iteration_search_fragments().
 		$rows = $wpdb->get_results(
 			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- The search placeholders vary with the search term; the merged arguments carry one value per placeholder.
@@ -1972,7 +2121,7 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 	/**
 	 * @inheritDoc
 	 */
-	public function count_action_iteration_rows( int $recipe_id, int $recipe_log_id, int $run_number, int $action_id, string $search, string $loop_type ): int {
+	public function count_action_iteration_rows( int $recipe_id, int $recipe_log_id, int $run_number, int $action_id, string $search, string $loop_type, array $matched_entity_ids = array() ): int {
 
 		$wpdb = $this->wpdb;
 
@@ -1980,7 +2129,7 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 		if ( ! $this->table_exists( $table ) ) {
 			return 0;
 		}
-		list( $join_sql, $search_sql, $search_params ) = $this->iteration_search_fragments( $search, $loop_type );
+		list( $join_sql, $search_sql, $search_params ) = $this->iteration_search_fragments( $search, $loop_type, $matched_entity_ids );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table; live state read, must not be cached. $join_sql and $search_sql are literal fragments from iteration_search_fragments().
 		return (int) $wpdb->get_var(
 			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- The search placeholders vary with the search term; the merged arguments carry one value per placeholder.
@@ -1994,15 +2143,16 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 	/**
 	 * Kind-aware search JOIN/WHERE fragments for the loop-iteration reads.
 	 * Users loops match display_name/user_email; posts loops match
-	 * post_title; every kind matches the entity id and error_message.
-	 * Token loops get no label join (their labels live in the parent's
-	 * entity_ids JSON, not in a joinable table).
+	 * post_title; both also match the entity id. Token loops match the given
+	 * entity ids: their labels live in the parent's entity_ids JSON, not in a
+	 * joinable table. Every kind matches error_message.
 	 *
-	 * @param string $search    Raw search term; '' yields empty fragments.
-	 * @param string $loop_type Loop kind: users|posts|token|''.
-	 * @return array{0: string, 1: string, 2: array<int,string>} JOIN SQL, WHERE-suffix SQL, LIKE params.
+	 * @param string         $search             Raw search term; '' yields empty fragments.
+	 * @param string         $loop_type          Loop kind: users|posts|token|''.
+	 * @param array<int,int> $matched_entity_ids Token loops: entity ids whose label contains $search.
+	 * @return array{0: string, 1: string, 2: array<int,int|string>} JOIN SQL, WHERE-suffix SQL, query params.
 	 */
-	protected function iteration_search_fragments( string $search, string $loop_type ): array {
+	protected function iteration_search_fragments( string $search, string $loop_type, array $matched_entity_ids ): array {
 		if ( '' === $search ) {
 			return array( '', '', array() );
 		}
@@ -2019,6 +2169,14 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 				" LEFT JOIN {$this->wpdb->posts} p ON p.ID = t.entity_id",
 				' AND (p.post_title LIKE %s OR CAST(t.entity_id AS CHAR) LIKE %s OR t.error_message LIKE %s)',
 				array( $like, $like, $like ),
+			);
+		}
+		if ( Iteration_Type::TOKEN === $loop_type ) {
+			$placeholders = implode( ', ', array_fill( 0, count( $matched_entity_ids ), '%d' ) );
+			return array(
+				'',
+				empty( $matched_entity_ids ) ? ' AND t.error_message LIKE %s' : " AND (t.entity_id IN ({$placeholders}) OR t.error_message LIKE %s)",
+				array_merge( $matched_entity_ids, array( $like ) ),
 			);
 		}
 		return array(
@@ -2072,6 +2230,39 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 		);
 
 		return null === $row ? null : (string) $row->meta_value;
+	}
+
+	/**
+	 * Whether a run has a recipe-log meta row for this key, whoever it was written for.
+	 *
+	 * The run owns its recipe-log meta: the user_id column is not consulted.
+	 * The recipe ID is part of the lookup because the table is indexed on
+	 * recipe_id and not on recipe_log_id; without it every call would read
+	 * the whole table.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param int    $recipe_id     The recipe ID.
+	 * @param int    $recipe_log_id The recipe log ID.
+	 * @param string $meta_key      The meta key.
+	 *
+	 * @return bool
+	 */
+	public function has_recipe_log_meta( int $recipe_id, int $recipe_log_id, string $meta_key ): bool {
+
+		$wpdb = $this->wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$found = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT 1 FROM {$wpdb->prefix}uap_recipe_log_meta WHERE recipe_id = %d AND recipe_log_id = %d AND meta_key = %s LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$recipe_id,
+				$recipe_log_id,
+				$meta_key
+			)
+		);
+
+		return null !== $found;
 	}
 
 	/**

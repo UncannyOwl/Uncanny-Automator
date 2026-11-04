@@ -44,7 +44,7 @@ class Action_Rest extends Recipe_Item_Rest {
 
 		if ( is_wp_error( $result ) ) {
 			$error_code = $result->get_error_code();
-			return $this->failure( $result->get_error_message(), 400, '' !== $error_code ? $error_code : 'automator_add_action_to_recipe_failed' );
+			return $this->add_failure( $result, '' !== $error_code ? $error_code : 'automator_add_action_to_recipe_failed' );
 		}
 
 		$action_id = (int) $result['action_id'];
@@ -82,7 +82,8 @@ class Action_Rest extends Recipe_Item_Rest {
 		$result  = $service->update_action( $this->get_post_id(), $config, null, $this->resolve_parent_id(), null, $this->get_path_code(), $this->get_recipe_id() );
 
 		if ( is_wp_error( $result ) ) {
-			return $this->failure( $result->get_error_message(), 400, 'automator_update_action_failed' );
+			// A move the placement rules refuse keeps its 422 and violation, as an add does.
+			return $this->add_failure( $result, 'automator_update_action_failed' );
 		}
 
 		return array(

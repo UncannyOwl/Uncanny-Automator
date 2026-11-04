@@ -106,23 +106,24 @@ class Automator_Email_Helpers {
 		$is_html     = $mail['is_html'];
 		$error       = Automator()->wp_error;
 
-		if ( ! $error->get_message( 'wp_mail_to' ) ) {
-			if ( is_array( $to ) ) {
-				foreach ( $to as $to_email ) {
-					if ( empty( $to_email ) ) {
-						$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is empty.', 'uncanny-automator' ), $mail );
-					}
-					if ( ! is_email( $to_email ) ) {
-						$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is invalid.', 'uncanny-automator' ), $mail );
-					}
-				}
-			} else {
-				if ( empty( $to ) ) {
+		// The error object is shared by the whole request: drop an earlier send's "To" errors, so this send is judged on its own "To".
+		$error->get_wp_error_object()->remove( 'wp_mail_to' );
+
+		if ( is_array( $to ) ) {
+			foreach ( $to as $to_email ) {
+				if ( empty( $to_email ) ) {
 					$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is empty.', 'uncanny-automator' ), $mail );
 				}
-				if ( ! is_email( $to ) ) {
+				if ( ! is_email( $to_email ) ) {
 					$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is invalid.', 'uncanny-automator' ), $mail );
 				}
+			}
+		} else {
+			if ( empty( $to ) ) {
+				$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is empty.', 'uncanny-automator' ), $mail );
+			}
+			if ( ! is_email( $to ) ) {
+				$error->add_error( 'wp_mail_to', esc_attr__( '"To" address is invalid.', 'uncanny-automator' ), $mail );
 			}
 		}
 

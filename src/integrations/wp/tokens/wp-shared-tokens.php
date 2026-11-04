@@ -322,13 +322,13 @@ class Wp_Shared_Tokens {
 		$pub_ts_gmt = get_post_time( 'U', true, $post );
 		$pub_local  = (int) mysql2date( 'U', $post->post_date );
 
-		$post_date = false !== $pub_ts_gmt ? wp_date( $combo, $pub_ts_gmt ) : '';
+		$post_date     = false !== $pub_ts_gmt ? wp_date( $combo, $pub_ts_gmt ) : '';
 		$post_date_gmt = false !== $pub_ts_gmt
 			? wp_date( $combo, $pub_ts_gmt, new \DateTimeZone( 'UTC' ) )
 			: '';
 
-		$mod_ts_gmt = get_post_modified_time( 'U', true, $post );
-		$post_mod   = false !== $mod_ts_gmt ? wp_date( $combo, $mod_ts_gmt ) : '';
+		$mod_ts_gmt   = get_post_modified_time( 'U', true, $post );
+		$post_mod     = false !== $mod_ts_gmt ? wp_date( $combo, $mod_ts_gmt ) : '';
 		$post_mod_gmt = false !== $mod_ts_gmt
 			? wp_date( $combo, $mod_ts_gmt, new \DateTimeZone( 'UTC' ) )
 			: '';
@@ -472,10 +472,9 @@ class Wp_Shared_Tokens {
 	/**
 	 * Canonical post-taxonomy token set (flat text).
 	 *
-	 * Display names "Post categories" / "Post tags" pair with the loopable
-	 * variants emitted by `post_taxonomy_loopable_tokens()` whose names carry
-	 * a "(loop)" suffix — eliminating the picker display-name collision per
-	 * Step 0 Decision 6.
+	 * The loopable category and tag lists are not declared here: the loopable
+	 * token classes under `loopable/trigger/` register them as `TOKEN_EXTENDED`
+	 * tokens, the only id the runtime hydrates.
 	 *
 	 * @return array<int, array{tokenId: string, tokenName: string, tokenType: string}>
 	 */
@@ -554,35 +553,15 @@ class Wp_Shared_Tokens {
 	}
 
 	/**
-	 * Canonical post-taxonomy loopable token declaration.
+	 * Declares nothing. Pro 8.0.0's post triggers merge this into their tokens, and Free can update before Pro.
 	 *
-	 * These IDs are loopable tokens (one row per category/tag) used by the
-	 * recipe-builder's loop-filter UI. Hydration is owned by the per-token
-	 * loopable classes in `loopable/trigger/post-categories.php` and
-	 * `loopable/trigger/post-tags.php` — this helper only declares the picker
-	 * entries so triggers can compose the loopable IDs alongside the flat
-	 * `post_taxonomy_tokens()` variants without depending on the loopable
-	 * registration files.
+	 * @since 8.0.1
+	 * @deprecated <version> Remove once the oldest Pro that can run beside this Free no longer calls it (Pro PR #5001).
 	 *
-	 * Display names carry an explicit "(loop)" suffix to disambiguate from
-	 * the flat-text POSTCATEGORIES/POSTTAGS picker entries per Step 0
-	 * Decision 6.
-	 *
-	 * @return array<int, array{tokenId: string, tokenName: string, tokenType: string}>
+	 * @return array Always empty.
 	 */
 	public static function post_taxonomy_loopable_tokens() {
-		return array(
-			array(
-				'tokenId'   => 'WP_POST_CATEGORIES',
-				'tokenName' => esc_html_x( 'Post categories (loop)', 'WordPress', 'uncanny-automator' ),
-				'tokenType' => 'json',
-			),
-			array(
-				'tokenId'   => 'WP_POST_TAGS',
-				'tokenName' => esc_html_x( 'Post tags (loop)', 'WordPress', 'uncanny-automator' ),
-				'tokenType' => 'json',
-			),
-		);
+		return array();
 	}
 
 	/**
@@ -921,15 +900,15 @@ class Wp_Shared_Tokens {
 
 		return sprintf(
 			/* translators: 1: Comment date, 2: Comment time. */
-			_x( '%1$s at %2$s', 'WordPress', 'uncanny-automator' ),
+			esc_html_x( '%1$s at %2$s', 'WordPress', 'uncanny-automator' ),
 			date_i18n(
 				/* translators: Publish box date format, see https://www.php.net/manual/datetime.format.php */
-				_x( 'M j, Y', 'publish box date format', 'uncanny-automator' ),
+				esc_html_x( 'M j, Y', 'publish box date format', 'uncanny-automator' ),
 				$timestamp
 			),
 			date_i18n(
 				/* translators: Publish box time format, see https://www.php.net/manual/datetime.format.php */
-				_x( 'H:i', 'publish box time format', 'uncanny-automator' ),
+				esc_html_x( 'H:i', 'publish box time format', 'uncanny-automator' ),
 				$timestamp
 			)
 		);

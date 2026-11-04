@@ -64,8 +64,9 @@ class Transient_Retry {
 	 * per recipe evaluation — during a platform outage, retrying it would
 	 * hold a PHP worker through the full schedule PER CHECK and stack across
 	 * every concurrent recipe on the site, unlike an action call which waits
-	 * at most once per action. It also has its own client-side fallback, so
-	 * a failed check self-heals on the next one: fail fast, retry nothing.
+	 * at most once per action. It also has its own client-side fallback:
+	 * License_Manager keeps serving the last good license (for up to 7 days)
+	 * and backs the next fetch off, so failing fast costs nothing: retry nothing.
 	 *
 	 * @var string[]
 	 */

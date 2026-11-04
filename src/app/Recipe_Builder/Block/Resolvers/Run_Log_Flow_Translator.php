@@ -10,6 +10,8 @@ use Uncanny_Automator\App\Infrastructure\Database\Database;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Block_Modifier_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Block_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Execution_Log_Store;
+use Uncanny_Automator\App\Recipe_Builder\Block\Registry\Blocks\Filter_Block;
+use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Fields_Bag;
 
 /**
  * Translates the uo-block tree into the legacy `actions_flow` shape that
@@ -288,19 +290,20 @@ final class Run_Log_Flow_Translator {
 			$mode            = $this->extract_match_mode( (array) ( $block['fields'] ?? array() ) );
 			$conditions_rows = $this->modifier_store->get_by_block( $block_id, 'filter_condition' );
 
+			// The legacy shape the run log reads (and Pro 7.x wrote): `mode`, `condition` and flat fields.
 			$conditions = array();
 			foreach ( $conditions_rows as $row ) {
 				$conditions[] = array(
-					'id'             => (string) ( $row['id'] ?? '' ),
-					'integration'    => (string) ( $row['integration_code'] ?? '' ),
-					'condition_code' => (string) ( $row['code'] ?? '' ),
-					'fields'         => (array) ( $row['fields'] ?? array() ),
+					'id'          => (string) ( $row['id'] ?? '' ),
+					'integration' => (string) ( $row['integration_code'] ?? '' ),
+					'condition'   => (string) ( $row['code'] ?? '' ),
+					'fields'      => Fields_Bag::to_legacy_flat( (array) ( $row['fields'] ?? array() ) ),
 				);
 			}
 
 			$groups[] = array(
 				'id'         => $this->resolve_filter_group_key( $block_id, $block ),
-				'logic'      => $mode,
+				'mode'       => $mode,
 				'actions'    => $inner_actions,
 				'conditions' => $conditions,
 			);
@@ -314,18 +317,16 @@ final class Run_Log_Flow_Translator {
 	}
 
 	/**
-	 * Pull the match mode out of a filter block's fields.
+	 * The match mode the filter runs with: the saved one, else the block's default, as the filter's processor reads it.
 	 *
 	 * @param array $fields Fields dict.
 	 *
 	 * @return string Match mode (`'all'`/`'any'`).
 	 */
 	private function extract_match_mode( array $fields ): string {
-		$raw = $fields['CONDITION_MATCH_MODE'] ?? 'all';
-		if ( is_array( $raw ) ) {
-			return (string) ( $raw['value'] ?? 'all' );
-		}
-		return (string) $raw;
+		$mode = Fields_Bag::from_array( $fields )->scalar( Filter_Block::FIELD_MATCH_MODE );
+
+		return '' === $mode ? Filter_Block::MATCH_MODE_ANY : $mode;
 	}
 
 	/**

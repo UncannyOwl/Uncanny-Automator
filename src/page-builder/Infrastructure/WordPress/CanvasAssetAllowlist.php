@@ -5,15 +5,30 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Infrastructure\WordPress;
 
 /**
- * Enforces the asset boundary for canvas editor pages.
+ * Enforces the asset boundary for canvas pages.
  *
  * Canvas pages are rendered through a WordPress request so core, plugins, and
  * themes can enqueue assets. The editor only permits explicit WordPress
  * editor/media handles and Page Builder-owned assets to avoid theme CSS/JS
  * leaking into the editing chrome.
+ *
+ * A published full page is visitor output. Its content can need any asset
+ * that core or a plugin queues for it (a payment form, a contact form,
+ * analytics), so it keeps them. It drops only the active theme's assets,
+ * because the theme does not render that page.
  */
 final class CanvasAssetAllowlist
 {
+    /**
+     * Core prints these styles from the active theme's theme.json and theme
+     * supports. They are theme styles, but they are not files in the theme.
+     */
+    private const THEME_DERIVED_STYLES = [
+        'global-styles',
+        'classic-theme-styles',
+        'wp-block-library-theme',
+    ];
+
     private const ALLOWED_STYLES = [
         'uncanny-page-builder-bridge',
         'admin-bar',
@@ -106,6 +121,76 @@ final class CanvasAssetAllowlist
         add_action('wp_print_footer_scripts', [$this, 'enforceScripts'], PHP_INT_MAX);
     }
 
+    public function registerPublishedPageGuards(): void
+    {
+        add_action('wp_print_styles', [$this, 'removeThemeStyles'], PHP_INT_MAX);
+        add_action('wp_print_scripts', [$this, 'removeThemeScripts'], PHP_INT_MAX);
+        add_action('wp_print_footer_scripts', [$this, 'removeThemeScripts'], PHP_INT_MAX);
+    }
+
+    public function removeThemeStyles(): void
+    {
+        global $wp_styles;
+
+        if (!$wp_styles instanceof \WP_Styles) {
+            return;
+        }
+
+        try {
+            $allowed = $this->allowedStyles();
+            $themeBases = $this->themeAssetBases();
+
+            foreach ($wp_styles->queue as $handle) {
+                if (in_array($handle, $allowed, true)) {
+                    continue;
+                }
+
+                if (
+                    !in_array($handle, self::THEME_DERIVED_STYLES, true)
+                    && !$this->isThemeAsset($wp_styles->registered[$handle] ?? null, $themeBases)
+                ) {
+                    continue;
+                }
+
+                wp_dequeue_style($handle);
+            }
+        } catch (\Throwable $failure) {
+            // A failed theme decision must not strip queued assets or
+            // terminate the shared request.
+            DiagnosticLog::write('[Uncanny Page Builder] Published page theme style removal failed (' . $failure::class . ')');
+        }
+    }
+
+    public function removeThemeScripts(): void
+    {
+        global $wp_scripts;
+
+        if (!$wp_scripts instanceof \WP_Scripts) {
+            return;
+        }
+
+        try {
+            $allowed = $this->allowedScripts();
+            $themeBases = $this->themeAssetBases();
+
+            foreach ($wp_scripts->queue as $handle) {
+                if (in_array($handle, $allowed, true)) {
+                    continue;
+                }
+
+                if (!$this->isThemeAsset($wp_scripts->registered[$handle] ?? null, $themeBases)) {
+                    continue;
+                }
+
+                wp_dequeue_script($handle);
+            }
+        } catch (\Throwable $failure) {
+            // A failed theme decision must not strip queued assets or
+            // terminate the shared request.
+            DiagnosticLog::write('[Uncanny Page Builder] Published page theme script removal failed (' . $failure::class . ')');
+        }
+    }
+
     public function enforceStyles(): void
     {
         global $wp_styles;
@@ -190,14 +275,51 @@ final class CanvasAssetAllowlist
 
     private function isPluginAsset(mixed $dependency): bool
     {
+        return $this->isServedFrom($dependency, $this->pluginAssetBase());
+    }
+
+    /**
+     * @param list<string> $themeBases
+     */
+    private function isThemeAsset(mixed $dependency, array $themeBases): bool
+    {
+        foreach ($themeBases as $base) {
+            if ($this->isServedFrom($dependency, $base)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isServedFrom(mixed $dependency, string $base): bool
+    {
         if (!is_object($dependency) || !isset($dependency->src) || !is_string($dependency->src)) {
             return false;
         }
 
-        $base = $this->pluginAssetBase();
         $src = $this->normalizeAssetSource(trim($dependency->src), $base);
 
         return $src !== '' && str_starts_with($src, $base);
+    }
+
+    /**
+     * The folders of the active theme and of its parent theme, each with a
+     * trailing slash so that a theme named `example` does not match
+     * `example-child`.
+     *
+     * @return list<string>
+     */
+    private function themeAssetBases(): array
+    {
+        $bases = [];
+        foreach ([get_stylesheet_directory_uri(), get_template_directory_uri()] as $uri) {
+            if (is_string($uri) && $uri !== '') {
+                $bases[] = rtrim($uri, '/') . '/';
+            }
+        }
+
+        return array_values(array_unique($bases));
     }
 
     private function pluginAssetBase(): string

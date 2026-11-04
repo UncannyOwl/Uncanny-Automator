@@ -69,4 +69,15 @@ interface Send_Webhook_Bridge {
 	 * @return array
 	 */
 	public function collect_response_tokens( $response ): array;
+
+	/**
+	 * Whether the answer is a success as a run judges it: a 2xx whose body
+	 * reports no error.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param array|\WP_Error $response HTTP response.
+	 * @return bool
+	 */
+	public function is_successful_response( $response ): bool;
 }

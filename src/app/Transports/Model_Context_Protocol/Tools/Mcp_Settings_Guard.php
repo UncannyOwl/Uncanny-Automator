@@ -17,12 +17,13 @@ use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abilities\Abil
  * writes options in general:
  *
  * - while an MCP tool use or an Automator ability runs, updating, adding or
- *   deleting these options is refused: an update keeps the stored value, and
- *   an addition or deletion stops the work with an error before anything is
- *   written. Option names are matched as the database matches them, so a
- *   name in another case or with accents, such as
- *   "automator_mcp_databasé_access", which reaches the same row, is refused
- *   too;
+ *   deleting these options is refused: the change stops the work with
+ *   Protected_Setting_Refused before anything is written, so the AI app is
+ *   answered with the refusal, never with success. A write that would leave
+ *   the option as it is writes nothing and is let through. Option names are
+ *   matched as the database matches them, so a name in another case or with
+ *   accents, such as "automator_mcp_databasé_access", which reaches the same
+ *   row, is refused too;
  * - such other spellings are refused on every request, recipes included, and
  *   Automator Pro's actions that set or delete options refuse the names
  *   themselves (register()).
@@ -298,29 +299,41 @@ final class Mcp_Settings_Guard {
 	 */
 	private static function hook(): void {
 		// Checked each time: tests and other code may reset WordPress's hooks.
-		if ( false !== has_filter( 'pre_update_option', array( self::class, 'keep_value' ) ) ) {
+		if ( false !== has_filter( 'pre_update_option', array( self::class, 'refuse_update' ) ) ) {
 			return;
 		}
-		add_filter( 'pre_update_option', array( self::class, 'keep_value' ), PHP_INT_MAX, 3 );
-		// Both fire before WordPress writes anything.
+		add_filter( 'pre_update_option', array( self::class, 'refuse_update' ), PHP_INT_MAX, 3 );
+		// All three run before WordPress writes anything.
 		add_action( 'add_option', array( self::class, 'refuse_change' ), PHP_INT_MAX, 1 );
 		add_action( 'delete_option', array( self::class, 'refuse_change' ), PHP_INT_MAX, 1 );
 	}
 
 	/**
-	 * Keep a protected option's value.
+	 * Stop the work before an update changes a protected option.
+	 *
+	 * An update that leaves the value as it is writes nothing, as WordPress
+	 * compares it, so it is let through, as adding an option that exists or
+	 * deleting one that does not is.
+	 *
+	 * @since 8.0.1 Refuses the update as an addition or deletion is refused; it used to keep the stored value silently.
 	 *
 	 * @param mixed $value     New value.
 	 * @param mixed $option    Option name.
 	 * @param mixed $old_value Current value.
-	 * @return mixed
+	 * @return mixed The new value, when the update is let through.
+	 *
+	 * @throws Protected_Setting_Refused When the change is refused.
 	 */
-	public static function keep_value( $value, $option, $old_value ) {
-		return self::refuses( $option ) ? $old_value : $value;
+	public static function refuse_update( $value, $option, $old_value ) {
+		if ( self::refuses( $option ) && $value !== $old_value && maybe_serialize( $value ) !== maybe_serialize( $old_value ) ) {
+			throw self::refusal();
+		}
+
+		return $value;
 	}
 
 	/**
-	 * Stop the work before a protected option is added or deleted.
+	 * Stop the work before a protected option is updated, added or deleted.
 	 *
 	 * @param mixed $option Option name.
 	 * @return void
@@ -329,7 +342,16 @@ final class Mcp_Settings_Guard {
 	 */
 	public static function refuse_change( $option ): void {
 		if ( self::refuses( $option ) ) {
-			throw new Protected_Setting_Refused( 'This setting belongs to the site owner and can be changed only on Automator\'s settings screens, so it was not changed.' );
+			throw self::refusal();
 		}
+	}
+
+	/**
+	 * The refusal an AI app gets for any change to a protected option.
+	 *
+	 * @return Protected_Setting_Refused
+	 */
+	private static function refusal(): Protected_Setting_Refused {
+		return new Protected_Setting_Refused( 'This setting belongs to the site owner and can be changed only on Automator\'s settings screens, so it was not changed.' );
 	}
 }

@@ -11,11 +11,13 @@ use Uncanny_Automator\App\Infrastructure\Connections\Connection_Registry;
 use Uncanny_Automator\App\Infrastructure\Connections\Default_Connection_Lookup;
 use Uncanny_Automator\App\Infrastructure\Connections\Connection_Not_Found_Exception;
 use Uncanny_Automator\App\Infrastructure\Connections\Multiple_Connections_Feature;
+use Uncanny_Automator\App\Infrastructure\License\License_Manager;
 use Uncanny_Automator\App\Infrastructure\License\Payment_Required_Message;
 use Uncanny_Automator\App\Recipe_Runner\Exceptions\Action_Error_Exception;
 use Uncanny_Automator\App\Recipe_Runner\Services\Error_Code;
 
 use function Uncanny_Automator\App\Infrastructure\automator_connection_registry;
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
 
 /**
  * What the customer is told when a step cannot reach its app through the
@@ -816,15 +818,33 @@ final class Platform_Failure_Message {
 	}
 
 	/**
-	 * A registered site whose license is no longer active (deactivated or
-	 * lapsed) asked to connect an app: the platform would only refuse the start
-	 * for the license, so nothing is sent.
+	 * A site with no active license (deactivated, lapsed, or never linked)
+	 * asked the platform for something only a licensed site gets, such as an
+	 * app connection or an app call: the platform would only refuse it for the
+	 * license, so nothing is sent.
+	 *
+	 * A site without Pro active (the License screen's free site) gets its
+	 * license from the free Automator account it links on the Dashboard, so it
+	 * is sent there, by the labels the Dashboard shows: the Connect your AI
+	 * card for an administrator who manages AI, and the account menu (Guest)
+	 * for everyone.
 	 *
 	 * @since 8.0.0
+	 * @since 8.0.1 A site without Pro active is sent to the Dashboard; the caller can say whether Pro is active.
+	 *
+	 * @param bool|null $pro_active Whether Pro is active; the site's answer when null.
 	 *
 	 * @return self
 	 */
-	public static function license_needed_to_connect(): self {
+	public static function license_needed_to_connect( ?bool $pro_active = null ): self {
+
+		if ( ! ( $pro_active ?? ( automator_license_manager() ?? new License_Manager() )->is_pro_active() ) ) {
+			return new self(
+				esc_html_x( 'This site needs your free Automator account linked before it can connect apps. On the Dashboard, click Link account under Connect your AI, or open Guest and choose Link your account.', 'Automator App Platform', 'uncanny-automator' ),
+				Error_Code::AUTH_FAILED
+			);
+		}
+
 		return new self(
 			esc_html_x( 'This site needs an active Automator license before it can connect apps. Activate it on the License screen.', 'Automator App Platform', 'uncanny-automator' ),
 			Error_Code::AUTH_FAILED

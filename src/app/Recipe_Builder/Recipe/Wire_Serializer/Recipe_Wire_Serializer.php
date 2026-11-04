@@ -109,6 +109,16 @@ final class Recipe_Wire_Serializer {
 	private $run_as_availability;
 
 	/**
+	 * Projection-time decorator that stamps `loopable_token_ids` on the
+	 * serialized `flow`'s loop blocks. Reads the decorated tokens and the
+	 * active integrations, so never cached.
+	 *
+	 * @since 8.0.1
+	 * @var Loop_Token_Scope_Decorator
+	 */
+	private $loop_tokens;
+
+	/**
 	 * Lazy-default DI per Rule 9c. The `$settings` param was added in P1 to extract
 	 * the settings projection into its own sub-module; production falls back to a
 	 * default instance, tests may inject a stub.
@@ -121,7 +131,8 @@ final class Recipe_Wire_Serializer {
 		?Recipe_Entity_Availability_Decorator $availability = null,
 		?Recipe_Entity_Token_Decorator $tokens = null,
 		?Deferred_Order_Decorator $deferred = null,
-		?Run_As_Availability_Resolver $run_as_availability = null
+		?Run_As_Availability_Resolver $run_as_availability = null,
+		?Loop_Token_Scope_Decorator $loop_tokens = null
 	) {
 		$this->flow         = $flow ?? new Flow_Wire_Serializer();
 		$this->misc         = $misc ?? Recipe_Misc_Service::instance();
@@ -132,6 +143,7 @@ final class Recipe_Wire_Serializer {
 		$this->deferred     = $deferred ?? new Deferred_Order_Decorator();
 
 		$this->run_as_availability = $run_as_availability ?? new Run_As_Availability_Resolver();
+		$this->loop_tokens         = $loop_tokens ?? new Loop_Token_Scope_Decorator();
 	}
 
 	/**
@@ -182,8 +194,10 @@ final class Recipe_Wire_Serializer {
 				$total_runs
 			),
 			Wire_Key::FLOW          => $this->deferred->decorate(
-				$this->availability->decorate(
-					$this->tokens->decorate( $this->flow->serialize( $tree ), $recipe_id )
+				$this->loop_tokens->decorate(
+					$this->availability->decorate(
+						$this->tokens->decorate( $this->flow->serialize( $tree ), $recipe_id )
+					)
 				),
 				$tree
 			),
