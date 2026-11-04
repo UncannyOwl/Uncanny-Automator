@@ -594,10 +594,15 @@ class Action_Logs_Resources {
 
 		if ( 'custom' === $action_meta['async_mode'] ) {
 
+			// A custom date is read in the site's timezone; strtotime() takes a base timestamp, not a timezone.
+			// No date, as strtotime() answers, when the sentence is empty or is not a date.
+			$sentence    = trim( (string) $action_meta['async_sentence'] );
+			$custom_date = '' === $sentence ? false : date_create( $sentence, wp_timezone() );
+
 			return array(
 				'status_id'  => 'not-completed',
 				'start_date' => $action_meta['async_sentence'],
-				'_timestamp' => strtotime( $action_meta['async_sentence'], wp_timezone() ),
+				'_timestamp' => false === $custom_date ? false : $custom_date->getTimestamp(),
 				'end_date'   => null,
 			);
 
@@ -674,7 +679,7 @@ class Action_Logs_Resources {
 				'start_date'      => $this->utils->date_time_format_relative( $formatted_date ),
 				'start_date_full' => $this->utils->date_time_format( $formatted_date ),
 				'_timestamp'      => $date->getTimestamp(),
-				'end_date'   => null,
+				'end_date'        => null,
 			);
 
 		}
@@ -885,7 +890,7 @@ class Action_Logs_Resources {
 				// Set the hashed conditions.
 				$this->field_conditions_resolver->set_recipe_actions_conditions(
 					array_values(
-						$hashed_conditions[ $action_flow_key ]['hashed_conditions'] // // @phpstan-ignore-line Cannot resolve.
+						$hashed_conditions[ $action_flow_key ]['hashed_conditions'] ?? array() // // @phpstan-ignore-line Cannot resolve.
 					)
 				);
 
@@ -901,8 +906,7 @@ class Action_Logs_Resources {
 				$results_formatted[] = array(
 					'type'                  => 'filter',
 					'id'                    => $action_flow_key,
-					'logic'                 => $hashed_conditions[ $action_flow_key ]['mode'],
-					// @phpstan-ignore-line Any or All.
+					'logic'                 => $this->conditions->get_match_mode( (array) ( $hashed_conditions[ $action_flow_key ] ?? array() ) ),
 					'conditions'            => $conditions,
 					'conditions_fullfilled' => $passed,
 					'items'                 => $action_items,

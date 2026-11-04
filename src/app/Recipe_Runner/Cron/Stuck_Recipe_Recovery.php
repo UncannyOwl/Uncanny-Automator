@@ -24,6 +24,10 @@ use Uncanny_Automator\App\Events\Dispatcher;
  * and the invariant it relies on. Each candidate is finalized through the runner
  * bridge and a RECIPE_STUCK entry is written to uap_error_log.
  *
+ * The same tick fails background dispatches whose worker never finished, which that
+ * query skips because their row is still In progress. They are never run again: a
+ * worker that died partway may already have sent the data.
+ *
  * @package Uncanny_Automator\App\Recipe_Runner\Cron
  * @since   7.3
  */
@@ -48,6 +52,12 @@ class Stuck_Recipe_Recovery {
 	 * Default threshold in seconds (1 hour).
 	 */
 	const DEFAULT_THRESHOLD = 3600;
+
+	/**
+	 * Seconds a background dispatch may stay In progress. A worker starts within 60 seconds or is refused
+	 * (Background_Actions::validate_rest_call()), so the rest is time for a running action to finish.
+	 */
+	const LOST_DISPATCH_THRESHOLD = 900;
 
 	/**
 	 * Default batch size.
@@ -163,13 +173,13 @@ class Stuck_Recipe_Recovery {
 			$threshold  = (int) Dispatcher::filter( 'automator_stuck_recipe_threshold_seconds', self::DEFAULT_THRESHOLD );
 			$batch_size = (int) Dispatcher::filter( 'automator_stuck_recipe_batch_size', self::DEFAULT_BATCH_SIZE );
 
+			$recovered = $this->fail_lost_dispatches( $batch_size );
+
 			$stuck_recipes = $this->log_store->find_stuck_recipe_logs( $threshold, $batch_size );
 
 			if ( empty( $stuck_recipes ) ) {
-				return 0;
+				return $recovered;
 			}
-
-			$recovered = 0;
 
 			foreach ( $stuck_recipes as $row ) {
 
@@ -205,6 +215,61 @@ class Stuck_Recipe_Recovery {
 		} finally {
 			$this->log_store->release_lock( self::LOCK_NAME );
 		}
+	}
+
+	/**
+	 * Fail each background dispatch whose worker never finished, then close its run.
+	 *
+	 * The run closes only when nothing else is waiting: a Queue block's row keeps it open. A worker that finished
+	 * after the query read its row keeps its result. One that finishes after the row failed replaces the row's
+	 * status with its real result, and the run keeps Completed with errors, because finalizing never lowers a run's
+	 * status. A run that fails to finalize here is left to the one-hour pass in recover().
+	 *
+	 * @param int $batch_size Maximum rows.
+	 *
+	 * @return int Number of runs finalized.
+	 */
+	private function fail_lost_dispatches( int $batch_size ): int {
+
+		$finalized = array();
+
+		foreach ( $this->log_store->find_lost_background_dispatches( self::LOST_DISPATCH_THRESHOLD, $batch_size ) as $row ) {
+
+			$action_log_id = (int) $row->ID;
+			$recipe_log_id = (int) $row->automator_recipe_log_id;
+
+			// Per-row try/catch: one poison row must not abandon the rest of the batch.
+			try {
+				if ( ! $this->log_store->mark_action_complete_if_in_progress( $action_log_id, Automator_Status::COMPLETED_WITH_ERRORS ) ) {
+					continue;
+				}
+				$this->error_store->store(
+					$recipe_log_id,
+					$action_log_id,
+					new Action_Error(
+						Error_Code::BACKGROUND_JOB_LOST,
+						'The background request for this action never finished, so the action may not have run.',
+						array(
+							'threshold_seconds' => self::LOST_DISPATCH_THRESHOLD,
+							'dispatched_at'     => (string) $row->date_time,
+						)
+					)
+				);
+				$this->runner->finalize_recipe( (int) $row->automator_recipe_id, (int) $row->user_id, $recipe_log_id, true );
+				$finalized[ $recipe_log_id ] = true;
+			} catch ( \Throwable $e ) {
+				automator_log(
+					sprintf(
+						'Lost dispatch recovery failed for action_log_id=%d: %s',
+						$action_log_id,
+						$e->getMessage()
+					),
+					'Stuck_Recipe_Recovery'
+				);
+			}
+		}
+
+		return count( $finalized );
 	}
 
 	/**

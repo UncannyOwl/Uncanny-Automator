@@ -8,7 +8,6 @@ use Uncanny_Automator\App\Transports\Restful\Recipe\Traits\Recipe_Entity;
 use Uncanny_Automator\App\Transports\Restful\Recipe\Traits\Recipe_Entity_Properties;
 use Uncanny_Automator\App\Transports\Restful\Utilities\Traits\Rest_Responses;
 use Uncanny_Automator\App\Recipe_Builder\Block\Services\Block_Crud_Service;
-use Uncanny_Automator\App\Recipe_Builder\Block\Services\Placement_Rule_Service;
 
 use WP_REST_Response;
 use WP_Error;
@@ -74,35 +73,6 @@ abstract class Recipe_Block_Rest {
 	 * @return int|WP_Error
 	 */
 	abstract protected function do_add_block();
-
-	/**
-	 * The REST failure for a block add the service refused.
-	 *
-	 * A placement refusal keeps its 422, its code and its `violation`, so the
-	 * builder can mark the rule that refused the drop; any other refusal is a
-	 * 400 under the route's own code.
-	 *
-	 * @since 8.0.0
-	 *
-	 * @param WP_Error $error      The service's refusal.
-	 * @param string   $error_code The route's code for any other refusal.
-	 *
-	 * @return WP_Error
-	 */
-	protected function add_block_failure( WP_Error $error, string $error_code ): WP_Error {
-		if ( Placement_Rule_Service::REJECTION_CODE === $error->get_error_code() ) {
-			$data = (array) $error->get_error_data();
-
-			return $this->failure(
-				$error->get_error_message(),
-				422,
-				Placement_Rule_Service::REJECTION_CODE,
-				array( 'violation' => $data['violation'] )
-			);
-		}
-
-		return $this->failure( $error->get_error_message(), 400, $error_code );
-	}
 
 	/**
 	 * Update a block's fields.

@@ -50,7 +50,7 @@ class Filter_Block extends Abstract_Block {
 		$this->set_block_type( Block_Type::FILTER );
 		$this->set_block_name( esc_html_x( 'Filter', 'Recipe Block name', 'uncanny-automator' ) );
 		$this->set_icon( 'code-merge' );
-		$this->set_primary_color( 'pink' );
+		$this->set_primary_color( 'indigo' );
 		$this->set_required_tier( Plan_Levels::PRO_BASIC );
 		$this->set_external_url( 'https://automatorplugin.com/knowledge-base/action-filters-conditions/' );
 

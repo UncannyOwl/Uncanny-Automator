@@ -17,7 +17,6 @@ class Formatters_Utils {
 	public static function handle_var( $mixed = null, $fallback = '' ) {
 
 		return empty( $mixed ) ? $fallback : $mixed;
-
 	}
 
 	/**
@@ -29,7 +28,7 @@ class Formatters_Utils {
 	 */
 	public static function flatten_post_meta( $meta = array() ) {
 		return array_map(
-			function( $item ) {
+			function ( $item ) {
 				if ( is_array( $item ) && isset( $item[0] ) ) {
 					return (string) $item[0];
 				}
@@ -93,6 +92,10 @@ class Formatters_Utils {
 	 */
 	public static function date_time_format( $date_string = '', $format = 'Y-m-d @ H:i:s' ) {
 
+		if ( null === $date_string ) {
+			return false;
+		}
+
 		// Handle default mysql date.
 		if ( strtotime( '0000-00-00 00:00:00' ) === strtotime( $date_string ) ) {
 			return null;
@@ -107,7 +110,6 @@ class Formatters_Utils {
 		}
 
 		return $dt->format( $wp_format );
-
 	}
 
 	/**
@@ -142,7 +144,7 @@ class Formatters_Utils {
 
 			if ( $diff_seconds < DAY_IN_SECONDS ) {
 				/* translators: %s is a human-readable time difference, e.g. "17 minutes" */
-				$relative = sprintf( __( '%s ago', 'uncanny-automator' ), human_time_diff( $dt->getTimestamp(), $now->getTimestamp() ) );
+				$relative = sprintf( esc_html__( '%s ago', 'uncanny-automator' ), human_time_diff( $dt->getTimestamp(), $now->getTimestamp() ) );
 
 				return sprintf( '%s (%s)', $formatted, $relative );
 			}
@@ -166,7 +168,6 @@ class Formatters_Utils {
 		}
 
 		return human_time_diff( strtotime( $start ), strtotime( $to ) );
-
 	}
 
 	/**
@@ -186,7 +187,6 @@ class Formatters_Utils {
 		$ds = $date->format( $datetime_format );
 
 		return $ds;
-
 	}
 
 	/**
@@ -207,7 +207,6 @@ class Formatters_Utils {
 		}
 
 		return (string) $class_name;
-
 	}
 
 	/**
@@ -251,7 +250,6 @@ class Formatters_Utils {
 		};
 
 		return false;
-
 	}
 
 	/**
@@ -271,7 +269,6 @@ class Formatters_Utils {
 			'elapsed_in_seconds' => $end_date_ts - $start_date_ts,
 			'human_time_diff'    => self::human_time_diff( $start_date, $end_date ),
 		);
-
 	}
 
 	/**
@@ -319,8 +316,5 @@ class Formatters_Utils {
 
 		// Wrap the entire sentence in a div container.
 		return sprintf( '<div>%s</div>', $formatted );
-
 	}
-
-
 }

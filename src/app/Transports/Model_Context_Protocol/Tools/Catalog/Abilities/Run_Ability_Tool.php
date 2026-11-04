@@ -14,6 +14,7 @@ use Uncanny_Automator\App\Transports\Model_Context_Protocol\Json_Rpc_Response;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abilities\Ability_Catalog;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abilities\Ability_Input;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abstract_MCP_Tool;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Rest\Rest_Request_Scope;
 use WP_Ability;
 
 /**
@@ -145,7 +146,15 @@ final class Run_Ability_Tool extends Abstract_MCP_Tool {
 		};
 		add_action( 'wp_before_execute_ability', $watch, PHP_INT_MAX, 1 );
 		try {
-			$result = $ability->execute( $input );
+			// Keep this scope: without it, every ability that makes internal
+			// REST requests (all of LifterLMS's) is refused for this MCP token.
+			// Why it adds no authority: Rest_Request_Scope::run_plugin_ability().
+			$result = Rest_Request_Scope::run_plugin_ability(
+				$user_context,
+				static function () use ( $ability, $input ) {
+					return $ability->execute( $input );
+				}
+			);
 		} finally {
 			remove_action( 'wp_before_execute_ability', $watch, PHP_INT_MAX );
 		}

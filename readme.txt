@@ -1,14 +1,14 @@
-=== Uncanny Automator – Connect Claude, ChatGPT or any AI to your site: MCP Server + Automation Engine ===
+=== Uncanny Automator – Claude & ChatGPT MCP Server with MCP for AI Automation ===
 Contributors: uncannyautomator, uncannyowl, smub
-Tags: mcp, mcp server, automation, claude, chatgpt
+Tags: ai, mcp server, automation, claude, chatgpt
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 8.0.0
+Stable tag: 8.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Connect Claude, ChatGPT, Gemini or any AI to manage your site. The only WordPress MCP server with a built-in automation engine.
+Claude, ChatGPT, Gemini or any AI agent runs your site through MCP and automates any task as a workflow. Automation engine built in.
 
 == Description ==
 
@@ -28,7 +28,7 @@ Install the plugin, create your free account, and sign in. One connection manage
 
 Create your free Uncanny Automator Lite account, connect your site and choose your AI app. From then on, your AI can read your site, analyze your data, publish drafts, update orders and automate your workflows through ordinary conversation.
 
-Any AI app that supports remote MCP servers connects the same way. Once connected, ask your AI how to get started.
+Any AI app that supports remote MCP servers connects the same way, including OpenAI's ChatGPT, Claude and Gemini. Once connected, ask your AI how to get started.
 
 = What your AI can do on your site =
 
@@ -458,6 +458,37 @@ Unlimited tool usage for a connected AI, the complete library of Pro triggers, a
 6. The recipe log: every run, every step, whether an AI or a schedule started it.
 
 == Changelog ==
+
+= 8.0.1 [2026-11-04] =
+
+**Fixes and improvements:**
+
+* Recipe Builder - The Filter block is now indigo instead of pink, so it is no longer mistaken for a failed block. #9371
+* Connect your AI - Loops accept every valid loopable token, and the user selector and trigger schema guidance no longer mislead AI. #9347
+* Connect your AI - Error responses are now accurate, and run logs show the full actions flow. #9346 #9348
+* Connect your AI - Abilities from LifterLMS, WooCommerce and other plugins now run through run_ability instead of failing with an MCP OAuth token error. #9377
+* Connect Apps - Sites without an active license or connected account now go to the Dashboard instead of the License screen. #9351
+* Database - Sites whose options tables use different collations no longer get a database error on every page load. #9343
+* Licensing - Pro triggers and actions no longer show as Locked when the license check fails after the cache expires. #9332
+* Migrations - Actions that shared a position now keep their original run order when a condition group migrates to a filter. #9342
+* Recipe Builder - A Loop's token list is no longer saved to the trigger log multiple times when a recipe is loaded and run in the same request. #9356
+* Recipe Builder - Actions placed where they are not allowed now return a clear rule error. #9349
+* Recipe Builder - One invalid email "To" address no longer blocks later emails. #9349
+* Recipe Builder - The token button is back on "Use a token/custom value" fields for dropdowns such as MailPoet's Subscriber Status. #9352
+* Recipe Logs - Failed actions now show their error under Notes in Logs > Action again. #9359
+* Recipe Logs - A Loop block shows its configuration, and a Queue block after a background action shows Delayed. #9350 #9354
+* Recipe Logs - Reading the next run ID no longer changes database settings for the rest of the request. #9348
+* Recipe Logs - Searching the run log now finds failed actions' errors and token loop iterations. #9359 #9339
+* Recipe Logs - The run log screen no longer crashes when a Filter block has no conditions. #9331
+* Recipe Runs - Recipes set to run on all triggers no longer wait forever for a Pro trigger while Pro is inactive. #9344
+* Uncanny Agent - A valid token without the required capability now gets a permission error instead of an invalid credentials error. #9284
+* Uncanny Page Builder - Published full pages now load other plugins' scripts and styles, so forms such as WP Simple Pay work again. #9379
+* Webhooks - Send data to a webhook - A new Authorization header is no longer left in clear text when saving the action fails. #9353
+* Webhooks - Send data to a webhook - Failed responses no longer offer response tokens, and webhooks saved by Pro 1.x to 2.1 no longer write PHP warnings. #9357
+* Webhooks - Send data to a webhook - Form-data, GET, GraphQL and Raw webhooks now send correct requests. #9355
+* Webhooks - Send data to a webhook - The Send webhook test now passes any successful response, fails error responses and keeps the saved tokens. #9358
+* Webhooks - Send data to a webhook - XML webhooks now send application/xml, and a broken XML wrapper fails the action. #9357 #9358
+* WordPress - Post triggers no longer list the "Post categories (loop)" and "Post tags (loop)" tokens that returned empty values. #9345
 
 = 8.0.0 [2026-11-02] =
 

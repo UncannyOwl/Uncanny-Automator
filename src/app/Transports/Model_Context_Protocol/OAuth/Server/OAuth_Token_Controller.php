@@ -543,6 +543,8 @@ final class OAuth_Token_Controller {
 	/**
 	 * Resolve and authenticate the exact client bound to an artifact.
 	 *
+	 * @since 8.0.1 A known client using the wrong method gets UA-MCP-521 or UA-MCP-522, not UA-MCP-520.
+	 *
 	 * @return array|WP_REST_Response
 	 */
 	private function authenticate_client( WP_REST_Request $request, string $bound_client_id ) {
@@ -568,20 +570,28 @@ final class OAuth_Token_Controller {
 		}
 
 		$client = $this->clients->resolve( $provided_id );
-		if ( ! is_array( $client ) || ! $this->clients->authenticate( $client, $provided_id, $secret ) ) {
-			$failure = is_array( $client ) ? 'authentication' : $this->clients->get_last_resolution_failure();
-			return $this->error( 'invalid_client', 'Client authentication failed.', 401, true, 'UA-MCP-520', 'Client authentication failed: ' . $failure . '.' );
+		if ( ! is_array( $client ) ) {
+			return $this->error( 'invalid_client', 'Client authentication failed.', 401, true, 'UA-MCP-520', 'Client authentication failed: ' . $this->clients->get_last_resolution_failure() . '.' );
 		}
 
+		// The method checks run before the secret check so their own codes reach
+		// the client. OAuth_Client_Registry::authenticate() refuses both cases as
+		// well, and checked first it answered both as UA-MCP-520. A revoked or
+		// unknown client was refused above, so these name only a known client's
+		// method; nothing passes here without the secret check below.
 		if ( 'confidential' === ( $client['type'] ?? '' ) && ! is_array( $basic ) ) {
 			return $this->error( 'invalid_client', 'Confidential clients must use HTTP Basic authentication.', 401, true, 'UA-MCP-521' );
 		}
 		if ( 'confidential' !== ( $client['type'] ?? '' ) && is_array( $basic ) ) {
-			// This also catches Basic with an EMPTY secret (base64 of
-			// "client_id:"), which some PKCE libraries send; only the empty
-			// FORM client_secret is tolerated. If support sees UA-MCP-522
-			// from a stock client, this is the line to revisit.
+			// Basic with an EMPTY secret (base64 of "client_id:"), which some
+			// PKCE libraries send, is refused here too; only the empty FORM
+			// client_secret is tolerated. If support sees UA-MCP-522 from a
+			// stock client, this is the line to revisit.
 			return $this->error( 'invalid_client', 'Public clients must not send a client secret.', 401, true, 'UA-MCP-522' );
+		}
+
+		if ( ! $this->clients->authenticate( $client, $provided_id, $secret ) ) {
+			return $this->error( 'invalid_client', 'Client authentication failed.', 401, true, 'UA-MCP-520', 'Client authentication failed: authentication.' );
 		}
 
 		return $client;

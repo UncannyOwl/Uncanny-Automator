@@ -16,6 +16,7 @@ use Uncanny_Automator\App\Recipe_Runner\Services\Recipe_Log_Manager;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Run_Snapshot_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Trigger_Store;
 use Uncanny_Automator\App\Recipe_Runner\Background\Background_Actions_Setting;
+use Uncanny_Automator\App\Recipe_Runner\Services\Trigger_Availability;
 use Uncanny_Automator\App\Recipe_Runner\Services\Trigger_Diagnostics;
 use Uncanny_Automator\App\Events\Dispatcher;
 use Uncanny_Automator\App\Infrastructure\Database\Database;
@@ -82,6 +83,13 @@ class Trigger_Complete_Stage implements Stage {
 	private $trigger_store;
 
 	/**
+	 * Says whether a trigger needs Pro while Pro is not active.
+	 *
+	 * @var Trigger_Availability
+	 */
+	private $trigger_availability;
+
+	/**
 	 * Build the stage with optional dependencies.
 	 *
 	 * @param Action_Run_Stage|null      $action_run      Optional custom action run stage.
@@ -93,8 +101,9 @@ class Trigger_Complete_Stage implements Stage {
 	 * @param Error_Handler|null         $error_handler   Optional error handler instance.
 	 * @param Run_Snapshot_Store|null    $snapshot_store  Optional snapshot store instance.
 	 * @param Recipe_Trigger_Store|null  $trigger_store   Optional trigger store instance.
+	 * @param Trigger_Availability|null  $trigger_availability Optional trigger availability check.
 	 */
-	public function __construct( ?Action_Run_Stage $action_run = null, ?Recipe_Log_Manager $log_manager = null, ?User_Resolver $user_resolver = null, ?Execution_Log_Store $log_store = null, ?Integration_Registry $integrations = null, ?Recipe_Data_Provider $data_provider = null, ?Error_Handler $error_handler = null, ?Run_Snapshot_Store $snapshot_store = null, ?Recipe_Trigger_Store $trigger_store = null ) {
+	public function __construct( ?Action_Run_Stage $action_run = null, ?Recipe_Log_Manager $log_manager = null, ?User_Resolver $user_resolver = null, ?Execution_Log_Store $log_store = null, ?Integration_Registry $integrations = null, ?Recipe_Data_Provider $data_provider = null, ?Error_Handler $error_handler = null, ?Run_Snapshot_Store $snapshot_store = null, ?Recipe_Trigger_Store $trigger_store = null, ?Trigger_Availability $trigger_availability = null ) {
 		$this->action_run     = $action_run ?? new Action_Run_Stage();
 		$this->log_manager    = $log_manager ?? new Recipe_Log_Manager();
 		$this->user_resolver  = $user_resolver;
@@ -105,6 +114,8 @@ class Trigger_Complete_Stage implements Stage {
 		$this->snapshot_store = $snapshot_store ?? Database::get_run_snapshot_store();
 		$this->diagnostics    = new Trigger_Diagnostics();
 		$this->trigger_store  = $trigger_store ?? Database::get_recipe_trigger_store();
+
+		$this->trigger_availability = $trigger_availability ?? new Trigger_Availability();
 	}
 
 	/**
@@ -859,6 +870,10 @@ class Trigger_Complete_Stage implements Stage {
 	/**
 	 * Collect completion statuses for all published triggers in a recipe.
 	 *
+	 * A trigger that cannot fire on this site is left out, so an "All" recipe completes on its other
+	 * triggers: one whose integration's plugin is inactive, and one not completed yet that needs Pro
+	 * while Pro is not active (Trigger_Availability::needs_inactive_pro()).
+	 *
 	 * @param int   $recipe_id     The recipe ID.
 	 * @param int   $user_id       The user ID.
 	 * @param int   $recipe_log_id The recipe log ID.
@@ -888,7 +903,7 @@ class Trigger_Complete_Stage implements Stage {
 				continue;
 			}
 
-			$trigger_statuses[ $trigger_post->ID ] = $this->log_store->is_trigger_completed(
+			$completed = $this->log_store->is_trigger_completed(
 				(int) $user_id,
 				(int) $trigger_post->ID,
 				(int) $recipe_id,
@@ -896,6 +911,19 @@ class Trigger_Complete_Stage implements Stage {
 				true,
 				(array) $args
 			);
+
+			// A trigger still to come that needs Pro, with Pro inactive, never comes: leave it out.
+			$trigger_code = (string) $this->trigger_store->get_meta( $trigger_post->ID, 'code' );
+			if ( ! $completed && $this->trigger_availability->needs_inactive_pro( (string) $trigger_integration, $trigger_code ) ) {
+				$this->error_handler->add_error(
+					'complete_trigger',
+					'ERROR: You are trying to complete ' . $trigger_code . ', which needs Uncanny Automator Pro, and Pro is not active. @recipe_id ' . $recipe_id,
+					$this
+				);
+				continue;
+			}
+
+			$trigger_statuses[ $trigger_post->ID ] = $completed;
 		}
 
 		return $trigger_statuses;

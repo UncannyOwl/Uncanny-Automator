@@ -4,6 +4,9 @@ declare( strict_types=1 );
 namespace Uncanny_Automator\App\Infrastructure\Automator_Platform;
 
 use Exception;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Dispatch\License_Key_Requirement;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Dispatch\Platform_Dispatch_Guard;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Dispatch\Refused_Before_Sending_Exception;
 use Uncanny_Automator\App\Recipe_Runner\Exceptions\Action_Error_Exception;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Api_Log_Store;
 use Uncanny_Automator\App\Infrastructure\Http\Transient_Retry;
@@ -56,20 +59,31 @@ class Client implements Client_Interface {
 	private $base_url;
 
 	/**
+	 * Refuses a request with no license key to send, judged by the license the
+	 * signer sends, and logs an action's.
+	 *
+	 * @var License_Key_Requirement
+	 */
+	private $license_key;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param License_Header_Injector      $signer            The request signer.
-	 * @param Api_Log_Store                $logger            Logger for recording API calls.
-	 * @param string                  $base_url The API base URL. Falls back to AUTOMATOR_API_URL.
+	 * @param License_Header_Injector      $signer   The request signer.
+	 * @param Api_Log_Store                $logger   Logger for recording API calls.
+	 * @param string                       $base_url The API base URL. Falls back to AUTOMATOR_API_URL.
+	 * @param License_Key_Requirement|null $license_key Refuses a request with no license key; by default, judged by the signer's license and logged to this client's log.
 	 */
 	public function __construct(
 		License_Header_Injector $signer,
 		Api_Log_Store $logger,
-		string $base_url = ''
+		string $base_url = '',
+		?License_Key_Requirement $license_key = null
 	) {
-		$this->signer   = $signer;
-		$this->logger   = $logger;
-		$this->base_url = '' !== $base_url ? $base_url : $this->resolve_base_url();
+		$this->signer      = $signer;
+		$this->logger      = $logger;
+		$this->base_url    = '' !== $base_url ? $base_url : $this->resolve_base_url();
+		$this->license_key = $license_key ?? new License_Key_Requirement( new Platform_Dispatch_Guard( null, null, $signer->license() ), $logger );
 	}
 
 	/**
@@ -81,6 +95,7 @@ class Client implements Client_Interface {
 	 *
 	 * @throws Platform_Error_Exception On an API error response: the answer, with the error code its status gives.
 	 * @throws Action_Error_Exception On a transport error, with the error code its message gives.
+	 * @throws Refused_Before_Sending_Exception When the site has no license key to send: nothing is sent, and an action's request is logged.
 	 * @throws Exception When app integration requests are disabled.
 	 */
 	public function send( Request $request ): Response {
@@ -93,6 +108,8 @@ class Client implements Client_Interface {
 		}
 
 		$url = $request->url( $this->base_url );
+
+		$this->license_key->enforce( $request, $url );
 
 		/**
 		 * Filter the API timeout in seconds.

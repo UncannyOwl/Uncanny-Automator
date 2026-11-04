@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Transports\Restful\Recipe\Traits;
 
+use Uncanny_Automator\App\Recipe_Builder\Block\Services\Placement_Rule_Service;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Recipe_Violation_Annotator;
 use Uncanny_Automator\App\Transports\Restful\Recipe\Recipe_Response;
+use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -196,6 +198,19 @@ trait Recipe_Entity {
 	abstract protected static function rejection( array $violations, array $recipe, string $message ): WP_REST_Response;
 
 	/**
+	 * The failure builder, provided by `Rest_Responses`. Declared here for the
+	 * same reason as `rejection()`.
+	 *
+	 * @param string $message     Error message.
+	 * @param int    $status_code HTTP status code.
+	 * @param string $error_code  Error code identifier.
+	 * @param array  $data        Additional error data.
+	 *
+	 * @return WP_Error
+	 */
+	abstract protected static function failure( string $message, int $status_code = 400, string $error_code = '', array $data = array() ): WP_Error;
+
+	/**
 	 * Map a `Recipe_Violation_Service::REJECTION_CODE` WP_Error to the 422
 	 * rejection envelope, with the violations stamped onto the current wire
 	 * recipe. The envelope itself comes from `Rest_Responses::rejection()`.
@@ -213,5 +228,35 @@ trait Recipe_Entity {
 			( new Recipe_Violation_Annotator() )->annotate( $this->get_recipe_wire() ?? array(), $violations ),
 			$error->get_error_message()
 		);
+	}
+
+	/**
+	 * The failure an add route, or the action update route that moves an
+	 * action, answers when the service refused the change.
+	 *
+	 * A placement refusal keeps its 422, its code and its `violation`, so the
+	 * builder can mark the rule that refused the drop; any other refusal is a
+	 * 400 under the code the route passes.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param WP_Error $error      The service's refusal.
+	 * @param string   $error_code The code for any other refusal.
+	 *
+	 * @return WP_Error
+	 */
+	protected function add_failure( WP_Error $error, string $error_code ): WP_Error {
+		if ( Placement_Rule_Service::REJECTION_CODE === $error->get_error_code() ) {
+			$data = (array) $error->get_error_data();
+
+			return static::failure(
+				$error->get_error_message(),
+				422,
+				Placement_Rule_Service::REJECTION_CODE,
+				array( 'violation' => $data['violation'] )
+			);
+		}
+
+		return static::failure( $error->get_error_message(), 400, $error_code );
 	}
 }

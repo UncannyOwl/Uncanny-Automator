@@ -381,6 +381,8 @@ class Trigger_Registry_Service {
 	/**
 	 * Get specific trigger definition.
 	 *
+	 * @since 8.0.1 The schema shape names the trigger's integration.
+	 *
 	 * @param string $trigger_code Trigger code.
 	 * @param bool   $include_schema Whether to include MCP schema.
 	 * @return array|\WP_Error Trigger definition or error.
@@ -425,9 +427,11 @@ class Trigger_Registry_Service {
 			// Convert to JSON Schema format using the existing converter.
 			$input_schema = $this->schema_converter->convert_fields_to_schema( $configuration_fields );
 
+			// The integration lets callers report whether the trigger can be used on this site.
 			$trigger_definition = array(
 				'name'        => $trigger_code,
 				'description' => $definition['sentence_human_readable'] ?? $definition['sentence'] ?? '',
+				'integration' => (string) ( $definition['integration'] ?? '' ),
 				'inputSchema' => $input_schema,
 			);
 

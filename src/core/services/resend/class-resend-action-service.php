@@ -2,6 +2,8 @@
 namespace Uncanny_Automator;
 
 use Uncanny_Automator\App\Infrastructure\Api_Log\Api_Log_Compressor;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Dispatch\Platform_Dispatch_Guard;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Dispatch\Refused_Before_Sending_Exception;
 use Uncanny_Automator\Webhooks\Response_Validator;
 
 /**
@@ -53,7 +55,9 @@ class Resend_Action_Service {
 	/**
 	 * Replay the stored API request for one action_log id. Mirrors the
 	 * per-action Resend button: re-fires the stored payload, records ONE
-	 * uap_api_log_response row, does NOT mutate the action_log row.
+	 * uap_api_log_response row, does NOT mutate the action_log row. A site
+	 * with no license key resends no platform request and records nothing: the
+	 * outcome is skipped, with the sentence that says which account to link.
 	 *
 	 * @param int $action_log_id
 	 * @return array{ ok: bool, outcome: string, message: string, api_log_id: int }
@@ -61,7 +65,8 @@ class Resend_Action_Service {
 	public function resend_action( $action_log_id ) {
 
 		$action_log_id = absint( $action_log_id );
-		$api_request   = Automator()->db->api->get_by_log_id( 'action', $action_log_id );
+
+		$api_request = Automator()->db->api->get_by_log_id( 'action', $action_log_id );
 
 		if ( empty( $api_request ) || empty( $api_request->params ) ) {
 			return array(
@@ -82,6 +87,20 @@ class Resend_Action_Service {
 		// Webhook branch.
 		if ( 'internal:webhook' === $api_request->endpoint ) {
 			return $this->resend_webhook( $api_request, $api_log_id );
+		}
+
+		// A platform request from a site with no license key can only be
+		// refused: nothing is rebuilt or sent, and no retry is recorded, so the
+		// action stays failed and resendable once the site has a license.
+		try {
+			( new Platform_Dispatch_Guard() )->refuse_without_a_license_key();
+		} catch ( Refused_Before_Sending_Exception $refused ) {
+			return array(
+				'ok'         => false,
+				'outcome'    => 'skipped',
+				'message'    => $refused->getMessage(),
+				'api_log_id' => $api_log_id,
+			);
 		}
 
 		$params = self::decode_api_log_value( $api_request->params );

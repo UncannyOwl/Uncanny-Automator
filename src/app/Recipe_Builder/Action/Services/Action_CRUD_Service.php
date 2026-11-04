@@ -804,7 +804,7 @@ class Action_CRUD_Service {
 					}
 				}
 
-				$landed = false;
+				$stored_before = null;
 				try {
 					// Update action with new configuration. The on / off switch is
 					// set_status()'s, so the save keeps the current status.
@@ -838,9 +838,11 @@ class Action_CRUD_Service {
 						}
 					}
 
+					// Nothing is written above this line. The action as stored now tells a failed save that wrote from one that did not.
+					$stored_before = $this->stored_action( $this->coerce_action_id( $action_id ) );
+
 					// Save updated action and get the persisted version
 					$saved_action = $this->action_store->save( $updated_action );
-					$landed       = true;
 
 					// Track action token dependencies for background processing.
 					$this->dependency_tracker->track_dependencies(
@@ -889,9 +891,10 @@ class Action_CRUD_Service {
 					);
 
 				} catch ( \Throwable $e ) {
-					// The fields landed before the failure: an event means a write landed.
-					if ( $landed && 0 < $saved_action->get_action_recipe_id()->get_value() ) {
-						Recipe_Change_Events::changed( new Recipe_Changed( Recipe_Change_Operation::UPDATED, Integration_Item_Types::ACTION, (int) $saved_action->get_action_id()->get_value(), (int) $saved_action->get_action_recipe_id()->get_value() ) );
+					// An event means a write landed: the post fields or the meta changed before the failure, in the store's save or after it.
+					$stored_id = $this->coerce_action_id( $action_id );
+					if ( null !== $stored_before && 0 < (int) $recipe_id && $stored_before !== $this->stored_action( $stored_id ) ) {
+						Recipe_Change_Events::changed( new Recipe_Changed( Recipe_Change_Operation::UPDATED, Integration_Item_Types::ACTION, $stored_id, (int) $recipe_id ) );
 					}
 					return new WP_Error(
 						'action_update_failed',
@@ -906,6 +909,30 @@ class Action_CRUD_Service {
 		);
 
 		return $this->with_stored_action( $result );
+	}
+
+	/**
+	 * The action as stored: its post's fields and its meta.
+	 *
+	 * Read before an update writes and again when the update fails, it tells a
+	 * save that wrote something from one that wrote nothing.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param int $action_id Action post ID.
+	 * @return array
+	 */
+	private function stored_action( int $action_id ): array {
+		$post   = get_post( $action_id );
+		$fields = $post instanceof \WP_Post ? get_object_vars( $post ) : array();
+
+		// WordPress stamps the modified time on every update, one that changes nothing included.
+		unset( $fields['post_modified'], $fields['post_modified_gmt'] );
+
+		return array(
+			'post' => $fields,
+			'meta' => get_post_meta( $action_id ),
+		);
 	}
 
 	/**

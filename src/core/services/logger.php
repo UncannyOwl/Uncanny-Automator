@@ -1,6 +1,8 @@
 <?php
 namespace Uncanny_Automator\Logger;
 
+use Uncanny_Automator\App\Infrastructure\Database\Database;
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Execution_Log_Store;
 use Uncanny_Automator\Services\Resolver\Recipe_Actions_Resolver;
 use Uncanny_Automator\Automator_Functions;
 use Uncanny_Automator\Resolver\Conditions\Errors_Mapping;
@@ -372,7 +374,12 @@ function tokens_logger( $hook_args = array() ) {
 }
 
 /**
- * Logs gathered async entries.
+ * Logs gathered async entries, unless the run already has its delay record.
+ *
+ * The record belongs to the run: the log reads it by run, whoever ran it. Pro's
+ * delay block writes it during the walk, for user 0, and this logger runs once
+ * the walk is over. So any `action_delays` row the run has, for any user, is the
+ * record, and this logger neither adds a second row nor overwrites it.
  *
  * @param int $recipe_id
  * @param int $user_id
@@ -386,6 +393,10 @@ function log_async_actions( $recipe_id = 0, $user_id = 0, $recipe_log_id = 0, $a
 	$entries = Automator()->async_action_logger()->get_entries();
 
 	if ( empty( $entries ) ) {
+		return;
+	}
+
+	if ( Database::get_execution_log_store()->has_recipe_log_meta( absint( $recipe_id ), absint( $recipe_log_id ), Execution_Log_Store::META_ACTION_DELAYS ) ) {
 		return;
 	}
 

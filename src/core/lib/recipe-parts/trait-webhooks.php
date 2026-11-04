@@ -105,9 +105,18 @@ trait Webhooks {
 		$data         = $action_data['meta'];
 		$data_type    = Automator()->send_webhook->get_data_type( $data );
 		$webhook_url  = Automator()->send_webhook->get_url( $data, $legacy, $parsing_args );
-		$fields       = Automator()->send_webhook->get_fields( $data, $legacy, $data_type, $parsing_args );
 		$request_type = Automator()->send_webhook->request_type( $data );
-		$headers      = Automator()->send_webhook->get_headers( $data, $data_type, $action_data['ID'], $parsing_args );
+		// Headers before the body: a form-data body is delimited by the boundary its Content-Type header names.
+		$headers = Automator()->send_webhook->get_headers( $data, $data_type, $action_data['ID'], $parsing_args );
+
+		try {
+			$fields = Automator()->send_webhook->get_fields( $data, $legacy, $data_type, $parsing_args );
+		} catch ( \Exception $e ) {
+			// A body that cannot be built (a bad XML wrapper) fails the action with the reason; nothing is sent.
+			$action_data['complete_with_errors'] = true;
+
+			return Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
+		}
 
 		if ( empty( $webhook_url ) ) {
 
@@ -175,16 +184,6 @@ trait Webhooks {
 			// Combine header and body tokens.
 			$all_tokens = array_merge( $header_leafs, $response_body );
 
-			// If tokens are not previously saved OR set to true, override previously saved tokens.
-			if (
-				empty( get_post_meta( $action_data['ID'], 'webhook_response_tokens', true ) ) ||
-				true === apply_filters( 'automator_outgoing_webhook_live_response_tokens', false, $response )
-			) {
-				$save_tokens = Automator_Send_Webhook::clean_tokens_before_save( $all_tokens );
-				update_post_meta( $action_data['ID'], 'webhook_response_tokens', wp_json_encode( $save_tokens ) );
-				unset( $save_tokens );
-			}
-
 			// Parse response into leafs.
 			$hydration_data = Automator_Send_Webhook::before_hydrate_tokens( $all_tokens, $response );
 
@@ -226,6 +225,9 @@ trait Webhooks {
 
 				}
 
+				// Only a successful answer offers its response tokens to later actions.
+				$this->save_response_tokens( $action_data['ID'], $all_tokens, $response );
+
 				Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
 				do_action( 'automator_webhook_action_completed', $body, $response, $user_id, $do_action_args, $this );
@@ -245,6 +247,33 @@ trait Webhooks {
 		$this->elapsed_time_ms = ( $end_time - $start_time ) * 1000;
 
 		$this->log_webhook_request( $args, $webhook_url, $response, $action_data );
+	}
+
+	/**
+	 * Save a successful answer's response tokens, without their values, as the action's tokens.
+	 *
+	 * Tokens are saved once, unless `automator_outgoing_webhook_live_response_tokens` asks for every
+	 * answer's. A saved list that is empty (an answer with no headers or JSON body, or a failed
+	 * answer an earlier version saved) counts as unsaved, so the next answer fills it.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param int     $action_id Action ID.
+	 * @param mixed[] $tokens    The answer's header and body tokens.
+	 * @param array   $response  The answer.
+	 *
+	 * @return void
+	 */
+	private function save_response_tokens( $action_id, $tokens, $response ) {
+
+		$saved = get_post_meta( $action_id, 'webhook_response_tokens', true );
+		$saved = is_string( $saved ) ? json_decode( $saved, true ) : $saved;
+
+		if ( ! empty( $saved ) && true !== apply_filters( 'automator_outgoing_webhook_live_response_tokens', false, $response ) ) {
+			return;
+		}
+
+		update_post_meta( $action_id, 'webhook_response_tokens', wp_json_encode( Automator_Send_Webhook::clean_tokens_before_save( $tokens ) ) );
 	}
 
 	/**

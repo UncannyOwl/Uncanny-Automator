@@ -302,6 +302,11 @@ class Recipe_Log_Service {
 	/**
 	 * Get metadata for a specific log entry.
 	 *
+	 * One value per key, read in the order the rows were written. A key stored more than once reads as its last row,
+	 * except `actions_flow`: an older run can hold two flow rows. The first is Run_Log_Flow_Translator's, with the
+	 * actions inside blocks (it writes before the legacy logger, and never once a row exists); the second is the legacy
+	 * logger's, with only the top-level actions. The translator's row is kept, the row the run log screen reads.
+	 *
 	 * @param int $log_id Log ID to get metadata for.
 	 * @return array Array of metadata key-value pairs.
 	 */
@@ -310,7 +315,7 @@ class Recipe_Log_Service {
 		global $wpdb;
 
 		$meta_query = $wpdb->prepare(
-			"SELECT meta_key, meta_value FROM {$wpdb->prefix}uap_recipe_log_meta WHERE recipe_log_id = %d",
+			"SELECT meta_key, meta_value FROM {$wpdb->prefix}uap_recipe_log_meta WHERE recipe_log_id = %d ORDER BY ID ASC",
 			$log_id
 		);
 
@@ -319,6 +324,11 @@ class Recipe_Log_Service {
 		$metadata     = array();
 
 		foreach ( $meta_results as $meta ) {
+			// The translator's flow row came first; the legacy logger's partial copy after it is left out.
+			if ( 'actions_flow' === $meta['meta_key'] && array_key_exists( 'actions_flow', $metadata ) ) {
+				continue;
+			}
+
 			$value = $meta['meta_value'];
 
 			// Try to decode JSON values

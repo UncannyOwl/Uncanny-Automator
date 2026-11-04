@@ -1311,6 +1311,9 @@ class Action_Run_Stage implements Stage {
 					// completes the action before this finalize runs — never
 					// downgrade a finished row back to IN_PROGRESS.
 					$this->log_store->mark_action_scheduled( (int) $action_data['ID'], $recipe_log_id, Dispatcher::filter( 'automator_action_log_date_time', null, $action['action_data'] ) );
+					if ( 'background_dispatch' === $process_reason ) {
+						$this->log_store->add_action_meta( $user_id, (int) $action_data['action_log_id'], (int) $action_data['ID'], Execution_Log_Store::ACTION_META_BACKGROUND_DISPATCH, '1' );
+					}
 				} else {
 					$this->log_store->mark_action_complete( (int) $action_data['ID'], $recipe_log_id, Automator_Status::SKIPPED );
 				}

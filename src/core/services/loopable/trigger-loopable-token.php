@@ -41,7 +41,8 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 	}
 
 	/**
-	 * Registers hooks for the loopable token.
+	 * Registers hooks for the loopable token: the listing hook, and the run-time hooks that parse the token
+	 * and save its list to the trigger log when the trigger completes.
 	 *
 	 * @param mixed[] $trigger
 	 *
@@ -49,11 +50,7 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 	 */
 	public function register_hooks( $trigger ) {
 
-		$this->trigger = $trigger;
-
-		$closure = function ( $tokens, $loop ) use ( $trigger ) {
-			return $this->loop_list( $tokens, $loop, $trigger );
-		};
+		$this->register_listing_hooks( $trigger );
 
 		$tokens_parser_hook       = strtolower( 'automator_token_parser_extended_data_token_' . $this->get_id() );
 		$child_tokens_parser_hook = strtolower( 'automator_token_parser_extended_data_token_children_' . $this->get_id() );
@@ -61,8 +58,30 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 		add_filter( $tokens_parser_hook, array( $this, 'hydrate_tokens' ), 10, 4 );
 		add_filter( $child_tokens_parser_hook, array( $this, 'hydrate_tokens_children' ), 10, 4 );
 
-		add_filter( 'automator_recipe_main_object_loop_tokens_items', $closure, 10, 2 );
 		add_action( 'automator_loopable_token_hydrate', array( $this, 'on_before_trigger_complete' ), 10, 2 );
+	}
+
+	/**
+	 * Registers only the hook that lists a loop's child tokens, for code that lists a recipe's tokens.
+	 *
+	 * A listing must leave no run-time hook behind: each one would save the token's list to the trigger log
+	 * again when the trigger completes in the same request.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param mixed[] $trigger The trigger definition.
+	 *
+	 * @return void
+	 */
+	public function register_listing_hooks( $trigger ) {
+
+		$this->trigger = $trigger;
+
+		$closure = function ( $tokens, $loop ) use ( $trigger ) {
+			return $this->loop_list( $tokens, $loop, $trigger );
+		};
+
+		add_filter( 'automator_recipe_main_object_loop_tokens_items', $closure, 10, 2 );
 	}
 
 	/**

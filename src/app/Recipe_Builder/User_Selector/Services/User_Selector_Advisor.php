@@ -29,6 +29,9 @@ class User_Selector_Advisor {
 	/**
 	 * User selector explanation appended to all messages.
 	 *
+	 * The source values are the ones save_recipe's user_selector.source accepts
+	 * (existingUser, newUser), not the stored kebab-case ones.
+	 *
 	 * @var string
 	 */
 	private const EXPLANATION = 'A user selector tells the recipe which WordPress user the actions should run for. '

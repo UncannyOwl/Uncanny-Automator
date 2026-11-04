@@ -230,7 +230,24 @@ final class Request {
 	public static function from_legacy_params( array $params ): self {
 
 		// Apply the legacy param filters migrated from Api_Server::filter_params().
-		$params = self::apply_legacy_param_filters( $params );
+		return self::from_filtered_legacy_params( self::apply_legacy_param_filters( $params ) );
+	}
+
+	/**
+	 * Create a Request from legacy $params that have already been through the legacy
+	 * filters (`automator_api_call` and its integration and action forms).
+	 *
+	 * Api_Server::api_call() runs those filters itself, once, on the params it sends.
+	 * Building its request with from_legacy_params() would run every callback a second
+	 * time, the first time on params that lack the url, method and plugin_ver.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param array $params The filtered legacy parameters array.
+	 *
+	 * @return self
+	 */
+	public static function from_filtered_legacy_params( array $params ): self {
 
 		$endpoint    = isset( $params['endpoint'] ) ? (string) $params['endpoint'] : '';
 		$body        = isset( $params['body'] ) ? (array) $params['body'] : array();

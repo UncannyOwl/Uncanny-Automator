@@ -69,6 +69,18 @@ class Rest_Bearer_Authenticator {
 	private $resolved_context = null;
 
 	/**
+	 * The resolved token's credential when it is valid but its user lacks manage_options.
+	 *
+	 * Such a credential never installs identity; it only lets the route
+	 * authorizer refuse it for the capability rather than as an invalid token.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @var Authenticated_Token_Context|null
+	 */
+	private ?Authenticated_Token_Context $unprivileged_context = null;
+
+	/**
 	 * Whether bearer-token resolution is already running.
 	 *
 	 * Token validation updates token metadata. That update can fire WordPress
@@ -257,6 +269,31 @@ class Rest_Bearer_Authenticator {
 		return $this->resolve_bearer_context( $token );
 	}
 
+	/**
+	 * The request's credential when it is valid but its user lacks manage_options.
+	 *
+	 * Uses the same token resolve_request_context() would. The credential is
+	 * returned for refusing the request only: it never becomes the current user.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param WP_REST_Request $request Matched REST request.
+	 *
+	 * @return Authenticated_Token_Context|null Null when the token is missing, invalid, or its user may use it.
+	 */
+	public function resolve_unprivileged_request_context( WP_REST_Request $request ): ?Authenticated_Token_Context {
+		$token = $this->extract_server_bearer_token();
+		if ( empty( $token ) ) {
+			$token = $this->extract_request_bearer_token( $request );
+		}
+
+		if ( false !== $this->resolve_bearer_context( $token ) || $this->resolved_token !== $token ) {
+			return null;
+		}
+
+		return $this->unprivileged_context;
+	}
+
 	/** Identify our credential format without claiming that authentication succeeded. */
 	public function has_automator_bearer( WP_REST_Request $request ): bool {
 		$token = $this->extract_server_bearer_token() ?? $this->extract_request_bearer_token( $request );
@@ -283,7 +320,8 @@ class Rest_Bearer_Authenticator {
 			return false;
 		}
 
-		$this->resolved_token = $token;
+		$this->resolved_token       = $token;
+		$this->unprivileged_context = null;
 
 		$this->is_resolving_bearer_context = true;
 
@@ -300,7 +338,9 @@ class Rest_Bearer_Authenticator {
 				return $context;
 			}
 
-			$this->resolved_context = false;
+			// Valid, but its user may not use it: kept only so the refusal can say why.
+			$this->resolved_context     = false;
+			$this->unprivileged_context = $context;
 			return false;
 		} finally {
 			$this->is_resolving_bearer_context = false;

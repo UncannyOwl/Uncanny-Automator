@@ -221,6 +221,13 @@ final class Wire_Key {
 	const DEFERRED_ORDER = 'deferred_order';
 
 	/**
+	 * Loop block node: the ids of the loopable tokens the loop can iterate.
+	 *
+	 * @since 8.0.1
+	 */
+	const LOOPABLE_TOKEN_IDS = 'loopable_token_ids';
+
+	/**
 	 * Block node: filter, delay_schedule or loop.
 	 */
 	const BLOCK_TYPE = 'block_type';
@@ -397,13 +404,15 @@ final class Wire_Key {
 	/**
 	 * Block node keys present only on some blocks, after BLOCK_KEYS in wire order.
 	 *
-	 * `deferred_order` rides only on a block whose catalog layout is deferred.
+	 * `deferred_order` rides only on a block whose catalog layout is deferred;
+	 * `loopable_token_ids` only on a loop block.
 	 *
 	 * @since 8.0.0
 	 * @var string[]
 	 */
 	const OPTIONAL_BLOCK_KEYS = array(
 		self::DEFERRED_ORDER,
+		self::LOOPABLE_TOKEN_IDS,
 	);
 
 	/**
@@ -526,6 +535,7 @@ final class Wire_Key {
 			self::LAST_KNOWN_INTEGRATION_NAME,
 			self::TOKENS,
 			self::AVAILABILITY,
+			self::LOOPABLE_TOKEN_IDS,
 			self::BLOCK_TYPE,
 			self::MODIFIERS,
 			self::PATHS,

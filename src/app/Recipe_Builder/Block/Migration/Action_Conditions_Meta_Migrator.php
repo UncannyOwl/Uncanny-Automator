@@ -3,10 +3,15 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Recipe_Builder\Block\Migration;
 
+use Uncanny_Automator\App\Infrastructure\Database\Database;
+use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Action_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Block_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Recipe_Legacy_Meta_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Legacy_Meta_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Reorder_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Block_Modifier_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Block_Store;
+use Uncanny_Automator\App\Recipe_Builder\Action\Enums\Action_Status;
 use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Path_Code;
 use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Type;
 use Uncanny_Automator\App\Recipe_Builder\Block\Registry\Blocks\Filter_Block;
@@ -83,23 +88,33 @@ class Action_Conditions_Meta_Migrator {
 	private Delay_Schedule_Meta_Migrator $delay_migrator;
 
 	/**
+	 * Writes the menu_order of a container's children.
+	 *
+	 * @var Recipe_Reorder_Store
+	 */
+	private Recipe_Reorder_Store $reorder_store;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Block_Store                       $block_store       Block database store.
 	 * @param Block_Modifier_Store              $modifier_store    Block-modifier database store.
 	 * @param Recipe_Legacy_Meta_Store|null     $legacy_meta_store Store for source/backup post-meta moves; defaults to the WP post-meta impl.
 	 * @param Delay_Schedule_Meta_Migrator|null $delay_migrator    Delay migrator for teardown's restore; defaults to one on the same stores.
+	 * @param Recipe_Reorder_Store|null         $reorder_store     Store for a child's menu_order; defaults to the WordPress one.
 	 */
 	public function __construct(
 		Block_Store $block_store,
 		Block_Modifier_Store $modifier_store,
 		?Recipe_Legacy_Meta_Store $legacy_meta_store = null,
-		?Delay_Schedule_Meta_Migrator $delay_migrator = null
+		?Delay_Schedule_Meta_Migrator $delay_migrator = null,
+		?Recipe_Reorder_Store $reorder_store = null
 	) {
 		$this->block_store       = $block_store;
 		$this->modifier_store    = $modifier_store;
 		$this->legacy_meta_store = $legacy_meta_store ?? new WP_Recipe_Legacy_Meta_Store();
 		$this->delay_migrator    = $delay_migrator ?? new Delay_Schedule_Meta_Migrator( $block_store, $modifier_store );
+		$this->reorder_store     = $reorder_store ?? Database::get_recipe_reorder_store();
 	}
 
 	/**
@@ -455,6 +470,8 @@ class Action_Conditions_Meta_Migrator {
 					// The filter in the group's own container keeps the group's key; one in another container names it.
 					$key_suffix = $parent_id === $container_id ? '' : ':in:' . $container_id;
 
+					$this->separate_tied_children( $container_id );
+
 					$block_id = $this->block_store->create(
 						$container_id,
 						Block_Type::FILTER,
@@ -623,6 +640,53 @@ class Action_Conditions_Meta_Migrator {
 		return Filter_Block::MATCH_MODE_ANY === ( $group['mode'] ?? null )
 			? Filter_Block::MATCH_MODE_ANY
 			: Filter_Block::MATCH_MODE_ALL;
+	}
+
+	/**
+	 * Give each child of a container its own menu_order, keeping the order the children run in.
+	 *
+	 * A duplicated 7.x action keeps its source's menu_order, and tied actions ran by id. A filter takes
+	 * its first action's menu_order with a newer id than any action, so without this it would sort
+	 * after every sibling tied with that action, and run after one 7.x ran later.
+	 *
+	 * A child moves only as far as it must. The writes run last child first because each one only raises
+	 * a menu_order, so a pass that stops part-way leaves the children in the same order for the retry.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param int $container_id The recipe or loop about to hold a filter.
+	 *
+	 * @return void
+	 */
+	private function separate_tied_children( int $container_id ): void {
+		$children = get_posts(
+			array(
+				'post_type'      => array( WP_Action_Store::POST_TYPE, WP_Block_Store::POST_TYPE, AUTOMATOR_POST_TYPE_LOOP ),
+				'post_parent'    => $container_id,
+				'post_status'    => array( Action_Status::DRAFT, Action_Status::PUBLISH ),
+				'posts_per_page' => -1, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				'orderby'        => array(
+					'menu_order' => 'ASC',
+					'ID'         => 'ASC',
+				),
+			)
+		);
+
+		$writes = array();
+		$lowest = null;
+
+		foreach ( $children as $child ) {
+			$menu_order = null === $lowest ? (int) $child->menu_order : max( (int) $child->menu_order, $lowest );
+			$lowest     = $menu_order + 1;
+
+			if ( (int) $child->menu_order !== $menu_order ) {
+				$writes[ (int) $child->ID ] = $menu_order;
+			}
+		}
+
+		foreach ( array_reverse( $writes, true ) as $child_id => $menu_order ) {
+			$this->reorder_store->set_menu_order( $child_id, $menu_order );
+		}
 	}
 
 	/**

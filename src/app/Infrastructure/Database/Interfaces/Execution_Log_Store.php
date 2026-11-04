@@ -83,6 +83,13 @@ interface Execution_Log_Store extends Error_Message_Rewrite_Store {
 	 */
 	public const ACTION_META_ASYNC_JOB_ID = 'async_job_id';
 
+	/**
+	 * Action-log meta: the row went to the background, where its worker is a request nothing tracks. Stuck recovery finds it by this.
+	 *
+	 * @var string
+	 */
+	public const ACTION_META_BACKGROUND_DISPATCH = 'background_dispatch';
+
 	// Trigger logs.
 	public function add_trigger( int $user_id, int $trigger_id, int $recipe_id, bool $is_completed, int $recipe_log_id ): int;
 
@@ -138,6 +145,18 @@ interface Execution_Log_Store extends Error_Message_Rewrite_Store {
 	 * @return void
 	 */
 	public function mark_action_complete_by_id( int $action_log_id, int $completed, string $error_message = '' ): void;
+
+	/**
+	 * Mark a single uap_action_log row complete only while it is still IN_PROGRESS.
+	 *
+	 * For a caller deciding from a row it read earlier: a worker that finished since keeps its result.
+	 *
+	 * @param int $action_log_id The uap_action_log primary key.
+	 * @param int $completed     Completion status constant.
+	 *
+	 * @return bool True when this call changed the row.
+	 */
+	public function mark_action_complete_if_in_progress( int $action_log_id, int $completed ): bool;
 
 	/**
 	 * Mark a deferred (background/async-dispatched) action's row IN_PROGRESS and
@@ -271,6 +290,16 @@ interface Execution_Log_Store extends Error_Message_Rewrite_Store {
 	 * @return object[] Rows with ID, automator_recipe_id, user_id, date_time, last_action_activity.
 	 */
 	public function find_stuck_recipe_logs( int $threshold_seconds, int $batch_size ): array;
+
+	/**
+	 * Action rows still waiting on a background worker past the threshold: candidates for failing as lost.
+	 *
+	 * @param int $threshold_seconds Time since the dispatch.
+	 * @param int $batch_size        Maximum rows.
+	 *
+	 * @return object[] Rows with ID, automator_recipe_log_id, automator_recipe_id, user_id, date_time.
+	 */
+	public function find_lost_background_dispatches( int $threshold_seconds, int $batch_size ): array;
 
 	/**
 	 * @param int $recipe_id The recipe ID.
@@ -514,8 +543,10 @@ interface Execution_Log_Store extends Error_Message_Rewrite_Store {
 	/**
 	 * Paged per-iteration rows for one loop-body action in one run (ITEM arm
 	 * of the iterations sub-resource). Kind-aware search joins users/posts by
-	 * entity_id when $loop_type warrants; all kinds match entity_id and
-	 * error_message. Empty array when the Pro loop tables are absent.
+	 * entity_id when $loop_type warrants. A token loop's entity_id is a position
+	 * and its labels are not joinable, so it matches $matched_entity_ids instead
+	 * of the entity_id text. All kinds match error_message. Empty array when the
+	 * Pro loop tables are absent.
 	 *
 	 * @param int    $recipe_id  Recipe post id.
 	 * @param int    $recipe_log_id Recipe-log row id.
@@ -525,9 +556,10 @@ interface Execution_Log_Store extends Error_Message_Rewrite_Store {
 	 * @param int    $offset     Row offset.
 	 * @param string $search     Raw search term; '' disables the search filter.
 	 * @param string $loop_type  Loop kind: users|posts|token|'' (drives the search JOIN).
+	 * @param array<int,int> $matched_entity_ids Token loops: entity ids whose label contains $search.
 	 * @return array<int,array<string,mixed>> Iteration rows ordered by ID ASC.
 	 */
-	public function get_action_iteration_rows( int $recipe_id, int $recipe_log_id, int $run_number, int $action_id, int $per_page, int $offset, string $search, string $loop_type ): array;
+	public function get_action_iteration_rows( int $recipe_id, int $recipe_log_id, int $run_number, int $action_id, int $per_page, int $offset, string $search, string $loop_type, array $matched_entity_ids = array() ): array;
 
 	/**
 	 * Total per-iteration row count for one loop-body action in one run,
@@ -540,9 +572,10 @@ interface Execution_Log_Store extends Error_Message_Rewrite_Store {
 	 * @param int    $action_id  Loop-body action post id.
 	 * @param string $search     Raw search term; '' disables the search filter.
 	 * @param string $loop_type  Loop kind: users|posts|token|''.
+	 * @param array<int,int> $matched_entity_ids Token loops: entity ids whose label contains $search.
 	 * @return int The matching row count.
 	 */
-	public function count_action_iteration_rows( int $recipe_id, int $recipe_log_id, int $run_number, int $action_id, string $search, string $loop_type ): int;
+	public function count_action_iteration_rows( int $recipe_id, int $recipe_log_id, int $run_number, int $action_id, string $search, string $loop_type, array $matched_entity_ids = array() ): int;
 
 	/**
 	 * Read a single recipe-log-meta value, or null when missing.
@@ -553,6 +586,21 @@ interface Execution_Log_Store extends Error_Message_Rewrite_Store {
 	 * @return string|null
 	 */
 	public function get_recipe_log_meta( int $recipe_log_id, string $meta_key ): ?string;
+
+	/**
+	 * Whether a run has a recipe-log meta row for this key, whoever it was written for.
+	 *
+	 * The run owns its recipe-log meta: the user_id column is not consulted.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param int    $recipe_id     The recipe ID.
+	 * @param int    $recipe_log_id The recipe log ID.
+	 * @param string $meta_key      The meta key.
+	 *
+	 * @return bool
+	 */
+	public function has_recipe_log_meta( int $recipe_id, int $recipe_log_id, string $meta_key ): bool;
 
 	/**
 	 * Upsert: insert if no row, otherwise update meta_value in place.

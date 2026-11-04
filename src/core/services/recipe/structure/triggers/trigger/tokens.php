@@ -3,6 +3,7 @@ namespace Uncanny_Automator\Services\Recipe\Structure\Triggers\Trigger;
 
 use stdClass;
 use Uncanny_Automator\Services\Recipe\Common;
+use Uncanny_Automator\Services\Loopable\Trigger_Loopable_Token;
 use Uncanny_Automator\Services\Recipe\Structure\Triggers\Tokens\Common\Token;
 
 final class Tokens implements \JsonSerializable {
@@ -165,9 +166,10 @@ final class Tokens implements \JsonSerializable {
 
 			if ( is_string( $token_class ) && class_exists( $token_class ) ) {
 				$token_class = new $token_class( self::$trigger_id );
-				$_trigger    = Automator()->get_trigger( self::$trigger['meta']['code'] );
-				$token_class->register_hooks( $_trigger );
-				$token_class->set_trigger( $_trigger );
+				// The listing hook only: a run-time hook left here would save the token's list to the trigger log again.
+				if ( $token_class instanceof Trigger_Loopable_Token ) {
+					$token_class->register_listing_hooks( Automator()->get_trigger( self::$trigger['meta']['code'] ) );
+				}
 			}
 
 			$definitions = $token_class->get_definitions();

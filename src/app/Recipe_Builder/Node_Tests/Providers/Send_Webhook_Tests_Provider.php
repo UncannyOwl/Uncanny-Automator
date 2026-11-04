@@ -179,13 +179,15 @@ final class Send_Webhook_Tests_Provider implements Node_Test_Provider {
 		$data_type    = $this->bridge->get_data_type( $data );
 		$request_type = $this->bridge->request_type( $data );
 
+		// Headers before the body: a form-data body is delimited by the boundary its Content-Type header names.
+		$headers = $this->bridge->get_headers( $data, $data_type, $context->get_node_id() );
+
 		$args = array(
 			'method'  => $request_type,
 			'body'    => $this->bridge->get_fields( $data, $data_type ),
 			'timeout' => 30,
 		);
 
-		$headers = $this->bridge->get_headers( $data, $data_type, $context->get_node_id() );
 		if ( ! empty( $headers ) ) {
 			$args['headers'] = $headers;
 		}
@@ -202,28 +204,47 @@ final class Send_Webhook_Tests_Provider implements Node_Test_Provider {
 			);
 		}
 
-		// Keep the legacy side effect: captured response leafs feed the action tokens.
-		$tokens = $this->bridge->collect_response_tokens( $response );
-		Database::get_action_store()->update_meta( $context->get_node_id(), 'webhook_response_tokens', wp_json_encode( $tokens ) );
-
 		$status_code = absint( wp_remote_retrieve_response_code( $response ) );
 		$body        = (string) wp_remote_retrieve_body( $response );
 		$content     = "```\n" . $body . "\n```";
 
-		if ( ! in_array( $status_code, array( 200, 201 ), true ) ) {
-			return Run_Result::failed(
-				sprintf(
-					/* translators: %d: HTTP status code */
-					esc_html_x( 'The server responded with error code %d.', 'Node tests', 'uncanny-automator' ),
-					$status_code
-				),
-				$content
-			);
+		// A success as a run judges it: any 2xx whose body reports no error.
+		if ( ! $this->bridge->is_successful_response( $response ) ) {
+			return Run_Result::failed( $this->failure_heading( $status_code ), $content );
 		}
+
+		// Keep the legacy side effect, from a successful answer only, as a run saves them: captured response
+		// leafs feed the action tokens.
+		$tokens = $this->bridge->collect_response_tokens( $response );
+		Database::get_action_store()->update_meta( $context->get_node_id(), 'webhook_response_tokens', wp_json_encode( $tokens ) );
 
 		return Run_Result::passed(
 			esc_html_x( 'Data was sent to the webhook successfully.', 'Node tests', 'uncanny-automator' ),
 			$content
+		);
+	}
+
+	/**
+	 * Why an answer that reached the server is not a success.
+	 *
+	 * @since 8.0.1
+	 *
+	 * @param int $status_code The HTTP status the server answered.
+	 * @return string
+	 */
+	private function failure_heading( int $status_code ): string {
+		if ( $status_code >= 200 && $status_code < 300 ) {
+			return sprintf(
+				/* translators: %d: HTTP status code */
+				esc_html_x( 'The server responded with code %d, but its answer reports an error.', 'Node tests', 'uncanny-automator' ),
+				$status_code
+			);
+		}
+
+		return sprintf(
+			/* translators: %d: HTTP status code */
+			esc_html_x( 'The server responded with error code %d.', 'Node tests', 'uncanny-automator' ),
+			$status_code
 		);
 	}
 }

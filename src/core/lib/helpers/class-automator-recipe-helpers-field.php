@@ -264,20 +264,22 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	 * @return mixed
 	 * @deprecated 3.0 Use Automator()->helpers->recipe->field->text( $args )
 	 *     instead.
+	 *
+	 * @since 8.0.1 Passes `$tokens` to text() under the key it reads, so a caller's `false` reaches the builder.
 	 */
 	public function text_field( $option_code = 'TEXT', $label = null, $tokens = true, $type = 'text', $default = null, $required = true, $description = '', $placeholder = null ) {
 		if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) {
 			_doing_it_wrong( 'Automator()->helpers->recipe->field->text_field()', 'Use Automator()->helpers->recipe->field->text( $args ) instead.', '3.0' );
 		}
 		$option = array(
-			'option_code'     => $option_code,
-			'label'           => $label,
-			'description'     => $description,
-			'placeholder'     => $placeholder,
-			'input_type'      => $type,
-			'supports_tokens' => $tokens,
-			'required'        => $required,
-			'default'         => $default,
+			'option_code' => $option_code,
+			'label'       => $label,
+			'description' => $description,
+			'placeholder' => $placeholder,
+			'input_type'  => $type,
+			'tokens'      => $tokens,
+			'required'    => $required,
+			'default'     => $default,
 		);
 
 		if ( 'textarea' === $type ) {
@@ -377,7 +379,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 				// Check if the element is defined. This parameter is optional, but
 				// only relevant if is_ajax is true.
 				if ( isset( $args['fill_values_in'] ) ) {
-					$field_args['endpoint'] = $args['fill_values_in'];
+					$field_args['fill_values_in'] = $args['fill_values_in'];
 				}
 			}
 
@@ -527,7 +529,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		$supports_custom_value    = $this->supports_custom_value( $args );
 		$supports_tokens          = key_exists( 'supports_tokens', $args ) ? $args['supports_tokens'] : null;
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
-		$support_token   = apply_filters( 'uap_option_' . $option_code . '_select_field', array( false ), '3.0', 'automator_option_' . $option_code . '_select_field' );
+		$support_token   = apply_filters( 'uap_option_' . $option_code . '_select_field', $supports_tokens, '3.0', 'automator_option_' . $option_code . '_select_field' );
 		$support_token   = apply_filters( 'automator_option_' . $option_code . '_select_field', $support_token );
 		$options_show_id = empty( $args['options_show_id'] ) ? false : $args['options_show_id'];
 		$options_show_id = apply_filters( 'automator_options_show_id', $options_show_id, $this );

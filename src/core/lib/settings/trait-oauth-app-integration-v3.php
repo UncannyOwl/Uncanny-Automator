@@ -6,10 +6,11 @@ use Exception;
 use Uncanny_Automator\Api_Server;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Platform_Failure;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Platform_Failure_Message;
-use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration\Registration_Wire;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Dispatch\Platform_Dispatch_Guard;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Response;
 use Uncanny_Automator\App\Infrastructure\Connections\Connection;
 use Uncanny_Automator\App\Presentation\Admin\Default_Connection_Chooser;
+use Uncanny_Automator\App\Recipe_Runner\Exceptions\Action_Error_Exception;
 
 /**
  * Trait OAuth_App_Integration_V3 — MVP plan A.8.
@@ -109,9 +110,12 @@ trait OAuth_App_Integration_V3 {
 
 		// A registered site keeps its secret when its license lapses or is
 		// deactivated; the platform would only refuse the start for the license.
-		// The same gate registration uses.
-		if ( ! ( new Registration_Wire() )->has_active_license() ) {
-			throw new Exception( wp_kses( Platform_Failure_Message::license_needed_to_connect()->text(), array() ) );
+		// The rule the app calls are refused by, so no app is connected that
+		// could never run: the site needs a license key to send.
+		try {
+			( new Platform_Dispatch_Guard() )->refuse_without_a_license_key();
+		} catch ( Action_Error_Exception $refused ) {
+			throw new Exception( wp_kses( $refused->getMessage(), array() ) );
 		}
 
 		$slug         = $this->get_v3_oauth_slug();

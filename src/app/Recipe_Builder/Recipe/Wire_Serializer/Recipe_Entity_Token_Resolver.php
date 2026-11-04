@@ -22,6 +22,8 @@ use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Wire_Key;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Wire_Node_Type;
 use Uncanny_Automator\App\Recipe_Builder\Token\Domain\Token_Hint_Tag;
 use Uncanny_Automator\App\Recipe_Builder\Token\Services\Token_Data_Types_Helper;
+use Uncanny_Automator\Services\Loopable\Action_Loopable_Token;
+use Uncanny_Automator\Services\Loopable\Trigger_Loopable_Token;
 
 /**
  * Derives a single flow node's published token definitions at projection time,
@@ -235,21 +237,21 @@ final class Recipe_Entity_Token_Resolver {
 	 * is still accepted for tolerance. Non-token loop types pass through
 	 * untouched.
 	 *
-	 * @param array<string,mixed> $iterable Reconstructed iterable_expression.
+	 * @param array<string,mixed> $expression Reconstructed iterable_expression.
 	 * @return array<string,mixed>
 	 */
-	private function bridge_token_loop_fields( array $iterable ): array {
-		if ( 'token' !== ( $iterable['type'] ?? '' ) ) {
-			return $iterable;
+	private function bridge_token_loop_fields( array $expression ): array {
+		if ( 'token' !== ( $expression['type'] ?? '' ) ) {
+			return $expression;
 		}
 
-		$decoded = json_decode( (string) ( $iterable['fields'] ?? '' ), true );
+		$decoded = json_decode( (string) ( $expression['fields'] ?? '' ), true );
 		$decoded = is_array( $decoded ) ? $decoded : array();
 		$chip    = (string) ( $decoded['TOKEN']['value'] ?? $decoded['token_key'] ?? '' );
 
-		$iterable['fields'] = (string) wp_json_encode( array( 'TOKEN' => array( 'value' => $chip ) ) );
+		$expression['fields'] = (string) wp_json_encode( array( 'TOKEN' => array( 'value' => $chip ) ) );
 
-		return $iterable;
+		return $expression;
 	}
 
 	/**
@@ -431,12 +433,10 @@ final class Recipe_Entity_Token_Resolver {
 		foreach ( $loopable_classes as $token_class ) {
 			if ( is_string( $token_class ) && class_exists( $token_class ) ) {
 				$token_class = new $token_class( $item_id );
-				if ( $is_trigger ) {
-					$token_class->register_hooks( $definition );
-					$token_class->set_trigger( $definition );
-				} else {
-					$token_class->set_action( $definition );
-					$token_class->register_hooks( $definition );
+				// The listing hook only: the loop rows read it later in this projection. A run-time hook left
+				// here would act again on a run in this request, saving the token's list to the trigger log twice.
+				if ( $is_trigger ? $token_class instanceof Trigger_Loopable_Token : $token_class instanceof Action_Loopable_Token ) {
+					$token_class->register_listing_hooks( $definition );
 				}
 			}
 			if ( ! is_object( $token_class ) || ! method_exists( $token_class, 'get_definitions' ) ) {

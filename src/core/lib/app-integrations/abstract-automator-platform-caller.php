@@ -6,6 +6,7 @@ use Exception;
 use Uncanny_Automator\Api_Server;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Dispatch\Connection_Repair_Retry;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Dispatch\Platform_Dispatch_Guard;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Dispatch\Refused_Before_Sending_Exception;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Dispatch\Platform_Request_Builder;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Dispatch\Platform_Request_Options;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Platform_Error_Exception;
@@ -103,6 +104,14 @@ abstract class Caller {
 	 * @var string
 	 */
 	private $sent_connection_id = '';
+
+	/**
+	 * What refuses this caller's requests before they are sent; built on first
+	 * use ({@see self::dispatch_guard()}).
+	 *
+	 * @var Platform_Dispatch_Guard|null
+	 */
+	private $dispatch_guard = null;
 
 	/**
 	 * Bind the App_Action driving the next api_request() call.
@@ -385,7 +394,7 @@ abstract class Caller {
 		$is_modern   = $this->is_modern_endpoint_version( (string) $this->api_endpoint );
 
 		if ( $is_modern ) {
-			( new Platform_Dispatch_Guard() )->hold_while_the_site_address_is_answered();
+			$this->dispatch_guard()->hold_while_the_site_address_is_answered();
 		}
 
 		$options = $options->with_background_key( $this->background_key_for_call( $explicit_action_data, $options ) );
@@ -558,7 +567,7 @@ abstract class Caller {
 	 */
 	protected function make_api_call( array $params ): array {
 
-		( new Platform_Dispatch_Guard() )->refuse_webhooks_on_local_site( (string) ( $params['endpoint'] ?? '' ) );
+		$this->dispatch_guard()->refuse_webhooks_on_local_site( (string) ( $params['endpoint'] ?? '' ) );
 
 		$client = $this->platform_client();
 
@@ -581,6 +590,22 @@ abstract class Caller {
 
 		// Legacy path — will be removed when all integrations use the new client.
 		return Api_Server::api_call( $params );
+	}
+
+	/**
+	 * What refuses this caller's requests before they are sent: one guard for
+	 * the caller's calls. A request with no license key is refused later, where
+	 * it is sent.
+	 *
+	 * @return Platform_Dispatch_Guard
+	 */
+	private function dispatch_guard(): Platform_Dispatch_Guard {
+
+		if ( null === $this->dispatch_guard ) {
+			$this->dispatch_guard = new Platform_Dispatch_Guard();
+		}
+
+		return $this->dispatch_guard;
 	}
 
 	/**
@@ -786,6 +811,11 @@ abstract class Caller {
 	 * @throws Action_Error_Exception With the customer's message.
 	 */
 	private function check_for_failure( Exception $e, bool $is_modern, array $args ) {
+
+		// Refused on the site, before sending: final, in the customer's words already.
+		if ( $e instanceof Refused_Before_Sending_Exception ) {
+			throw $e;
+		}
 
 		if ( $is_modern && $e instanceof Platform_Error_Exception ) {
 			$failure = $this->platform_failure_message( $e->failure() )->to_exception( (int) $e->getCode(), $e );

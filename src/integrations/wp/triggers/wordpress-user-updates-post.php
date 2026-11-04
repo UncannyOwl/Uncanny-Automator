@@ -73,8 +73,7 @@ class WP_USER_UPDATES_POST extends \Uncanny_Automator\Recipe\Trigger {
 			Wp_Shared_Tokens::post_featured_image_tokens(),
 			Wp_Shared_Tokens::post_author_tokens(),
 			Wp_Shared_Tokens::post_date_tokens(),
-			Wp_Shared_Tokens::post_taxonomy_tokens(),
-			Wp_Shared_Tokens::post_taxonomy_loopable_tokens()
+			Wp_Shared_Tokens::post_taxonomy_tokens()
 		);
 	}
 
