@@ -529,11 +529,6 @@ return array(
 	),
 	'BP' => array(
 		'triggers' => array(
-			'BP_BPACCACTIVATE' => array(
-				'code'  => 'BPACCACTIVATE',
-				'class' => 'Uncanny_Automator\\BP_ACCACTIVATE',
-				'file'  => $baseDir . '/src/integrations/buddypress/triggers/bp-accactivate.php',
-			),
 			'BP_BPACTIVITYSTRM' => array(
 				'code'  => 'BPACTIVITYSTRM',
 				'class' => 'Uncanny_Automator\\BP_ACTIVITYSTRM',

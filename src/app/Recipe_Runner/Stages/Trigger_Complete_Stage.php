@@ -802,6 +802,11 @@ class Trigger_Complete_Stage implements Stage {
 			return $args;
 		}
 
+		// Trigger args carry the ids as the trigger's source gave them; EDD's rows give the user as a numeric string.
+		$user_id       = absint( $user_id );
+		$recipe_id     = absint( $recipe_id );
+		$recipe_log_id = absint( $recipe_log_id );
+
 		$recipe_triggers = $this->log_store->get_triggers_by_recipe_log_id( $user_id, $recipe_id, $recipe_log_id, $run_number );
 
 		if ( empty( $recipe_triggers ) ) {

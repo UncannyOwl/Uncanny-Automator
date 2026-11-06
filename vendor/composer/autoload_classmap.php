@@ -2276,7 +2276,6 @@ return array(
     'Uncanny_Automator\\BO_AWARDACHIEVEMENT_A' => $baseDir . '/src/integrations/badgeos/actions/bo-awardachievement-a.php',
     'Uncanny_Automator\\BO_AWARDPOINTS_A' => $baseDir . '/src/integrations/badgeos/actions/bo-awardpoints-a.php',
     'Uncanny_Automator\\BO_AWARDRANK_A' => $baseDir . '/src/integrations/badgeos/actions/bo-awardrank-a.php',
-    'Uncanny_Automator\\BP_ACCACTIVATE' => $baseDir . '/src/integrations/buddypress/triggers/bp-accactivate.php',
     'Uncanny_Automator\\BP_ACTIVITYSTRM' => $baseDir . '/src/integrations/buddypress/triggers/bp-activitystrm.php',
     'Uncanny_Automator\\BP_ADDTOGROUP' => $baseDir . '/src/integrations/buddypress/actions/bp-addtogroup.php',
     'Uncanny_Automator\\BP_Register_Universal_Tokens' => $baseDir . '/src/integrations/buddypress/tokens/bp-register-universal-tokens.php',

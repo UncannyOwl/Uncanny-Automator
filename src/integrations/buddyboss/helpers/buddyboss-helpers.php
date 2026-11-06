@@ -163,11 +163,6 @@ class Buddyboss_Helpers {
 	 */
 	public function list_buddyboss_forums( $label = null, $option_code = 'BDBFORUMS', $args = array() ) {
 
-		if ( ! function_exists( 'bbp_get_forum_post_type' ) ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
-
 		$args = wp_parse_args(
 			$args,
 			array(
@@ -179,23 +174,27 @@ class Buddyboss_Helpers {
 			$label = esc_attr__( 'Forum', 'uncanny-automator' );
 		}
 
-		$options    = array();
-		$forum_args = array(
-			'post_type'      => bbp_get_forum_post_type(),
-			'posts_per_page' => 999,
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-			'post_status'    => array( 'publish', 'private' ),
-		);
+		$options = array();
 
 		if ( $args['uo_include_any'] ) {
 			$options[- 1] = $args['uo_any_label'];
 		}
 
-		$forums = Automator()->helpers->recipe->options->wp_query( $forum_args );
-		if ( ! empty( $forums ) ) {
-			foreach ( $forums as $key => $forum ) {
-				$options[ $key ] = $forum;
+		// With BuddyBoss's Forums component off there are no forums to list, and the field stays a select the recipe builder can load.
+		if ( function_exists( 'bbp_get_forum_post_type' ) ) {
+			$forum_args = array(
+				'post_type'      => bbp_get_forum_post_type(),
+				'posts_per_page' => 999,
+				'orderby'        => 'title',
+				'order'          => 'ASC',
+				'post_status'    => array( 'publish', 'private' ),
+			);
+
+			$forums = Automator()->helpers->recipe->options->wp_query( $forum_args );
+			if ( ! empty( $forums ) ) {
+				foreach ( $forums as $key => $forum ) {
+					$options[ $key ] = $forum;
+				}
 			}
 		}
 

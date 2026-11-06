@@ -55,11 +55,6 @@ class Bbpress_Helpers {
 	 */
 	public function list_bbpress_forums( $label = null, $option_code = 'BBFORUMS', $any_option = false ) {
 
-		if ( ! function_exists( 'bbp_get_forum_post_type' ) ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
-
 		if ( ! $label ) {
 			$label = esc_attr__( 'Forum', 'uncanny-automator' );
 		}
@@ -70,15 +65,22 @@ class Bbpress_Helpers {
 			$any_label = esc_attr__( 'Any forum', 'uncanny-automator' );
 		}
 
-		$args = array(
-			'post_type'      => bbp_get_forum_post_type(),
-			'posts_per_page' => 999,
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-			'post_status'    => array( 'publish', 'private' ),
-		);
+		$options = array();
 
-		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, $any_label );
+		// Without bbPress (or with BuddyBoss's Forums component off) there are no forums to list, and the field stays a select the recipe builder can load.
+		if ( function_exists( 'bbp_get_forum_post_type' ) ) {
+			$args = array(
+				'post_type'      => bbp_get_forum_post_type(),
+				'posts_per_page' => 999,
+				'orderby'        => 'title',
+				'order'          => 'ASC',
+				'post_status'    => array( 'publish', 'private' ),
+			);
+
+			$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, $any_label );
+		} elseif ( $any_option ) {
+			$options[- 1] = $any_label;
+		}
 
 		$option = array(
 			'option_code'     => $option_code,

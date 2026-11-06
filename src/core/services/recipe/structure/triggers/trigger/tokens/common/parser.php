@@ -135,15 +135,16 @@ class Parser {
 	 *
 	 * Resolution order (each fallback covers a distinct failure mode):
 	 *
-	 *   1. Per-recipe `sentence_human_readable` post meta on the trigger
-	 *      post. Set by the recipe builder at save time with placeholders
-	 *      already resolved to the user's actual choice (e.g. "Any subsite"
-	 *      for the `-1` sentinel, or the selected entity's title). The
-	 *      registry's static `sentence` carries unresolved
-	 *      `{{Label:OPTION_CODE}}` placeholders that the outer action-side
-	 *      parser treats as unmatched tokens and strips entirely, leaving
-	 *      bare prose (e.g. " is deactivated"). The per-recipe meta avoids
-	 *      that round-trip.
+	 *   1. Per-recipe sentence post meta on the trigger post. Set by the
+	 *      recipe builder at save time with placeholders already resolved to
+	 *      the user's actual choice (e.g. "Any subsite" for the `-1` sentinel,
+	 *      or the selected entity's title). The registry's static `sentence`
+	 *      carries unresolved `{{Label:OPTION_CODE}}` placeholders that the
+	 *      outer action-side parser treats as unmatched tokens and strips
+	 *      entirely, leaving bare prose (e.g. " is deactivated"). The
+	 *      per-recipe meta avoids that round-trip. The HTML form comes first
+	 *      because it marks each field label, which the bracket form runs
+	 *      into the value (`{{Post: Any post}}`).
 	 *
 	 *   2. Registry — eager-registered triggers (admin / editor contexts via
 	 *      `should_load_all()`) carry `select_option_name` and `sentence`
@@ -164,6 +165,11 @@ class Parser {
 
 		// Preferred path: per-recipe rendered sentence on the trigger post.
 		if ( $this->trigger_id > 0 ) {
+			$rendered_html = (string) get_post_meta( $this->trigger_id, 'sentence_human_readable_html', true );
+			if ( '' !== $rendered_html ) {
+				return $this->sentence_html_to_text( $rendered_html );
+			}
+
 			$rendered = (string) get_post_meta( $this->trigger_id, 'sentence_human_readable', true );
 			if ( '' !== $rendered ) {
 				return $rendered;
@@ -199,5 +205,20 @@ class Parser {
 		}
 
 		return method_exists( $instance, 'get_sentence' ) ? (string) $instance->get_sentence() : '';
+	}
+
+	/**
+	 * The plain text of a saved sentence's HTML form, without its field labels.
+	 *
+	 * @since 8.0.2
+	 *
+	 * @param string $sentence_html The trigger's `sentence_human_readable_html` meta.
+	 * @return string
+	 */
+	private function sentence_html_to_text( $sentence_html ) {
+
+		$without_labels = preg_replace( '#<span class="item-title__token-label">.*?</span>#s', '', $sentence_html );
+
+		return html_entity_decode( wp_strip_all_tags( (string) $without_labels, true ), ENT_QUOTES, 'UTF-8' );
 	}
 }

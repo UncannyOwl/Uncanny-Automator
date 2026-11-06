@@ -1,10 +1,10 @@
-=== Uncanny Automator – Claude & ChatGPT MCP Server with MCP for AI Automation ===
+=== Uncanny Automator – MCP Server + Automation MCP for Claude & ChatGPT ===
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: ai, mcp server, automation, claude, chatgpt
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 8.0.1
+Stable tag: 8.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -458,6 +458,17 @@ Unlimited tool usage for a connected AI, the complete library of Pro triggers, a
 6. The recipe log: every run, every step, whether an AI or a schedule started it.
 
 == Changelog ==
+
+= 8.0.2 [2026-11-05] =
+
+**Fixed:**
+
+* BuddyBoss - A user creates a topic in a forum - Fixed recipe builder errors when the Forums component is disabled. #9382
+* Core - Fixed recipe runs stopping unexpectedly when some triggers return user IDs as text instead of numbers. #9399
+* Core - Fixed the Trigger title token displaying field labels, extra braces or "Unknown token" instead of the correct trigger sentence. #9384
+* Recipe Builder - Added a Resolve dependencies dialog for triggers and actions with missing requirements. #9401
+* Recipe Builder - Fixed the missing remove button icon for selected files in file fields. #9402
+* Recipe Logs - Nested tokens now display their resolved values instead of raw tokens or "Unknown token". #9386
 
 = 8.0.1 [2026-11-04] =
 

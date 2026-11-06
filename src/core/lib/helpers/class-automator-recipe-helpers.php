@@ -1057,6 +1057,11 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	}
 
 	/**
+	 * An empty select field, for a picker whose plugin can't list anything.
+	 *
+	 * The recipe builder rejects a field without an input type or a label, and
+	 * then can't load the item's panel, so pass a label.
+	 *
 	 * @param string $label
 	 * @param string $option_code
 	 *
@@ -1068,7 +1073,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 			array(
 				'option_code' => $option_code,
 				'label'       => $label,
-				'input_type'  => '',
+				'input_type'  => 'select',
 				'required'    => true,
 				'options'     => array(),
 			)

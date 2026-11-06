@@ -333,7 +333,6 @@ return array(
 			$baseDir . '/src/integrations/buddypress/tokens/bp-universal-token.php',
 		),
 		'triggers' => array(
-			$baseDir . '/src/integrations/buddypress/triggers/bp-accactivate.php',
 			$baseDir . '/src/integrations/buddypress/triggers/bp-activitystrm.php',
 			$baseDir . '/src/integrations/buddypress/triggers/bp-useracceptfriendrequest.php',
 			$baseDir . '/src/integrations/buddypress/triggers/bp-usersendsfriendrequest.php',

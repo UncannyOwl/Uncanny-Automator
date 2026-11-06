@@ -381,6 +381,9 @@ class Action_Conditions_Meta_Migrator {
 	 * Rows saved before quotes were slashed for storage are corrupt at rest; every 7.x read path repaired
 	 * them, so the migration does too. A non-empty source that still does not parse is a failed pass, not
 	 * "no conditions": the wrapper leaves the vintage alone and the recipe fails closed until the meta is fixed.
+	 * Valid JSON that is not an array (`null`, `false`) parsed fine and holds no groups, and 7.x ran the recipe's
+	 * actions ungated (Pro v7.7.0 `src/core/classes/actions-conditions.php:513-517`, caught at :136-140), so it is
+	 * "no conditions".
 	 *
 	 * @param mixed $raw Raw meta value (string JSON, array, or empty).
 	 *
@@ -396,11 +399,11 @@ class Action_Conditions_Meta_Migrator {
 		}
 
 		$data = json_decode( Json_String_Repair::looks_like_structured_json( $raw ) ? Json_String_Repair::repair( $raw ) : $raw, true );
-		if ( ! is_array( $data ) ) {
+		if ( JSON_ERROR_NONE !== json_last_error() ) {
 			throw new \RuntimeException( 'actions_conditions is not valid JSON and could not be repaired: ' . esc_html( json_last_error_msg() ) );
 		}
 
-		return $data;
+		return is_array( $data ) ? $data : array();
 	}
 
 	/**
@@ -435,6 +438,20 @@ class Action_Conditions_Meta_Migrator {
 
 			$parent_id = $this->container_id( $recipe_id, absint( $group['parent_id'] ?? 0 ) );
 			if ( null === $parent_id ) {
+				// Nothing changes at run time, but the conditions leave the builder, so this is worth a log with debug logging off.
+				if ( ! empty( $group['conditions'] ) ) {
+					automator_log(
+						sprintf(
+							'Condition group %s of recipe %d makes no filter: its parent is not this recipe or one of its loops, so 7.x never ran it. The group stays in %s.',
+							isset( $group['id'] ) && is_scalar( $group['id'] ) ? (string) $group['id'] : 'group-' . $index,
+							$recipe_id,
+							self::META_KEY_BACKUP
+						),
+						'Conditions migration',
+						true,
+						'conditions-migration'
+					);
+				}
 				continue;
 			}
 

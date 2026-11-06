@@ -316,12 +316,13 @@ final class Recipe_Importer {
 					// Groups parent at the source loop (in the item map) or
 					// the source recipe (never in the item map) — both must
 					// land on this site's ids or the migrator parents its
-					// filter blocks at a stale foreign id.
-					if ( isset( $group['parent_id'] ) ) {
-						$old_parent         = (int) $group['parent_id'];
-						$group['parent_id'] = $id_map[ $old_parent ]
-							?? ( $old_parent === $source_recipe_id ? $recipe_id : $old_parent );
-					}
+					// filter blocks at a stale foreign id. A group an older export
+					// saved with no parent belongs to the recipe: the 7.x builder
+					// treated it so and saved that when the draft was opened.
+					$old_parent         = (int) ( $group['parent_id'] ?? 0 );
+					$group['parent_id'] = 0 === $old_parent
+						? $recipe_id
+						: ( $id_map[ $old_parent ] ?? ( $old_parent === $source_recipe_id ? $recipe_id : $old_parent ) );
 				}
 				unset( $group );
 

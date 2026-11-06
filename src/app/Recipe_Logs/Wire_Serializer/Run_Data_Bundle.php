@@ -57,6 +57,14 @@ final class Run_Data_Bundle {
 	private $api_logged = array();
 
 	/**
+	 * How many levels of tokens inside token values are filled in, the limit the
+	 * action token parser applies at run time.
+	 *
+	 * @var int
+	 */
+	private const MAX_NESTED_TOKEN_DEPTH = 5;
+
+	/**
 	 * Run token map, keyed by braced token identifier.
 	 *
 	 * @var array<string,string>
@@ -146,7 +154,7 @@ final class Run_Data_Bundle {
 	public function __construct( array $parts ) {
 		$this->recipe_log_row     = is_array( $parts['recipe_log_row'] ?? null ) ? $parts['recipe_log_row'] : array();
 		$this->api_retries        = is_array( $parts['api_retries'] ?? null ) ? $parts['api_retries'] : array();
-		$this->tokens_map         = is_array( $parts['tokens_map'] ?? null ) ? $parts['tokens_map'] : array();
+		$this->tokens_map         = $this->with_nested_tokens_filled_in( is_array( $parts['tokens_map'] ?? null ) ? $parts['tokens_map'] : array() );
 		$this->action_meta_bag    = is_array( $parts['action_meta_bag'] ?? null ) ? $parts['action_meta_bag'] : array();
 		$this->trigger_meta_bag   = is_array( $parts['trigger_meta_bag'] ?? null ) ? $parts['trigger_meta_bag'] : array();
 		$this->trigger_properties = is_array( $parts['trigger_properties'] ?? null ) ? $parts['trigger_properties'] : array();
@@ -342,6 +350,38 @@ final class Run_Data_Bundle {
 	 */
 	public function has_api_log( int $action_log_id ): bool {
 		return isset( $this->api_logged[ $action_log_id ] );
+	}
+
+	/**
+	 * Fills in the tokens held inside the recorded token values.
+	 *
+	 * An action field token is recorded with the field's saved text, before the
+	 * run's parser resolves the tokens in that text. Those tokens are recorded as
+	 * well, so the log can show what the run used.
+	 *
+	 * @since 8.0.2
+	 *
+	 * @param array<string,string> $tokens The token map as recorded.
+	 * @return array<string,string> The token map with final values.
+	 */
+	private function with_nested_tokens_filled_in( array $tokens ): array {
+		foreach ( $tokens as $key => $value ) {
+			if ( false === strpos( (string) $value, '{{' ) ) {
+				continue;
+			}
+
+			for ( $depth = 0; $depth < self::MAX_NESTED_TOKEN_DEPTH; ++$depth ) {
+				$filled_in = strtr( (string) $value, $tokens );
+				if ( $filled_in === $value ) {
+					break;
+				}
+				$value = $filled_in;
+			}
+
+			$tokens[ $key ] = $value;
+		}
+
+		return $tokens;
 	}
 
 	/**
