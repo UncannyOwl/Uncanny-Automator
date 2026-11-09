@@ -72,6 +72,13 @@ class Redirect_Delivery {
 	private $delivered = '';
 
 	/**
+	 * The run whose redirect was delivered in this request; 0 before any delivery.
+	 *
+	 * @var int
+	 */
+	private $delivered_for = 0;
+
+	/**
 	 * Whether a transient was stored this request; REST response filters add the header when true.
 	 *
 	 * @var bool
@@ -200,6 +207,28 @@ class Redirect_Delivery {
 	}
 
 	/**
+	 * Whether a run other than this one already recorded or delivered a redirect in this request. Recipes started by one
+	 * event run one after another in the request, and only the first redirect is delivered.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param int $recipe_log_id The run asking.
+	 *
+	 * @return bool
+	 */
+	public function redirected_by_another_run( int $recipe_log_id ): bool {
+		if ( '' !== $this->delivered && $this->delivered_for !== $recipe_log_id ) {
+			return true;
+		}
+		foreach ( array_keys( $this->pending ) as $run ) {
+			if ( $run !== $recipe_log_id ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Terminal-event listener: deliver the run's pending redirect once its synchronous leg finished.
 	 *
 	 * @param object $result The leg's `Pipeline_Result`.
@@ -233,7 +262,8 @@ class Redirect_Delivery {
 			automator_log( sprintf( 'Redirect to %s for run %d dropped: this request already redirected to %s.', $url, $recipe_log_id, $this->delivered ), 'redirect' );
 			return;
 		}
-		$this->delivered = $url;
+		$this->delivered     = $url;
+		$this->delivered_for = $recipe_log_id;
 		$this->nudge_cron();
 
 		switch ( $this->get_redirect_strategy() ) {
@@ -400,6 +430,7 @@ class Redirect_Delivery {
 	public function reset_for_tests(): void {
 		$this->pending                      = array();
 		$this->delivered                    = '';
+		$this->delivered_for                = 0;
 		$this->redirect_stored_this_request = false;
 		$this->last_stored_redirect_url     = '';
 	}

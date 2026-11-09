@@ -138,16 +138,16 @@ class Recipe_Post_Metabox {
 	}
 
 	/**
-	 * Add the recipe-builder body class on the recipe edit screen, and collapse the admin menu there.
+	 * Add the recipe-builder body class on the recipe edit screen.
 	 *
-	 * The core `folded` class collapses the menu for this render only. The user's saved preference (the `mfold` user setting) is untouched, so every other admin screen keeps rendering from it.
+	 * The admin menu keeps the user's own preference (the `mfold` user setting) here as on every other admin screen; the pinned builder sizes itself to whichever width the menu has.
 	 *
 	 * @param string $classes Space-separated list of body classes.
 	 *
 	 * @return string
 	 */
 	public function maybe_add_body_class( $classes ) {
-		return $this->is_recipe_edit_screen() ? $classes . ' uap-recipe-builder-screen folded' : $classes;
+		return $this->is_recipe_edit_screen() ? $classes . ' uap-recipe-builder-screen' : $classes;
 	}
 
 	/**

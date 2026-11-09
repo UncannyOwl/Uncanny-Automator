@@ -2062,6 +2062,7 @@ return array(
 			$baseDir . '/src/integrations/the-events-calendar/helpers/class-ec-attendee-meta-keys.php',
 			$baseDir . '/src/integrations/the-events-calendar/helpers/class-ec-attendee-resolver.php',
 			$baseDir . '/src/integrations/the-events-calendar/helpers/class-ec-provider-constants.php',
+			$baseDir . '/src/integrations/the-events-calendar/helpers/class-ec-rsvp.php',
 			$baseDir . '/src/integrations/the-events-calendar/helpers/class-has-dependency-state.php',
 			$baseDir . '/src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php',
 			$baseDir . '/src/integrations/the-events-calendar/helpers/trait-has-dependency.php',
@@ -2467,6 +2468,7 @@ return array(
 			$baseDir . '/src/integrations/woocommerce/helpers/woocommerce-helpers.php',
 		),
 		'tokens' => array(
+			$baseDir . '/src/integrations/woocommerce/tokens/wc-stripe-amounts.php',
 			$baseDir . '/src/integrations/woocommerce/tokens/wc-tokens.php',
 		),
 		'triggers' => array(

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Logs\Wire_Serializer;
 
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Execution_Log_Store;
+use Uncanny_Automator\App\Recipe_Builder\Block\Registry\Blocks\Filter_Block;
 use Uncanny_Automator\App\Recipe_Runner\Services\Error_Code;
 
 /**
@@ -144,12 +145,23 @@ final class Run_Data_Bundle {
 	private $node_created_map;
 
 	/**
+	 * What each migrated condition of a filter answered on a run recorded under 7.x, indexed by filter block id then
+	 * modifier id: `{ asked, met, message }`. Inside a Loop, the answers span the loop's items and carry no message.
+	 * Empty for a run recorded under 8.x.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @var array<int,array<int|string,array{asked:bool,met:bool,message:string}>>
+	 */
+	private $legacy_filter_conditions;
+
+	/**
 	 * Builds the bundle from prefetched raw store output, indexing rows by id.
 	 *
 	 * @param array<string,mixed> $parts Prefetched raw structures. Keys:
 	 *   recipe_log_row, trigger_rows, action_rows, api_retries, api_logged, tokens_map,
 	 *   action_meta_bag, trigger_meta_bag, trigger_properties, recipe_meta_bag, error_rows,
-	 *   loop_entries, loop_breakdowns, node_created_map.
+	 *   loop_entries, loop_breakdowns, node_created_map, legacy_filter_conditions.
 	 */
 	public function __construct( array $parts ) {
 		$this->recipe_log_row     = is_array( $parts['recipe_log_row'] ?? null ) ? $parts['recipe_log_row'] : array();
@@ -162,6 +174,8 @@ final class Run_Data_Bundle {
 		$this->loop_entries       = is_array( $parts['loop_entries'] ?? null ) ? $parts['loop_entries'] : array();
 		$this->loop_breakdowns    = is_array( $parts['loop_breakdowns'] ?? null ) ? $parts['loop_breakdowns'] : array();
 		$this->node_created_map   = is_array( $parts['node_created_map'] ?? null ) ? $parts['node_created_map'] : array();
+
+		$this->legacy_filter_conditions = is_array( $parts['legacy_filter_conditions'] ?? null ) ? $parts['legacy_filter_conditions'] : array();
 
 		foreach ( (array) ( $parts['api_logged'] ?? array() ) as $action_log_id ) {
 			$this->api_logged[ (int) $action_log_id ] = true;
@@ -474,6 +488,115 @@ final class Run_Data_Bundle {
 			return null;
 		}
 		return (string) $decoded[ $block_id ]['chosen_path'];
+	}
+
+	/**
+	 * What each condition of a filter answered when the filter chose its path: modifier id => met. A condition the
+	 * filter decided without is absent. A run recorded under 7.x answers from the 7.x results its migrated conditions
+	 * map to.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param int $block_id The filter block's post ID.
+	 * @return array<string, bool>|null Null when the run kept no answers for the block.
+	 */
+	public function filter_condition_results( int $block_id ): ?array {
+		$decoded = json_decode( (string) $this->recipe_meta( Execution_Log_Store::META_BLOCK_CHOSEN_PATHS ), true );
+		if ( is_array( $decoded ) && is_array( $decoded[ $block_id ]['conditions'] ?? null ) ) {
+			$results = array();
+			foreach ( $decoded[ $block_id ]['conditions'] as $modifier_id => $answer ) {
+				$results[ (string) $modifier_id ] = is_array( $answer ) && ! empty( $answer['met'] );
+			}
+
+			return $results;
+		}
+
+		return $this->legacy_filter_condition_results( $block_id );
+	}
+
+	/**
+	 * What each migrated condition of a filter answered on a run recorded under 7.x: modifier id => met. A condition
+	 * 7.x never asked is absent. Inside a Loop, a condition was asked when any loop item asked it, and met when it
+	 * passed for any item.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param int $block_id The filter block's post ID.
+	 * @return array<string, bool>|null Null when the run kept no 7.x results for the block.
+	 */
+	public function legacy_filter_condition_results( int $block_id ): ?array {
+		if ( ! isset( $this->legacy_filter_conditions[ $block_id ] ) ) {
+			return null;
+		}
+
+		$results = array();
+		foreach ( $this->legacy_filter_conditions[ $block_id ] as $modifier_id => $condition ) {
+			if ( ! empty( $condition['asked'] ) ) {
+				$results[ (string) $modifier_id ] = ! empty( $condition['met'] );
+			}
+		}
+
+		return $results;
+	}
+
+	/**
+	 * The message 7.x recorded for a migrated condition the filter asked and that did not pass.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param int        $block_id    The filter block's post ID.
+	 * @param int|string $modifier_id The condition's modifier id.
+	 * @return string|null Null for an 8.x run, a met condition, one never asked, or one without a message.
+	 */
+	public function legacy_condition_message( int $block_id, $modifier_id ): ?string {
+		$condition = $this->legacy_filter_conditions[ $block_id ][ (string) $modifier_id ] ?? null;
+		if ( ! is_array( $condition ) || empty( $condition['asked'] ) || ! empty( $condition['met'] ) || '' === (string) ( $condition['message'] ?? '' ) ) {
+			return null;
+		}
+
+		return (string) $condition['message'];
+	}
+
+	/**
+	 * Whether a migrated filter's conditions were met on a run recorded under 7.x, from the results 7.x kept, under the
+	 * filter's match mode: any condition met for `any`, every condition met for `all`. A condition never asked counts as
+	 * not met, as in 7.x.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param int    $block_id   The filter block's post ID.
+	 * @param string $match_mode The filter's match mode (`any` or `all`).
+	 * @return bool|null Null when the run kept no 7.x results for the filter.
+	 */
+	public function legacy_filter_met( int $block_id, string $match_mode ): ?bool {
+		if ( ! isset( $this->legacy_filter_conditions[ $block_id ] ) ) {
+			return null;
+		}
+
+		$met = array();
+		foreach ( $this->legacy_filter_conditions[ $block_id ] as $condition ) {
+			$met[] = ! empty( $condition['asked'] ) && ! empty( $condition['met'] );
+		}
+
+		return Filter_Block::MATCH_MODE_ALL === $match_mode ? ! in_array( false, $met, true ) : in_array( true, $met, true );
+	}
+
+	/**
+	 * Whether a modifier is a migrated condition whose filter's 7.x result this run kept.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param int|string $modifier_id The modifier id.
+	 * @return bool
+	 */
+	public function kept_legacy_condition( $modifier_id ): bool {
+		foreach ( $this->legacy_filter_conditions as $conditions ) {
+			if ( isset( $conditions[ (string) $modifier_id ] ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

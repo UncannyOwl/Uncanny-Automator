@@ -6,6 +6,7 @@ namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Template_Library;
 use Uncanny_Automator\App\Infrastructure\Template_Library\Template_Library_Client;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Portability\Legacy_Export_Adapter;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Recipe_Wire_Serializer;
+use Uncanny_Automator\App\Recipe_Builder\Token\Services\Reference_Rewriter;
 use WP_Error;
 
 /**
@@ -22,6 +23,13 @@ use WP_Error;
  * TTL policy as the feed.
  */
 final class Template_Preview_Service {
+
+	/**
+	 * What a preview shows in place of a trigger's own post id.
+	 *
+	 * @var string
+	 */
+	const ITEM_ID_PLACEHOLDER = '{{ID}}';
 
 	/**
 	 * Transient key prefix; the client's LIBRARY_VERSION rides in the key
@@ -91,6 +99,7 @@ final class Template_Preview_Service {
 			return $tree;
 		}
 
+		$tree              = $this->with_item_id_placeholders( $tree );
 		$tree['recipe_id'] = $template_id;
 
 		$wire = Recipe_Wire_Serializer::instance()->serialize( $tree );
@@ -146,5 +155,34 @@ final class Template_Preview_Service {
 		}
 
 		return $document['recipe'];
+	}
+
+	/**
+	 * Show a placeholder in the fields where a magic button or link trigger
+	 * stores its own post id. In a template that id belongs to the site the
+	 * template was made on; on the viewer's site it names another post or
+	 * none, yet the trigger's sentence shows it in a shortcode that can be
+	 * copied. With {@see self::ITEM_ID_PLACEHOLDER} the shortcode reads
+	 * `id="{{ID}}"`, and the builder doesn't offer to copy a shortcode that
+	 * still holds a `{{…}}` placeholder. Import gives the trigger its new id
+	 * (Recipe_Tree_Materializer).
+	 *
+	 * @param array<string,mixed> $tree Canonical recipe tree.
+	 * @return array<string,mixed>
+	 */
+	private function with_item_id_placeholders( array $tree ): array {
+		foreach ( (array) ( $tree['triggers'] ?? array() ) as $index => $trigger ) {
+			if ( ! is_array( $trigger ) ) {
+				continue;
+			}
+			$code = (string) ( $trigger['code'] ?? '' );
+			foreach ( Reference_Rewriter::BARE_ID_FIELD_KEYS as $key ) {
+				if ( $code === $key || isset( $trigger['fields'][ $key ] ) ) {
+					$tree['triggers'][ $index ]['fields'][ $key ] = self::ITEM_ID_PLACEHOLDER;
+				}
+			}
+		}
+
+		return $tree;
 	}
 }

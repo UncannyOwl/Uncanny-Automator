@@ -20,6 +20,8 @@ use WP_REST_Request;
  * @since 7.2.3
  * @since 7.2.3 Added Page Builder agent REST route access.
  * @since 7.2.3 Defers bearer identity until the route allowlist succeeds.
+ * @since 8.0.3 Keeps JWT Authentication for WP-API from refusing an
+ *                  Automator token on a request Automator authorizes (Jwt_Auth_Conflict).
  */
 class Rest_Bearer_Route_Authorizer {
 
@@ -94,6 +96,25 @@ class Rest_Bearer_Route_Authorizer {
 			20,
 			3
 		);
+		// The REST server fires this once, after every plugin has registered its
+		// rest_pre_dispatch callbacks and before it dispatches anything. A server
+		// built before this point has fired it already.
+		if ( did_action( 'rest_api_init' ) ) {
+			$this->contain_jwt_auth_refusal();
+		} else {
+			add_action( 'rest_api_init', array( $this, 'contain_jwt_auth_refusal' ), PHP_INT_MAX );
+		}
+	}
+
+	/**
+	 * Keep JWT Authentication for WP-API from refusing requests Automator authorizes.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @return void
+	 */
+	public function contain_jwt_auth_refusal(): void {
+		Jwt_Auth_Conflict::contain( \Closure::fromCallable( array( $this, 'authorizes_own_bearer_request' ) ) );
 	}
 
 	/**
@@ -111,6 +132,46 @@ class Rest_Bearer_Route_Authorizer {
 		}
 
 		return $this->enforce_bearer_route_access( $result, array(), $request );
+	}
+
+	/**
+	 * Whether Automator authorizes this request with its own valid bearer token.
+	 *
+	 * Mirrors the three branches of enforce_bearer_route_access(): a request a
+	 * checked MCP tool dispatches is judged by Rest_Request_Scope, the owned MCP
+	 * transport routes authenticate the token themselves, and every other route
+	 * must be on the allowlist for this token's purpose, method and scope. A
+	 * missing, foreign, invalid or unprivileged token, or a route Automator
+	 * would refuse, answers false, so the JWT plugin's refusal stands.
+	 *
+	 * Only Jwt_Auth_Conflict asks, and only after the JWT plugin refused.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param WP_REST_Request $request REST request object.
+	 *
+	 * @return bool
+	 */
+	private function authorizes_own_bearer_request( WP_REST_Request $request ): bool {
+		$context = $this->resolve_bearer_context( $request );
+		if ( ! $context instanceof Authenticated_Token_Context ) {
+			return false;
+		}
+
+		if ( Rest_Request_Scope::is_active() ) {
+			return null === Rest_Request_Scope::authorize( $request );
+		}
+
+		if ( $this->is_owned_mcp_route( $request ) ) {
+			return true;
+		}
+
+		return null === $this->credential_refusal(
+			$context,
+			$this->normalize_route( (string) $request->get_route() ),
+			strtoupper( (string) $request->get_method() ),
+			$request
+		);
 	}
 
 	/**

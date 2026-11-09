@@ -853,6 +853,7 @@ function is_automator_admin_page() {
  *
  * @since 7.2
  * @since 8.0.0 Anchored to the request path (was a whole-URI substring match).
+ * @since 8.0.3 A `rest_route` that is not a string (`?rest_route[]=x`) is no route, instead of a fatal TypeError.
  *
  * @param string $segment The path segment to search for (e.g. 'uap/v2').
  *
@@ -875,8 +876,10 @@ function automator_request_contains( $segment ) {
 	// Plain permalink fallback — the REST route rides as `?rest_route=/uap/v2/…`.
 	// Anchor the segment to the START of the route (after a leading `/`) so a
 	// crafted `?rest_route=/foo?x=uap/v2` can't sneak through a free substring.
+	// `?rest_route[]=x` arrives as an array, which urldecode() refuses with a
+	// TypeError on PHP 8. It names no route, and WordPress answers it with 400.
 	// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Decoded first on purpose; the decoded value is unslashed and sanitized by the wrapping calls.
-	$rest_route = isset( $_GET['rest_route'] ) ? sanitize_text_field( wp_unslash( urldecode( $_GET['rest_route'] ) ) ) : '';
+	$rest_route = isset( $_GET['rest_route'] ) && is_string( $_GET['rest_route'] ) ? sanitize_text_field( wp_unslash( urldecode( $_GET['rest_route'] ) ) ) : '';
 	$rest_route = ltrim( $rest_route, '/' );
 
 	return '' !== $rest_route && 0 === strpos( $rest_route, $segment );

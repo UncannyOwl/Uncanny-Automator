@@ -2020,6 +2020,12 @@ return array (
         1 => 10,
         2 => 4,
       ),
+      1 => 
+      array (
+        0 => 'automator_tec_rsvp_tickets_generated_for_product',
+        1 => 10,
+        2 => 4,
+      ),
     ),
   ),
   'ET_TICKET_ADDED' => 

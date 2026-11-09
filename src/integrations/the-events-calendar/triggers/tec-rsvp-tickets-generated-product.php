@@ -11,16 +11,14 @@ use Uncanny_Automator\Recipe\Trigger_Definition;
  * event, optionally filtered by going / not-going status. Gated on
  * Event Tickets.
  *
- * Hook signature: event_tickets_rsvp_tickets_generated_for_product(
- *   $product_id, $order_id, $qty, $attendee_ids
- * ) — verified at event-tickets/src/Tribe/RSVP.php:2807. Note an older
- * 3-arg fire path exists at Repositories/Attendee/RSVP.php:191 — we
- * treat missing $attendee_ids as empty array.
+ * Both hooks pass ( $product_id, $order_id, $qty, $attendee_ids ):
+ *   - event_tickets_rsvp_tickets_generated_for_product: the legacy RSVP.
+ *     Its older 3-arg fire path passes no attendee IDs, read as none.
+ *   - automator_tec_rsvp_tickets_generated_for_product: a Tickets Commerce
+ *     RSVP (Event Tickets 5.30+), fired by Rsvp_Tickets_Dispatcher.
  *
- * Status is NOT a hook arg. We resolve it from the first attendee's
- * `_tribe_rsvp_status` post-meta (verified as the canonical key at
- * event-tickets/src/Tribe/RSVP.php:106 → const ATTENDEE_RSVP_KEY).
- * Values: 'yes' (going) / 'no' (not going).
+ * Status is not a hook arg: it is the first attendee's RSVP answer, in
+ * either format.
  *
  * @property The_Events_Calendar_Helpers $item_helpers
  *
@@ -39,7 +37,8 @@ class ET_RSVP_TICKETS_GENERATED_PRODUCT extends \Uncanny_Automator\Recipe\Trigge
 		return self::new_definition( 'ET_RSVP_TICKETS_GENERATED_PRODUCT', 'EC' )
 			->trigger_meta( 'ECEVENTS' )
 			->trigger_type( 'anonymous' )
-			->hook( 'event_tickets_rsvp_tickets_generated_for_product', 10, 4 );
+			->hook( 'event_tickets_rsvp_tickets_generated_for_product', 10, 4 )
+			->hook( 'automator_tec_rsvp_tickets_generated_for_product', 10, 4 );
 	}
 
 	/**
@@ -279,8 +278,7 @@ class ET_RSVP_TICKETS_GENERATED_PRODUCT extends \Uncanny_Automator\Recipe\Trigge
 
 	/**
 	 * Resolve normalized status ('going' / 'not_going' / '') from a list
-	 * of attendee post IDs. Reads `_tribe_rsvp_status` directly (key
-	 * confirmed at event-tickets/src/Tribe/RSVP.php:106).
+	 * of attendee post IDs, in either RSVP format.
 	 *
 	 * **Primary-attendee semantics**: only the FIRST attendee in the
 	 * list is inspected. If a single RSVP submission generates multiple
@@ -301,23 +299,7 @@ class ET_RSVP_TICKETS_GENERATED_PRODUCT extends \Uncanny_Automator\Recipe\Trigge
 			return '';
 		}
 
-		$first = absint( reset( $attendee_ids ) );
-
-		if ( 0 === $first ) {
-			return '';
-		}
-
-		$raw = (string) get_post_meta( $first, '_tribe_rsvp_status', true );
-
-		if ( 'yes' === $raw ) {
-			return 'going';
-		}
-
-		if ( 'no' === $raw ) {
-			return 'not_going';
-		}
-
-		return '';
+		return $this->item_helpers->rsvp_attendee_status( absint( reset( $attendee_ids ) ) );
 	}
 
 	/**

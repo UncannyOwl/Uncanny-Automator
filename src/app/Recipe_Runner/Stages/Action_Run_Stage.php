@@ -18,6 +18,7 @@ use Uncanny_Automator\App\Recipe_Runner\Blocks\Block_Children_Runner;
 use Uncanny_Automator\App\Recipe_Runner\Blocks\Block_Processor;
 use Uncanny_Automator\App\Recipe_Runner\Blocks\Block_Processor_Registry;
 use Uncanny_Automator\App\Recipe_Runner\Blocks\Block_Refusal_Aware;
+use Uncanny_Automator\App\Recipe_Runner\Blocks\Filter_Condition_Answers;
 use Uncanny_Automator\App\Recipe_Runner\Blocks\Tree_Walk;
 use Uncanny_Automator\App\Recipe_Runner\Blocks\Walk_Completion_Aware;
 use Uncanny_Automator\App\Recipe_Runner\Dtos\Pipeline_Result;
@@ -134,6 +135,15 @@ class Action_Run_Stage implements Stage {
 	private $meta_structure;
 
 	/**
+	 * What each condition of a filter answers while the processor this stage handed the filter to evaluates it.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @var Filter_Condition_Answers
+	 */
+	private $condition_answers;
+
+	/**
 	 * Wire the stage; every dependency is lazy-defaulted.
 	 *
 	 * @param Recipe_Complete_Stage|null    $recipe_complete Completion stage.
@@ -165,6 +175,7 @@ class Action_Run_Stage implements Stage {
 
 		$this->action_definitions = $action_definitions ?? new Automator_Action_Definition_Bridge();
 		$this->meta_structure     = $meta_structure ?? new Action_Meta_Structure_Converter();
+		$this->condition_answers  = new Filter_Condition_Answers();
 	}
 
 	/**
@@ -543,8 +554,10 @@ class Action_Run_Stage implements Stage {
 			return;
 		}
 
+		// Pro 8.0.0 and 8.0.1 hand the children runner no per-condition results; note the answers while the filter runs.
+		$this->condition_answers->open( $node, $context );
 		try {
-			$outcome = $processor->process( $node, $context, new Block_Children_Runner( $this, $result, $this->log_store, $depth ) );
+			$outcome = $processor->process( $node, $context, new Block_Children_Runner( $this, $result, $this->log_store, $depth, $this->condition_answers ) );
 		} catch ( \Throwable $e ) {
 			// Entity items in a loop body are Pro's; the walk's catch stores the throw on the run as before.
 			if ( $context->is_loop_scoped() ) {
@@ -569,6 +582,8 @@ class Action_Run_Stage implements Stage {
 				)
 			);
 			return;
+		} finally {
+			$this->condition_answers->close( $block_id );
 		}
 
 		if ( $outcome->is_not_run() ) {

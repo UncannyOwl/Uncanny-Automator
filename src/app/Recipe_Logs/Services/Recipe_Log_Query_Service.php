@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Logs\Services;
 
 use Uncanny_Automator\App\Infrastructure\Database\Database;
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Execution_Log_Store;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Block_Modifier_Types;
 use Uncanny_Automator\App\Recipe_Builder\Block\Migration\Legacy_Storage_Migration_Exception;
 use Uncanny_Automator\App\Recipe_Builder\Loop\Iterable_Expression\Enums\Iteration_Type;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Schema\Recipe_Schema_Reader;
@@ -382,25 +384,156 @@ final class Recipe_Log_Query_Service {
 
 		$action_log_ids  = array_map( static fn( $r ) => (int) $r['ID'], $action_rows );
 		$trigger_log_ids = array_map( static fn( $r ) => (int) $r['ID'], $trigger_rows );
+		$recipe_meta_bag = $store->get_recipe_log_meta_bag( $log_id );
 
 		return new Run_Data_Bundle(
 			array(
-				'recipe_log_row'     => $log_row,
-				'trigger_rows'       => $trigger_rows,
-				'action_rows'        => $action_rows,
-				'api_retries'        => Database::get_api_log_store()->get_api_retries( $log_id ),
-				'api_logged'         => Database::get_api_log_store()->get_api_logged_action_log_ids( $log_id ),
-				'tokens_map'         => $store->get_tokens_record_map( $recipe_id, $log_id, $run_number ),
-				'action_meta_bag'    => $store->get_action_log_meta_bag( $action_log_ids ),
-				'trigger_meta_bag'   => $store->get_trigger_log_meta_bag( $trigger_log_ids ),
-				'trigger_properties' => $store->get_trigger_log_meta_values( $trigger_log_ids, 'properties' ),
-				'recipe_meta_bag'    => $store->get_recipe_log_meta_bag( $log_id ),
-				'error_rows'         => Database::get_action_error_store()->get_by_recipe_log( $log_id ),
-				'loop_entries'       => $store->get_loop_entries( $log_id, $run_number ),
-				'loop_breakdowns'    => $store->get_loop_item_status_breakdown( $log_id, $run_number ),
-				'node_created_map'   => $this->collect_node_created_map( $tree ),
+				'recipe_log_row'           => $log_row,
+				'trigger_rows'             => $trigger_rows,
+				'action_rows'              => $action_rows,
+				'api_retries'              => Database::get_api_log_store()->get_api_retries( $log_id ),
+				'api_logged'               => Database::get_api_log_store()->get_api_logged_action_log_ids( $log_id ),
+				'tokens_map'               => $store->get_tokens_record_map( $recipe_id, $log_id, $run_number ),
+				'action_meta_bag'          => $store->get_action_log_meta_bag( $action_log_ids ),
+				'trigger_meta_bag'         => $store->get_trigger_log_meta_bag( $trigger_log_ids ),
+				'trigger_properties'       => $store->get_trigger_log_meta_values( $trigger_log_ids, 'properties' ),
+				'recipe_meta_bag'          => $recipe_meta_bag,
+				'error_rows'               => Database::get_action_error_store()->get_by_recipe_log( $log_id ),
+				'loop_entries'             => $store->get_loop_entries( $log_id, $run_number ),
+				'loop_breakdowns'          => $store->get_loop_item_status_breakdown( $log_id, $run_number ),
+				'node_created_map'         => $this->collect_node_created_map( $tree ),
+				'legacy_filter_conditions' => $this->legacy_filter_conditions( $recipe_id, $tree, $log_id, $recipe_meta_bag, $store ),
 			)
 		);
+	}
+
+	/**
+	 * What each migrated condition of a filter answered on a run recorded under 7.x: the run's result rows for the
+	 * filter's 7.x group, mapped through each condition's 7.x id, with the run's 7.x failure messages. Every 8.0 run of
+	 * a recipe with a block opens the block run-config record; a run that has it gets nothing here. Inside a Loop, 7.x
+	 * wrote a result row per item: a condition there carries its answers across the items and no message, which would
+	 * belong to one item. The 7.x rows are read in one query, the `conditions_failed` rows only when a top-level filter
+	 * can show them, and the conditions in one query for the recipe once a group row came back.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param int                  $recipe_id       Recipe id.
+	 * @param array<string,mixed>  $tree            Schema tree.
+	 * @param int                  $log_id          Recipe-log row id.
+	 * @param array<string,string> $recipe_meta_bag The run's fixed recipe-log meta.
+	 * @param Execution_Log_Store  $store           Log store.
+	 * @return array<int,array<int|string,array{asked:bool,met:bool,message:string}>> By filter block id, then modifier id.
+	 */
+	private function legacy_filter_conditions( int $recipe_id, array $tree, int $log_id, array $recipe_meta_bag, Execution_Log_Store $store ): array {
+		if ( '' !== (string) ( $recipe_meta_bag[ Execution_Log_Store::META_BLOCK_RUN_CONFIG ] ?? '' ) ) {
+			return array();
+		}
+
+		$groups      = array();
+		$loop_blocks = array();
+		$this->collect_migrated_filters( (array) ( $tree['content'] ?? array() ), false, $groups, $loop_blocks );
+		if ( empty( $groups ) ) {
+			return array();
+		}
+
+		$keys = array_values( $groups );
+		if ( ! empty( array_diff_key( $groups, $loop_blocks ) ) ) {
+			$keys[] = 'conditions_failed';
+		}
+		$values  = $store->get_recipe_log_meta_values( $log_id, $keys );
+		$answers = array();
+		foreach ( $groups as $block_id => $group_id ) {
+			$group_answers = $this->legacy_group_answers( $values[ $group_id ] ?? array() );
+			if ( null !== $group_answers ) {
+				$answers[ $block_id ] = $group_answers;
+			}
+		}
+		if ( empty( $answers ) ) {
+			return array();
+		}
+
+		$messages = array();
+		foreach ( $values['conditions_failed'] ?? array() as $value ) {
+			foreach ( (array) json_decode( $value, true ) as $legacy_id => $message ) {
+				$messages[ (string) $legacy_id ] = is_scalar( $message ) ? (string) $message : '';
+			}
+		}
+
+		$conditions = array();
+		foreach ( Database::get_block_modifier_store()->get_by_recipe( $recipe_id, Block_Modifier_Types::FILTER_CONDITION ) as $row ) {
+			$block_id  = (int) $row['parent_block_id'];
+			$legacy_id = (string) ( $row['legacy_id'] ?? '' );
+			if ( ! isset( $answers[ $block_id ] ) || '' === $legacy_id ) {
+				continue;
+			}
+
+			$conditions[ $block_id ][ $row['id'] ] = array(
+				'asked'   => array_key_exists( $legacy_id, $answers[ $block_id ] ),
+				'met'     => ! empty( $answers[ $block_id ][ $legacy_id ] ),
+				'message' => isset( $loop_blocks[ $block_id ] ) ? '' : ( $messages[ $legacy_id ] ?? '' ),
+			);
+		}
+
+		return $conditions;
+	}
+
+	/**
+	 * One answer per 7.x condition across a group's result rows: asked when any row names it, passed when any row says
+	 * it succeeded. A top-level group has one row; inside a Loop, 7.x wrote one per item.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param array<int,string> $rows The group's result rows, oldest first.
+	 * @return array<string,bool>|null 7.x condition id => passed; null when no row holds a result.
+	 */
+	private function legacy_group_answers( array $rows ): ?array {
+		$answers = array();
+		$found   = false;
+		foreach ( $rows as $row ) {
+			$decoded = json_decode( $row, true );
+			if ( ! is_array( $decoded ) ) {
+				continue;
+			}
+			$found = true;
+			foreach ( $decoded as $legacy_id => $answer ) {
+				$answers[ (string) $legacy_id ] = ! empty( $answers[ (string) $legacy_id ] ) || 'succeeded' === $answer;
+			}
+		}
+
+		return $found ? $answers : null;
+	}
+
+	/**
+	 * Map each migrated filter's block id to its 7.x group id, through block paths and into a Loop's body, noting the
+	 * filters inside a Loop.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param array<int,mixed>  $nodes       Tree nodes.
+	 * @param bool              $in_loop     Whether the nodes sit in a Loop's body.
+	 * @param array<int,string> $groups      Block id => 7.x group id, appended in place.
+	 * @param array<int,bool>   $loop_blocks Block id => true for each filter inside a Loop, appended in place.
+	 * @return void
+	 */
+	private function collect_migrated_filters( array $nodes, bool $in_loop, array &$groups, array &$loop_blocks ): void {
+		foreach ( $nodes as $node ) {
+			$node = (array) $node;
+			if ( 'block' !== ( $node['kind'] ?? '' ) ) {
+				continue;
+			}
+			$block_type = (string) ( $node['block_type'] ?? '' );
+			$group_id   = (string) ( $node['legacy_group_id'] ?? '' );
+			if ( Block_Type::FILTER === $block_type && '' !== $group_id ) {
+				$block_id            = (int) ( $node['id'] ?? 0 );
+				$groups[ $block_id ] = $group_id;
+				if ( $in_loop ) {
+					$loop_blocks[ $block_id ] = true;
+				}
+			}
+			foreach ( (array) ( $node['paths'] ?? array() ) as $path ) {
+				$this->collect_migrated_filters( (array) ( ( (array) $path )['items'] ?? array() ), $in_loop || Block_Type::LOOP === $block_type, $groups, $loop_blocks );
+			}
+		}
 	}
 
 	/**

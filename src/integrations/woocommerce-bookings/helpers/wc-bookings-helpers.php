@@ -2,6 +2,7 @@
 
 namespace Uncanny_Automator\Integrations\WooCommerce_Bookings;
 
+use Uncanny_Automator\Wc_Stripe_Amounts;
 use Uncanny_Automator\Wc_Tokens;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -250,18 +251,8 @@ class Wc_Bookings_Helpers {
 			$ordered_products_qty   = join( ' | ', $ordered_products_qty );
 			$ordered_products_links = join( ' | ', $ordered_products_links );
 
-			$stripe_fee    = 0;
-			$stripe_payout = 0;
-			if ( function_exists( 'stripe_wc' ) ) {
-				$stripe_fee    = \WC_Stripe_Utils::display_fee( $order );
-				$stripe_payout = \WC_Stripe_Utils::display_net( $order );
-			}
-			if ( ( function_exists( 'woocommerce_gateway_stripe' ) || class_exists( '\WC_Stripe_Helper' ) ) && 0 === $stripe_fee ) {
-				$stripe_fee = \WC_Stripe_Helper::get_stripe_fee( $order );
-			}
-			if ( class_exists( '\WC_Stripe_Helper' ) && 0 === $stripe_payout ) {
-				$stripe_payout = \WC_Stripe_Helper::get_stripe_net( $order );
-			}
+			$stripe_fee    = Wc_Stripe_Amounts::fee( $order );
+			$stripe_payout = Wc_Stripe_Amounts::payout( $order );
 
 			$order_token_values = array(
 				'order_id'              => $order_id,

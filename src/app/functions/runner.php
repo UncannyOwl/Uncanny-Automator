@@ -8,6 +8,7 @@
  */
 
 use Uncanny_Automator\App\Infrastructure\Database\Database;
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Execution_Log_Store;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Schema\Recipe_Schema_Reader;
 use Uncanny_Automator\App\Recipe_Runner\Blocks\Tree_Walk;
 use Uncanny_Automator\App\Recipe_Runner\Services\Run_Detach_Request;
@@ -87,5 +88,58 @@ if ( ! function_exists( 'automator_run_has_work_after' ) ) {
 		$items = is_array( $tree ) ? (array) ( $tree['content'] ?? array() ) : array();
 
 		return true === Tree_Walk::has_work_after( $items, $action_id );
+	}
+}
+
+if ( ! function_exists( 'automator_get_run_claim' ) ) {
+	/**
+	 * Who holds a run's claim (see automator_claim_run()).
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param int    $recipe_id     The recipe the run belongs to.
+	 * @param int    $recipe_log_id The run (`$action_data['recipe_log_id']`).
+	 * @param string $claim         The claim's name: lowercase letters, digits and underscores, up to 64.
+	 *
+	 * @return string|null|WP_Error The holder, null when nothing holds it, or an error for a bad id or name or a failed read.
+	 */
+	function automator_get_run_claim( int $recipe_id, int $recipe_log_id, string $claim ) {
+		if ( $recipe_id <= 0 || $recipe_log_id <= 0 || 1 !== preg_match( '/^[a-z0-9_]{1,64}$/', $claim ) ) {
+			return new WP_Error( 'automator_run_claim_invalid', 'A run claim needs a recipe, a run and a name of lowercase letters, digits and underscores.' );
+		}
+		try {
+			return Database::get_execution_log_store()->find_recipe_log_meta( $recipe_id, $recipe_log_id, Execution_Log_Store::META_RUN_CLAIM_PREFIX . $claim );
+		} catch ( \Throwable $e ) {
+			return new WP_Error( 'automator_run_claim_failed', $e->getMessage() );
+		}
+	}
+}
+
+if ( ! function_exists( 'automator_claim_run' ) ) {
+	/**
+	 * Claim something once for a whole run: the first holder keeps it for the rest of the run, whichever request the
+	 * run's later nodes execute in. Claiming again as the holder is true; any other holder is false.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param int    $recipe_id     The recipe the run belongs to.
+	 * @param int    $recipe_log_id The run (`$action_data['recipe_log_id']`).
+	 * @param string $claim         The claim's name: lowercase letters, digits and underscores, up to 64.
+	 * @param string $holder        Who claims it, such as the action id.
+	 *
+	 * @return bool|WP_Error Whether $holder holds the claim, or an error for a bad id, name or holder, or when the claim
+	 *                       could not be taken (lock not acquired, read or write failed); an error writes nothing.
+	 */
+	function automator_claim_run( int $recipe_id, int $recipe_log_id, string $claim, string $holder ) {
+		if ( $recipe_id <= 0 || $recipe_log_id <= 0 || '' === $holder || 1 !== preg_match( '/^[a-z0-9_]{1,64}$/', $claim ) ) {
+			return new WP_Error( 'automator_run_claim_invalid', 'A run claim needs a recipe, a run, a holder and a name of lowercase letters, digits and underscores.' );
+		}
+		try {
+			$kept = Database::get_execution_log_store()->claim_recipe_log_meta( $recipe_id, $recipe_log_id, Execution_Log_Store::META_RUN_CLAIM_PREFIX . $claim, $holder );
+
+			return $kept === $holder;
+		} catch ( \Throwable $e ) {
+			return new WP_Error( 'automator_run_claim_failed', $e->getMessage() );
+		}
 	}
 }

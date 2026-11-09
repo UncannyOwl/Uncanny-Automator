@@ -9,7 +9,9 @@ use Uncanny_Automator\App\Recipe_Logs\Status\Enums\Log_Status_Phase;
 use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Path_Code;
 use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Type;
 use Uncanny_Automator\App\Recipe_Builder\Block\Registry\Block_Registry;
+use Uncanny_Automator\App\Recipe_Builder\Block\Registry\Blocks\Filter_Block;
 use Uncanny_Automator\App\Recipe_Builder\Block\Registry\WP_Block_Registry;
+use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Fields_Bag;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Wire_Key;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Wire_Node_Type;
 use Uncanny_Automator\App\Bridge\Automator_Recipe_Runner_Bridge;
@@ -299,7 +301,10 @@ final class Log_Block_Serializer {
 	/**
 	 * Resolve a filter block's chosen path: the run's record when the runner kept one (a filter absent from it
 	 * was never evaluated), otherwise inferred from execution — the path whose descendant actions ran was the
-	 * taken path (runs older than the record).
+	 * taken path (runs older than the record). A filter in a run recorded under 7.x whose actions never ran took
+	 * its not-met path when the 7.x results it kept say it wasn't met: 7.x had no not-met path to run.
+	 *
+	 * @since 8.0.3 A 7.x run's filter that wasn't met reads its not-met path.
 	 *
 	 * @param array<string,mixed> $block    Block entry.
 	 * @param int                 $block_id Block id.
@@ -311,7 +316,18 @@ final class Log_Block_Serializer {
 			return $bundle->chosen_path_for_block( $block_id );
 		}
 
-		return $this->infer_chosen_path_from_execution( $block, $bundle );
+		$inferred = $this->infer_chosen_path_from_execution( $block, $bundle );
+		if ( null !== $inferred ) {
+			return $inferred;
+		}
+
+		// 7.x recorded no path, and its not-met path ran nothing: no action ran, and its results say the filter wasn't met.
+		$mode = Fields_Bag::from_array( (array) ( $block['fields'] ?? array() ) )->scalar( Filter_Block::FIELD_MATCH_MODE );
+		if ( false === $bundle->legacy_filter_met( $block_id, '' === $mode ? Filter_Block::MATCH_MODE_ANY : $mode ) ) {
+			return Block_Path_Code::FILTER_CONDITIONS_NOT_MET;
+		}
+
+		return null;
 	}
 
 	/**

@@ -667,48 +667,22 @@ class Wc_Tokens {
 						break;
 
 					case 'stripe_fee':
-						$value = 0;
-						if ( function_exists( 'stripe_wc' ) ) {
-							$value = \WC_Stripe_Utils::display_fee( $order );
-						}
-						if ( ( function_exists( 'woocommerce_gateway_stripe' ) || class_exists( '\WC_Stripe_Helper' ) ) && 0 === $value ) {
-							$value = \WC_Stripe_Helper::get_stripe_fee( $order );
-						}
-
+						$value = Wc_Stripe_Amounts::fee( $order );
 						break;
 
 					case 'stripe_fee_raw':
-						$value = 0;
-						if ( function_exists( 'stripe_wc' ) ) {
-							$value = \WC_Stripe_Utils::display_fee( $order );
-						}
-						if ( ( function_exists( 'woocommerce_gateway_stripe' ) || class_exists( '\WC_Stripe_Helper' ) ) && 0 === $value ) {
-							$value = \WC_Stripe_Helper::get_stripe_fee( $order );
-						}
-
+						$value = Wc_Stripe_Amounts::fee( $order );
 						if ( ! empty( $value ) ) {
 							$value = $this->clean_wc_price( $value );
 						}
 						break;
 
 					case 'stripe_payout':
-						$value = 0;
-						if ( function_exists( 'stripe_wc' ) ) {
-							$value = \WC_Stripe_Utils::display_net( $order );
-						}
-						if ( class_exists( '\WC_Stripe_Helper' ) && 0 === $value ) {
-							$value = \WC_Stripe_Helper::get_stripe_net( $order );
-						}
+						$value = Wc_Stripe_Amounts::payout( $order );
 						break;
 
 					case 'stripe_payout_raw':
-						$value = 0;
-						if ( function_exists( 'stripe_wc' ) ) {
-							$value = \WC_Stripe_Utils::display_net( $order );
-						}
-						if ( class_exists( '\WC_Stripe_Helper' ) && 0 === $value ) {
-							$value = \WC_Stripe_Helper::get_stripe_net( $order );
-						}
+						$value = Wc_Stripe_Amounts::payout( $order );
 						if ( ! empty( $value ) ) {
 							$value = $this->clean_wc_price( $value );
 						}

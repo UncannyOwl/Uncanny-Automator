@@ -96,6 +96,10 @@ final class Node_Run_Visibility {
 	 * Whether a block modifier should be hidden from this run's flow.
 	 * Modifiers never leave run rows, so creation time is the only signal;
 	 * non-numeric ids (legacy fixtures) can't be dated and stay visible.
+	 * A migrated 7.x condition whose filter's 7.x result the run kept stays
+	 * visible too: the migration created its post after the run.
+	 *
+	 * @since 8.0.3 Keeps a migrated 7.x condition the run kept a result for.
 	 *
 	 * @param array<string,mixed> $modifier Tree modifier entry.
 	 * @param Run_Data_Bundle     $bundle   Run data.
@@ -104,6 +108,9 @@ final class Node_Run_Visibility {
 	public function modifier_hidden( array $modifier, Run_Data_Bundle $bundle ): bool {
 		$id = $modifier['id'] ?? 0;
 		if ( ! is_numeric( $id ) ) {
+			return false;
+		}
+		if ( $bundle->kept_legacy_condition( (int) $id ) ) {
 			return false;
 		}
 		return $this->created_after_run_start( (int) $id, $bundle );

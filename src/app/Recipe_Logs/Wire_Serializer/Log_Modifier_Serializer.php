@@ -96,6 +96,11 @@ final class Log_Modifier_Serializer {
 			if ( null !== $outcome && ! $outcome['met'] && '' !== $outcome['message'] ) {
 				$execution['result_message'] = Log_Message_Text::from_stored( $outcome['message'] );
 			}
+		} else {
+			$legacy_message = $bundle->legacy_condition_message( $block_id, $id );
+			if ( null !== $legacy_message ) {
+				$execution['result_message'] = Log_Message_Text::from_stored( $legacy_message );
+			}
 		}
 
 		// `fields` stays the saved configuration, tokens intact, exactly as Log_Item_Serializer

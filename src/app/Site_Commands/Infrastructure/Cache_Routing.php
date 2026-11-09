@@ -25,6 +25,9 @@ namespace Uncanny_Automator\App\Site_Commands\Infrastructure;
  *
  * Arguments are the function's own parameters, literals or casts of them.
  * There is no assignment, no function call (so no hook) and no other object.
+ * The call may be guarded by "$wp_object_cache instanceof Name &&", as APCu
+ * Manager writes it: instanceof runs no code and loads no class, so the
+ * guard only decides whether the call runs.
  *
  * Isolating reads is best effort. A function that reads or fills the cache
  * but is in no verified form leaves commands running, with a limitation to
@@ -345,7 +348,8 @@ final class Cache_Routing {
 		if ( $returning ) {
 			$rest = array_slice( $rest, 1 );
 		}
-		$end = self::call_end( $rest, $parameters );
+		$rest = array_slice( $rest, self::guard_length( $rest, 0 ) );
+		$end  = self::call_end( $rest, $parameters );
 		if ( null === $end || ';' !== ( $rest[ $end + 1 ][1] ?? '' ) ) {
 			return false;
 		}
@@ -358,7 +362,9 @@ final class Cache_Routing {
 	/**
 	 * Whether a function that flushes can reach nothing but $wp_object_cache.
 	 * It may hold its own values and the globals it declares, call
-	 * $wp_object_cache's methods and FLUSH_CALLS, and fire FLUSH_FILTERS.
+	 * $wp_object_cache's methods, guarded or not by
+	 * "$wp_object_cache instanceof Name &&", call FLUSH_CALLS, and fire
+	 * FLUSH_FILTERS.
 	 * Anything that could reach another object or run other code is refused:
 	 * another object's methods, a call through a call's result, static calls,
 	 * new objects, closures, variable functions, $GLOBALS, interpolated
@@ -398,6 +404,12 @@ final class Cache_Routing {
 				continue;
 			}
 			if ( T_VARIABLE === $type ) {
+				$guard = self::guard_length( $body, $index );
+				if ( $guard > 0 ) {
+					// Resume at the $wp_object_cache whose member the guard decides on.
+					$index += $guard - 1;
+					continue;
+				}
 				// No variable function, no other global's store, and $wp_object_cache only used, never replaced.
 				if ( '(' === $next || in_array( $text, array( '$GLOBALS', '$this' ), true ) || ( '$wp_object_cache' === $text && ! in_array( $next, array( '->', '?->', ',', ';' ), true ) ) ) {
 					return false;
@@ -522,6 +534,39 @@ final class Cache_Routing {
 		}
 
 		return null;
+	}
+
+	/**
+	 * How many tokens "$wp_object_cache instanceof Name &&" takes at a
+	 * position, when a member of $wp_object_cache follows it; 0 when the
+	 * tokens there are anything else. Name is one class name, which may start
+	 * with a backslash. Another operand, a class named by a variable or an
+	 * expression, and "||" are no guard.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param array $tokens   Tokens.
+	 * @param int   $position Where the guard would start.
+	 * @return int
+	 */
+	private static function guard_length( array $tokens, int $position ): int {
+		if ( '$wp_object_cache' !== ( $tokens[ $position ][1] ?? '' ) || T_INSTANCEOF !== ( $tokens[ $position + 1 ][0] ?? null ) ) {
+			return 0;
+		}
+		$name = $position + 2;
+		// Before PHP 8, "\Name" is a separator and a name.
+		if ( T_NS_SEPARATOR === ( $tokens[ $name ][0] ?? null ) ) {
+			++$name;
+		}
+		$class     = $tokens[ $name ] ?? array( null, '' );
+		$qualified = defined( 'T_NAME_FULLY_QUALIFIED' ) ? constant( 'T_NAME_FULLY_QUALIFIED' ) : null;
+		$one_name  = ( T_STRING === $class[0] && ! self::literal( $class ) )
+			|| ( null !== $qualified && $qualified === $class[0] && 1 === substr_count( $class[1], '\\' ) );
+		if ( ! $one_name || '&&' !== ( $tokens[ $name + 1 ][1] ?? '' ) || '$wp_object_cache' !== ( $tokens[ $name + 2 ][1] ?? '' ) || ! in_array( $tokens[ $name + 3 ][1] ?? '', array( '->', '?->' ), true ) ) {
+			return 0;
+		}
+
+		return $name + 2 - $position;
 	}
 
 	/**

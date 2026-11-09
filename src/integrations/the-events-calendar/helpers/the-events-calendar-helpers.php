@@ -68,6 +68,13 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 	private $tokens = null;
 
 	/**
+	 * Lazy-loaded RSVP format handler.
+	 *
+	 * @var EC_Rsvp|null
+	 */
+	private $rsvp = null;
+
+	/**
 	 * Backward-compat shim — old Pro (< 7.3) Event Tickets items call this helper as
 	 * Automator()->helpers->recipe->event_tickets->options->method().
 	 *
@@ -248,6 +255,87 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 		}
 
 		return $this->tokens;
+	}
+
+	// =========================================================================
+	// RSVPs in both Event Tickets formats (see EC_Rsvp)
+	// =========================================================================
+
+	/**
+	 * Whether the ticket is an RSVP, in either format.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param \Tribe__Tickets__Ticket_Object|int $ticket The ticket or its ID.
+	 *
+	 * @return bool
+	 */
+	public function is_rsvp_ticket( $ticket ) {
+		return $this->rsvp()->is_rsvp_ticket( $ticket );
+	}
+
+	/**
+	 * Whether the ticket is a Tickets Commerce RSVP (Event Tickets 5.30+).
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param \Tribe__Tickets__Ticket_Object|int $ticket The ticket or its ID.
+	 *
+	 * @return bool
+	 */
+	public function is_tickets_commerce_rsvp( $ticket ) {
+		return $this->rsvp()->is_tickets_commerce_rsvp( $ticket );
+	}
+
+	/**
+	 * Create a Tickets Commerce RSVP the way Event Tickets' RSVP form does.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param \Tribe__Tickets__Ticket_Object $ticket   A Tickets Commerce RSVP ticket.
+	 * @param array<string,mixed>            $attendee full_name, email, user_id, quantity, going.
+	 *
+	 * @return array{order_id:int,attendee_ids:int[]}|\WP_Error
+	 */
+	public function create_tickets_commerce_rsvp( \Tribe__Tickets__Ticket_Object $ticket, array $attendee ) {
+		return $this->rsvp()->create_tickets_commerce_rsvp( $ticket, $attendee );
+	}
+
+	/**
+	 * The RSVP answer of an attendee in either format.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param int $attendee_id The attendee post ID.
+	 *
+	 * @return string `going`, `not_going`, or ''.
+	 */
+	public function rsvp_attendee_status( $attendee_id ) {
+		return $this->rsvp()->attendee_status( $attendee_id );
+	}
+
+	/**
+	 * The event and answer meta keys of an RSVP attendee, per format.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @return array<int,array{event:string,status:string}>
+	 */
+	public function rsvp_attendee_meta_keys() {
+		return $this->rsvp()->attendee_meta_keys();
+	}
+
+	/**
+	 * The RSVP format handler.
+	 *
+	 * @return EC_Rsvp
+	 */
+	private function rsvp() {
+		if ( null === $this->rsvp ) {
+			$this->rsvp = new EC_Rsvp();
+		}
+
+		return $this->rsvp;
 	}
 
 	// =========================================================================
@@ -870,6 +958,9 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 		// Legacy RSVP.
 		add_action( 'event_tickets_rsvp_tickets_generated_for_product', array( $this, 'normalize_rsvp_registration' ), 10, 3 );
 
+		// Tickets Commerce RSVP (Event Tickets 5.30+), once per ticket of the order like the legacy RSVP.
+		add_action( 'automator_tec_rsvp_tickets_generated_for_product', array( $this, 'normalize_tc_rsvp_registration' ), 10, 2 );
+
 		// Legacy WooCommerce (via Event Tickets Plus).
 		add_action( 'event_tickets_woocommerce_tickets_generated_for_product', array( $this, 'normalize_woo_registration' ), 10, 4 );
 
@@ -1039,6 +1130,12 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 			return;
 		}
 
+		// An RSVP registers once per ticket of its order, not once per guest:
+		// normalize_tc_rsvp_registration() reports it.
+		if ( $this->is_tickets_commerce_rsvp( $ticket ) ) {
+			return;
+		}
+
 		// Resolve event ID from ticket first (most reliable at creation time), then attendee.
 		$event_id = is_callable( array( $ticket, 'get_event_id' ) ) ? absint( $ticket->get_event_id() ) : 0;
 
@@ -1058,6 +1155,38 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is an automator_event_tickets_ constant.
 		do_action( self::USER_REGISTERED_ACTION, $event_id, $product_id, $order_id, $user_id );
+	}
+
+	/**
+	 * Normalize a Tickets Commerce RSVP (Event Tickets 5.30+) registration.
+	 *
+	 * Fired by Rsvp_Tickets_Dispatcher once per ticket of the RSVP order, as
+	 * the legacy RSVP fires its own hook. The user is the order's purchaser,
+	 * then the current user, as for any Tickets Commerce order.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param int $product_id The RSVP ticket post ID.
+	 * @param int $order_id   The Tickets Commerce order post ID.
+	 *
+	 * @return void
+	 */
+	public function normalize_tc_rsvp_registration( $product_id, $order_id ) {
+
+		$event = tribe_events_get_ticket_event( $product_id );
+
+		if ( ! $event instanceof \WP_Post ) {
+			return;
+		}
+
+		$order   = function_exists( 'tec_tc_get_order' ) ? tec_tc_get_order( $order_id ) : null;
+		$user_id = ( $order instanceof \WP_Post && ! empty( $order->purchaser['user_id'] ) ) ? absint( $order->purchaser['user_id'] ) : 0;
+
+		if ( 0 === $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		do_action( 'automator_event_tickets_user_registered', $event->ID, absint( $product_id ), absint( $order_id ), $user_id );
 	}
 
 	// =========================================================================

@@ -24,7 +24,9 @@ namespace Uncanny_Automator\App\Infrastructure\Database\Interfaces;
 interface Execution_Log_Store extends Error_Message_Rewrite_Store {
 
 	/**
-	 * Recipe-log meta: `{ "<block_id>": { "chosen_path": "<path_code>" } }`, written by the children runner for every multi-path block outside loop scope.
+	 * Recipe-log meta: `{ "<block_id>": { "chosen_path": "<path_code>", "conditions": { "<modifier_id>": { "met": bool } } } }`, written by
+	 * the children runner for every multi-path block outside loop scope. `conditions` holds what each condition of a filter answered; a
+	 * condition the filter decided without is absent, and an entry written before the record (or for a block without conditions) has none.
 	 *
 	 * @var string
 	 */
@@ -56,6 +58,17 @@ interface Execution_Log_Store extends Error_Message_Rewrite_Store {
 	 * @var string
 	 */
 	public const META_BLOCK_REFUSALS = '_automator_block_refusals';
+
+	/**
+	 * Recipe-log meta key prefix for a run claim. `<prefix><claim>` holds the one holder of that claim for the run,
+	 * written once through claim_recipe_log_meta(), so a node can act once for the whole run across the requests
+	 * the run spans.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @var string
+	 */
+	public const META_RUN_CLAIM_PREFIX = '_automator_run_claim_';
 
 	/**
 	 * Recipe-log meta: `{ "<loop_filter_id>": { "met": false, "message": "<plain text>" } }`, the loop filters of this
@@ -509,6 +522,18 @@ interface Execution_Log_Store extends Error_Message_Rewrite_Store {
 	public function get_recipe_log_meta_bag( int $recipe_log_id, array $extra_keys = array() ): array;
 
 	/**
+	 * Every value each of the given recipe-log meta keys holds for a run, oldest row first. A run can hold several rows
+	 * under one key, which get_recipe_log_meta_bag() would collapse into one.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param int           $recipe_log_id Recipe-log row id.
+	 * @param array<string> $meta_keys     Meta keys.
+	 * @return array<string,array<int,string>> Meta key => its values; a key with no rows is absent.
+	 */
+	public function get_recipe_log_meta_values( int $recipe_log_id, array $meta_keys ): array;
+
+	/**
 	 * Loop-run rows for a recipe-log/run, indexed by loop_id. Empty when the Pro loop table is absent.
 	 *
 	 * @param int $recipe_log_id Recipe-log row id.
@@ -654,4 +679,35 @@ interface Execution_Log_Store extends Error_Message_Rewrite_Store {
 	 * @return bool Whether the entry was claimed.
 	 */
 	public function claim_recipe_log_meta_entry( int $recipe_id, int $recipe_log_id, string $meta_key, string $entry_key, string $holder, ?string $previous_holder ): bool;
+
+	/**
+	 * Read a run's recipe-log meta value through the table's recipe_id index (there is none on recipe_log_id).
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param int    $recipe_id     The recipe the run belongs to.
+	 * @param int    $recipe_log_id The run.
+	 * @param string $meta_key      The meta key.
+	 *
+	 * @return string|null Null when the run has no row for the key.
+	 * @throws \Uncanny_Automator\App\Infrastructure\Exceptions\Store_Exception When the read fails.
+	 */
+	public function find_recipe_log_meta( int $recipe_id, int $recipe_log_id, string $meta_key ): ?string;
+
+	/**
+	 * Write $holder under a run's recipe-log meta key unless the run already holds a value there. The read and the
+	 * insert happen under the run-meta advisory lock; the table has no unique key, so without the lock the claim is
+	 * refused rather than risk a second winner.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param int    $recipe_id     The recipe the run belongs to.
+	 * @param int    $recipe_log_id The run.
+	 * @param string $meta_key      The meta key.
+	 * @param string $holder        Who claims it.
+	 *
+	 * @return string The holder the run keeps: $holder when it was first, the earlier holder otherwise.
+	 * @throws \Uncanny_Automator\App\Infrastructure\Exceptions\Store_Exception When the lock is not acquired, or the read or the insert fails; nothing is written.
+	 */
+	public function claim_recipe_log_meta( int $recipe_id, int $recipe_log_id, string $meta_key, string $holder ): string;
 }

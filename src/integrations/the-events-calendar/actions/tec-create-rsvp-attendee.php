@@ -2,22 +2,18 @@
 
 namespace Uncanny_Automator\Integrations\The_Events_Calendar;
 
+use Uncanny_Automator\App\Recipe_Runner\Exceptions\Action_Error_Exception;
+
 /**
  * Class ET_CREATE_RSVP_ATTENDEE
  *
  * Action: Create an RSVP attendee for a ticket on an event.
  *
- * API: Tribe__Tickets__RSVP::create_attendee_for_ticket(
- *        Tribe__Tickets__Ticket_Object $ticket,
- *        array $attendee_data
- *      ) (verified at event-tickets/src/Tribe/RSVP.php:845).
- *
- * The API takes a Tribe__Tickets__Ticket_Object, NOT a ticket ID. We
- * resolve via Tribe__Tickets__Tickets::load_ticket_object() (verified at
- * event-tickets/src/Tribe/Tickets.php:625).
- *
- * Required attendee_data keys: full_name, email. Optional: order_status,
- * user_id, optout, order_id.
+ * A legacy RSVP ticket goes through
+ * Tribe__Tickets__RSVP::create_attendee_for_ticket(). A Tickets Commerce
+ * RSVP (Event Tickets 5.30+) goes through the helper's
+ * create_tickets_commerce_rsvp(), which follows Event Tickets' own RSVP
+ * steps (EC_Rsvp).
  *
  * @property The_Events_Calendar_Helpers $item_helpers
  *
@@ -135,6 +131,8 @@ class ET_CREATE_RSVP_ATTENDEE extends \Uncanny_Automator\Recipe\Action {
 	 * @param array $parsed
 	 *
 	 * @return bool
+	 *
+	 * @throws Action_Error_Exception When an input is missing or invalid, or Event Tickets refuses the RSVP.
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
@@ -145,45 +143,39 @@ class ET_CREATE_RSVP_ATTENDEE extends \Uncanny_Automator\Recipe\Action {
 		$status    = (string) ( $parsed['EC_RSVP_ATTENDEE_STATUS'] ?? 'going' );
 
 		if ( 0 === $event_id ) {
-			$this->add_log_error( esc_html_x( 'Event ID is required.', 'The Events Calendar', 'uncanny-automator' ) );
-			return false;
+			throw Action_Error_Exception::validation_failed( esc_html_x( 'Event ID is required.', 'The Events Calendar', 'uncanny-automator' ) );
 		}
 
 		if ( 0 === $ticket_id ) {
-			$this->add_log_error( esc_html_x( 'Ticket ID is required.', 'The Events Calendar', 'uncanny-automator' ) );
-			return false;
+			throw Action_Error_Exception::validation_failed( esc_html_x( 'Ticket ID is required.', 'The Events Calendar', 'uncanny-automator' ) );
 		}
 
 		if ( '' === $full_name ) {
-			$this->add_log_error( esc_html_x( 'Attendee name is required.', 'The Events Calendar', 'uncanny-automator' ) );
-			return false;
+			throw Action_Error_Exception::validation_failed( esc_html_x( 'Attendee name is required.', 'The Events Calendar', 'uncanny-automator' ) );
 		}
 
 		if ( '' === $email || ! is_email( $email ) ) {
-			$this->add_log_error( esc_html_x( 'A valid attendee email is required.', 'The Events Calendar', 'uncanny-automator' ) );
-			return false;
+			throw Action_Error_Exception::validation_failed( esc_html_x( 'A valid attendee email is required.', 'The Events Calendar', 'uncanny-automator' ) );
 		}
 
 		if ( ! class_exists( '\Tribe__Tickets__Tickets' ) || ! class_exists( '\Tribe__Tickets__RSVP' ) ) {
-			$this->add_log_error( esc_html_x( 'Event Tickets is not active.', 'The Events Calendar', 'uncanny-automator' ) );
-			return false;
+			throw Action_Error_Exception::execution_failed( esc_html_x( 'Event Tickets is not active.', 'The Events Calendar', 'uncanny-automator' ) );
 		}
 
-		// Reject ticket/event mismatches up front. This catches stale
-		// AJAX dropdowns or recipe authors pasting IDs from different
-		// events — without this check we'd silently create an attendee
-		// on the ticket's actual event instead of the user-selected one.
+		// Reject ticket/event mismatches up front, so a stale dropdown or a
+		// pasted ID never creates an attendee on another event.
 		if ( function_exists( 'tribe_events_get_ticket_event' ) ) {
-			$ticket_event = tribe_events_get_ticket_event( $ticket_id );
+			$ticket_event    = tribe_events_get_ticket_event( $ticket_id );
 			$ticket_event_id = ( $ticket_event instanceof \WP_Post ) ? (int) $ticket_event->ID : 0;
 			if ( 0 === $ticket_event_id || $ticket_event_id !== $event_id ) {
-				$this->add_log_error( sprintf(
-					/* translators: %1$d is the ticket ID, %2$d is the user-selected event ID */
-					esc_html_x( 'Ticket %1$d does not belong to event %2$d.', 'The Events Calendar', 'uncanny-automator' ),
-					$ticket_id,
-					$event_id
-				) );
-				return false;
+				throw Action_Error_Exception::validation_failed(
+					sprintf(
+						/* translators: %1$d is the ticket ID, %2$d is the user-selected event ID */
+						esc_html_x( 'Ticket %1$d does not belong to event %2$d.', 'The Events Calendar', 'uncanny-automator' ),
+						absint( $ticket_id ),
+						absint( $event_id )
+					)
+				);
 			}
 		}
 
@@ -191,30 +183,96 @@ class ET_CREATE_RSVP_ATTENDEE extends \Uncanny_Automator\Recipe\Action {
 
 		if ( ! $ticket_object instanceof \Tribe__Tickets__Ticket_Object ) {
 			/* translators: %d ticket ID */
-			$this->add_log_error( sprintf( esc_html_x( 'Could not load ticket object for ID %d.', 'The Events Calendar', 'uncanny-automator' ), $ticket_id ) );
-			return false;
+			throw Action_Error_Exception::not_found( sprintf( esc_html_x( 'Could not load ticket object for ID %d.', 'The Events Calendar', 'uncanny-automator' ), absint( $ticket_id ) ) );
 		}
+
+		if ( ! $this->item_helpers->is_rsvp_ticket( $ticket_object ) ) {
+			/* translators: %d ticket ID */
+			throw Action_Error_Exception::validation_failed( sprintf( esc_html_x( 'Ticket %d is not an RSVP ticket.', 'The Events Calendar', 'uncanny-automator' ), absint( $ticket_id ) ) );
+		}
+
+		$attendee_id = $this->item_helpers->is_tickets_commerce_rsvp( $ticket_object )
+			? $this->create_tickets_commerce_attendee( $ticket_object, $full_name, $email, 'not_going' !== $status, absint( $user_id ) )
+			: $this->create_legacy_attendee( $ticket_object, $full_name, $email, $status, absint( $user_id ) );
+
+		$this->hydrate_tokens(
+			array(
+				'EC_CREATED_ATTENDEE_ID'    => $attendee_id,
+				'EC_CREATED_ATTENDEE_NAME'  => $full_name,
+				'EC_CREATED_ATTENDEE_EMAIL' => $email,
+			)
+		);
+
+		return true;
+	}
+
+	/**
+	 * Create the attendee on a Tickets Commerce RSVP (Event Tickets 5.30+).
+	 *
+	 * @param \Tribe__Tickets__Ticket_Object $ticket    The RSVP ticket.
+	 * @param string                         $full_name The attendee's name.
+	 * @param string                         $email     The attendee's email.
+	 * @param bool                           $going     Going or Not going.
+	 * @param int                            $user_id   The recipe's user.
+	 *
+	 * @return int The attendee ID.
+	 *
+	 * @throws Action_Error_Exception When Event Tickets refuses the RSVP.
+	 */
+	private function create_tickets_commerce_attendee( \Tribe__Tickets__Ticket_Object $ticket, $full_name, $email, $going, $user_id ) {
+
+		$created = $this->item_helpers->create_tickets_commerce_rsvp(
+			$ticket,
+			array(
+				'full_name' => $full_name,
+				'email'     => $email,
+				'user_id'   => $user_id,
+				'quantity'  => 1,
+				'going'     => $going,
+			)
+		);
+
+		if ( is_wp_error( $created ) ) {
+			throw Action_Error_Exception::execution_failed( esc_html( $created->get_error_message() ) );
+		}
+
+		return (int) reset( $created['attendee_ids'] );
+	}
+
+	/**
+	 * Create the attendee on a legacy RSVP ticket.
+	 *
+	 * @param \Tribe__Tickets__Ticket_Object $ticket    The RSVP ticket.
+	 * @param string                         $full_name The attendee's name.
+	 * @param string                         $email     The attendee's email.
+	 * @param string                         $status    `going` or `not_going`.
+	 * @param int                            $user_id   The recipe's user.
+	 *
+	 * @return int The attendee ID.
+	 *
+	 * @throws Action_Error_Exception When Event Tickets refuses the RSVP.
+	 */
+	private function create_legacy_attendee( \Tribe__Tickets__Ticket_Object $ticket, $full_name, $email, $status, $user_id ) {
 
 		$rsvp = \Tribe__Tickets__RSVP::get_instance();
 
 		if ( ! $rsvp instanceof \Tribe__Tickets__RSVP ) {
-			$this->add_log_error( esc_html_x( 'Could not resolve the RSVP provider.', 'The Events Calendar', 'uncanny-automator' ) );
-			return false;
+			throw Action_Error_Exception::execution_failed( esc_html_x( 'Could not resolve the RSVP provider.', 'The Events Calendar', 'uncanny-automator' ) );
 		}
 
 		try {
 			$attendee_object = $rsvp->create_attendee_for_ticket(
-				$ticket_object,
+				$ticket,
 				array(
 					'full_name'    => $full_name,
 					'email'        => $email,
-					'order_status' => $status,
-					'user_id'      => absint( $user_id ),
+					// Event Tickets reads yes / no; any other answer it takes as Going.
+					'order_status' => 'not_going' === $status ? 'no' : 'yes',
+					'user_id'      => $user_id,
 				)
 			);
 		} catch ( \Exception $e ) {
-			$this->add_log_error( $e->getMessage() );
-			return false;
+			throw Action_Error_Exception::execution_failed( esc_html( $e->getMessage() ) );
 		}
 
 		$attendee_id = 0;
@@ -226,18 +284,9 @@ class ET_CREATE_RSVP_ATTENDEE extends \Uncanny_Automator\Recipe\Action {
 		}
 
 		if ( 0 === $attendee_id ) {
-			$this->add_log_error( esc_html_x( 'RSVP attendee was not created.', 'The Events Calendar', 'uncanny-automator' ) );
-			return false;
+			throw Action_Error_Exception::execution_failed( esc_html_x( 'RSVP attendee was not created.', 'The Events Calendar', 'uncanny-automator' ) );
 		}
 
-		$this->hydrate_tokens(
-			array(
-				'EC_CREATED_ATTENDEE_ID'    => $attendee_id,
-				'EC_CREATED_ATTENDEE_NAME'  => $full_name,
-				'EC_CREATED_ATTENDEE_EMAIL' => $email,
-			)
-		);
-
-		return true;
+		return $attendee_id;
 	}
 }

@@ -37,7 +37,7 @@ class Redirect_To_Url extends Action {
 		$this->set_readable_sentence( esc_html_x( 'Redirect to a URL', 'Redirect', 'uncanny-automator' ) );
 		// Explicit catalog metadata, so the item is described even if complete.json never lists this built-in integration.
 		$this->set_readable_description( esc_html_x( 'Sends the visitor to a URL when the recipe reaches this action. The rest of the recipe keeps running in the background.', 'Redirect', 'uncanny-automator' ) );
-		$this->set_mcp_description( esc_html_x( 'Redirect action: sends the visitor\'s browser to the configured URL (an absolute HTTP or HTTPS URL, or a path on this site) as soon as the recipe reaches it; any actions after it finish in the background. It works only in a browser request, so it completes with a notice when the recipe runs on cron, inside a loop or from the command line. The URL field supports tokens.', 'Redirect', 'uncanny-automator' ) );
+		$this->set_mcp_description( esc_html_x( 'Redirect action: sends the visitor\'s browser to the configured URL (an absolute HTTP or HTTPS URL, or a path on this site) as soon as the recipe reaches it; any actions after it finish in the background. Only the first Redirect action that runs in a recipe run redirects the visitor; every later one in that run, and a Redirect in another recipe run the same event started, completes with a notice. It works only in a browser request, so it completes with a notice when the recipe runs on cron, inside a loop or from the command line. The URL field supports tokens.', 'Redirect', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -50,10 +50,13 @@ class Redirect_To_Url extends Action {
 	}
 
 	/**
-	 * Validate, record the redirect for delivery when the leg ends and, when something still runs after this
-	 * action and the run can finish in the background, record a one-second site job for this row and ask the
-	 * walker to detach. Last at every level (every migrated recipe), or without a snapshot, the rest runs now
-	 * and the redirect follows the walk: no job, no cron.
+	 * The first Redirect that runs in a browser request claims the run and redirects the visitor; every other Redirect
+	 * in the run, in this request or a later one, completes with a notice. So does a Redirect in any other run of the
+	 * request once a run recorded or delivered a redirect: a request redirects once. Both checks come before the URL is
+	 * validated. The winner records the redirect for delivery when the leg ends and, when something still runs after
+	 * it and the run can finish in the background, records a one-second site job for this row and asks the walker to
+	 * detach. Last at every level (every migrated recipe), or without a snapshot, the rest runs now and the redirect
+	 * follows the walk: no job, no cron.
 	 *
 	 * @param int   $user_id     The user.
 	 * @param array $action_data The action row and meta.
@@ -65,9 +68,25 @@ class Redirect_To_Url extends Action {
 	 * @throws Action_Error_Exception When the URL is empty or not http(s).
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
-		$delivery = Redirect_Delivery::instance();
-		$raw      = isset( $parsed['REDIRECT_URL'] ) ? (string) $parsed['REDIRECT_URL'] : '';
-		$url      = $delivery->validate_url( $raw );
+		$delivery      = Redirect_Delivery::instance();
+		$recipe_log_id = (int) ( $action_data['recipe_log_id'] ?? 0 );
+		$holder        = (string) (int) ( $action_data['ID'] ?? 0 );
+		$winner        = automator_get_run_claim( (int) $recipe_id, $recipe_log_id, 'redirect' );
+
+		if ( is_string( $winner ) && $holder !== $winner ) {
+			$this->add_log_error( esc_html_x( 'Another Redirect action in this run already redirected the visitor.', 'Redirect', 'uncanny-automator' ) );
+			$this->set_complete_with_notice( true );
+			return null;
+		}
+
+		if ( $delivery->redirected_by_another_run( $recipe_log_id ) ) {
+			$this->add_log_error( esc_html_x( 'A Redirect action in another recipe run already redirected the visitor.', 'Redirect', 'uncanny-automator' ) );
+			$this->set_complete_with_notice( true );
+			return null;
+		}
+
+		$raw = isset( $parsed['REDIRECT_URL'] ) ? (string) $parsed['REDIRECT_URL'] : '';
+		$url = $delivery->validate_url( $raw );
 
 		if ( '' === $url ) {
 			throw Action_Error_Exception::validation_failed(
@@ -85,8 +104,18 @@ class Redirect_To_Url extends Action {
 			return null;
 		}
 
-		$recipe_log_id = (int) ( $action_data['recipe_log_id'] ?? 0 );
-		if ( ! $delivery->set_pending( $recipe_log_id, $url ) ) {
+		// Claim only while nothing is queued for the run in this request, so the claim names a Redirect that queued its URL.
+		$claimed = false;
+		if ( null === $delivery->pending_for( $recipe_log_id ) ) {
+			$claimed = automator_claim_run( (int) $recipe_id, $recipe_log_id, 'redirect', $holder );
+		}
+		if ( is_wp_error( $claimed ) ) {
+			// Redirect anyway: set_pending() still allows one redirect per run here. Without a stored winner, a Redirect
+			// in a later request of this run gives the background notice.
+			automator_log( $claimed->get_error_message(), 'redirect', true );
+		}
+
+		if ( false === $claimed || ! $delivery->set_pending( $recipe_log_id, $url ) ) {
 			$this->add_log_error( esc_html_x( 'Another Redirect action in this run already redirected the visitor.', 'Redirect', 'uncanny-automator' ) );
 			$this->set_complete_with_notice( true );
 			return null;

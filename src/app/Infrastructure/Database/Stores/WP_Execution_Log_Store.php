@@ -2019,6 +2019,37 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 	/**
 	 * @inheritDoc
 	 */
+	public function get_recipe_log_meta_values( int $recipe_log_id, array $meta_keys ): array {
+
+		$wpdb = $this->wpdb;
+
+		$keys = array_values( array_unique( array_filter( array_map( 'strval', $meta_keys ) ) ) );
+		if ( $recipe_log_id <= 0 || empty( $keys ) ) {
+			return array();
+		}
+		$placeholders = implode( ',', array_fill( 0, count( $keys ), '%s' ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table; live state read, must not be cached.
+		$rows = $wpdb->get_results(
+			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- $placeholders is one %s per meta key; the spread supplies the keys after the recipe log id.
+			$wpdb->prepare(
+				"SELECT meta_key, meta_value FROM {$wpdb->prefix}uap_recipe_log_meta WHERE recipe_log_id = %d AND meta_key IN ({$placeholders}) ORDER BY ID ASC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is one %s per meta key.
+				$recipe_log_id,
+				...$keys
+			),
+			ARRAY_A
+		);
+
+		$values = array();
+		foreach ( (array) $rows as $row ) {
+			$values[ (string) $row['meta_key'] ][] = (string) $row['meta_value'];
+		}
+
+		return $values;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public function get_loop_entries( int $recipe_log_id, int $run_number ): array {
 
 		$wpdb = $this->wpdb;
@@ -2374,6 +2405,73 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 				return $record;
 			}
 		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @since 8.0.3
+	 */
+	public function find_recipe_log_meta( int $recipe_id, int $recipe_log_id, string $meta_key ): ?string {
+
+		$wpdb = $this->wpdb;
+
+		// get_row, not get_var: get_var reads an empty value as no row.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$row = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT meta_value FROM {$wpdb->prefix}uap_recipe_log_meta WHERE recipe_id = %d AND recipe_log_id = %d AND meta_key = %s LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$recipe_id,
+				$recipe_log_id,
+				$meta_key
+			)
+		);
+
+		if ( '' !== $wpdb->last_error ) {
+			throw new Store_Exception( sprintf( 'Recipe log %d: %s could not be read: %s', absint( $recipe_log_id ), esc_html( $meta_key ), esc_html( $wpdb->last_error ) ) );
+		}
+
+		return null === $row ? null : (string) $row->meta_value;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @since 8.0.3
+	 */
+	public function claim_recipe_log_meta( int $recipe_id, int $recipe_log_id, string $meta_key, string $holder ): string {
+
+		$lock = 'automator_run_meta_' . $recipe_log_id;
+		if ( ! $this->acquire_lock( $lock, 5 ) ) {
+			throw new Store_Exception( sprintf( 'Recipe log %d: %s was not claimed because the run-meta lock was not acquired.', absint( $recipe_log_id ), esc_html( $meta_key ) ) );
+		}
+
+		try {
+			$current = $this->find_recipe_log_meta( $recipe_id, $recipe_log_id, $meta_key );
+			if ( null !== $current ) {
+				return $current;
+			}
+
+			$wpdb = $this->wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$written = $wpdb->insert(
+				$wpdb->prefix . 'uap_recipe_log_meta',
+				array(
+					'recipe_id'     => $recipe_id,
+					'recipe_log_id' => $recipe_log_id,
+					'meta_key'      => $meta_key,
+					'meta_value'    => $holder,
+				),
+				array( '%d', '%d', '%s', '%s' )
+			);
+			if ( false === $written ) {
+				throw new Store_Exception( sprintf( 'Recipe log %d: %s could not be claimed: %s', absint( $recipe_log_id ), esc_html( $meta_key ), esc_html( $wpdb->last_error ) ) );
+			}
+
+			return $holder;
+		} finally {
+			$this->release_lock( $lock );
+		}
 	}
 
 	/**

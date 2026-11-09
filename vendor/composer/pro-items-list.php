@@ -1069,11 +1069,6 @@ function automator_pro_items_list() {
 					'is_elite' => false,
 				),
 				array(
-					'name'     => esc_html_x( 'Subscribe the user to {{a forum}}', 'Automator Pro item', 'uncanny-automator' ),
-					'is_pro'   => true,
-					'is_elite' => false,
-				),
-				array(
 					'name'     => esc_html_x( 'Unsubscribe the user from {{a forum}}', 'Automator Pro item', 'uncanny-automator' ),
 					'is_pro'   => true,
 					'is_elite' => false,

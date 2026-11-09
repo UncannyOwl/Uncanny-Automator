@@ -151,8 +151,13 @@ final class Node_Status_Resolver {
 				! empty( $ctx['loop_ran'] ) ? Log_Status_Code::CONDITION_MET : Log_Status_Code::CONDITION_NOT_EVALUATED
 			);
 		}
-		// A condition inside a loop body evaluated once per entity; the entity counts on its paths are the record.
+		// A condition inside a loop body evaluated once per entity. A 7.x run kept its answers across the items; an 8.x
+		// run, the entity counts on the filter's paths.
 		if ( ! empty( $ctx['inside_loop'] ) ) {
+			$results = $bundle->legacy_filter_condition_results( $block_id );
+			if ( null !== $results ) {
+				return $this->condition_answer( $results, $modifier_node );
+			}
 			$met     = (int) ( $ctx['path_entities'][ Block_Path_Code::FILTER_CONDITIONS_MET ] ?? 0 );
 			$not_met = (int) ( $ctx['path_entities'][ Block_Path_Code::FILTER_CONDITIONS_NOT_MET ] ?? 0 );
 			if ( $met > 0 ) {
@@ -162,12 +167,36 @@ final class Node_Status_Resolver {
 			return Log_Status_Registry::from_code( $not_met > 0 ? Log_Status_Code::CONDITION_NOT_MET : Log_Status_Code::CONDITION_NOT_EVALUATED );
 		}
 
+		$results = $bundle->filter_condition_results( $block_id );
+		if ( null !== $results ) {
+			return $this->condition_answer( $results, $modifier_node );
+		}
+
+		// Runs before that record: every condition reads the filter's own outcome.
 		$chosen = (string) ( $ctx['chosen_path'] ?? '' );
 		if ( '' === $chosen ) {
 			return Log_Status_Registry::from_code( Log_Status_Code::CONDITION_NOT_EVALUATED );
 		}
 		$met = false === strpos( $chosen, 'NOT-MET' );
 		return Log_Status_Registry::from_code( $met ? Log_Status_Code::CONDITION_MET : Log_Status_Code::CONDITION_NOT_MET );
+	}
+
+	/**
+	 * A condition's status from the answers the run kept: asked and passed, asked and failed, or never asked.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param array<string,bool>  $results       Modifier id => met, for the conditions the run asked.
+	 * @param array<string,mixed> $modifier_node Modifier tree node.
+	 * @return Log_Status The condition's status.
+	 */
+	private function condition_answer( array $results, array $modifier_node ): Log_Status {
+		$id = (string) ( $modifier_node['id'] ?? '' );
+		if ( ! array_key_exists( $id, $results ) ) {
+			return Log_Status_Registry::from_code( Log_Status_Code::CONDITION_NOT_EVALUATED );
+		}
+
+		return Log_Status_Registry::from_code( $results[ $id ] ? Log_Status_Code::CONDITION_MET : Log_Status_Code::CONDITION_NOT_MET );
 	}
 
 	/**

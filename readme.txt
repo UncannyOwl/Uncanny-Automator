@@ -4,7 +4,7 @@ Tags: ai, mcp server, automation, claude, chatgpt
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 8.0.2
+Stable tag: 8.0.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,13 +12,13 @@ Claude, ChatGPT, Gemini or any AI agent runs your site through MCP and automates
 
 == Description ==
 
-**Uncanny Automator connects your AI to your WordPress site.** It is an MCP server for WordPress with a built-in automation engine: your AI manages the site and acts across your plugins and apps, and any task it does once can become a recipe, an automation that keeps running without it.
+**Uncanny Automator connects Claude or ChatGPT to your WordPress site.** It is an MCP server for WordPress with a built-in automation engine: your AI manages the site and acts across your plugins and apps, and any task it does once can become a recipe, an automation that keeps running without it.
 
 Connect ChatGPT, Claude, Gemini, Perplexity or any AI app that supports remote MCP servers, and run your site in plain English. Uncanny Automator connects your AI to thousands of plugin abilities, plus 470+ actions built into Uncanny Automator. Build and update pages in Gutenberg, Spectra, Elementor, Divi or WPBakery, keep plugins and themes up to date, and turn any task into a workflow you can view, edit and audit.
 
 Trusted by 40,000+ active sites with a 4.9/5 rating and 2,000,000+ downloads. Automating WordPress since 2018.
 
-= Connect your AI in 60 seconds =
+= Connect Claude or ChatGPT in 60 seconds =
 
 An MCP server is how AI apps such as ChatGPT or Claude connect to other software. Uncanny Automator includes the MCP server for your site, so the AI you already use can manage it.
 
@@ -26,18 +26,30 @@ Install the plugin, create your free account, and sign in. One connection manage
 
 = Connect ChatGPT, Claude, Gemini, Perplexity and more to WordPress =
 
-Create your free Uncanny Automator Lite account, connect your site and choose your AI app. From then on, your AI can read your site, analyze your data, publish drafts, update orders and automate your workflows through ordinary conversation.
+Create your free Uncanny Automator Lite account, connect your site and choose your AI app. From then on, Claude or ChatGPT can read your site, analyze your data, publish drafts, update orders and automate your workflows through ordinary conversation.
 
-Any AI app that supports remote MCP servers connects the same way, including OpenAI's ChatGPT, Claude and Gemini. Once connected, ask your AI how to get started.
+Any AI app that supports remote MCP servers connects the same way, including OpenAI's ChatGPT, Claude and Gemini. Once connected, ask Claude or ChatGPT how to get started.
 
-= What your AI can do on your site =
+= The most capable WordPress MCP server for Claude and ChatGPT =
+
+Unlike other MCP server plugins, Uncanny Automator has been helping users automate WordPress since 2018. 
+
+We built an MCP server into Uncanny Automator before any of the other WordPress MCP server plugins existed, back in December of 2025, and we used it to power Uncanny Agent, our built-in AI agent. 
+
+In that time, we learned a lot about building a good MCP server, like utilizing the most secure connections (no application passwords here!), the optimal number of MCP tools for an agent to manage, and how to build effective MCP skills. Now, we've opened up the best MCP server on WordPress and made it available to everyone to connect Claude, ChatGPT, Gemini and more. 
+
+Any MCP server on its own lets an AI manage your site in chat. In Uncanny Automator, the MCP server sits on top of a full automation plugin, so Claude or ChatGPT can do a task today and turn it into an automation that repeats it tomorrow.
+
+Ask in plain English, for example "when someone buys a course, add them to my CRM", and it builds the automation through the MCP server as a recipe you can view and edit. The automation runs on your site, so it keeps working after you close ChatGPT or Claude. Any other AI app that supports remote MCP servers connects the same way.
+
+= What Claude or ChatGPT can do on your site =
 
 - **Run your site in plain English:** create and edit posts and pages, manage users, comments, menus, settings and more. "Create a page for our spring sale." "Give Maria the Editor role and email her the login."
 - **Get answers instead of dashboards:** "How are my sales trending month over month and year over year?" "Who enrolled this week and hasn't started?" "What changed since Monday?"
 - **Act across your plugins and apps:** enroll a learner, tag a contact in Mailchimp, create a Stripe invoice, post to Slack, publish to Instagram. Any AI connected through Uncanny Automator gains access to an exclusive library of 470+ actions across 144 plugins and apps that no other MCP server offers, plus the thousands of abilities your other plugins register with WordPress. Pro adds hundreds more.
 - **Skills for the plugins you run.** Skills are step-by-step guidance your AI loads for a specific plugin or task. Uncanny Automator ships 200+ of them, including guides for WooCommerce, LearnDash, WPCode, Tutor LMS, WPForms, FluentCRM, BuddyBoss and much more, so your AI already knows how to work with the plugins you run.
 - **Keep the site up to date:** update, install, activate and deactivate plugins and themes from WordPress.org, moderate comments, flush caches, run cron events and switch maintenance mode, from chat.
-- **Build and update pages in the page builder you already use:** Gutenberg, Spectra, Elementor, Divi or WPBakery. No page builder? Uncanny Page Builder is built in: fast, light and AI-native. On a block theme, your AI can build the whole site in the Site Editor: pages, headers, footers, navigation, templates and global styles.
+- **Build and update pages in the page builder you already use:** Gutenberg, Spectra, Elementor, Divi or WPBakery. No page builder? Uncanny Page Builder is built in: fast, light and AI-native. On a block theme, Claude or ChatGPT can build the whole site in the Site Editor: pages, headers, footers, navigation, templates and global styles.
 - **Turn any task into a recipe:** build automated workflows with AI, powered by the only MCP server with a built-in automation engine (see below).
 - **Use the abilities your other plugins register** through the WordPress Abilities API, each with its own switch.
 - **Diagnose problems in your site's code or build custom functionality**: your AI can inspect code and files and verify WordPress core against the official checksums. It doesn't change files and never opens wp-config.php, keys or backups.
@@ -52,9 +64,9 @@ Prompts to try:
 
 = Automations that keep working after the chat ends =
 
-Any WordPress MCP server lets your AI manage your site in chat. Only Uncanny Automator has a built-in automation engine, so your AI can also build recipes: deterministic automations with triggers, conditions and actions that run the same way every time, which you can open in the visual builder, edit, and audit in the log. Unlimited automations included: end the pay-per use Zapier subscription.
+Any WordPress MCP server lets Claude or ChatGPT manage your site in chat. Only Uncanny Automator has a built-in automation engine, so your AI can also build recipes: deterministic automations with triggers, conditions and actions that run the same way every time, which you can open in the visual builder, edit, and audit in the log. Unlimited automations included: end the pay-per use Zapier subscription.
 
-- **Built with AI.** Describe what should happen and your AI writes the recipe: triggers, actions, conditions, delays, schedules and loops. Open it in the visual builder and change anything.
+- **Built with AI.** Describe what should happen and Claude or ChatGPT writes the recipe: triggers, actions, conditions, delays, schedules and loops. Open it in the visual builder and change anything.
 - **Runs without it.** Published recipes run on events and schedules with no chat and no AI in the loop. Every run is logged.
 - **AI steps.** Put a model inside a recipe to summarise, draft, translate, classify, analyse sentiment or write SEO titles and descriptions.
 
@@ -458,6 +470,28 @@ Unlimited tool usage for a connected AI, the complete library of Pro triggers, a
 6. The recipe log: every run, every step, whether an AI or a schedule started it.
 
 == Changelog ==
+
+= 8.0.3 [2026-11-09] =
+
+**Updated:**
+
+* Recipe Builder - The WordPress admin menu now retains the user’s preferred expanded or collapsed state. #9437
+
+**Fixed:**
+
+* Connect Your AI - Fixed Claude/MCP connection errors on sites using the JWT Authentication for WP-API plugin. #9416
+* Connect buttons now show a loading state and prevent duplicate connection requests. #9414
+* Core - Fixed PHP errors when REST API requests contain invalid rest_route values. #9419
+* Recipe Logs - Filter conditions now display their individual results instead of the overall filter result. #9338
+* Recipe Logs - Fixed missing filter conditions and incorrect Skipped statuses for runs recorded in 7.x. #9442
+* Recipe Logs - Fixed missing filter conditions inside loops for runs recorded in 7.x. #9444
+* Redirect - Redirect to a URL - Multiple redirects in the same recipe run now display the correct notice when a previous redirect has already occurred. #9430
+* Site Commands - Fixed compatibility with object cache plugins such as APCu Manager that previously blocked site commands. #9423
+* Template Library - Magic button and magic link templates now show placeholder shortcodes instead of IDs from another site. #9433
+* Template Library - Templates now correctly include integrations used inside loops and action conditions in requirements, filters and Ready to use results. #9435
+* The Events Calendar - Create an RSVP attendee for an event - Added support for the new RSVP format introduced in Event Tickets v5.30+. #9421
+* WooCommerce - Stripe fee and payout tokens - Fixed compatibility with WooCommerce Stripe Gateway 10.7 and later.
+* WooCommerce Bookings - Fixed trigger errors caused by changes in WooCommerce Stripe Gateway 10.7. #9407
 
 = 8.0.2 [2026-11-05] =
 

@@ -24,6 +24,15 @@ use WP_Error;
 final class Template_Feed_Service {
 
 	/**
+	 * Keys under which a feed item holds the items nested in it, in the
+	 * order they are read: a filter's conditions, a loop's filters, then
+	 * the actions a filter or loop runs.
+	 *
+	 * @var array<int,string>
+	 */
+	const NESTED_ITEM_KEYS = array( 'conditions', 'loops_filters', 'items' );
+
+	/**
 	 * Shared instance.
 	 *
 	 * @var self|null
@@ -159,7 +168,8 @@ final class Template_Feed_Service {
 
 	/**
 	 * Unique integration codes from the entry's trigger + action items,
-	 * first-seen order (triggers before actions).
+	 * including the items nested in filters and loops, first-seen order
+	 * (triggers before actions).
 	 *
 	 * @param array<string,mixed> $entry Upstream feed entry.
 	 * @return array<int,string>
@@ -167,16 +177,37 @@ final class Template_Feed_Service {
 	private function integration_codes( array $entry ): array {
 		$codes = array();
 		foreach ( array( 'triggers', 'actions' ) as $branch ) {
-			$items = $entry[ $branch ]['items'] ?? array();
-			foreach ( (array) $items as $item ) {
-				$code = isset( $item['integration_code'] ) ? (string) $item['integration_code'] : '';
-				if ( '' !== $code && ! in_array( $code, $codes, true ) ) {
-					$codes[] = $code;
-				}
-			}
+			$this->collect_integration_codes( (array) ( $entry[ $branch ]['items'] ?? array() ), $codes );
 		}
 
 		return $codes;
+	}
+
+	/**
+	 * Adds each item's integration code, then those of the items nested
+	 * in it, to $codes unless already there.
+	 *
+	 * @param array<int|string,mixed> $items Feed items.
+	 * @param array<int,string>       $codes Codes collected so far.
+	 * @return void
+	 */
+	private function collect_integration_codes( array $items, array &$codes ): void {
+		foreach ( $items as $item ) {
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+
+			$code = isset( $item['integration_code'] ) ? (string) $item['integration_code'] : '';
+			if ( '' !== $code && ! in_array( $code, $codes, true ) ) {
+				$codes[] = $code;
+			}
+
+			foreach ( self::NESTED_ITEM_KEYS as $key ) {
+				if ( isset( $item[ $key ] ) && is_array( $item[ $key ] ) ) {
+					$this->collect_integration_codes( $item[ $key ], $codes );
+				}
+			}
+		}
 	}
 
 	/**

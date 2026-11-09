@@ -73,11 +73,25 @@ class The_Events_Calendar_Integration extends \Uncanny_Automator\Integration {
 	}
 
 	/**
+	 * Run-time listeners every recipe part of this integration relies on.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @return void
+	 */
+	protected function load_shared_hooks() {
+		Rsvp_Tickets_Dispatcher::boot();
+	}
+
+	/**
 	 * Load triggers and actions.
 	 *
 	 * @return void
 	 */
 	protected function load() {
+		// The framework calls load_shared_hooks() only in targeted mode, never alongside load().
+		$this->load_shared_hooks();
+
 		new EC_REGISTER( $this->helpers );
 		new EC_EVENT_CREATED_OR_UPDATED( $this->helpers );
 		new EC_EVENT_UPDATED( $this->helpers );

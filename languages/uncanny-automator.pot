@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 8.0.2\n"
+"Project-Id-Version: Uncanny Automator 8.0.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-06T01:58:43+00:00\n"
+"POT-Creation-Date: 2026-11-09T22:21:52+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -5075,7 +5075,7 @@ msgid "Could not create temporary file."
 msgstr ""
 
 #: src/app/Infrastructure/Remote_File/Remote_File_Client.php:152
-#: src/global-functions.php:1441
+#: src/global-functions.php:1444
 msgid "The URL resolves to a private or reserved IP address and cannot be used."
 msgstr ""
 
@@ -5143,7 +5143,7 @@ msgid "Template not found."
 msgstr ""
 
 #: src/app/Infrastructure/Template_Library/Template_Library_Client.php:144
-#: src/app/Recipe_Builder/Recipe/Template_Library/Template_Preview_Service.php:144
+#: src/app/Recipe_Builder/Recipe/Template_Library/Template_Preview_Service.php:153
 msgctxt "Template library"
 msgid "The template export returned invalid data."
 msgstr ""
@@ -8488,7 +8488,7 @@ msgctxt "Run-as"
 msgid "Use the existing user"
 msgstr ""
 
-#: src/app/Recipe_Logs/Services/Recipe_Log_Query_Service.php:462
+#: src/app/Recipe_Logs/Services/Recipe_Log_Query_Service.php:595
 msgctxt "Recipe log REST error"
 msgid "Recipe log not found."
 msgstr ""
@@ -8620,7 +8620,7 @@ msgid "Not run: the %s block needs Uncanny Automator Pro 8.0 or later."
 msgstr ""
 
 #: src/app/Recipe_Logs/Wire_Serializer/Log_Block_Error_Text.php:83
-#: src/app/Recipe_Runner/Stages/Action_Run_Stage.php:526
+#: src/app/Recipe_Runner/Stages/Action_Run_Stage.php:537
 msgctxt "Recipe run log"
 msgid "This block did not run because Uncanny Automator Pro is not active."
 msgstr ""
@@ -8662,20 +8662,20 @@ msgid "Meta entry updated."
 msgstr ""
 
 #. translators: %s is the error the block stopped with.
-#: src/app/Recipe_Runner/Stages/Action_Run_Stage.php:561
+#: src/app/Recipe_Runner/Stages/Action_Run_Stage.php:574
 #, php-format
 msgctxt "Recipe run log"
 msgid "This block stopped with an error, so the rest of its actions did not run: %s"
 msgstr ""
 
 #. translators: %s is why the block's configuration is incomplete.
-#: src/app/Recipe_Runner/Stages/Action_Run_Stage.php:672
+#: src/app/Recipe_Runner/Stages/Action_Run_Stage.php:687
 #, php-format
 msgctxt "Recipe run log"
 msgid "Not run: %s"
 msgstr ""
 
-#: src/app/Recipe_Runner/Stages/Action_Run_Stage.php:1443
+#: src/app/Recipe_Runner/Stages/Action_Run_Stage.php:1458
 #: src/core/lib/process/class-automator-recipe-process-complete.php:229
 msgctxt "Uncanny Automator"
 msgid "Stacktrace"
@@ -9737,7 +9737,7 @@ msgstr ""
 #: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:681
 #: src/integrations/advanced-ads/helpers/advanced-ads-helpers.php:43
 #: src/integrations/armember/helpers/armember-helpers.php:57
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:214
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:221
 #: src/integrations/wp-discuz/helpers/wp-discuz-helpers.php:77
 #, php-format
 msgid "ID: %1$s (no title)"
@@ -14325,8 +14325,8 @@ msgstr ""
 #: src/core/views/admin-settings/tab/model-context-protocol/authentication-log.php:197
 #: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:47
 #: src/integrations/modern-events-calendar/helpers/mec-helpers.php:190
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:142
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:196
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:149
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:203
 msgid "Event"
 msgstr ""
 
@@ -16759,7 +16759,7 @@ msgstr ""
 msgid "Notes:"
 msgstr ""
 
-#: src/global-functions.php:1470
+#: src/global-functions.php:1473
 msgid "The URL exceeded the maximum number of redirects allowed."
 msgstr ""
 
@@ -41107,7 +41107,7 @@ msgstr ""
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:663
 #: src/integrations/woocommerce/helpers/woocommerce-helpers.php:125
 #: src/integrations/woocommerce/helpers/woocommerce-helpers.php:210
-#: src/integrations/woocommerce/tokens/wc-tokens.php:1036
+#: src/integrations/woocommerce/tokens/wc-tokens.php:1010
 msgid "Product"
 msgstr ""
 
@@ -42019,8 +42019,8 @@ msgid "Select from the list of available Events"
 msgstr ""
 
 #: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:92
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:169
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:230
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:176
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:237
 msgid "Event title"
 msgstr ""
 
@@ -42045,17 +42045,17 @@ msgid "Event cost"
 msgstr ""
 
 #: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:98
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:172
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:179
 msgid "Event featured image ID"
 msgstr ""
 
 #: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:99
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:173
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:180
 msgid "Event featured image URL"
 msgstr ""
 
 #: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:104
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:157
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:164
 msgid "Any event"
 msgstr ""
 
@@ -44537,27 +44537,33 @@ msgstr ""
 
 #: src/integrations/redirect/actions/redirect-to-url.php:40
 msgctxt "Redirect"
-msgid "Redirect action: sends the visitor's browser to the configured URL (an absolute HTTP or HTTPS URL, or a path on this site) as soon as the recipe reaches it; any actions after it finish in the background. It works only in a browser request, so it completes with a notice when the recipe runs on cron, inside a loop or from the command line. The URL field supports tokens."
+msgid "Redirect action: sends the visitor's browser to the configured URL (an absolute HTTP or HTTPS URL, or a path on this site) as soon as the recipe reaches it; any actions after it finish in the background. Only the first Redirect action that runs in a recipe run redirects the visitor; every later one in that run, and a Redirect in another recipe run the same event started, completes with a notice. It works only in a browser request, so it completes with a notice when the recipe runs on cron, inside a loop or from the command line. The URL field supports tokens."
+msgstr ""
+
+#: src/integrations/redirect/actions/redirect-to-url.php:77
+#: src/integrations/redirect/actions/redirect-to-url.php:119
+msgctxt "Redirect"
+msgid "Another Redirect action in this run already redirected the visitor."
+msgstr ""
+
+#: src/integrations/redirect/actions/redirect-to-url.php:83
+msgctxt "Redirect"
+msgid "A Redirect action in another recipe run already redirected the visitor."
 msgstr ""
 
 #. translators: %s is the redirect URL after tokens were parsed.
-#: src/integrations/redirect/actions/redirect-to-url.php:76
+#: src/integrations/redirect/actions/redirect-to-url.php:95
 #, php-format
 msgctxt "Redirect"
 msgid "The redirect URL \"%s\" is not a valid HTTP or HTTPS URL."
 msgstr ""
 
-#: src/integrations/redirect/actions/redirect-to-url.php:83
+#: src/integrations/redirect/actions/redirect-to-url.php:102
 msgctxt "Redirect"
 msgid "The recipe ran in the background, so there was no browser to redirect."
 msgstr ""
 
-#: src/integrations/redirect/actions/redirect-to-url.php:90
-msgctxt "Redirect"
-msgid "Another Redirect action in this run already redirected the visitor."
-msgstr ""
-
-#: src/integrations/redirect/actions/redirect-to-url.php:98
+#: src/integrations/redirect/actions/redirect-to-url.php:127
 msgctxt "Redirect"
 msgid "Redirecting to"
 msgstr ""
@@ -49356,7 +49362,7 @@ msgstr ""
 
 #: src/integrations/the-events-calendar/actions/tec-assign-organizer.php:41
 #: src/integrations/the-events-calendar/actions/tec-assign-venue.php:41
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:82
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:78
 #: src/integrations/the-events-calendar/actions/tec-delete-event.php:41
 #: src/integrations/the-events-calendar/actions/tec-update-event.php:62
 #: src/integrations/the-events-calendar/triggers/tec-attendee-checked-in.php:72
@@ -49364,7 +49370,7 @@ msgstr ""
 #: src/integrations/the-events-calendar/triggers/tec-event-linked.php:53
 #: src/integrations/the-events-calendar/triggers/tec-event-unlinked.php:53
 #: src/integrations/the-events-calendar/triggers/tec-event-updated.php:61
-#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:74
+#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:73
 #: src/integrations/the-events-calendar/triggers/tec-ticket-added.php:68
 #: src/integrations/the-events-calendar/triggers/tec-ticket-deleted.php:73
 #: src/integrations/the-events-calendar/triggers/tec-user-registers-for-event.php:73
@@ -49476,7 +49482,7 @@ msgstr ""
 
 #: src/integrations/the-events-calendar/actions/tec-check-in-attendee.php:51
 #: src/integrations/the-events-calendar/actions/tec-check-in-attendee.php:68
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:60
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:56
 #: src/integrations/the-events-calendar/actions/tec-uncheck-in-attendee.php:52
 #: src/integrations/the-events-calendar/actions/tec-uncheck-in-attendee.php:69
 msgctxt "The Events Calendar"
@@ -49505,7 +49511,7 @@ msgid "Attendee ID is required."
 msgstr ""
 
 #: src/integrations/the-events-calendar/actions/tec-check-in-attendee.php:96
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:168
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:162
 #: src/integrations/the-events-calendar/actions/tec-uncheck-in-attendee.php:97
 msgctxt "The Events Calendar"
 msgid "Event Tickets is not active."
@@ -49590,7 +49596,7 @@ msgstr ""
 
 #: src/integrations/the-events-calendar/actions/tec-create-event.php:99
 #: src/integrations/the-events-calendar/actions/tec-update-event.php:95
-#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:92
+#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:91
 msgctxt "The Events Calendar"
 msgid "Status"
 msgstr ""
@@ -49701,99 +49707,106 @@ msgid "Failed to create organizer."
 msgstr ""
 
 #. translators: %1$s event field.
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:43
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:39
 #, php-format
 msgctxt "The Events Calendar"
 msgid "Create an RSVP attendee for {{an event:%1$s}}"
 msgstr ""
 
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:44
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:40
 msgctxt "The Events Calendar"
 msgid "Create an RSVP attendee for {{an event}}"
 msgstr ""
 
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:64
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:99
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:60
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:95
 #: src/integrations/the-events-calendar/tokens/the-events-calendar-tokens.php:121
 #: src/integrations/the-events-calendar/tokens/the-events-calendar-tokens.php:835
 msgctxt "The Events Calendar"
 msgid "Attendee name"
 msgstr ""
 
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:68
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:106
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:64
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:102
 #: src/integrations/the-events-calendar/tokens/the-events-calendar-tokens.php:126
 #: src/integrations/the-events-calendar/tokens/the-events-calendar-tokens.php:840
 msgctxt "The Events Calendar"
 msgid "Attendee email"
 msgstr ""
 
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:91
-#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:83
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:87
+#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:82
 msgctxt "The Events Calendar"
 msgid "Ticket type"
 msgstr ""
 
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:114
-#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:214
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:110
+#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:213
 msgctxt "The Events Calendar"
 msgid "RSVP status"
 msgstr ""
 
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:118
-#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:100
-#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:261
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:114
+#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:99
+#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:260
 msgctxt "The Events Calendar"
 msgid "Going"
 msgstr ""
 
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:122
-#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:104
-#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:262
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:118
+#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:103
+#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:261
 msgctxt "The Events Calendar"
 msgid "Not going"
 msgstr ""
 
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:148
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:146
 msgctxt "The Events Calendar"
 msgid "Event ID is required."
 msgstr ""
 
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:153
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:150
 msgctxt "The Events Calendar"
 msgid "Ticket ID is required."
 msgstr ""
 
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:158
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:154
 msgctxt "The Events Calendar"
 msgid "Attendee name is required."
 msgstr ""
 
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:163
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:158
 msgctxt "The Events Calendar"
 msgid "A valid attendee email is required."
 msgstr ""
 
 #. translators: %1$d is the ticket ID, %2$d is the user-selected event ID
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:182
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:174
 #, php-format
 msgctxt "The Events Calendar"
 msgid "Ticket %1$d does not belong to event %2$d."
 msgstr ""
 
 #. translators: %d ticket ID
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:194
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:186
 #, php-format
 msgctxt "The Events Calendar"
 msgid "Could not load ticket object for ID %d."
 msgstr ""
 
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:201
+#. translators: %d ticket ID
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:191
+#, php-format
+msgctxt "The Events Calendar"
+msgid "Ticket %d is not an RSVP ticket."
+msgstr ""
+
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:260
 msgctxt "The Events Calendar"
 msgid "Could not resolve the RSVP provider."
 msgstr ""
 
-#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:229
+#: src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php:287
 msgctxt "The Events Calendar"
 msgid "RSVP attendee was not created."
 msgstr ""
@@ -49947,67 +49960,98 @@ msgctxt "The Events Calendar"
 msgid "Failed to update event."
 msgstr ""
 
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:170
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:231
+#: src/integrations/the-events-calendar/helpers/class-ec-rsvp.php:93
+msgctxt "The Events Calendar"
+msgid "The ticket is not an RSVP ticket."
+msgstr ""
+
+#. translators: %1$d the places asked for, %2$d the places left
+#: src/integrations/the-events-calendar/helpers/class-ec-rsvp.php:107
+#, php-format
+msgctxt "The Events Calendar"
+msgid "The RSVP has %2$d places left, and %1$d were asked for."
+msgstr ""
+
+#: src/integrations/the-events-calendar/helpers/class-ec-rsvp.php:140
+msgctxt "The Events Calendar"
+msgid "Event Tickets did not create the RSVP order."
+msgstr ""
+
+#. translators: %1$d the order ID, %2$d the attendees asked for, %3$d the attendees created
+#: src/integrations/the-events-calendar/helpers/class-ec-rsvp.php:159
+#, php-format
+msgctxt "The Events Calendar"
+msgid "RSVP order %1$d has %3$d attendees instead of %2$d."
+msgstr ""
+
+#. translators: %d the attendee ID
+#: src/integrations/the-events-calendar/helpers/class-ec-rsvp.php:172
+#, php-format
+msgctxt "The Events Calendar"
+msgid "Attendee %d was created without the RSVP answer."
+msgstr ""
+
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:177
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:238
 msgid "Event ID"
 msgstr ""
 
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:171
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:232
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:178
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:239
 msgid "Event URL"
 msgstr ""
 
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:272
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:360
 msgctxt "The Events Calendar"
 msgid "Any event"
 msgstr ""
 
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:311
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:399
 msgctxt "The Events Calendar"
 msgid "Any organizer"
 msgstr ""
 
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:331
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:419
 msgctxt "The Events Calendar"
 msgid "Any venue"
 msgstr ""
 
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:352
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:440
 msgctxt "The Events Calendar"
 msgid "Any series"
 msgstr ""
 
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:406
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:494
 msgctxt "The Events Calendar"
 msgid "Any past event"
 msgstr ""
 
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:542
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:630
 msgctxt "The Events Calendar"
 msgid "Any ticket"
 msgstr ""
 
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:685
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:773
 msgctxt "The Events Calendar"
 msgid "Any category"
 msgstr ""
 
 #. translators: %d is a term ID
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:709
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:797
 #, php-format
 msgctxt "The Events Calendar"
 msgid "ID: %d (no name)"
 msgstr ""
 
 #. translators: %d is a post ID
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:830
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:918
 #, php-format
 msgctxt "The Events Calendar"
 msgid "ID: %d (no title)"
 msgstr ""
 
 #. translators: %1$s is the post title, %2$s is the post-status label (e.g. Draft, Scheduled).
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:845
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:933
 #, php-format
 msgctxt "The Events Calendar"
 msgid "%1$s [%2$s]"
@@ -50276,8 +50320,8 @@ msgstr ""
 
 #: src/integrations/the-events-calendar/triggers/tec-event-linked.php:65
 #: src/integrations/the-events-calendar/triggers/tec-event-unlinked.php:65
-#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:96
-#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:260
+#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:95
+#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:259
 msgctxt "The Events Calendar"
 msgid "Any"
 msgstr ""
@@ -50357,28 +50401,28 @@ msgid "{{An organizer}} is updated"
 msgstr ""
 
 #. translators: %1$s event field, %2$s ticket field, %3$s status field
-#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:55
+#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:54
 #, php-format
 msgctxt "The Events Calendar"
 msgid "RSVP tickets are generated for {{a ticket type:%2$s}} on {{an event:%1$s}} with {{a status:%3$s}}"
 msgstr ""
 
-#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:56
+#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:55
 msgctxt "The Events Calendar"
 msgid "RSVP tickets are generated for {{a ticket type}} on {{an event}} with {{a status}}"
 msgstr ""
 
-#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:209
+#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:208
 msgctxt "The Events Calendar"
 msgid "RSVP order ID"
 msgstr ""
 
-#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:219
+#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:218
 msgctxt "The Events Calendar"
 msgid "Quantity"
 msgstr ""
 
-#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:224
+#: src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php:223
 msgctxt "The Events Calendar"
 msgid "Attendee IDs"
 msgstr ""
@@ -54952,32 +54996,32 @@ msgid "Price type"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:664
-#: src/integrations/woocommerce/tokens/wc-tokens.php:1037
+#: src/integrations/woocommerce/tokens/wc-tokens.php:1011
 msgid "Quantity"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:665
-#: src/integrations/woocommerce/tokens/wc-tokens.php:1038
+#: src/integrations/woocommerce/tokens/wc-tokens.php:1012
 msgid "Price"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:710
-#: src/integrations/woocommerce/tokens/wc-tokens.php:1083
+#: src/integrations/woocommerce/tokens/wc-tokens.php:1057
 msgid "Subtotal:"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:722
-#: src/integrations/woocommerce/tokens/wc-tokens.php:1095
+#: src/integrations/woocommerce/tokens/wc-tokens.php:1069
 msgid "Tax:"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:734
-#: src/integrations/woocommerce/tokens/wc-tokens.php:1107
+#: src/integrations/woocommerce/tokens/wc-tokens.php:1081
 msgid "Payment method:"
 msgstr ""
 
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:745
-#: src/integrations/woocommerce/tokens/wc-tokens.php:1118
+#: src/integrations/woocommerce/tokens/wc-tokens.php:1092
 msgid "Total:"
 msgstr ""
 
@@ -55042,142 +55086,142 @@ msgstr ""
 msgid "A user is removed from {{a membership level}}"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:45
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:46
 msgctxt "Woocommerce Bookings"
 msgid "Booking order ID"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:50
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:51
 msgctxt "Woocommerce Bookings"
 msgid "Booking ID"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:55
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:56
 msgctxt "Woocommerce Bookings"
 msgid "Customer email"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:60
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:61
 msgctxt "Woocommerce Bookings"
 msgid "Customer name"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:65
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:66
 msgctxt "Woocommerce Bookings"
 msgid "Booking product title"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:70
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:71
 msgctxt "Woocommerce Bookings"
 msgid "Booking product ID"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:75
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:76
 msgctxt "Woocommerce Bookings"
 msgid "Booking order item ID"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:80
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:81
 msgctxt "Woocommerce Bookings"
 msgid "Booking product URL"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:85
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:86
 msgctxt "Woocommerce Bookings"
 msgid "Booking details"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:90
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:91
 msgctxt "Woocommerce Bookings"
 msgid "Booking product price"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:95
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:96
 msgctxt "Woocommerce Bookings"
 msgid "Booking start date and time"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:100
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:101
 msgctxt "Woocommerce Bookings"
 msgid "Booking end date and time"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:105
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:106
 msgctxt "Woocommerce Bookings"
 msgid "Booking status"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:110
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:111
 msgctxt "Woocommerce Bookings"
 msgid "Booking duration type"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:115
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:116
 msgctxt "Woocommerce Bookings"
 msgid "Booking duration"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:120
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:121
 msgctxt "Woocommerce Bookings"
 msgid "Booking duration unit"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:125
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:126
 msgctxt "Woocommerce Bookings"
 msgid "Booking duration (in minutes)"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:130
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:131
 msgctxt "Woocommerce Bookings"
 msgid "Booking timezone"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:135
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:136
 msgctxt "Woocommerce Bookings"
 msgid "Booking start date"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:140
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:141
 msgctxt "Woocommerce Bookings"
 msgid "Booking start time"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:145
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:146
 msgctxt "Woocommerce Bookings"
 msgid "Booking end date"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:150
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:151
 msgctxt "Woocommerce Bookings"
 msgid "Booking end time"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:155
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:156
 msgctxt "Woocommerce Bookings"
 msgid "Booking product tags"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:160
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:161
 msgctxt "Woocommerce Bookings"
 msgid "Booking product categories"
 msgstr ""
 
 #. translators: 1: Resource title
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:179
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:180
 #, php-format
 msgctxt "Woocommerce Bookings"
 msgid "Type: %s"
 msgstr ""
 
 #. translators: 1: person count
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:198
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:199
 #, php-format
 msgctxt "Woocommerce Bookings"
 msgid "%d Persons"
 msgstr ""
 
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:206
-#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:210
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:207
+#: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:211
 msgctxt "Woocommerce Bookings"
 msgid "Booking details unavailable"
 msgstr ""
@@ -55475,15 +55519,15 @@ msgstr ""
 msgid "Stripe payout (unformatted)"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:953
+#: src/integrations/woocommerce/tokens/wc-tokens.php:927
 msgid "Shipping tracking number"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:959
+#: src/integrations/woocommerce/tokens/wc-tokens.php:933
 msgid "Shipping carrier"
 msgstr ""
 
-#: src/integrations/woocommerce/tokens/wc-tokens.php:965
+#: src/integrations/woocommerce/tokens/wc-tokens.php:939
 msgid "Ship date"
 msgstr ""
 

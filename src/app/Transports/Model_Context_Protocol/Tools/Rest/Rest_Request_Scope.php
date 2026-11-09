@@ -226,7 +226,7 @@ final class Rest_Request_Scope {
 		if ( is_wp_error( $operation ) ) {
 			return $operation;
 		}
-		if ( $scope->handler !== $operation['handler'] || ( null !== $handler && $handler !== $scope->handler ) ) {
+		if ( $scope->handler !== $operation['handler'] || ( null !== $handler && ! self::is_registered_handler( $handler, $scope->handler ) ) ) {
 			return new WP_Error( 'rest_forbidden', 'The matched handler changed. Discover the operation again.', array( 'status' => 403 ) );
 		}
 		if ( $scope->max_input_bytes !== $operation['policy']['max_input_bytes'] ) {
@@ -299,7 +299,7 @@ final class Rest_Request_Scope {
 		if ( ! isset( $this->content_handlers[ $key ] ) ) {
 			$this->content_handlers[ $key ] = array( $request, $operation['handler'] );
 		}
-		if ( $operation['handler'] !== $this->content_handlers[ $key ][1] || ( null !== $handler && $handler !== $operation['handler'] ) ) {
+		if ( $operation['handler'] !== $this->content_handlers[ $key ][1] || ( null !== $handler && ! self::is_registered_handler( $handler, $operation['handler'] ) ) ) {
 			return new WP_Error( 'rest_forbidden', 'The native content handler changed.', array( 'status' => 403 ) );
 		}
 		$reason = ( new Rest_Operation_Policy() )->unavailable_reason( $operation['policy'], $this->context, 'rest_request' );
@@ -420,6 +420,31 @@ final class Rest_Request_Scope {
 			self::$active     = $parent;
 			wp_set_current_user( $previous_user );
 		}
+	}
+
+	/**
+	 * Whether the handler WordPress matched is the registered one it was checked against.
+	 *
+	 * WordPress 7.2 resolves a handler's `data_processing` settings when it
+	 * matches a request, and adds them to the handler it passes to
+	 * rest_request_before_callbacks (WP_REST_Server::find_handler_for_request()).
+	 * The matched handler is then never identical to the registered one. The
+	 * settings only say whether `_fields`, `_embed` and response links shape
+	 * the response data, and core derives them from the same handler and its
+	 * route, so they do not decide which handler runs. Every other key must be
+	 * identical.
+	 *
+	 * @since 8.0.3
+	 *
+	 * @param array $matched    The handler WordPress matched.
+	 * @param array $registered The registered handler.
+	 *
+	 * @return bool
+	 */
+	private static function is_registered_handler( array $matched, array $registered ): bool {
+		unset( $matched['data_processing'], $registered['data_processing'] );
+
+		return $matched === $registered;
 	}
 
 	/** Compare nested identity and permit native sanitization of scalar IDs. */
