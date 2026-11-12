@@ -388,8 +388,9 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			$field_args['placeholder'] = isset( $args['placeholder'] ) ? $args['placeholder'] : '';
 
 			// Supports options_show_id
-			// default: hidden, unless the automator_options_show_id filter turns option IDs on
-			$field_args['options_show_id'] = isset( $args['options_show_id'] ) ? $args['options_show_id'] : apply_filters( 'automator_options_show_id', false, $this );
+			// default: null (auto): the builder shows IDs for numeric option values (posts, events,
+			// products) and hides them for text values, unless the automator_options_show_id filter decides
+			$field_args['options_show_id'] = isset( $args['options_show_id'] ) ? $args['options_show_id'] : apply_filters( 'automator_options_show_id', null, $this );
 
 			// Supports multiple values
 			// default: false
@@ -439,7 +440,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 			'chained_to'               => null,
 			'endpoint'                 => null,
 			'token_name'               => '',
-			'options_show_id'          => apply_filters( 'automator_options_show_id', false, $this ),
+			'options_show_id'          => apply_filters( 'automator_options_show_id', null, $this ),
 			'exclude_default_token'    => false,
 		);
 		$args                     = wp_parse_args( $args, $defaults );
@@ -531,7 +532,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.
 		$support_token   = apply_filters( 'uap_option_' . $option_code . '_select_field', $supports_tokens, '3.0', 'automator_option_' . $option_code . '_select_field' );
 		$support_token   = apply_filters( 'automator_option_' . $option_code . '_select_field', $support_token );
-		$options_show_id = empty( $args['options_show_id'] ) ? false : $args['options_show_id'];
+		$options_show_id = isset( $args['options_show_id'] ) ? $args['options_show_id'] : null;
 		$options_show_id = apply_filters( 'automator_options_show_id', $options_show_id, $this );
 
 		$option = array(
@@ -610,7 +611,7 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 		$supports_tokens       = apply_filters_deprecated( 'uap_option_' . $option_code . '_select_field', array( $supports_tokens ), '3.0', 'automator_option_' . $option_code . '_select_field' );
 		$supports_tokens       = apply_filters( 'automator_option_' . $option_code . '_select_field', $supports_tokens );
 		$token_name            = apply_filters( 'automator_option_' . $option_code . '_select_field_token_name', $token_name, $args );
-		$options_show_id       = empty( $args['options_show_id'] ) ? false : $args['options_show_id'];
+		$options_show_id       = isset( $args['options_show_id'] ) ? $args['options_show_id'] : null;
 		$options_show_id       = apply_filters( 'automator_options_show_id', $options_show_id, $this );
 		$option                = array(
 			'option_code'              => $option_code,

@@ -1521,6 +1521,11 @@ function automator_pro_items_list() {
 			),
 			'actions'    => array(
 				array(
+					'name'     => esc_html_x( 'Create an order for {{a customer}}', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
 					'name'     => esc_html_x( 'Delete a customer by {{ID}}', 'Automator Pro item', 'uncanny-automator' ),
 					'is_pro'   => true,
 					'is_elite' => false,
@@ -1532,6 +1537,11 @@ function automator_pro_items_list() {
 				),
 				array(
 					'name'     => esc_html_x( 'Generate a discount code', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( "Set {{an order's}} status to {{a specific status}}", 'Automator Pro item', 'uncanny-automator' ),
 					'is_pro'   => true,
 					'is_elite' => false,
 				),

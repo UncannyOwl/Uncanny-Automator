@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator\Integrations\Wp;
 
+use Uncanny_Automator\App\Recipe_Runner\Exceptions\Action_Error_Exception;
+
 /**
  * Class WP_CREATE_ROLE
  *
@@ -113,12 +115,13 @@ class WP_CREATE_ROLE extends \Uncanny_Automator\Recipe\Action {
 	 * @param array $parsed      The parsed data.
 	 *
 	 * @return bool True if the role was created successfully, false otherwise.
+	 *
+	 * @throws Action_Error_Exception When the Capabilities field holds something other than capability names.
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 		$role_name    = isset( $parsed['role_name'] ) ? sanitize_text_field( $parsed['role_name'] ) : '';
 		$role_slug    = isset( $parsed['role_slug'] ) ? sanitize_key( $parsed['role_slug'] ) : '';
 		$display_name = isset( $parsed['display_name'] ) ? sanitize_text_field( $parsed['display_name'] ) : '';
-		$capabilities = isset( $parsed['CAPABILITIES'] ) ? $parsed['CAPABILITIES'] : array();
 
 		// Validate role slug format.
 		if ( ! preg_match( '/^[a-z0-9_]+$/', $role_slug ) ) {
@@ -138,13 +141,9 @@ class WP_CREATE_ROLE extends \Uncanny_Automator\Recipe\Action {
 			return false;
 		}
 
-		// Create capabilities array.
-		$role_capabilities = array();
-		if ( ! empty( $capabilities ) ) {
-			foreach ( $capabilities as $cap ) {
-				$role_capabilities[ $cap ] = true;
-			}
-		}
+		$capabilities = $this->requested_capabilities( $parsed, $action_data['meta'] ?? array() );
+
+		$role_capabilities = array_fill_keys( $capabilities, true );
 
 		// Add the new role.
 		$result = add_role( $role_slug, $display_name, $role_capabilities );
@@ -155,5 +154,80 @@ class WP_CREATE_ROLE extends \Uncanny_Automator\Recipe\Action {
 		}
 
 		return true;
+	}
+
+	/**
+	 * The capability names the Capabilities field asks for.
+	 *
+	 * The field is saved as a JSON list of names, or as the text of a custom
+	 * value. A custom value in the multi-select is saved as the list
+	 * ["automator_custom_value"], with the text in CAPABILITIES_custom.
+	 *
+	 * @param array $parsed The parsed action fields.
+	 * @param array $saved  The action's saved fields.
+	 *
+	 * @return string[] Capability names; empty when the field names none, and the role then has no capabilities.
+	 *
+	 * @throws Action_Error_Exception When the field holds something other than names.
+	 */
+	private function requested_capabilities( $parsed, $saved ) {
+		$names = $this->capability_names( $this->saved_field( 'CAPABILITIES', $parsed, $saved ) );
+
+		if ( in_array( 'automator_custom_value', $names, true ) ) {
+			$names = array_merge(
+				array_diff( $names, array( 'automator_custom_value' ) ),
+				$this->capability_names( $this->saved_field( 'CAPABILITIES_custom', $parsed, $saved ) )
+			);
+		}
+
+		return array_values( array_unique( $names ) );
+	}
+
+	/**
+	 * A parsed field, only when this action saved it.
+	 *
+	 * The parser keeps the fields of earlier runs of this action, so a field
+	 * this action didn't save could still hold an earlier run's value.
+	 *
+	 * @param string $key    The field's key.
+	 * @param array  $parsed The parsed action fields.
+	 * @param array  $saved  The action's saved fields.
+	 *
+	 * @return mixed The parsed value; an empty list when this action didn't save the field.
+	 */
+	private function saved_field( $key, $parsed, $saved ) {
+		return array_key_exists( $key, $saved ) ? ( $parsed[ $key ] ?? array() ) : array();
+	}
+
+	/**
+	 * Capability names from a list, a JSON list, or comma-separated text.
+	 *
+	 * @param mixed $value The field value.
+	 *
+	 * @return string[] Trimmed names; empty entries are left out.
+	 *
+	 * @throws Action_Error_Exception When the value or one of its entries is not a name.
+	 */
+	private function capability_names( $value ) {
+		if ( is_string( $value ) ) {
+			$decoded = json_decode( $value, true );
+			$value   = is_array( $decoded ) ? $decoded : explode( ',', $value );
+		}
+
+		$names = array();
+
+		foreach ( is_array( $value ) ? $value : array( $value ) as $entry ) {
+			if ( ! is_string( $entry ) ) {
+				throw Action_Error_Exception::validation_failed(
+					esc_html_x( 'Capabilities must be capability names, such as read or edit_posts.', 'WordPress', 'uncanny-automator' )
+				);
+			}
+
+			if ( '' !== trim( $entry ) ) {
+				$names[] = trim( $entry );
+			}
+		}
+
+		return $names;
 	}
 }

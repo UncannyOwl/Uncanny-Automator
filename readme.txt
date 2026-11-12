@@ -4,7 +4,7 @@ Tags: ai, mcp server, automation, claude, chatgpt
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 8.0.3
+Stable tag: 8.0.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -470,6 +470,24 @@ Unlimited tool usage for a connected AI, the complete library of Pro triggers, a
 6. The recipe log: every run, every step, whether an AI or a schedule started it.
 
 == Changelog ==
+
+= 8.0.4 [2026-11-12] =
+
+**Fixes and improvements:**
+
+* Admin - The Connect Your AI notice no longer appears when an AI app is already connected. #9465
+* App Platform - Fixed registration and event delivery errors on sites with BuddyBoss Private REST APIs enabled. #9447
+* App Platform - Resolved PHP 8.5 deprecation notice when a request fails without a cURL error. #9475
+* Code Snippets - Activate a snippet, Deactivate a snippet - Fixed compatibility with Code Snippets 3.10.0 and later. #9473
+* Core - Fixed stuck run recovery incorrectly closing active runs or failing background actions when database and site times differ or clocks change. #9452
+* Core - Optimized background requests to reduce memory usage by loading only the integrations used by active recipes. #9463
+* Keap - Sites connected before version 7.2.3 that have not migrated are now prompted to reconnect instead of receiving an invalid credentials error. #9456
+* Recipe Builder - Dropdowns now show numeric IDs by default. #9450
+* Recipes - Saving, duplicating or importing recipes now correctly stores all trigger hooks to prevent triggers from failing to run. #9459
+* Recipes - Triggers with multiple hooks now run correctly when created by AI, duplicated, imported or added from templates. #9451
+* Site Management - Plugin and theme installations now preserve previously detected update availability. #9468
+* WordPress - Create a new role - Fixed an issue where new roles were created without the selected capabilities. #9474
+* WP Download Manager, Advanced Ads, Easy Affiliate, Jetpack CRM and Duplicator - Resolved PHP 8.5 deprecation notices. #9472
 
 = 8.0.3 [2026-11-09] =
 

@@ -295,7 +295,8 @@ final class Recipe_Replay_Writer {
 	 * Fallbacks for unregistered codes: meta_code falls back to the code for
 	 * the aggregate's invariant, the sentence falls back to the code so the
 	 * copy has a title, and the hook falls back to the node's carried
-	 * `add_action` or a code-derived placeholder. A trigger that lands on the placeholder is forced to
+	 * `add_action` or a code-derived placeholder. The trigger store replaces the carried hook with the
+	 * code's own hooks when this site knows the code. A trigger that lands on the placeholder is forced to
 	 * `draft` — the placeholder is only inert while it stays out of
 	 * Trigger_Query's live map, and that is now enforced rather than assumed.
 	 *
@@ -317,14 +318,14 @@ final class Recipe_Replay_Writer {
 		// legacy dump that carries no add_action at all — without it the
 		// Trigger_Hook VO rejects the empty name and the whole import fails.
 		//
-		// A placeholder row must never go LIVE. Trigger_Query::get_active_triggers()
-		// keys its map by trigger CODE with scalar assignment, so one published
-		// row carrying a fabricated hook replaces the entry for that code and
-		// every recipe using it stops firing site-wide — the WPFSUBFORM outage.
-		// Forcing draft keeps the import complete and visible: the author sees a
-		// trigger that needs attention, and find_triggers() (published triggers on
-		// published recipes) never sees the placeholder at all. Fixing the map is
-		// still the durable fix; this stops us feeding it.
+		// A placeholder row must never go LIVE. Before the Trigger_Query map kept
+		// every row's hooks, one published row carrying a fabricated hook replaced
+		// the entry for its code and every recipe using it stopped firing
+		// site-wide (the WPFSUBFORM outage). The map no longer replaces, but a
+		// live placeholder would still listen on a hook nothing fires. Forcing
+		// draft keeps the import complete and visible: the author sees a trigger
+		// that needs attention, and find_triggers() (published triggers on
+		// published recipes) never sees the placeholder at all.
 		$hook_resolved = array() !== $hook;
 
 		$configuration = $fields;

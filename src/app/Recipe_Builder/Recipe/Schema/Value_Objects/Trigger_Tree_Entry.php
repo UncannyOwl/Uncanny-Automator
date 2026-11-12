@@ -45,7 +45,9 @@ final class Trigger_Tree_Entry extends Item_Tree_Entry {
 		$instance->fields           = $trigger->get_fields();
 		$instance->menu_order       = (int) $post->menu_order;
 		$instance->presentation     = array(
-			'hook'                    => $trigger->get_trigger_hook()->get_name(),
+			// Every hook the trigger listens on, in the `add_action` shape: a copy, an
+			// export or a template replayed from this entry must listen on all of them.
+			'hook'                    => $trigger->get_trigger_hook()->to_array()['name'],
 			'sentence'                => $trigger->get_sentence(),
 			'sentence_human_readable' => $trigger->get_sentence_human_readable(),
 		);
@@ -81,12 +83,34 @@ final class Trigger_Tree_Entry extends Item_Tree_Entry {
 		$instance->fields           = Item_Field_Filter::omit_structural_keys( $stored['configuration'] );
 		$instance->menu_order       = (int) $post->menu_order;
 		$instance->presentation     = array(
-			// `add_action` can store a list of hooks; an entry presents one, as `Trigger_Hook::get_name()` does.
-			'hook'                    => (string) ( ( (array) $stored['trigger_hook']['name'] )[0] ?? '' ),
+			// Same shape as a hydrated entry: one hook name, or the list `add_action` stores.
+			'hook'                    => self::present_hook( $stored['trigger_hook']['name'] ?? '' ),
 			'sentence'                => $stored['sentence'],
 			'sentence_human_readable' => $stored['sentence_human_readable'],
 		);
 
 		return $instance;
+	}
+
+	/**
+	 * Present stored hook names the way `Trigger_Hook::to_array()` does.
+	 *
+	 * One name is a string, several are a list, so an unhydrated entry carries
+	 * every hook the trigger stores, like a hydrated one.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @param mixed $stored_name The stored `add_action` value: a name or a list of names.
+	 *
+	 * @return string|string[]
+	 */
+	private static function present_hook( $stored_name ) {
+		$names = array_values( array_filter( array_map( 'strval', array_filter( (array) $stored_name, 'is_scalar' ) ), 'strlen' ) );
+
+		if ( count( $names ) > 1 ) {
+			return $names;
+		}
+
+		return $names[0] ?? '';
 	}
 }

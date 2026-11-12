@@ -510,7 +510,7 @@ class Jetcrm_Tokens {
 			case 'zbsco_seccountry':
 				$value = $contact->zbsco_seccountry;
 				break;
-			case 'object_id';
+			case 'object_id':
 				$value = $contact_id;
 				break;
 		}

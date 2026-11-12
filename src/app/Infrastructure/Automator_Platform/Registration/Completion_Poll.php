@@ -69,6 +69,14 @@ final class Completion_Poll {
 	private $schedule;
 
 	/**
+	 * Which door the next attempt gives the platform, chosen when one ends
+	 * unproven ({@see abandon_attempt()}).
+	 *
+	 * @var Registration_Door
+	 */
+	private $door;
+
+	/**
 	 * @param Site_Credentials_Store $store     Holds the secret the redeemed attempt stores.
 	 * @param object                 $http      Collaborator with a `post(string, array, array): array` shape.
 	 * @param Registration_Challenge $challenge The attempt on file and its proofs.
@@ -78,6 +86,7 @@ final class Completion_Poll {
 	 * @param Registration_Outcomes  $outcomes  How attempts ended.
 	 * @param Reverification_Ledger  $ledger    Marks a superseded attempt.
 	 * @param Completion_Schedule    $schedule  The cron event that finishes a pending attempt.
+	 * @param Registration_Door|null $door      Which door the platform reaches this site through; the wire's addresses are of it.
 	 */
 	public function __construct(
 		Site_Credentials_Store $store,
@@ -88,7 +97,8 @@ final class Completion_Poll {
 		Registration_Backoff $backoff,
 		Registration_Outcomes $outcomes,
 		Reverification_Ledger $ledger,
-		Completion_Schedule $schedule
+		Completion_Schedule $schedule,
+		?Registration_Door $door = null
 	) {
 
 		$this->store     = $store;
@@ -100,6 +110,7 @@ final class Completion_Poll {
 		$this->outcomes  = $outcomes;
 		$this->ledger    = $ledger;
 		$this->schedule  = $schedule;
+		$this->door      = $door ?? new Registration_Door( $store );
 	}
 
 	/**
@@ -259,7 +270,7 @@ final class Completion_Poll {
 		// instead of polling until it expires.
 		$progress = $answer->challenge_progress();
 		if ( null !== $progress && $progress->is_over() ) {
-			$this->abandon_attempt( '' !== $progress->last_outcome() ? $progress->last_outcome() : 'expired', $progress->last_http_status() );
+			$this->abandon_attempt( '' !== $progress->last_outcome() ? $progress->last_outcome() : 'expired', $progress->last_http_status(), $progress );
 			return false;
 		}
 
@@ -384,16 +395,27 @@ final class Completion_Poll {
 	 * production the drift gate hands the site back to the notice, which asks
 	 * again and says why ('unconfirmed').
 	 *
-	 * @param string $reason 'expired'; the completion status ('401' / '404');
-	 *                       or what the challenge's last try came to, when the
-	 *                       platform said no try is coming
-	 *                       ({@see Challenge_Progress::is_over()}).
-	 * @param int    $status The completion status, or the last try's HTTP
-	 *                       status; 0 when none.
+	 * The record and the log name the address this attempt gave the platform.
+	 * Then the next attempt's door is chosen from what the platform last said
+	 * of its check of this site's address ({@see Registration_Door::after_unproven()}),
+	 * and a change is logged with the two addresses the next register gives.
+	 *
+	 * @param string                  $reason   'expired'; the completion status ('401' / '404');
+	 *                                          or what the challenge's last try came to, when the
+	 *                                          platform said no try is coming
+	 *                                          ({@see Challenge_Progress::is_over()}).
+	 * @param int                     $status   The completion status, or the last try's HTTP
+	 *                                          status; 0 when none.
+	 * @param Challenge_Progress|null $progress The answer that said no try is coming; null
+	 *                                          reads what the last poll kept on the attempt.
 	 *
 	 * @return void
 	 */
-	private function abandon_attempt( string $reason, int $status = 0 ): void {
+	private function abandon_attempt( string $reason, int $status = 0, ?Challenge_Progress $progress = null ): void {
+
+		// Read before the attempt that kept it is dropped.
+		$last_check = $progress ?? $this->challenge->last_progress();
+		$tried_at   = $this->wire->challenge_url();
 
 		$this->drop_attempt( 'unconfirmed' );
 		$this->schedule->sync();
@@ -403,17 +425,25 @@ final class Completion_Poll {
 			new Register_Answer(),
 			$status,
 			array(
-				'challenge_url' => $this->wire->challenge_url(),
+				'challenge_url' => $tried_at,
 				'reason'        => $reason,
 			)
 		);
 
 		Dispatcher::action( 'automator_platform_site_register_unproven', $reason );
 		automator_log(
-			'Platform site registration could not be confirmed (' . $reason . '). The platform must be able to reach ' . $this->wire->challenge_url() . ' to confirm this site; registration will be retried later.',
+			'Platform site registration could not be confirmed (' . $reason . '). The platform must be able to reach ' . $tried_at . ' to confirm this site; registration will be retried later.',
 			'Platform_Site_Registration',
 			true
 		);
+
+		if ( $this->door->after_unproven( $last_check ) ) {
+			automator_log(
+				'The next registration gives the platform ' . $this->wire->challenge_url() . ' to confirm this site and ' . $this->wire->callback_url() . ' for its callbacks.',
+				'Platform_Site_Registration',
+				true
+			);
+		}
 	}
 
 	/**

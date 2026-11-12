@@ -902,6 +902,8 @@ class Automator_Load {
 	/**
 	 * Load migrations that uses hooks.
 	 *
+	 * @since 8.0.4 Hooks the multi-hook trigger repair's run_again().
+	 *
 	 * @return void
 	 */
 	public function load_migrations_hooks() {
@@ -917,6 +919,10 @@ class Automator_Load {
 		// legacy `actions_flow` meta the run-details modal reads, before the
 		// legacy logger fires at priority 30.
 		( new \Uncanny_Automator\App\Recipe_Builder\Block\Resolvers\Run_Log_Flow_Translator() )->register_hooks();
+
+		// Multi-hook trigger repair: run it again after a plugin is activated. A trigger whose
+		// integration was inactive when the repair ran was skipped.
+		add_action( 'activated_plugin', array( Migrations\Migrate_Multi_Hook_Triggers::class, 'run_again' ) );
 	}
 
 	/**
@@ -928,6 +934,7 @@ class Automator_Load {
 	 * them since then runs them now.
 	 *
 	 * @since 8.0.0 Loads the trigger hook, nested token and option type migrations again.
+	 * @since 8.0.4 Loads the multi-hook trigger repair.
 	 *
 	 * @return void
 	 */
@@ -942,6 +949,7 @@ class Automator_Load {
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-seed-launcher-defaults.php';
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-trigger-custom-value-meta.php';
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-ai-intro-notice.php';
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-multi-hook-triggers.php';
 
 		// The Redirect integration's closure retirement lives with that integration (classmap-loaded) but is
 		// registered here: integrations load on demand, and no recipe uses REDIRECT_TO_URL until it ran.
@@ -961,6 +969,12 @@ class Automator_Load {
 		// are otherwise loaded on demand. Force a full load for the admin
 		// requests the migration runs on, and only until it has finished.
 		if ( is_admin() && Migrations\Migrate_Orphan_Readable_Meta::is_pending() ) {
+			add_filter( 'automator_should_load_all_integrations', '__return_true' );
+		}
+
+		// The multi-hook repair compares each stored trigger hook with the list its code
+		// registers, so it needs every integration's trigger definitions too.
+		if ( is_admin() && Migrations\Migrate_Multi_Hook_Triggers::is_pending() ) {
 			add_filter( 'automator_should_load_all_integrations', '__return_true' );
 		}
 	}

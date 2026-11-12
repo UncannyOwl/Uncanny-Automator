@@ -279,7 +279,6 @@ class Recipe_Manifest {
 			'automator_ajax'       => $this->is_automator_ajax(),
 			'automator_rest'       => $this->is_automator_rest(),
 			'mcp_rest'             => $this->is_mcp_rest(),
-			'as_runner'            => $this->is_action_scheduler_runner(),
 			'platform_webhook'     => $this->is_automator_platform_webhook(),
 			'notice_review'        => $this->is_notice_review(),
 		);
@@ -534,72 +533,19 @@ class Recipe_Manifest {
 	}
 
 	/**
-	 * Action Scheduler is firing in this request — wp-cron, the queue
-	 * runner, or any explicit AS dispatch via WP-CLI.
-	 *
-	 * AS resumes scheduled Automator actions (delay/schedule wrappers,
-	 * deferred dispatches) here. If targeted-mode loading skipped the
-	 * integrations those actions belong to — which it does by default for
-	 * App_Integrations whose `is_app_connected()` returns false — the
-	 * action class is never instantiated, `action_execution_function_from_action_code`
-	 * returns null, and `Action_Run_Stage::verify_execution_function` throws
-	 * `Pipeline_Exception('action-function-not-exist')`. Full load on this
-	 * request type guarantees the action class is registered before the AS
-	 * callback fires.
-	 *
-	 * Two signals, OR'd together:
-	 *  - `wp_doing_cron()` covers the wp-cron.php request that AS uses by
-	 *    default (`AS_Store_DB::DEFAULT_DATA_STORE` falls through to cron
-	 *    when the runner is unreachable).
-	 *  - `as_async_request_queue_runner` admin-ajax action — the queue
-	 *    runner's preferred async fire path. The action prefix doesn't
-	 *    match `is_automator_ajax`'s allow-list, so we recognise it
-	 *    explicitly here.
-	 *
-	 * Cost — read honestly: the gate is `wp_doing_cron()` (plus the one AS
-	 * ajax action), so EVERY wp-cron request full-loads every Automator
-	 * integration, not just the AS ticks that actually resume an Automator
-	 * action. We don't cheaply tell the two apart — knowing "AS is about to
-	 * run an automator_* hook" needs a DB probe. Frequency tracks the site's
-	 * cron: default pseudo-cron fires a loopback wp-cron.php request whenever
-	 * any due event exists (can be frequent on an active site), a system cron
-	 * fires each configured tick. Accepted because cron requests are
-	 * background / non-user-facing, whereas the alternative — introspect
-	 * `wp_actionscheduler_actions` for a pending automator_* hook at init:1 —
-	 * adds a per-request DB round-trip on EVERY request for a check that's
-	 * negative most of the time.
-	 *
-	 * @return bool
-	 */
-	private function is_action_scheduler_runner() {
-		if ( function_exists( 'wp_doing_cron' ) && wp_doing_cron() ) {
-			return true;
-		}
-
-		if ( ! wp_doing_ajax() ) {
-			return false;
-		}
-
-		// Nonce check intentionally skipped — bootstrap-time routing decision.
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) : '';
-
-		return 'as_async_request_queue_runner' === $action;
-	}
-
-	/**
 	 * Automator Platform inbound webhook — `/wp-json/automator/platform/v1/...`
 	 * (and forward-compatibly any `automator/platform/vN` namespace).
 	 *
-	 * Matches the same execution-context shape as `is_action_scheduler_runner()`:
-	 * a webhook delivery resumes deferred async-app actions via
+	 * A webhook delivery resumes deferred async-app actions via
 	 * `automator_platform_async_completed` → `Async_App_Action_Resume_Stage`,
 	 * and the post-resume scheduler repump dispatches downstream actions whose
-	 * token deps just cleared. Any of those downstream actions belonging to a
-	 * targeted-mode-skipped App_Integration would hit the same `null
-	 * execution_function` → `Pipeline_Exception('action-function-not-exist')`
-	 * failure as the AS-resume path. Full load this request type so the action
-	 * classes are registered when the resume-driven repump dispatches them.
+	 * token deps just cleared. A downstream action can belong to an
+	 * App_Integration that targeted-mode loading skips (one whose
+	 * `is_app_connected()` returns false); its action class would then never be
+	 * registered and the dispatch would fail with
+	 * `Pipeline_Exception('action-function-not-exist')`. Full load this request
+	 * type so the action classes are registered when the resume-driven repump
+	 * dispatches them.
 	 *
 	 * Pattern matches `automator/platform/v` to forward-cover future v2/v3
 	 * webhook namespaces without per-version churn.

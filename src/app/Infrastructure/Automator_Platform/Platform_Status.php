@@ -4,6 +4,8 @@ declare( strict_types=1 );
 namespace Uncanny_Automator\App\Infrastructure\Automator_Platform;
 
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration\Registration_Backoff;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration\Registration_Door;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration\Registration_Wire;
 
 /**
  * Report-safe view of this site's link to the Automator Platform (the App
@@ -173,16 +175,15 @@ final class Platform_Status {
 	}
 
 	/**
-	 * The plugin's webhook receiver URL the platform calls back to. Public
-	 * REST endpoint — safe to report.
+	 * The plugin's webhook receiver URL the platform calls back to, of the
+	 * door the registration gives it: the REST route, or the site's own
+	 * address ({@see Query_Door}). A public endpoint — safe to report.
 	 *
 	 * @return string
 	 */
 	private function callback_url(): string {
 
-		return function_exists( 'rest_url' )
-			? (string) rest_url( AUTOMATOR_PLATFORM_WEBHOOK_RECEIVER_ROUTE )
-			: '';
+		return ( new Registration_Wire( null, new Registration_Door( $this->store ) ) )->callback_url();
 	}
 
 	/**

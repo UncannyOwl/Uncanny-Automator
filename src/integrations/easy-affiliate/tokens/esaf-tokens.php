@@ -366,7 +366,7 @@ class Esaf_Tokens {
 			case 'AFFILIATE_YTD_COMMISSIONS':
 				$value = $this->get_ytd_commissions( $data->affiliate_id );
 				break;
-			case 'AFFILIATE_ID';
+			case 'AFFILIATE_ID':
 			default:
 				$value = $affiliate_data->ID;
 				break;

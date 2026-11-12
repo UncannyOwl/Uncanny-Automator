@@ -60,15 +60,6 @@ class Trigger_Hook {
 	}
 
 	/**
-	 * Get the first (primary) hook name.
-	 *
-	 * @return string
-	 */
-	public function get_name(): string {
-		return $this->names[0];
-	}
-
-	/**
 	 * Get all hook names this trigger listens on.
 	 *
 	 * @return string[]

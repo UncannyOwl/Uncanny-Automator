@@ -188,7 +188,7 @@ class Advanced_Ads_Tokens {
 			case 'AD_AUTHOR':
 				$value = get_the_author_meta( 'display_name', $post->post_author );
 				break;
-			case 'AD_ID';
+			case 'AD_ID':
 			default:
 				$value = $post->ID;
 				break;

@@ -11,6 +11,7 @@ use Uncanny_Automator\App\Infrastructure\Async_Jobs\Inbox_Drainer;
 use Uncanny_Automator\App\Infrastructure\Database\Database;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Action_Error_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Execution_Log_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Site_Time;
 use Uncanny_Automator\Automator_Status;
 use Uncanny_Automator\App\Events\Dispatcher;
 
@@ -283,10 +284,10 @@ class Stuck_Recipe_Recovery {
 	 */
 	private function log_recovery( int $recipe_log_id, int $threshold_seconds, string $last_activity ): void {
 
-		// Guard against an unparseable timestamp. Ageing against a zero date
-		// previously reported ~2027 years of "age" in the log UI.
-		$last_activity_ts = strtotime( $last_activity );
-		$age_seconds      = false === $last_activity_ts ? 0 : max( 0, time() - $last_activity_ts );
+		// Row times are site time; read as UTC they'd be off by the site's offset. A time that names no instant
+		// reports no age: ageing against a zero date previously reported ~2027 years of "age" in the log UI.
+		$last_activity_at = ( new Site_Time( wp_timezone() ) )->latest_instant( $last_activity );
+		$age_seconds      = null === $last_activity_at ? 0 : max( 0, time() - $last_activity_at );
 
 		// COMPLETED, COMPLETED_WITH_NOTICE and DID_NOTHING all mean every action finished; only Stage 4 was missed.
 		$finished = array( Automator_Status::COMPLETED, Automator_Status::COMPLETED_WITH_NOTICE, Automator_Status::DID_NOTHING );

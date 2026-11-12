@@ -34,6 +34,14 @@ class Trigger_Query {
 	 * Queries the WordPress database for all published triggers associated with
 	 * published recipes. Returns a structured array of trigger configurations.
 	 *
+	 * A code with one single-hook trigger maps to a flat `{hook, code}` entry; a
+	 * code whose triggers listen on more than one hook maps to a list of entries.
+	 * Several triggers can share a code with different stored hooks (a recipe
+	 * saved before a hook was added, a copy that kept fewer hooks), so every row's
+	 * hooks are added to the code's entries: none replaces another.
+	 *
+	 * @since 8.0.4 A single-hook row no longer replaces the hooks earlier rows of the same code added.
+	 *
 	 * @return array Array of active triggers indexed by trigger code.
 	 */
 	public function get_active_triggers() {
@@ -50,23 +58,52 @@ class Trigger_Query {
 
 			$action_hook = automator_safe_unserialize( $trigger['action_hook'] );
 
-			if ( is_array( $action_hook ) ) {
-				foreach ( $action_hook as $hook ) {
-					$active_triggers[ $trigger['trigger_code'] ][] = array(
-						'hook' => (string) $hook,
-						'code' => $trigger['trigger_code'],
-					);
-				}
-				continue;
+			foreach ( (array) $action_hook as $hook ) {
+				$this->add_entry( $active_triggers, (string) $trigger['trigger_code'], (string) $hook, is_array( $action_hook ) );
 			}
-
-			$active_triggers[ $trigger['trigger_code'] ] = array(
-				'hook' => (string) $action_hook,
-				'code' => $trigger['trigger_code'],
-			);
 		}
 
 		return $active_triggers;
+	}
+
+	/**
+	 * Add one hook for a trigger code, keeping every hook the code already has.
+	 *
+	 * The first single-hook entry of a code stays a flat `{hook, code}` array.
+	 * Once the code has a second hook, or its row stores a list of hooks, the
+	 * code's value becomes a list of entries. An entry for the same hook is not
+	 * added twice.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @param array  $active_triggers Map being built, by reference.
+	 * @param string $code            Trigger code.
+	 * @param string $hook            Hook name.
+	 * @param bool   $from_list       Whether the row stores a list of hooks.
+	 *
+	 * @return void
+	 */
+	private function add_entry( array &$active_triggers, $code, $hook, $from_list ) {
+
+		$entry = array(
+			'hook' => $hook,
+			'code' => $code,
+		);
+
+		if ( ! isset( $active_triggers[ $code ] ) ) {
+			$active_triggers[ $code ] = $from_list ? array( $entry ) : $entry;
+			return;
+		}
+
+		// A flat single-hook entry becomes the first item of the code's list.
+		$entries = isset( $active_triggers[ $code ]['hook'] ) ? array( $active_triggers[ $code ] ) : $active_triggers[ $code ];
+
+		if ( in_array( $hook, array_column( $entries, 'hook' ), true ) ) {
+			return;
+		}
+
+		$entries[]                = $entry;
+		$active_triggers[ $code ] = $entries;
 	}
 
 	/**

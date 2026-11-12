@@ -183,7 +183,9 @@ function automator_get_triggers_by_integration( string $integration, bool $inclu
  * @param array $trigger_data {
  *     Trigger configuration data.
  *     @type string $trigger_code Trigger code (required).
- *     @type array  $config       Trigger configuration (optional).
+ *     @type array  $config       Trigger configuration (optional). A `hook` key is
+ *                                ignored: the trigger's hooks come from its
+ *                                registered definition.
  * }
  * @return array|WP_Error Trigger data on success, WP_Error on failure.
  */

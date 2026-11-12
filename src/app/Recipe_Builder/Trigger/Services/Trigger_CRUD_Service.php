@@ -184,18 +184,20 @@ class Trigger_CRUD_Service {
 	/**
 	 * Refuse a trigger config that lacks a key the trigger is built from, or holds a value of the wrong type.
 	 *
-	 * A trigger is built from its integration, sentence, type and hook; meta_code,
-	 * tokens and configuration are optional. Without this check the build stops on
-	 * a PHP TypeError, whose message names the server's files.
+	 * A trigger is built from its integration, sentence and type; its hooks come
+	 * from the registered trigger, and meta_code, tokens and configuration are
+	 * optional. Without this check the build stops on a PHP TypeError, whose
+	 * message names the server's files.
 	 *
 	 * @since 8.0.0
+	 * @since 8.0.4 No longer requires hook.
 	 *
 	 * @param array $config Trigger configuration.
 	 * @return WP_Error|null The refusal, or null when the trigger can be built from the config.
 	 */
 	private function validate_trigger_config_keys( array $config ): ?WP_Error {
 		$missing = array();
-		foreach ( array( 'integration', 'sentence', 'type', 'hook' ) as $key ) {
+		foreach ( array( 'integration', 'sentence', 'type' ) as $key ) {
 			if ( ! isset( $config[ $key ] ) ) {
 				$missing[] = $key;
 			}
@@ -244,6 +246,11 @@ class Trigger_CRUD_Service {
 	/**
 	 * Build trigger configuration from array.
 	 *
+	 * The trigger carries the hook of its registry definition, never one from the
+	 * caller's config; the trigger store resolves what is stored.
+	 *
+	 * @since 8.0.4 The hook comes from the registry definition, never the caller.
+	 *
 	 * @param int    $recipe_id Recipe ID.
 	 * @param string $trigger_code Trigger code.
 	 * @param array  $config Configuration array.
@@ -276,6 +283,9 @@ class Trigger_CRUD_Service {
 			$sentence_human_readable_html   = $sentence_result['html'];
 		}
 
+		$definition = Trigger_Registry_Service::instance()->get_trigger_definition( $trigger_code, false );
+		$carried    = is_array( $definition ) ? ( $definition['trigger_hook']['name'] ?? '' ) : '';
+
 		return ( new Trigger_Config() )
 			->id( null ) // Will be generated when creating the trigger
 			->recipe_id( $recipe_id )
@@ -286,7 +296,7 @@ class Trigger_CRUD_Service {
 			->sentence_human_readable( $sentence_human_readable_filled )
 			->sentence_human_readable_html( $sentence_human_readable_html )
 			->user_type( $config['type'] )
-			->hook( is_array( $config['hook'] ) ? $config['hook'] : array( 'name' => $config['hook'] ) )
+			->hook( array( 'name' => $carried ) )
 			->tokens( $config['tokens'] ?? array() )
 			->configuration( $configuration );
 	}

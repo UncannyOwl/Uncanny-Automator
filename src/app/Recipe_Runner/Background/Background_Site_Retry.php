@@ -22,6 +22,9 @@ use Uncanny_Automator\App\Recipe_Runner\Value_Objects\Background_Job_Result;
  * time. A job whose retry event was lost is run by the one-minute sweep once its attempt is due; a job nothing
  * reschedules is lost by the poll's cap. Exposes the callbacks only; Background_Bootstrap binds them to CRON_HOOK
  * and SWEEP_HOOK.
+ *
+ * A job whose run's recipe is no longer published is never retried: it is settled without asking the action, and the
+ * runner cancels the action and the steps waiting on it.
  */
 final class Background_Site_Retry {
 
@@ -318,7 +321,9 @@ final class Background_Site_Retry {
 	}
 
 	/**
-	 * One attempt, on the cron hook.
+	 * One attempt, on the cron hook. A job whose run's recipe is no longer published is never retried: it is settled
+	 * as failed without the write and handed to the runner's complete_background_action(), which cancels the action
+	 * and the steps waiting on it.
 	 *
 	 * @param string $job_id The site job id.
 	 *
@@ -341,7 +346,12 @@ final class Background_Site_Retry {
 		}
 
 		$counters = self::counters( $job );
-		$outcome  = $this->attempt( $job, self::action_values( $job->remembered() ) );
+		$outcome  = $this->runner->is_run_published( $job->recipe_log_id() )
+			? $this->attempt( $job, self::action_values( $job->remembered() ) )
+			: array(
+				'result'     => $this->failed( sprintf( 'Background job %s was not retried: its recipe is not published.', $job->job_id() ) ),
+				'remembered' => self::action_values( $job->remembered() ),
+			);
 		if ( null === $outcome['result'] && $counters['attempt'] >= $counters['max'] ) {
 			$outcome['result'] = Background_Job_Result::from_site(
 				Background_Job_Result::STATUS_FAILED,

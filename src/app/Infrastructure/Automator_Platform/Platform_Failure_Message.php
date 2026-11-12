@@ -260,6 +260,18 @@ final class Platform_Failure_Message {
 
 		$check = self::challenge_check( $status );
 
+		// The attempt gave the platform the site's own address, not its REST
+		// API: the REST API is not what the admin has to open.
+		if ( Query_Door::is_door_address( $status->challenge_url() ) ) {
+			$text = '' === $check
+				/* translators: %s: this site's registration challenge URL */
+				? sprintf( esc_html_x( 'The Automator App Platform could not reach this site to confirm it (at %s). Make sure this site is reachable from the internet, then re-check the registration. Security plugins, firewalls and password protection can block it.', 'Automator App Platform', 'uncanny-automator' ), esc_html( $status->challenge_url() ) )
+				/* translators: 1: this site's registration challenge URL; 2: what the last check got, e.g. "it answered HTTP 403" */
+				: sprintf( esc_html_x( 'The Automator App Platform could not reach this site to confirm it (at %1$s): %2$s. Make sure this site is reachable from the internet, then re-check the registration. Security plugins, firewalls and password protection can block it.', 'Automator App Platform', 'uncanny-automator' ), esc_html( $status->challenge_url() ), $check );
+
+			return new self( $text, Error_Code::AUTH_FAILED );
+		}
+
 		$text = '' === $check
 			/* translators: %s: this site's registration challenge URL */
 			? sprintf( esc_html_x( "The Automator App Platform could not reach this site to confirm it (at %s). Make sure this site's REST API is reachable from the internet, then re-check the registration. Security plugins, firewalls and password protection can block it.", 'Automator App Platform', 'uncanny-automator' ), esc_html( $status->challenge_url() ) )

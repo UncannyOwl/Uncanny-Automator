@@ -72,9 +72,9 @@ class CODE_SNIPPETS_DEACTIVATE_SNIPPET extends Action {
 			return false;
 		}
 
-		$snippet_details = \Code_Snippets\get_snippet( $snippet_id );
+		$snippet_details = $this->item_helpers->get_snippet( $snippet_id );
 
-		if ( ! $snippet_details instanceof \Code_Snippets\Snippet ) {
+		if ( null === $snippet_details ) {
 			// translators: 1: Snippet ID
 			$this->add_log_error( sprintf( esc_attr_x( 'Invalid snippet id: %d.', 'Code Snippets', 'uncanny-automator' ), $snippet_id ) );
 
@@ -94,9 +94,9 @@ class CODE_SNIPPETS_DEACTIVATE_SNIPPET extends Action {
 			return false;
 		}
 
-		$snippet_deactivated = \Code_Snippets\deactivate_snippet( $snippet_id );
+		$snippet_deactivated = $this->item_helpers->deactivate_snippet( $snippet_id );
 
-		if ( ! $snippet_deactivated instanceof \Code_Snippets\Snippet ) {
+		if ( null === $snippet_deactivated ) {
 			$this->add_log_error( esc_attr_x( 'The snippet could not be deactivated.', 'Code Snippets', 'uncanny-automator' ) );
 
 			return false;

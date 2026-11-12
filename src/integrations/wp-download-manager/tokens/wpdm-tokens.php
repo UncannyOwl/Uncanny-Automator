@@ -199,51 +199,51 @@ class Wpdm_Tokens {
 		$package      = automator_safe_unserialize( $package_data );
 
 		switch ( $to_replace ) {
-			case 'FILE_TITLE';
+			case 'FILE_TITLE':
 				$value = $package['title'];
 				break;
-			case 'FILE_URL';
+			case 'FILE_URL':
 				$value = get_permalink( $package['ID'] );
 				break;
-			case 'FILE_DESCRIPTION';
+			case 'FILE_DESCRIPTION':
 				$value = $package['description'];
 				break;
-			case 'FILE_EXCERPT';
+			case 'FILE_EXCERPT':
 				$value = $package['excerpt'];
 				break;
-			case 'FILE_DOWNLOADABLE_FILES';
+			case 'FILE_DOWNLOADABLE_FILES':
 				$value = join( ', ', $package['files'] );
 				break;
-			case 'FILE_TAG';
+			case 'FILE_TAG':
 				$tags  = wp_get_post_terms( $package['ID'], 'wpdmtag', array( 'fields' => 'names' ) );
 				$value = join( ', ', $tags );
 				break;
-			case 'FILE_CATEGORY';
+			case 'FILE_CATEGORY':
 				$categories = wp_get_post_terms( $package['ID'], 'wpdmcategory', array( 'fields' => 'names' ) );
 				$value      = join( ', ', $categories );
 				break;
-			case 'FILE_AUTHOR';
+			case 'FILE_AUTHOR':
 				$value = get_the_author_meta( 'display_name', $package['author'] );
 				break;
-			case 'FILE_ID';
+			case 'FILE_ID':
 				$value = $package['ID'];
 				break;
-			case 'USER_ID';
+			case 'USER_ID':
 				$value = ! empty( $user_id ) ? $user_id : '';
 				break;
-			case 'USERNAME';
+			case 'USERNAME':
 				$user  = get_userdata( $user_id );
 				$value = $user->user_login;
 				break;
-			case 'USER_FIRSTNAME';
+			case 'USER_FIRSTNAME':
 				$user  = get_userdata( $user_id );
 				$value = $user->user_firstname;
 				break;
-			case 'USER_LASTNAME';
+			case 'USER_LASTNAME':
 				$user  = get_userdata( $user_id );
 				$value = $user->user_lastname;
 				break;
-			case 'USER_EMAIL';
+			case 'USER_EMAIL':
 				$user  = get_userdata( $user_id );
 				$value = $user->user_email;
 				break;

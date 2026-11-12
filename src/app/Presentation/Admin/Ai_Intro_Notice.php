@@ -3,6 +3,7 @@ declare( strict_types=1 );
 
 namespace Uncanny_Automator\App\Presentation\Admin;
 
+use Uncanny_Automator\Ai_Connection_State;
 use Uncanny_Automator\App\Presentation\Admin\Notices\Notice;
 use Uncanny_Automator\App\Presentation\Admin\Notices\Notice_Action;
 use Uncanny_Automator\App\Presentation\Admin\Notices\Notice_Dismissal;
@@ -12,7 +13,9 @@ use Uncanny_Automator\App\Presentation\Admin\Notices\Notice_Screen;
 /**
  * "There's a new way to manage and automate this site with Uncanny
  * Automator: connect the AI you already use", once, to sites that existed
- * before 8.0: the migration flags them ({@see mark_pending()}).
+ * before 8.0: the migration flags them ({@see mark_pending()}). Hidden
+ * while an AI app is connected, however it was connected; it shows again
+ * if the connection drops before anyone dismissed it.
  *
  * Dismissed for the whole site by its X, "Not now", or following "Connect
  * your AI". The site's state lives in its own option, which the migration
@@ -87,6 +90,10 @@ final class Ai_Intro_Notice extends Notice {
 	public function message( Notice_Screen $screen ): ?Notice_Message {
 
 		if ( self::STATE_PENDING !== automator_get_option( self::OPTION_NAME, null ) ) {
+			return null;
+		}
+
+		if ( Ai_Connection_State::is_connected() ) {
 			return null;
 		}
 

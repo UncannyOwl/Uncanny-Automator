@@ -60,9 +60,6 @@ class Keap_Integration extends \Uncanny_Automator\App_Integrations\App_Integrati
 		new KEAP_REMOVE_TAGS_CONTACT( $this->dependencies );
 		new KEAP_ADD_NOTE_CONTACT( $this->dependencies );
 		new KEAP_ADD_UPDATE_COMPANY( $this->dependencies );
-
-		// Migration.
-		new Keap_Credentials_Migration( 'keap_credentials_migration', $this->dependencies );
 	}
 
 	/**

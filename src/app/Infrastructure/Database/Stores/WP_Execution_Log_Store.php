@@ -5,6 +5,7 @@ namespace Uncanny_Automator\App\Infrastructure\Database\Stores;
 
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Execution_Log_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Database;
+use Uncanny_Automator\App\Infrastructure\Database\Site_Time;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\Traits\Error_Message_Like;
 use Uncanny_Automator\App\Infrastructure\Exceptions\Store_Exception;
 use Uncanny_Automator\App\Recipe_Builder\Loop\Iterable_Expression\Enums\Iteration_Type;
@@ -1144,7 +1145,9 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 	 *    from MAX( al.date_time ), not rl.date_time: uap_recipe_log.date_time is
 	 *    a completion timestamp, seeded '0000-00-00 00:00:00' by
 	 *    insert_recipe_log_row() and only written by mark_recipe_complete(), so
-	 *    an in-flight row always compares as older than any threshold.
+	 *    an in-flight row always compares as older than any threshold. Row times
+	 *    are site time, so the cutoff is too (Site_Time::cutoff()): MySQL's NOW()
+	 *    keeps the session's clock, which can be hours from it.
 	 *
 	 * The run is NOT_COMPLETED (the walker never marked it) or IN_PROGRESS
 	 * (Action_Run_Stage marks the run before the walk; a run that died anywhere
@@ -1208,7 +1211,7 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 				  )
 				  {$loop_exclusion}
 				GROUP BY rl.ID, rl.automator_recipe_id, rl.user_id, rl.date_time
-				HAVING MAX( al.date_time ) < DATE_SUB( NOW(), INTERVAL %d SECOND )
+				HAVING MAX( al.date_time ) < %s
 				ORDER BY last_action_activity ASC
 				LIMIT %d",
 				Automator_Status::NOT_COMPLETED,
@@ -1218,7 +1221,7 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 				Automator_Status::COMPLETED_AWAITING,
 				Automator_Status::QUEUED,
 				Automator_Status::BLOCKED_ON_DEPENDENCY,
-				$threshold_seconds,
+				( new Site_Time( wp_timezone() ) )->cutoff( time(), $threshold_seconds ),
 				$batch_size
 			)
 		);
@@ -1262,7 +1265,7 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 				LIMIT %d",
 				Automator_Status::IN_PROGRESS,
 				// Row times are site time, which can be hours from MySQL's NOW().
-				wp_date( 'Y-m-d H:i:s', time() - $threshold_seconds ),
+				( new Site_Time( wp_timezone() ) )->cutoff( time(), $threshold_seconds ),
 				self::ACTION_META_BACKGROUND_DISPATCH,
 				$batch_size
 			)

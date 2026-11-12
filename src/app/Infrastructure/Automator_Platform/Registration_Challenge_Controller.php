@@ -52,6 +52,36 @@ final class Registration_Challenge_Controller {
 	}
 
 	/**
+	 * The REST route this endpoint answers on, as WordPress reports a request's
+	 * route ({@see \WP_REST_Request::get_route()}): the route BuddyBoss's
+	 * Private REST APIs exemption lets through ({@see BuddyBoss_Private_Rest_Exemption})
+	 * and the route the second door builds its requests for ({@see Query_Door}).
+	 *
+	 * @since 8.0.4
+	 *
+	 * @return string `/automator/platform/v1/register-challenge`.
+	 */
+	public static function route(): string {
+
+		return '/' . self::REST_NAMESPACE . self::ROUTE;
+	}
+
+	/**
+	 * This endpoint's address at the REST API: the challenge URL a register
+	 * gives the platform through that door
+	 * ({@see Registration\Registration_Wire::challenge_url()}), and the one
+	 * plugin 8.0.x gave it every time.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @return string
+	 */
+	public static function url(): string {
+
+		return (string) rest_url( self::REST_NAMESPACE . self::ROUTE );
+	}
+
+	/**
 	 * Register the public POST route on `rest_api_init`.
 	 *
 	 * @return void

@@ -23,14 +23,17 @@ final class Transport_Failure {
 		if ( preg_match( '/^cURL error ([0-9]{1,3}):/', substr( (string) $error->get_error_message(), 0, 256 ), $matches ) ) {
 			$curl = (int) $matches[1];
 		}
-		$causes      = array(
+		$causes = array(
 			6  => 'the destination hostname could not be resolved',
 			7  => 'the connection to the destination could not be opened',
 			28 => 'the request timed out before a complete response arrived',
 			35 => 'the secure connection could not be established',
 			60 => 'the destination HTTPS certificate could not be verified',
 		);
-		$reason      = $causes[ $curl ] ?? 'the HTTP request failed before a complete response arrived';
+		$reason = 'the HTTP request failed before a complete response arrived';
+		if ( null !== $curl && isset( $causes[ $curl ] ) ) {
+			$reason = $causes[ $curl ];
+		}
 		$reference   = wp_generate_uuid4();
 		$observed_at = gmdate( 'Y-m-d\TH:i:s\Z' );
 		$details     = array(

@@ -209,9 +209,13 @@ final class Plugin_Manage_Commands implements Site_Command_Group {
 				}
 				Packages::require_installable( $api, $slug, 'plugin' );
 
+				// WordPress deletes its last update check after an install. It builds a new one
+				// in a follow-up check that only wp-admin hooks, and that a command removes
+				// when it is hooked. Nothing would rebuild it here, so the last check is kept,
+				// as "plugin update" keeps it.
 				$skin     = new \WP_Ajax_Upgrader_Skin();
 				$upgrader = new \Plugin_Upgrader( $skin );
-				$result   = $upgrader->install( (string) $api->download_link );
+				$result   = $upgrader->install( (string) $api->download_link, array( 'clear_update_cache' => false ) );
 				$failure  = Site_Changes::outcome( $session->explain( $result ), $skin, Site_Changes::INSTALL );
 				if ( null !== $failure ) {
 					throw new Command_Error( sprintf( 'Installing %s failed: %s', $slug, $failure ) );

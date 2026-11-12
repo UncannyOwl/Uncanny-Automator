@@ -77,7 +77,7 @@ class Armember_Helpers {
 			'supports_custom_value' => $args['supports_custom_value'],
 			'relevant_tokens'       => array(),
 			'options'               => $options,
-			'options_show_id'       => apply_filters( 'automator_options_show_id', false, $this ),
+			'options_show_id'       => apply_filters( 'automator_options_show_id', null, $this ),
 		);
 
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name, kept for compatibility.

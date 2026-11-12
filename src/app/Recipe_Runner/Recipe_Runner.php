@@ -44,6 +44,7 @@ use Uncanny_Automator\App\Recipe_Runner\Value_Objects\Background_Job;
 use Uncanny_Automator\App\Recipe_Runner\Value_Objects\Background_Job_Result;
 use Uncanny_Automator\App\Recipe_Runner\Value_Objects\Run_Snapshot;
 use Uncanny_Automator\App\Events\Dispatcher;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Status;
 
 /**
  * Unified recipe execution pipeline.
@@ -889,7 +890,7 @@ class Recipe_Runner {
 			return Automator_Status::COMPLETED_WITH_ERRORS;
 		}
 
-		if ( 'publish' !== (string) ( $tree['status'] ?? '' ) ) {
+		if ( ! $this->is_published( $tree ) ) {
 			$this->settle_waiting_rows( Tree_Walk::action_ids( array( $node ) ), $completed, $recipe_log_id, Automator_Status::CANCELLED, sprintf( 'Recipe %d was not published when its delayed actions were due; they were cancelled.', $recipe_id ) );
 			$this->finalize_recipe( $recipe_id, $user_id, $recipe_log_id, $args );
 			return Automator_Status::CANCELLED;
@@ -956,6 +957,10 @@ class Recipe_Runner {
 	 * and a job re-driven MAX_REDRIVES times is given up as lost with the run closed on the error. Without the run's
 	 * snapshot nothing can execute again, so the row fails and every held-back node is skipped.
 	 *
+	 * A recipe that is no longer published (any other status, or deleted) is refused before any of that: the job's
+	 * outcome is not recorded, an awaiting row and every held-back node of the run are cancelled, nothing runs and
+	 * the run is finalized.
+	 *
 	 * @param Background_Job        $job    The job record.
 	 * @param Background_Job_Result $result The job's outcome.
 	 *
@@ -994,6 +999,25 @@ class Recipe_Runner {
 			)
 			: $this->run_args_from_snapshot( $snapshot, $recipe_log_id );
 
+		// A recipe switched off does not continue: whatever the job reports, nothing in the run runs again.
+		if ( ! $this->is_published( $tree ) ) {
+			if ( Automator_Status::COMPLETED_AWAITING === $this->log_store->get_action_completion_status( $job->action_log_id() ) ) {
+				$this->complete_action(
+					$action_id,
+					$recipe_log_id,
+					Automator_Status::CANCELLED,
+					'The recipe was switched off before this action\'s result came back; the result was not recorded and the steps waiting on it were cancelled.',
+					array(
+						'job_id'    => $job->job_id(),
+						'action_id' => $action_id,
+					)
+				);
+			}
+			$this->abandon_run( $recipe_id, $user_id, $recipe_log_id, $args, $items, $job, Automator_Status::CANCELLED, 'The recipe was switched off before the step this one waits on finished; this step was cancelled.' );
+			$this->job_store->mark_finished( $job->id(), $result->status(), $result->source() );
+			return;
+		}
+
 		// A completion that died this many times would die again: the run cannot finish on its own, so it is
 		// closed with the error and the job is given up instead of being driven every poll for good.
 		if ( $job->redrives() >= Background_Dispatch_Policy::MAX_REDRIVES ) {
@@ -1007,7 +1031,7 @@ class Recipe_Runner {
 			} else {
 				$this->error_store->store_system_error( $recipe_log_id, new Action_Error( Error_Code::SYSTEM_ERROR, $message, $context ) );
 			}
-			$this->abandon_run( $recipe_id, $user_id, $recipe_log_id, $args, $items, $job );
+			$this->abandon_run( $recipe_id, $user_id, $recipe_log_id, $args, $items, $job, Automator_Status::SKIPPED );
 			$this->job_store->mark_finished( $job->id(), Background_Job::STATUS_LOST, $result->source() );
 			return;
 		}
@@ -1017,7 +1041,7 @@ class Recipe_Runner {
 		if ( Automator_Status::COMPLETED_AWAITING !== $this->log_store->get_action_completion_status( $job->action_log_id() ) ) {
 			if ( array() !== Background_Wait_Set::from_run( $this->log_store, $recipe_log_id, $items )->dependents_of( $action_id ) ) {
 				if ( null === $snapshot ) {
-					$this->abandon_run( $recipe_id, $user_id, $recipe_log_id, $args, $items, $job );
+					$this->abandon_run( $recipe_id, $user_id, $recipe_log_id, $args, $items, $job, Automator_Status::SKIPPED );
 				} else {
 					$this->settle_dependents( $recipe_id, $user_id, $recipe_log_id, $args, $items, $job );
 				}
@@ -1038,7 +1062,7 @@ class Recipe_Runner {
 					'action_id' => $action_id,
 				)
 			);
-			$this->abandon_run( $recipe_id, $user_id, $recipe_log_id, $args, $items, $job );
+			$this->abandon_run( $recipe_id, $user_id, $recipe_log_id, $args, $items, $job, Automator_Status::SKIPPED );
 			$this->job_store->mark_finished( $job->id(), $result->status(), $result->source() );
 			return;
 		}
@@ -1115,6 +1139,38 @@ class Recipe_Runner {
 	}
 
 	/**
+	 * Whether the run's recipe is published. A run whose recipe has any other status, whose recipe no longer exists,
+	 * or that has no run row does not continue: no background job of it runs or re-runs an action.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @param int $recipe_log_id The run.
+	 *
+	 * @return bool
+	 */
+	public function is_run_published( int $recipe_log_id ): bool {
+		$row = $this->log_store->get_recipe_log_row( $recipe_log_id );
+		if ( null === $row ) {
+			return false;
+		}
+
+		return $this->is_published( $this->action_run->reader()->get_or_build( (int) $row->automator_recipe_id ) );
+	}
+
+	/**
+	 * Whether a recipe tree is a published recipe's. A recipe that no longer exists has no tree.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @param array|null $tree The recipe tree, or null when the recipe no longer exists.
+	 *
+	 * @return bool
+	 */
+	private function is_published( ?array $tree ): bool {
+		return null !== $tree && Recipe_Status::PUBLISH === (string) ( $tree['status'] ?? '' );
+	}
+
+	/**
 	 * After an awaited action's row settled: pass over the run until nothing more is due, skipping every held-back
 	 * node with a failed blocker and running every one whose blockers all finished, then finalize unless a block
 	 * deferred again. The rows decide, so a node waiting on two jobs is skipped as soon as one fails. Each pass
@@ -1166,7 +1222,7 @@ class Recipe_Runner {
 				}
 			);
 			foreach ( $doomed as $node_id ) {
-				$claimed = $this->skip_blocked_node( $wait, $node_id, $recipe_id, $recipe_log_id, $job ) || $claimed;
+				$claimed = $this->settle_blocked_node( $wait, $node_id, $recipe_id, $recipe_log_id, $job, Automator_Status::SKIPPED ) || $claimed;
 			}
 
 			$ready = array_diff(
@@ -1209,46 +1265,54 @@ class Recipe_Runner {
 	}
 
 	/**
-	 * The run's context is gone, so nothing in it can execute again: skip every held-back node, whatever it waited
-	 * on, and finalize.
+	 * Nothing in the run can execute again (its context is gone, its completion died too often, or its recipe is no
+	 * longer published): settle every held-back node to one status, whatever it waited on, and finalize. With a
+	 * message, each settled row also records it as its reason; without one, only the status is written.
 	 *
 	 * @param int            $recipe_id     The recipe.
 	 * @param int            $user_id       The user the run executes as.
 	 * @param int            $recipe_log_id The run.
-	 * @param array          $args          The two-key args a run without a snapshot still has.
+	 * @param array          $args          The run's trigger args, or the two-key args a run without a snapshot still has.
 	 * @param array          $items         The tree's `content`.
 	 * @param Background_Job $job           The job this completion holds; it names the claims it takes.
+	 * @param int            $status        Terminal Automator_Status for every held-back row: SKIPPED, or CANCELLED for a recipe that is no longer published.
+	 * @param string         $message       Reason written to the error log for every settled row; empty writes the status only.
 	 *
 	 * @return void
 	 */
-	private function abandon_run( int $recipe_id, int $user_id, int $recipe_log_id, array $args, array $items, Background_Job $job ): void {
+	private function abandon_run( int $recipe_id, int $user_id, int $recipe_log_id, array $args, array $items, Background_Job $job, int $status, string $message = '' ): void {
 		$wait = Background_Wait_Set::from_run( $this->log_store, $recipe_log_id, $items );
 		foreach ( $wait->blocked_node_ids() as $node_id ) {
-			$this->skip_blocked_node( $wait, $node_id, $recipe_id, $recipe_log_id, $job );
+			$this->settle_blocked_node( $wait, $node_id, $recipe_id, $recipe_log_id, $job, $status, $message );
 		}
 		$this->finalize_recipe( $recipe_id, $user_id, $recipe_log_id, $args );
 	}
 
 	/**
-	 * Skip a held-back node that will never run: its own row, or every row under a block, goes to SKIPPED, then its
-	 * entry is removed. A node another completion holds is left to it.
+	 * Settle a held-back node that will never run: its own row, or every row under a block, goes to the given status,
+	 * with the message as each row's reason when one is given, then its entry is removed. A node another completion
+	 * holds is left to it.
+	 *
+	 * @since 8.0.4
 	 *
 	 * @param Background_Wait_Set $wait          The run's wait state; the node is forgotten from it once claimed.
 	 * @param int                 $node_id       The action or block.
 	 * @param int                 $recipe_id     The recipe.
 	 * @param int                 $recipe_log_id The run.
 	 * @param Background_Job      $job           The job this completion holds.
+	 * @param int                 $status        Terminal Automator_Status for the node's rows: SKIPPED, or CANCELLED for a recipe that is no longer published.
+	 * @param string              $message       Reason written to the error log for each of the node's rows; empty writes the status only.
 	 *
-	 * @return bool Whether this completion skipped it.
+	 * @return bool Whether this completion settled it.
 	 */
-	private function skip_blocked_node( Background_Wait_Set $wait, int $node_id, int $recipe_id, int $recipe_log_id, Background_Job $job ): bool {
+	private function settle_blocked_node( Background_Wait_Set $wait, int $node_id, int $recipe_id, int $recipe_log_id, Background_Job $job, int $status, string $message = '' ): bool {
 		$record = $wait->record_for( $node_id );
 		if ( null === $record || ! $this->claim_blocked_node( $wait, $node_id, $recipe_id, $recipe_log_id, $job ) ) {
 			return false;
 		}
 		$wait->forget( $node_id );
 		foreach ( 'action' === $record['kind'] ? array( $node_id ) : $record['covers'] as $action_id ) {
-			$this->log_store->mark_action_complete( $action_id, $recipe_log_id, Automator_Status::SKIPPED );
+			$this->complete_action( (int) $action_id, $recipe_log_id, $status, $message );
 		}
 		$this->log_store->merge_recipe_log_meta_entry( $recipe_id, $recipe_log_id, Execution_Log_Store::META_BLOCKED_NODES, (string) $node_id, null );
 

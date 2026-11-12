@@ -331,7 +331,6 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 			'sentence'      => $trigger_def['sentence'] ?? '',
 			'meta_code'     => $trigger_code,
 			'type'          => $trigger_def['trigger_type'] ?? '',
-			'hook'          => $trigger_def['trigger_hook'] ?? array(),
 			'tokens'        => $trigger_def['tokens'] ?? array(),
 			'configuration' => $fields,
 		);

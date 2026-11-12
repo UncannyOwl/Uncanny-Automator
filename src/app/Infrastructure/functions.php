@@ -23,6 +23,7 @@ use Uncanny_Automator\App\Infrastructure\Automator_Platform\Site_Credentials_Sto
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Site_Heartbeat_Cron;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Site_Identity_Service;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Source_Url_Token;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Webhooks\Integrations_Webhook_Controller;
 use Uncanny_Automator\App\Infrastructure\Connections\Connection_Adoption;
 use Uncanny_Automator\App\Infrastructure\Connections\Connection_Error_Handler;
 use Uncanny_Automator\App\Infrastructure\Connections\Connection_Registry;
@@ -339,6 +340,21 @@ function automator_platform_hmac_validator( ?Hmac_Validator $override = null, bo
 		$instance = new Hmac_Validator( automator_site_credentials_store() );
 	}
 	return $instance;
+}
+
+/**
+ * The Automator Platform's callback receiver, as both of its doors answer
+ * with it: its REST route (registered on `rest_api_init` by the application
+ * bootstrap) and the site's own address
+ * ({@see \Uncanny_Automator\App\Infrastructure\Automator_Platform\Query_Door}).
+ * A new one each call, on the shared credentials store and validator.
+ *
+ * @since 8.0.4
+ *
+ * @return Integrations_Webhook_Controller
+ */
+function automator_platform_callback_receiver(): Integrations_Webhook_Controller {
+	return new Integrations_Webhook_Controller( automator_site_credentials_store(), automator_platform_hmac_validator() );
 }
 
 /**

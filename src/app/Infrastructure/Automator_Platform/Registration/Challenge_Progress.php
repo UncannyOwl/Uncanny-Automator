@@ -28,6 +28,13 @@ final class Challenge_Progress {
 	public const OUTCOME_HTTP_STATUS = 'http_status';
 
 	/**
+	 * The challenge URL answered 200 with a body that is not the plugin's JSON.
+	 *
+	 * @since 8.0.4
+	 */
+	public const OUTCOME_BAD_ANSWER = 'bad_answer';
+
+	/**
 	 * @var string
 	 */
 	private $checking;
@@ -120,6 +127,47 @@ final class Challenge_Progress {
 	public function has_failed_check(): bool {
 
 		return '' !== $this->last_outcome && self::CHECKING_THIS_ADDRESS === $this->checking;
+	}
+
+	/**
+	 * Whether the latest try of this site's own address reached it and was
+	 * answered by something that is not the plugin: a status that is not its
+	 * answer ({@see OUTCOME_HTTP_STATUS}: a REST lock's 401 or 403, a 404
+	 * page, a redirect, a 5xx) or a 200 body that is not its JSON
+	 * ({@see OUTCOME_BAD_ANSWER}). Something answered at that address in the
+	 * plugin's place, so another address on the same host may reach it.
+	 *
+	 * Every other outcome says nothing about the address: a timeout, a TLS or
+	 * connection failure and a host that does not resolve happen before any
+	 * address on the host is reached, `unknown_attempt` and `invalid_proof`
+	 * are the plugin's own answers, and an outcome this plugin does not know
+	 * is not evidence.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @return bool
+	 */
+	public function answered_without_the_plugin(): bool {
+
+		return self::CHECKING_THIS_ADDRESS === $this->checking && self::is_answer_without_the_plugin( $this->last_outcome );
+	}
+
+	/**
+	 * Whether a try's outcome is an answer by something that is not the
+	 * plugin: {@see OUTCOME_HTTP_STATUS} or {@see OUTCOME_BAD_ANSWER}, the one
+	 * set {@see answered_without_the_plugin()} reads, and the one a record of
+	 * an attempt that ended on it is read by
+	 * ({@see Registration_Door::after_recorded_unproven()}).
+	 *
+	 * @since 8.0.4
+	 *
+	 * @param string $outcome An outcome code of the platform's closed set.
+	 *
+	 * @return bool
+	 */
+	public static function is_answer_without_the_plugin( string $outcome ): bool {
+
+		return in_array( $outcome, array( self::OUTCOME_HTTP_STATUS, self::OUTCOME_BAD_ANSWER ), true );
 	}
 
 	/**

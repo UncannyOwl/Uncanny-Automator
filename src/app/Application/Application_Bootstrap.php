@@ -12,16 +12,17 @@ use Uncanny_Automator\App\Infrastructure\Connections\Restart_Disconnections;
 use Uncanny_Automator\App\Application\Services_Bootstrap;
 use Uncanny_Automator\App\Infrastructure\Async_Jobs\Inbox_Drainer;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\BackCompat;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\BuddyBoss_Private_Rest_Exemption;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Client_Timeout_Header_Injector;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Clock_Skew_Monitor;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Connect_Timeout_Injector;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Platform_Default_Timeout;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Platform_Headers_Injector;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Platform_Request_Signature_Injector;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Query_Door;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration_Challenge_Controller;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Site_Credentials_Rejection_Observer;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Site_License_Refusal_Observer;
-use Uncanny_Automator\App\Infrastructure\Automator_Platform\Webhooks\Integrations_Webhook_Controller;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Webhooks\Receiver_Header;
 use Uncanny_Automator\App\Presentation\Admin\App_Connections_Actions;
 use Uncanny_Automator\App\Presentation\Admin\Ai_Intro_Notice;
@@ -68,7 +69,7 @@ use function Uncanny_Automator\App\Infrastructure\automator_disconnect_service;
 use function Uncanny_Automator\App\Infrastructure\automator_legacy_upgrade_observer;
 use function Uncanny_Automator\App\Infrastructure\automator_file_serve_controller;
 use function Uncanny_Automator\App\Infrastructure\automator_platform_connections_api;
-use function Uncanny_Automator\App\Infrastructure\automator_platform_hmac_validator;
+use function Uncanny_Automator\App\Infrastructure\automator_platform_callback_receiver;
 use function Uncanny_Automator\App\Infrastructure\automator_platform_site_registration;
 use function Uncanny_Automator\App\Infrastructure\automator_site_credentials_store;
 use function Uncanny_Automator\App\Infrastructure\automator_site_heartbeat_cron;
@@ -568,20 +569,29 @@ class Application_Bootstrap {
 	 * Every answer of its route carries `X-Automator-Receiver` (callback
 	 * delivery contract §4), added once on `rest_request_after_callbacks`.
 	 *
+	 * The platform calls both routes logged out, so BuddyBoss Platform's
+	 * "Private REST APIs" setting is told to let them through, with Connect
+	 * your AI's MCP and OAuth routes ({@see BuddyBoss_Private_Rest_Exemption}).
+	 *
+	 * The same two endpoints have a second door outside the REST API, the
+	 * site's own address with `?automator_platform=…` (Query_Door, answered on
+	 * `wp_loaded`), for a site whose REST API refuses anonymous callers. It
+	 * answers with the same receiver and the same challenge controller.
+	 *
 	 * @return void
 	 */
 	private function wire_platform_webhooks(): void {
 
 		( new Receiver_Header() )->register_hooks();
+		( new BuddyBoss_Private_Rest_Exemption() )->register_hooks();
+		( new Query_Door() )->register_hooks();
 
 		add_action(
 			'rest_api_init',
 			static function (): void {
-				$store     = automator_site_credentials_store();
-				$validator = automator_platform_hmac_validator();
-				$router    = automator_webhook_router();
+				$router = automator_webhook_router();
 
-				$router->register( new Integrations_Webhook_Controller( $store, $validator ) );
+				$router->register( automator_platform_callback_receiver() );
 				$router->register_routes();
 
 				// C1 dedicated pre-registration challenge endpoint (868jw791t) —

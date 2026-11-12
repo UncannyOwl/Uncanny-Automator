@@ -9,6 +9,7 @@ use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration\Complet
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration\Copy_Registration;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration\Register_Dispatch;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration\Registration_Backoff;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration\Registration_Door;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration\Registration_Outcomes;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration\Registration_Recorder;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration\Registration_Wire;
@@ -199,7 +200,12 @@ final class Platform_Site_Registration {
 			sleep( $seconds );
 		};
 
-		$this->wire     = new Registration_Wire( $license );
+		// The door the platform reaches this site through: the wire names its
+		// addresses, the completion poll chooses it when an attempt ends
+		// unproven, and the dispatch from a record 8.0.x left.
+		$door = new Registration_Door( $store );
+
+		$this->wire     = new Registration_Wire( $license, $door );
 		$this->backoff  = new Registration_Backoff();
 		$this->ledger   = new Reverification_Ledger( $store );
 		$this->outcomes = new Registration_Outcomes( $this->wire );
@@ -207,8 +213,8 @@ final class Platform_Site_Registration {
 		$this->address  = new Site_Address_Drift( $store, $this->wire );
 
 		$recorder       = new Registration_Recorder( $store, $this->wire, $this->ledger, $this->outcomes );
-		$this->register = new Register_Dispatch( $identity, $store, $http, $challenge, $this->wire, $this->backoff, $this->outcomes, $this->schedule, $recorder );
-		$this->poll     = new Completion_Poll( $store, $http, $challenge, $this->wire, $recorder, $this->backoff, $this->outcomes, $this->ledger, $this->schedule );
+		$this->register = new Register_Dispatch( $identity, $store, $http, $challenge, $this->wire, $this->backoff, $this->outcomes, $this->schedule, $recorder, $door );
+		$this->poll     = new Completion_Poll( $store, $http, $challenge, $this->wire, $recorder, $this->backoff, $this->outcomes, $this->ledger, $this->schedule, $door );
 		$this->copy     = new Copy_Registration( $store, $challenge, $copy_record, $this->register, $this->address, $this->wire, $this->backoff );
 	}
 

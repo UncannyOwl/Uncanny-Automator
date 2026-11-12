@@ -13,6 +13,7 @@ use Uncanny_Automator\App\Recipe_Builder\Trigger\Trigger;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Trigger_Config;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Value_Objects\Trigger_Id;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Enums\Trigger_Status;
+use Uncanny_Automator\App\Recipe_Builder\Trigger\Services\Utilities\Trigger_Hook_Resolver;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Trigger_Store;
 use Uncanny_Automator\App\Infrastructure\Cache\Recipe_Cache;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
@@ -621,7 +622,7 @@ class WP_Recipe_Trigger_Store extends WP_Post_Store implements Recipe_Trigger_St
 			self::META_TRIGGER_CODE                 => $trigger_code,
 			self::META_TRIGGER_TYPE                 => $trigger_data['trigger_type'],
 			self::META_INTEGRATION                  => $trigger_data['integration'],
-			self::META_ADD_ACTION                   => $hook_data['name'] ?? '',
+			self::META_ADD_ACTION                   => $this->stored_hooks( (string) $trigger_code, $hook_data['name'] ?? '' ),
 			self::META_SENTENCE                     => $trigger_data['sentence'] ?? '',
 			self::META_SENTENCE_HUMAN_READABLE      => $human_readable_sentence,
 			self::META_SENTENCE_HUMAN_READABLE_HTML => $human_readable_sentence_html,
@@ -639,6 +640,34 @@ class WP_Recipe_Trigger_Store extends WP_Post_Store implements Recipe_Trigger_St
 			'title' => $title,
 			'meta'  => $meta,
 		);
+	}
+
+	/**
+	 * The value a trigger's `add_action` meta holds: the hooks the trigger's code listens on.
+	 *
+	 * The engine and the manual-trigger lookups read this meta. The hooks the trigger carries are
+	 * stored only for a code this request does not know.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @param string $trigger_code Trigger code.
+	 * @param mixed  $carried      The hook name or names the trigger carries.
+	 *
+	 * @return string|string[] One hook name, a list when there are several, '' when there is none.
+	 */
+	private function stored_hooks( string $trigger_code, $carried ) {
+
+		$hooks = ( new Trigger_Hook_Resolver() )->resolve( $trigger_code, $carried );
+
+		if ( empty( $hooks ) ) {
+			return '';
+		}
+
+		if ( 1 === count( $hooks ) ) {
+			return $hooks[0];
+		}
+
+		return $hooks;
 	}
 
 	/**

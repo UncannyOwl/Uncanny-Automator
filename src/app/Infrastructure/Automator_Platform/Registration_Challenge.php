@@ -288,6 +288,24 @@ final class Registration_Challenge {
 	}
 
 	/**
+	 * How the host challenge of the attempt on file was going at the last poll
+	 * that said, whether or not the attempt has expired since; null when no
+	 * attempt is on file, or no answer said. What an attempt that ends
+	 * unproven leaves as evidence about the address it gave the platform
+	 * ({@see Registration\Registration_Door::after_unproven()}).
+	 *
+	 * @since 8.0.4
+	 *
+	 * @return Challenge_Progress|null
+	 */
+	public function last_progress(): ?Challenge_Progress {
+
+		$attempt = $this->record();
+
+		return null === $attempt ? null : Challenge_Progress::from_block( $attempt['progress'] ?? null );
+	}
+
+	/**
 	 * Record that a completion request is going out. Until an answer saying
 	 * the platform did not complete the attempt is read ({@see record_poll()}),
 	 * it may have: the request may still be in flight in another process, or

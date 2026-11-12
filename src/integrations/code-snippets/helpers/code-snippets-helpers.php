@@ -2,8 +2,12 @@
 
 namespace Uncanny_Automator\Integrations\Code_Snippets;
 
+use WP_Error;
+use function Code_Snippets\activate_snippet;
 use function Code_Snippets\code_snippets;
+use function Code_Snippets\deactivate_snippet;
 use function Code_Snippets\get_all_snippet_tags;
+use function Code_Snippets\get_snippet;
 
 /**
  * Class Code_Snippets_Helpers
@@ -198,6 +202,86 @@ class Code_Snippets_Helpers {
 		}
 
 		return $options;
+	}
+
+	/**
+	 * The class Code Snippets builds snippets with: Code_Snippets\Model\Snippet from 3.10.0, Code_Snippets\Snippet
+	 * before it. The one place that knows which.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @return string The class name, or '' when neither class is loaded.
+	 */
+	public function get_snippet_class() {
+		if ( class_exists( 'Code_Snippets\Model\Snippet' ) ) {
+			return 'Code_Snippets\Model\Snippet';
+		}
+
+		if ( class_exists( 'Code_Snippets\Snippet' ) ) {
+			return 'Code_Snippets\Snippet';
+		}
+
+		return '';
+	}
+
+	/**
+	 * Whether a value Code Snippets returned is one of its snippets.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @param mixed $value The value to test.
+	 *
+	 * @return bool
+	 */
+	public function is_snippet( $value ) {
+		$class = $this->get_snippet_class();
+
+		return '' !== $class && $value instanceof $class;
+	}
+
+	/**
+	 * The snippet with this ID.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @param int $snippet_id The snippet ID.
+	 *
+	 * @return object|null The snippet, or null when Code Snippets has none with this ID.
+	 */
+	public function get_snippet( $snippet_id ) {
+		$snippet = get_snippet( $snippet_id );
+
+		return $this->is_snippet( $snippet ) ? $snippet : null;
+	}
+
+	/**
+	 * Activates the snippet with this ID.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @param int $snippet_id The snippet ID.
+	 *
+	 * @return object|WP_Error The activated snippet, or the error Code Snippets reported.
+	 */
+	public function activate_snippet( $snippet_id ) {
+		$result = activate_snippet( $snippet_id );
+
+		return $this->is_snippet( $result ) ? $result : new WP_Error( 'code_snippets_activate_failed', is_string( $result ) ? $result : '' );
+	}
+
+	/**
+	 * Deactivates the snippet with this ID.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @param int $snippet_id The snippet ID.
+	 *
+	 * @return object|null The deactivated snippet, or null when Code Snippets could not deactivate it.
+	 */
+	public function deactivate_snippet( $snippet_id ) {
+		$result = deactivate_snippet( $snippet_id );
+
+		return $this->is_snippet( $result ) ? $result : null;
 	}
 
 	/**

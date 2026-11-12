@@ -2,6 +2,7 @@
 
 namespace Uncanny_Automator\Integrations\Keap;
 
+use Uncanny_Automator\App\Recipe_Runner\Exceptions\Action_Error_Exception;
 use Uncanny_Automator\App_Integrations\Api_Caller;
 use Exception;
 
@@ -25,12 +26,13 @@ class Keap_Api_Caller extends Api_Caller {
 	 * @param array $args        Additional arguments that may be needed for preparation.
 	 *
 	 * @return string The prepared credentials JSON string.
-	 * @throws Exception If credentials are missing keap_id or vault_signature.
+	 * @throws Action_Error_Exception If credentials are missing keap_id or vault_signature: the reconnect message, with the settings link.
 	 */
 	public function prepare_request_credentials( $credentials, $args ) {
 
+		// Raw tokens stored before the vault (Free < 7.2.3) are never sent: the site owner reconnects.
 		if ( empty( $credentials['keap_id'] ) || empty( $credentials['vault_signature'] ) ) {
-			throw new Exception( esc_html_x( 'Invalid credentials', 'Keap', 'uncanny-automator' ) );
+			throw Action_Error_Exception::app_not_connected( esc_html( $this->format_error_message( $this->error_messages['invalid credentials'] ) ) );
 		}
 
 		return wp_json_encode(

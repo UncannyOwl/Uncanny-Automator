@@ -237,6 +237,32 @@ class Webhook_Router {
 	}
 
 	/**
+	 * The answer a handler that answers its own refusal gives outside its REST
+	 * route: the Automator Platform receiver at its second door, the site's own
+	 * address ({@see \Uncanny_Automator\App\Infrastructure\Automator_Platform\Query_Door}).
+	 * Exactly its route's answer: that route's permission check lets every
+	 * request through, and {@see handle()} asks `refusal_for()` before anything
+	 * is processed.
+	 *
+	 * The one public way to dispatch a request, and only for such a handler.
+	 * Every other handler is verified by its route's permission check
+	 * (`validate()`, {@see permission_callback()}), which does not run here, so
+	 * the parameter's type refuses it: a TypeError, never an unvalidated
+	 * dispatch.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @param Answers_Own_Refusal $handler The handler, which verifies the request itself.
+	 * @param \WP_REST_Request    $request The incoming request.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public function handle_answering_own_refusal( Answers_Own_Refusal $handler, \WP_REST_Request $request ): \WP_REST_Response {
+
+		return $this->handle( $handler, $request );
+	}
+
+	/**
 	 * The body a durable handler's failure is answered with: the exception's
 	 * own ({@see Provides_Http_Body}), or the router's.
 	 *

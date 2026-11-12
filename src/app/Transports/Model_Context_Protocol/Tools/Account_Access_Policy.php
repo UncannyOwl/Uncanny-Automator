@@ -239,6 +239,11 @@ final class Account_Access_Policy {
 			if ( self::is_token( $capability ) ) {
 				return 'a capability comes from a token, so it cannot be checked before it is used. List the capabilities by name. ' . self::BUILDER_HINT;
 			}
+
+			// The run unescapes the field and runs its shortcodes before the action reads it, so only a plain name reads the same then as now.
+			if ( 1 !== preg_match( '/^[a-z0-9_]+$/i', $capability ) ) {
+				return sprintf( 'the capability "%s" is not a plain name. Use letters, numbers and underscores, such as edit_posts. %s', $capability, self::BUILDER_HINT );
+			}
 		}
 
 		$admin = array_values( array_intersect( self::ADMIN_CAPABILITIES, $capabilities ) );

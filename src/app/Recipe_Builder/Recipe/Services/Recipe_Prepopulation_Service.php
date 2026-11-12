@@ -21,7 +21,7 @@ use WP_Error;
  * CRUD/settings services instead.
  *
  * Trigger_CRUD_Service::add_to_recipe() expects the caller to supply the
- * definition-shaped config (integration/sentence/type/hook) — the same
+ * definition-shaped config (integration/sentence/type) — the same
  * registry enrichment the REST and MCP transports perform — so this service
  * resolves the definition through Trigger_Registry_Service before creating.
  *
@@ -160,7 +160,6 @@ class Recipe_Prepopulation_Service {
 				'sentence'      => $definition['sentence'] ?? '',
 				'meta_code'     => $trigger_code,
 				'type'          => $definition['trigger_type'] ?? '',
-				'hook'          => $definition['trigger_hook'] ?? array(),
 				'tokens'        => $definition['tokens'] ?? array(),
 				'configuration' => $configuration,
 			)

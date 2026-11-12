@@ -72,9 +72,9 @@ class CODE_SNIPPETS_ACTIVATE_SNIPPET extends Action {
 			return false;
 		}
 
-		$snippet_details = \Code_Snippets\get_snippet( $snippet_id );
+		$snippet_details = $this->item_helpers->get_snippet( $snippet_id );
 
-		if ( ! $snippet_details instanceof \Code_Snippets\Snippet ) {
+		if ( null === $snippet_details ) {
 			// translators: 1: Snippet ID
 			$this->add_log_error( sprintf( esc_attr_x( 'Invalid snippet id: %d.', 'Code Snippets', 'uncanny-automator' ), $snippet_id ) );
 
@@ -94,10 +94,10 @@ class CODE_SNIPPETS_ACTIVATE_SNIPPET extends Action {
 			return false;
 		}
 
-		$snippet_activated = \Code_Snippets\activate_snippet( $snippet_id );
+		$snippet_activated = $this->item_helpers->activate_snippet( $snippet_id );
 
-		if ( ! $snippet_activated instanceof \Code_Snippets\Snippet ) {
-			$this->add_log_error( esc_attr( $snippet_activated ) );
+		if ( is_wp_error( $snippet_activated ) ) {
+			$this->add_log_error( esc_attr( $snippet_activated->get_error_message() ) );
 
 			return false;
 		}

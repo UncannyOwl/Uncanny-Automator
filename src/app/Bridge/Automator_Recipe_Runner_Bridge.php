@@ -45,6 +45,13 @@ final class Automator_Recipe_Runner_Bridge implements Recipe_Runner_Bridge {
 	/**
 	 * @inheritDoc
 	 */
+	public function is_run_published( int $recipe_log_id ): bool {
+		return \Automator()->recipe_runner->is_run_published( $recipe_log_id );
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public function has_user_resolver(): bool {
 		return \Automator()->recipe_runner->has_user_resolver();
 	}

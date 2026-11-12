@@ -196,7 +196,6 @@ class Trigger_Rest extends Recipe_Item_Rest {
 			'sentence'                => $registry['sentence'] ?? '',
 			'sentence_human_readable' => $registry['select_option_name'] ?? '',
 			'type'                    => $registry['type'] ?? 'anonymous',
-			'hook'                    => $registry['action'] ?? '',
 		);
 	}
 }

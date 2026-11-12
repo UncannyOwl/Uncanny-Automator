@@ -39,12 +39,36 @@ class Keap_Settings extends App_Integration_Settings {
 	 * @return void
 	 */
 	public function output_main_disconnected_content() {
+		$this->output_legacy_connection_notice();
+
 		$this->output_disconnected_header(
 			esc_html_x( 'Connect Uncanny Automator to Keap to streamline automations that incorporate contact management, email marketing, and activity on your WordPress site.', 'Keap', 'uncanny-automator' )
 		);
 
 		// Output available recipe items (actions/triggers list).
 		$this->output_available_items();
+	}
+
+	/**
+	 * Tell a site whose connection predates the vault (Free < 7.2.3) to reconnect.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @return void
+	 */
+	protected function output_legacy_connection_notice() {
+
+		if ( ! $this->helpers->has_legacy_credentials() ) {
+			return;
+		}
+
+		$this->alert_html(
+			array(
+				'type'    => 'warning',
+				'heading' => esc_html_x( 'Reconnection required', 'Keap', 'uncanny-automator' ),
+				'content' => esc_html_x( 'This site was connected to Keap with an older version of Uncanny Automator, and that connection is no longer supported. Connect your Keap account again to run your Keap actions.', 'Keap', 'uncanny-automator' ),
+			)
+		);
 	}
 
 	/**

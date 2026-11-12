@@ -48,6 +48,20 @@ class Rest_Bearer_Authenticator {
 	);
 
 	/**
+	 * The routes Automator authenticates itself, exactly as WordPress reports them.
+	 *
+	 * Read by integrations with other plugins that gate logged-out REST requests,
+	 * so those plugins let these routes answer for themselves.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @return string[]
+	 */
+	public static function owned_routes(): array {
+		return self::OWNED_ROUTES;
+	}
+
+	/**
 	 * Token manager.
 	 *
 	 * @var Token_Manager

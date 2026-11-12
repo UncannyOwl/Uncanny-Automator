@@ -4,6 +4,7 @@ declare( strict_types=1 );
 namespace Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration;
 
 use Uncanny_Automator\App\Events\Dispatcher;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Query_Door;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration_Challenge_Controller;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Site_Credentials_Rejection_Observer;
 use Uncanny_Automator\App\Infrastructure\License\License_Manager;
@@ -14,9 +15,10 @@ use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
 /**
  * The wire context of a registration request: where it goes, who sends it and what
  * it says about this install: the register and completion URLs, the challenge and
- * callback routes, the headers, the license, and the address the site runs on.
+ * callback addresses, the headers, the license, and the address the site runs on.
  *
- * No options and no state beyond the injected license provider.
+ * No state of its own: the license provider and the door the platform reaches
+ * this site through ({@see Registration_Door}) are injected.
  *
  * @internal Collaborator of {@see \Uncanny_Automator\App\Infrastructure\Automator_Platform\Platform_Site_Registration::__construct()}; not part of the plugin's API.
  *
@@ -33,11 +35,20 @@ final class Registration_Wire {
 	private $license;
 
 	/**
-	 * @param License_Provider_Interface|null $license The license provider; null reads the shared License_Manager when it is needed.
+	 * Which door the challenge and callback addresses are of.
+	 *
+	 * @var Registration_Door
 	 */
-	public function __construct( ?License_Provider_Interface $license = null ) {
+	private $door;
+
+	/**
+	 * @param License_Provider_Interface|null $license The license provider; null reads the shared License_Manager when it is needed.
+	 * @param Registration_Door|null          $door    Which door the platform reaches this site through.
+	 */
+	public function __construct( ?License_Provider_Interface $license = null, ?Registration_Door $door = null ) {
 
 		$this->license = $license;
+		$this->door    = $door ?? new Registration_Door();
 	}
 
 	/**
@@ -127,22 +138,31 @@ final class Registration_Wire {
 	/**
 	 * This install's dedicated C1 pre-registration endpoint — the URL the
 	 * platform issues its challenge to. Same host as the callback (A2), so the
-	 * challenge is only ever delivered to the license-validated site.
+	 * challenge is only ever delivered to the license-validated site. Of the
+	 * door the next registration uses, as {@see callback_url()} is: the REST
+	 * route, or the site's own address ({@see Query_Door}).
 	 *
 	 * @return string Fully-qualified URL, or '' outside WP (test sanity guard).
 	 */
 	public function challenge_url(): string {
 
-		return function_exists( 'rest_url' )
-			? (string) rest_url( Registration_Challenge_Controller::REST_NAMESPACE . Registration_Challenge_Controller::ROUTE )
-			: '';
+		if ( ! function_exists( 'rest_url' ) ) {
+			return '';
+		}
+
+		return $this->door->uses_query_door()
+			? Query_Door::url( Query_Door::CHALLENGE )
+			: Registration_Challenge_Controller::url();
 	}
 
 	/**
-	 * Plugin's REST endpoint that the platform fans webhook events back
-	 * to (Integrations_Webhook_Controller, registered at
-	 * `automator/platform/v1/webhooks/events`). Sent in the request body
-	 * so the platform can persist it for later callback delivery.
+	 * The plugin's endpoint that the platform fans webhook events back to
+	 * (Integrations_Webhook_Controller, registered at
+	 * `automator/platform/v1/webhooks/events`, and answered at the site's own
+	 * address too). Sent in the request body so the platform can persist it
+	 * for later callback delivery. Of the same door as
+	 * {@see challenge_url()}: the callbacks travel the door the challenge
+	 * proves.
 	 *
 	 * @return string Fully-qualified callback URL, or empty string when
 	 *                `rest_url()` is unavailable (sanity guard for
@@ -150,9 +170,13 @@ final class Registration_Wire {
 	 */
 	public function callback_url(): string {
 
-		return function_exists( 'rest_url' )
-			? (string) rest_url( AUTOMATOR_PLATFORM_WEBHOOK_RECEIVER_ROUTE )
-			: '';
+		if ( ! function_exists( 'rest_url' ) ) {
+			return '';
+		}
+
+		return $this->door->uses_query_door()
+			? Query_Door::url( Query_Door::CALLBACK )
+			: (string) rest_url( AUTOMATOR_PLATFORM_WEBHOOK_RECEIVER_ROUTE );
 	}
 
 	/**

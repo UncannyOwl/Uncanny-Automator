@@ -7,6 +7,7 @@ use Uncanny_Automator\App\Events\Dispatcher;
 use Uncanny_Automator\App\Infrastructure\Connections\Copy_Quarantine_State;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Platform_Http;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration_Challenge;
+use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration_Challenge_Controller;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration_Status;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Site_Credentials_Store;
 use Uncanny_Automator\App\Infrastructure\Automator_Platform\Site_Identity_Service;
@@ -109,6 +110,14 @@ final class Register_Dispatch {
 	private $recorder;
 
 	/**
+	 * Which door the platform reaches this site through; a new attempt may
+	 * choose it from how the last one was recorded ({@see dispatch()}).
+	 *
+	 * @var Registration_Door
+	 */
+	private $door;
+
+	/**
 	 * @param Site_Identity_Service  $identity  Owner of the site UUIDv4.
 	 * @param Site_Credentials_Store $store     Holds the secret, the identity and the markers.
 	 * @param object                 $http      Collaborator with a `post(string, array, array): array` shape.
@@ -118,6 +127,7 @@ final class Register_Dispatch {
 	 * @param Registration_Outcomes  $outcomes  How attempts ended.
 	 * @param Completion_Schedule    $schedule  The cron event that finishes a pending attempt.
 	 * @param Registration_Recorder  $recorder  Accepts a registration the platform answered.
+	 * @param Registration_Door|null $door      Which door the platform reaches this site through; the wire's addresses are of it.
 	 */
 	public function __construct(
 		Site_Identity_Service $identity,
@@ -128,7 +138,8 @@ final class Register_Dispatch {
 		Registration_Backoff $backoff,
 		Registration_Outcomes $outcomes,
 		Completion_Schedule $schedule,
-		Registration_Recorder $recorder
+		Registration_Recorder $recorder,
+		?Registration_Door $door = null
 	) {
 
 		$this->identity  = $identity;
@@ -140,6 +151,7 @@ final class Register_Dispatch {
 		$this->outcomes  = $outcomes;
 		$this->schedule  = $schedule;
 		$this->recorder  = $recorder;
+		$this->door      = $door ?? new Registration_Door( $store );
 	}
 
 	/**
@@ -214,6 +226,19 @@ final class Register_Dispatch {
 		// A new register answers the drift afresh; how the last move ended no
 		// longer applies.
 		$this->outcomes->forget_move_failure();
+
+		// A site that updated from 8.0.x may hold that version's record of the
+		// platform finding its REST API answered by something that is not the
+		// plugin, and no door chosen from it. A new attempt chooses from it now,
+		// before the addresses below are read, so the door is open when the
+		// register naming it goes out; a pending attempt is resent as it began.
+		if ( null === $this->challenge->pending_attempt() && $this->door->after_recorded_unproven( $this->outcomes->last_failure() ) ) {
+			automator_log(
+				'The platform\'s last check of ' . Registration_Challenge_Controller::url() . ' was answered by something that is not the plugin. This registration gives the platform ' . $this->wire->challenge_url() . ' to confirm this site and ' . $this->wire->callback_url() . ' for its callbacks.',
+				'Platform_Site_Registration',
+				true
+			);
+		}
 
 		$callback_url = $this->wire->callback_url();
 		$headers      = $this->wire->headers();

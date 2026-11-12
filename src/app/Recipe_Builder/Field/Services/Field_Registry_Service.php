@@ -675,6 +675,8 @@ final class Field_Registry_Service {
 			unset( $field['type'] );
 		}
 
+		$field = $this->with_site_option_ids_choice( $field );
+
 		// Options builders return `false`/garbage when a remote API is
 		// unreachable; FE `options` is z.array().optional(), so a non-array
 		// fails the parse while an absent key is fine — drop the key.
@@ -705,6 +707,43 @@ final class Field_Registry_Service {
 				},
 				$field['fields']
 			);
+		}
+
+		return $field;
+	}
+
+	/**
+	 * Let the site decide option IDs for a select that says nothing about them.
+	 *
+	 * A select without `options_show_id` shows each option's ID when the value
+	 * is a number (a post, event, product or course ID) and hides it for text
+	 * values; the builder decides that per option. `automator_options_show_id`
+	 * lets a site choose for such selects instead: true shows every ID, false
+	 * hides them all. The legacy select helpers ask the filter, but a field
+	 * declared as a plain array never passed through them (The Events
+	 * Calendar's Event field, for one), so it is asked here. A field's own
+	 * `options_show_id` still wins.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @param array $field Field with `input_type` resolved.
+	 * @return array
+	 */
+	private function with_site_option_ids_choice( array $field ): array {
+		if ( Field_Types::SELECT !== ( $field['input_type'] ?? '' ) || array_key_exists( 'options_show_id', $field ) ) {
+			return $field;
+		}
+
+		/**
+		 * Filters whether dropdowns show each option's ID beside its label.
+		 *
+		 * @param bool|null $show_id Null: IDs show for numeric option values only. True: always. False: never.
+		 * @param array     $field   The select field, for a site that chooses per field.
+		 */
+		$choice = apply_filters( 'automator_options_show_id', null, $field );
+
+		if ( null !== $choice ) {
+			$field['options_show_id'] = (bool) $choice;
 		}
 
 		return $field;

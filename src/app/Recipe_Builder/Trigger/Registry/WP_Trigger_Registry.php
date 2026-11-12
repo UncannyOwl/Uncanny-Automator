@@ -316,29 +316,29 @@ class WP_Trigger_Registry implements Trigger_Registry {
 		// build_mcp_tool_schema() → get_fields_from_trigger_instance(), which
 		// is the only consumer that actually needs them.
 
-		// Normalize hook name - some triggers have multiple hooks
-		$hook_name = $legacy_trigger['action'] ?? '';
+		// A legacy trigger may listen on several hooks (`'action' => array( 'a', 'b' )`),
+		// e.g. WooCommerce's order triggers on completed, thank-you and payment-complete.
+		// Keep them all: Trigger_Hook holds the list, the trigger store writes it to
+		// `add_action`, and Trigger_Query registers each one. Keeping only the first
+		// left every trigger saved from this definition deaf to the others.
+		$hook_names = $legacy_trigger['action'] ?? '';
 
-		// If action is an array (multiple hooks), use the first one as primary
-		// and store the rest as additional hooks for future support
-		if ( is_array( $hook_name ) ) {
-			$primary_hook     = $hook_name[0] ?? '';
-			$additional_hooks = array_slice( $hook_name, 1 );
-		} else {
-			$primary_hook     = $hook_name;
-			$additional_hooks = array();
+		if ( is_array( $hook_names ) ) {
+			$hook_names = array_values(
+				array_filter(
+					$hook_names,
+					static function ( $name ) {
+						return is_string( $name ) && '' !== $name;
+					}
+				)
+			);
 		}
 
 		$hook = array(
-			'name'       => $primary_hook,
+			'name'       => $hook_names,
 			'priority'   => $legacy_trigger['priority'] ?? 10,
 			'args_count' => $legacy_trigger['accepted_args'] ?? 1,
 		);
-
-		// Store additional hooks if present (for future multi-hook support)
-		if ( ! empty( $additional_hooks ) ) {
-			$hook['additional_hooks'] = $additional_hooks;
-		}
 
 		return array(
 			'trigger_code'      => $legacy_trigger['code'] ?? '',

@@ -36,6 +36,28 @@ class Keap_App_Helpers extends App_Helpers {
 	const REFRESH_THROTTLE_SECONDS = 120;
 
 	////////////////////////////////////////////////////////////
+	// Connection state methods
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Whether the stored credentials are the raw OAuth tokens of a connection
+	 * made before the vault (Free < 7.2.3). Nothing can use them: the site
+	 * owner reconnects.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @return bool
+	 */
+	public function has_legacy_credentials() {
+
+		$credentials = automator_get_option( $this->get_credentials_option_name(), array() );
+
+		return is_array( $credentials )
+			&& ! empty( $credentials['access_token'] )
+			&& empty( $credentials['vault_signature'] );
+	}
+
+	////////////////////////////////////////////////////////////
 	// Account details methods
 	////////////////////////////////////////////////////////////
 

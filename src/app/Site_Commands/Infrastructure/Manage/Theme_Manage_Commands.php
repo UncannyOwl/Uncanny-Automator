@@ -175,6 +175,10 @@ final class Theme_Manage_Commands implements Site_Command_Group {
 				Packages::require_installable( $api, $slug, 'theme' );
 
 				// WordPress's theme upgrader sets the skin's $api when it installs a parent theme.
+				// It also deletes its last update check after an install. It builds a new one
+				// in a follow-up check that only wp-admin hooks, and that a command removes
+				// when it is hooked. Nothing would rebuild it here, so the last check is kept,
+				// as "theme update" keeps it.
 				$skin     = new class() extends \WP_Ajax_Upgrader_Skin {
 					/**
 					 * The parent theme's information.
@@ -184,7 +188,7 @@ final class Theme_Manage_Commands implements Site_Command_Group {
 					public $api;
 				};
 				$upgrader = new \Theme_Upgrader( $skin );
-				$result   = $upgrader->install( (string) $api->download_link );
+				$result   = $upgrader->install( (string) $api->download_link, array( 'clear_update_cache' => false ) );
 				$theme    = $upgrader->theme_info();
 				$failure  = Site_Changes::outcome( $session->explain( $result ), $skin, Site_Changes::INSTALL );
 				if ( ! $theme instanceof \WP_Theme || ! $theme->exists() ) {

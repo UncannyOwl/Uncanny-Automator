@@ -65,6 +65,19 @@ interface Recipe_Runner_Bridge {
 	public function resolve_background_action( Background_Job $job ): ?array;
 
 	/**
+	 * Whether the run's recipe is published; a run whose recipe is not does not continue from a background job.
+	 *
+	 * Wraps `Automator()->recipe_runner->is_run_published( $recipe_log_id )`.
+	 *
+	 * @since 8.0.4
+	 *
+	 * @param int $recipe_log_id The run.
+	 *
+	 * @return bool False when the recipe has any other status, no longer exists, or the run has no row.
+	 */
+	public function is_run_published( int $recipe_log_id ): bool;
+
+	/**
 	 * Whether the runner has a user resolver registered.
 	 *
 	 * Wraps `Automator()->recipe_runner->has_user_resolver()`.
