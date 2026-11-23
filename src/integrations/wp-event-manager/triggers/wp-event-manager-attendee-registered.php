@@ -15,11 +15,13 @@ class Wp_Event_Manager_Attendee_Registered extends \Uncanny_Automator\Recipe\Tri
 	const TRIGGER_CODE = 'WP_EVENT_MANAGER_ATTENDEE_REGISTERED';
 	const TRIGGER_META = 'WP_EVENT_MANAGER_EVENT';
 	/**
-	 * Requirements met.
+	 * Whether the Registrations add-on is loaded, from its own folder or a renamed one.
 	 *
-	 * @return mixed
+	 * @since 8.1.0
+	 *
+	 * @return bool|null True when the Registrations add-on is loaded, false when it is not.
 	 */
-	public function requirements_met() {
+	protected function is_plugin_compatible(): ?bool {
 		return class_exists( '\WPEM_Registrations' );
 	}
 
@@ -38,6 +40,14 @@ class Wp_Event_Manager_Attendee_Registered extends \Uncanny_Automator\Recipe\Tri
 		$this->set_sentence( sprintf( esc_html_x( 'An attendee is registered for {{an event:%1$s}}', 'WP Event Manager', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_html_x( 'An attendee is registered for {{an event}}', 'WP Event Manager', 'uncanny-automator' ) );
 		$this->add_action( 'new_event_registration', 10, 2 );
+
+		$this->set_plugin_details(
+			array(
+				'plugin_file'       => 'wp-event-manager-registrations/wp-event-manager-registrations.php',
+				'plugin_name'       => 'WP Event Manager Registrations',
+				'distribution_type' => 'commercial',
+			)
+		);
 	}
 
 	/**

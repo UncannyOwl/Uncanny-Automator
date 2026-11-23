@@ -312,7 +312,6 @@ final class File_Serve_Controller {
 	private function resolve_local_path( string $p ): ?string {
 
 		$uploads = wp_get_upload_dir();
-		$baseurl = isset( $uploads['baseurl'] ) ? (string) $uploads['baseurl'] : '';
 		$basedir = isset( $uploads['basedir'] ) ? (string) $uploads['basedir'] : '';
 
 		if ( '' === $basedir ) {
@@ -324,14 +323,12 @@ final class File_Serve_Controller {
 		// Candidate is already an absolute filesystem path?
 		if ( '' !== $p && DIRECTORY_SEPARATOR === $p[0] && false === strpos( $p, '://' ) ) {
 			$candidate = $p;
-		} elseif ( '' !== $baseurl && 0 === strpos( $p, rtrim( $baseurl, '/' ) . '/' ) ) {
-			// Anchor on `baseurl + "/"` — the SAME boundary the gate uses
-			// (Allowed_Path_Policy::is_allowed_external_url). A bare prefix
-			// match mapped `{baseurl}-backups/x` onto `{basedir}-backups/x`,
-			// a sibling dir the gate classified as an external own-host URL
-			// and never realpath-contained; this keeps the two in lockstep.
-			$relative  = substr( $p, strlen( rtrim( $baseurl, '/' ) ) );
-			$candidate = rtrim( $basedir, DIRECTORY_SEPARATOR ) . $relative;
+		} else {
+			// A media-library URL maps to its file through the policy, the
+			// SAME mapping the gate used: a separate prefix match here once
+			// mapped `{baseurl}-backups/x` onto `{basedir}-backups/x`, a
+			// sibling dir the gate never realpath-contained.
+			$candidate = $this->policy->media_library_path( $p );
 		}
 
 		if ( null === $candidate ) {

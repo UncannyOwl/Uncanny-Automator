@@ -10,6 +10,8 @@
 
 namespace Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Discovery\Items;
 
+use Uncanny_Automator\App\Integration_Catalog\Services\Item_Availability_Provider;
+
 /**
  * Base class for discovering integration items.
  *
@@ -42,6 +44,26 @@ abstract class Integration_Item_Discoverer {
 	 * @return array Item data
 	 */
 	abstract public function discover( string $code, string $name ): array;
+
+	/**
+	 * The normalized rows of an integration's listed items of one type whose requirements are not met.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $type The item type: 'trigger', 'action', 'filter_condition' or 'loop_filter'.
+	 * @param string $code The integration code.
+	 *
+	 * @return array Normalized item rows.
+	 */
+	protected function discover_unavailable( string $type, string $code ): array {
+		$rows = array();
+
+		foreach ( Item_Availability_Provider::instance()->listed_unavailable( $type, $code ) as $row ) {
+			$rows[] = $this->normalize_item( $row, $type );
+		}
+
+		return $rows;
+	}
 
 	/**
 	 * Normalize item data structure.

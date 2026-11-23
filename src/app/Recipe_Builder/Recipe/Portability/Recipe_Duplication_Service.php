@@ -15,6 +15,7 @@ use Uncanny_Automator\App\Recipe_Builder\Recipe\Schema\Value_Objects\Materializa
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Recipe_CRUD_Service;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Recipe_Reorder_Service;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Recipe_Taxonomy_Service;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Settings\Services\Recipe_Settings_Service;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Status;
 use Uncanny_Automator\App\Recipe_Builder\Token\Services\Reference_Rewriter;
 use Uncanny_Automator\App\Recipe_Builder\User_Selector\Services\User_Selector_Service;
@@ -144,6 +145,13 @@ final class Recipe_Duplication_Service {
 	private Reference_Rewriter $rewriter;
 
 	/**
+	 * Sets the type of a recipe that has none yet, which the update path refuses.
+	 *
+	 * @var Recipe_Settings_Service
+	 */
+	private Recipe_Settings_Service $recipe_settings;
+
+	/**
 	 * Lazy-default constructor injection (Rule 9c).
 	 *
 	 * The recipe-level scalar settings + notes ride in on `create_recipe()`
@@ -162,6 +170,7 @@ final class Recipe_Duplication_Service {
 	 * @param Recipe_Reorder_Service|null          $reorder
 	 * @param User_Selector_Service|null           $user_selector
 	 * @param Reference_Rewriter|null              $rewriter
+	 * @param Recipe_Settings_Service|null         $recipe_settings
 	 */
 	public function __construct(
 		?Recipe_Tree_Builder $tree_builder = null,
@@ -173,7 +182,8 @@ final class Recipe_Duplication_Service {
 		?Recipe_Subtree_Extractor $subtree_extractor = null,
 		?Recipe_Reorder_Service $reorder = null,
 		?User_Selector_Service $user_selector = null,
-		?Reference_Rewriter $rewriter = null
+		?Reference_Rewriter $rewriter = null,
+		?Recipe_Settings_Service $recipe_settings = null
 	) {
 		$this->tree_builder      = $tree_builder ?? Recipe_Tree_Builder::instance();
 		$this->materializer      = $materializer ?? new Recipe_Tree_Materializer();
@@ -183,6 +193,7 @@ final class Recipe_Duplication_Service {
 		$this->reorder           = $reorder ?? Recipe_Reorder_Service::instance();
 		$this->user_selector     = $user_selector ?? User_Selector_Service::instance();
 		$this->rewriter          = $rewriter ?? new Reference_Rewriter();
+		$this->recipe_settings   = $recipe_settings ?? Recipe_Settings_Service::instance();
 
 		$block_store    = Database::get_block_store();
 		$modifier_store = Database::get_block_modifier_store();
@@ -259,6 +270,67 @@ final class Recipe_Duplication_Service {
 	}
 
 	/**
+	 * Replay a canonical tree into an existing recipe: its type, title and settings, then the graph, taxonomy and user selector.
+	 *
+	 * The caller answers for the target. This writes on top of whatever the recipe holds and undoes nothing on failure, so it runs inside the caller's transaction. It announces nothing either: the caller reports the change once the writes are final.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array<string,mixed> $tree          Canonical tree (root keys per Recipe_Tree_Builder).
+	 * @param int                 $recipe_id     The recipe to fill.
+	 * @param string              $title         The recipe's new title.
+	 * @param array|null          $selector_data Full selector data bag, or null for none.
+	 *
+	 * @return Materialization_Result|WP_Error Result (root = the filled recipe's id) or the first failure.
+	 */
+	public function replay_tree_into( array $tree, int $recipe_id, string $title, ?array $selector_data = null ) {
+		return Recipe_Change_Events::operation(
+			function () use ( $tree, $recipe_id, $title, $selector_data ) {
+				$settings_error = $this->fill_settings( $tree, $recipe_id, $title );
+				if ( $settings_error instanceof WP_Error ) {
+					return $settings_error;
+				}
+
+				return $this->replay_graph( $tree, $recipe_id, $selector_data );
+			}
+		);
+	}
+
+	/**
+	 * Write the tree's type, title and recipe-level settings onto an existing recipe.
+	 *
+	 * The type goes first: the update path refuses a type change, and the triggers replayed next inherit the recipe's type.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array<string,mixed> $tree      Canonical tree.
+	 * @param int                 $recipe_id The recipe to fill.
+	 * @param string              $title     The recipe's new title.
+	 *
+	 * @return WP_Error|null The first failure, or null.
+	 */
+	private function fill_settings( array $tree, int $recipe_id, string $title ): ?WP_Error {
+		$data = $this->build_create_data( $tree, $title, Recipe_Status::DRAFT );
+
+		$typed = $this->recipe_settings->set_recipe_type( $recipe_id, (string) $data['type'] );
+		if ( $typed instanceof WP_Error ) {
+			return $typed;
+		}
+		if ( ! $typed ) {
+			return new WP_Error(
+				'replay_type_failed',
+				esc_html_x( 'The recipe type could not be saved.', 'Recipe replay error', 'uncanny-automator' )
+			);
+		}
+
+		unset( $data['type'], $data['status'] );
+
+		$updated = $this->recipe_crud->update_recipe( $recipe_id, $data );
+
+		return $updated instanceof WP_Error ? $updated : null;
+	}
+
+	/**
 	 * Replay a tree as a new recipe: shell, graph, taxonomy, user selector.
 	 *
 	 * @param array      $tree          Canonical recipe tree.
@@ -286,35 +358,56 @@ final class Recipe_Duplication_Service {
 		}
 		$new_recipe_id = (int) $created['recipe_id'];
 
-		// 2. Rebuild the whole graph into the new shell (fresh ids + rewritten refs).
-		$result = $this->materializer->materialize_tree( $tree, $new_recipe_id );
+		// 2. Replay the graph, taxonomy and user selector into the new shell.
+		$result = $this->replay_graph( $tree, $new_recipe_id, $selector_data );
 		if ( $result instanceof WP_Error ) {
 			return $this->abandon_replay( $new_recipe_id, $result );
 		}
 
-		// 3. Copy recipe-level taxonomy the create path cannot accept.
-		$taxonomy_error = $this->copy_taxonomy( $tree, $new_recipe_id );
-		if ( $taxonomy_error instanceof WP_Error ) {
-			return $this->abandon_replay( $new_recipe_id, $taxonomy_error );
+		return $result;
+	}
+
+	/**
+	 * Replay what sits under a recipe: the graph, taxonomy and user selector. Undoes nothing on failure; each caller owns that.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array      $tree          Canonical recipe tree.
+	 * @param int        $recipe_id     The recipe to write under.
+	 * @param array|null $selector_data User selector to persist, or null.
+	 *
+	 * @return Materialization_Result|WP_Error
+	 */
+	private function replay_graph( array $tree, int $recipe_id, ?array $selector_data ) {
+		// 1. Rebuild the whole graph into the recipe (fresh ids + rewritten refs).
+		$result = $this->materializer->materialize_tree( $tree, $recipe_id );
+		if ( $result instanceof WP_Error ) {
+			return $result;
 		}
 
-		// 4. Copy the user selector (anonymous recipes), rewriting any
+		// 2. Copy recipe-level taxonomy the create path cannot accept.
+		$taxonomy_error = $this->copy_taxonomy( $tree, $recipe_id );
+		if ( $taxonomy_error instanceof WP_Error ) {
+			return $taxonomy_error;
+		}
+
+		// 3. Copy the user selector (anonymous recipes), rewriting any
 		//    entity-id tokens its values hold onto the fresh ids. A copy keeps
 		//    the source's setting whether or not this site can use it.
 		if ( is_array( $selector_data ) && ! empty( $selector_data ) ) {
 			$saved = $this->user_selector->copy_user_selector(
-				$new_recipe_id,
+				$recipe_id,
 				(array) $this->rewriter->rewrite( $selector_data, $result->get_id_map() )
 			);
 			if ( $saved instanceof WP_Error ) {
-				return $this->abandon_replay( $new_recipe_id, $saved );
+				return $saved;
 			}
 		}
 
-		// 5. Return a result whose root_id is the NEW RECIPE id (the materializer
+		// 4. Return a result whose root_id is the RECIPE id (the materializer
 		//    already roots whole-tree results at the target recipe id, but rebuild
 		//    explicitly so the contract holds regardless of its root choice).
-		return new Materialization_Result( $new_recipe_id, $result->get_id_map() );
+		return new Materialization_Result( $recipe_id, $result->get_id_map() );
 	}
 
 	/**

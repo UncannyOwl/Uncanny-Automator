@@ -14,7 +14,7 @@
 
 namespace Uncanny_Automator\Recipe;
 
-use Uncanny_Automator\App\Integration_Catalog\Services\Hidden_Items;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
 use Uncanny_Automator\App\Recipe_Runner\Exceptions\Action_Error_Exception;
 
 /**
@@ -28,6 +28,11 @@ abstract class Action {
 	 * Action Setup. This trait handles action definitions.
 	 */
 	use Action_Setup;
+
+	/**
+	 * Item Requirements. What the action needs beyond its integration, and the answer stored at registration.
+	 */
+	use \Uncanny_Automator\Item_Requirements;
 
 	/**
 	 * Action Conditions. This trait handles action conditions. This is where action conditionally executes. For
@@ -196,40 +201,16 @@ abstract class Action {
 	}
 
 	/**
-	 * requirements_met
+	 * Define the action and store it with its requirements: in the actions the filter builds when they
+	 * are met, on Automator's unavailable items when they are not.
 	 *
-	 * Override this method if the action has any pre-requisites
+	 * @param array $actions The actions registered so far, keyed by action code.
 	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return true;
-	}
-
-	/**
-	 * Why the action's requirements are not met on this site, for a recipe
-	 * that already holds it. Override alongside requirements_met(); '' tells
-	 * the generic sentence.
-	 *
-	 * @since 8.0.0
-	 *
-	 * @return string
-	 */
-	public function requirements_unmet_message(): string {
-		return '';
-	}
-
-	/**
-	 * Define and register the action by pushing it into the Automator object
+	 * @return array The actions, with this one when its requirements are met.
 	 */
 	public function register_action( $actions ) {
 
-		if ( ! $this->requirements_met() ) {
-			// Not offered; a recipe that already holds it is told why (decision A4).
-			Hidden_Items::record( (string) $this->get_integration(), 'action', (string) $this->get_action_code(), $this->requirements_unmet_message() );
-
-			return $actions;
-		}
+		$requirements = $this->evaluate_requirements();
 
 		$action = array(
 			'author'                => $this->get_author(),
@@ -263,7 +244,16 @@ abstract class Action {
 
 		$action = $this->with_required_block_ancestors( $action );
 
-		$action = apply_filters( 'automator_register_action', $action );
+		if ( ! $requirements['is_met'] ) {
+			$action['requirements'] = $requirements;
+
+			Automator()->set_unavailable_item( Integration_Item_Types::ACTION, (string) $this->get_integration(), (string) $this->get_action_code(), $action );
+
+			return $actions;
+		}
+
+		$action                 = apply_filters( 'automator_register_action', $action );
+		$action['requirements'] = $requirements;
 
 		$this->maybe_register_loopable_tokens_hooks( $action );
 

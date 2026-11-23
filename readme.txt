@@ -1,10 +1,10 @@
-=== Uncanny Automator – MCP Server + Automation MCP for Claude & ChatGPT ===
+=== Uncanny Automator – MCP Server + Automation - Connect Claude, ChatGPT & other MCP agents ===
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: ai, mcp server, automation, claude, chatgpt
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 8.0.4
+Stable tag: 8.1.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -202,6 +202,7 @@ Uncanny Automator connects the most popular WordPress plugins and apps. Mix and 
 [All-in-One WP Migration](https://automatorplugin.com/integration/all-in-one-wp-migration/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Amelia](https://automatorplugin.com/integration/amelia/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [ARMember](https://automatorplugin.com/integration/armember/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
+[Asgaros Forum](https://automatorplugin.com/integration/asgaros-forum/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Automator Core](https://automatorplugin.com/integration/automator-core/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Automator for PayPal](https://automatorplugin.com/integration/automator-for-paypal/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [BadgeOS](https://automatorplugin.com/integration/badgeos/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
@@ -217,6 +218,7 @@ Uncanny Automator connects the most popular WordPress plugins and apps. Mix and 
 [Cloudways](https://automatorplugin.com/integration/cloudways/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Code Snippets](https://automatorplugin.com/integration/code-snippets/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Contact Form 7](https://automatorplugin.com/integration/contact-form-7/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
+[Contact Form CFDB7](https://automatorplugin.com/integration/contact-form-cfdb7/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [CSV](https://automatorplugin.com/integration/csv/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Custom Action](https://automatorplugin.com/integration/custom-action/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Custom User Fields](https://automatorplugin.com/integration/custom-user-fields-addon/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
@@ -236,6 +238,7 @@ Uncanny Automator connects the most popular WordPress plugins and apps. Mix and 
 [Events Manager](https://automatorplugin.com/integration/events-manager/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Everest Forms](https://automatorplugin.com/integration/everest-forms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [ExactMetrics](https://automatorplugin.com/integration/exactmetrics/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
+[Favorites](https://automatorplugin.com/integration/favorites/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Fluent Forms](https://automatorplugin.com/integration/wp-fluent-forms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Fluent Support](https://automatorplugin.com/integration/fluent-support/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [FluentBoards](https://automatorplugin.com/integration/fluentboards/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
@@ -278,7 +281,9 @@ Uncanny Automator connects the most popular WordPress plugins and apps. Mix and 
 [Magic Button](https://automatorplugin.com/integration/magic-button/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [MailPoet](https://automatorplugin.com/integration/mailpoet/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Mailster](https://automatorplugin.com/integration/mailster/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
+[MainWP](https://automatorplugin.com/integration/mainwp/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Make](https://automatorplugin.com/integration/make/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
+[Masteriyo LMS](https://automatorplugin.com/integration/masteriyo-lms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [MasterStudy LMS](https://automatorplugin.com/integration/masterstudy-lms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Memberium for Keap](https://automatorplugin.com/integration/memberium-keap/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [MemberMouse](https://automatorplugin.com/integration/membermouse/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
@@ -316,10 +321,12 @@ Uncanny Automator connects the most popular WordPress plugins and apps. Mix and 
 [Schedule](https://automatorplugin.com/integration/schedule/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Security Optimizer](https://automatorplugin.com/integration/sg-security/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [SeedProd](https://automatorplugin.com/integration/seedprod/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
+[Sensei LMS](https://automatorplugin.com/integration/sensei-lms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Site Kit by Google](https://automatorplugin.com/integration/site-kit-by-google/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [SliceWP](https://automatorplugin.com/integration/slicewp/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Smush](https://automatorplugin.com/integration/smush/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Speed Optimizer](https://automatorplugin.com/integration/sg-optimizer/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
+[SportsPress](https://automatorplugin.com/integration/sportspress/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Studiocart](https://automatorplugin.com/integration/studiocart/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Sucuri Security](https://automatorplugin.com/integration/sucuri-security/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Sugar Calendar](https://automatorplugin.com/integration/sugar-calendar/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
@@ -347,6 +354,7 @@ Uncanny Automator connects the most popular WordPress plugins and apps. Mix and 
 [URL](https://automatorplugin.com/integration/url/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [User Lists](https://automatorplugin.com/integration/user-lists-addon/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [UserFeedback](https://automatorplugin.com/integration/userfeedback/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
+[UsersWP](https://automatorplugin.com/integration/userswp/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [W3 Total Cache](https://automatorplugin.com/integration/w3-total-cache/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Webhooks](https://automatorplugin.com/integration/webhooks/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Wholesale Suite](https://automatorplugin.com/integration/wholesale-suite/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
@@ -471,168 +479,115 @@ Unlimited tool usage for a connected AI, the complete library of Pro triggers, a
 
 == Changelog ==
 
-= 8.0.4 [2026-11-12] =
-
-**Fixes and improvements:**
-
-* Admin - The Connect Your AI notice no longer appears when an AI app is already connected. #9465
-* App Platform - Fixed registration and event delivery errors on sites with BuddyBoss Private REST APIs enabled. #9447
-* App Platform - Resolved PHP 8.5 deprecation notice when a request fails without a cURL error. #9475
-* Code Snippets - Activate a snippet, Deactivate a snippet - Fixed compatibility with Code Snippets 3.10.0 and later. #9473
-* Core - Fixed stuck run recovery incorrectly closing active runs or failing background actions when database and site times differ or clocks change. #9452
-* Core - Optimized background requests to reduce memory usage by loading only the integrations used by active recipes. #9463
-* Keap - Sites connected before version 7.2.3 that have not migrated are now prompted to reconnect instead of receiving an invalid credentials error. #9456
-* Recipe Builder - Dropdowns now show numeric IDs by default. #9450
-* Recipes - Saving, duplicating or importing recipes now correctly stores all trigger hooks to prevent triggers from failing to run. #9459
-* Recipes - Triggers with multiple hooks now run correctly when created by AI, duplicated, imported or added from templates. #9451
-* Site Management - Plugin and theme installations now preserve previously detected update availability. #9468
-* WordPress - Create a new role - Fixed an issue where new roles were created without the selected capabilities. #9474
-* WP Download Manager, Advanced Ads, Easy Affiliate, Jetpack CRM and Duplicator - Resolved PHP 8.5 deprecation notices. #9472
-
-= 8.0.3 [2026-11-09] =
-
-**Updated:**
-
-* Recipe Builder - The WordPress admin menu now retains the user’s preferred expanded or collapsed state. #9437
-
-**Fixed:**
-
-* Connect Your AI - Fixed Claude/MCP connection errors on sites using the JWT Authentication for WP-API plugin. #9416
-* Connect buttons now show a loading state and prevent duplicate connection requests. #9414
-* Core - Fixed PHP errors when REST API requests contain invalid rest_route values. #9419
-* Recipe Logs - Filter conditions now display their individual results instead of the overall filter result. #9338
-* Recipe Logs - Fixed missing filter conditions and incorrect Skipped statuses for runs recorded in 7.x. #9442
-* Recipe Logs - Fixed missing filter conditions inside loops for runs recorded in 7.x. #9444
-* Redirect - Redirect to a URL - Multiple redirects in the same recipe run now display the correct notice when a previous redirect has already occurred. #9430
-* Site Commands - Fixed compatibility with object cache plugins such as APCu Manager that previously blocked site commands. #9423
-* Template Library - Magic button and magic link templates now show placeholder shortcodes instead of IDs from another site. #9433
-* Template Library - Templates now correctly include integrations used inside loops and action conditions in requirements, filters and Ready to use results. #9435
-* The Events Calendar - Create an RSVP attendee for an event - Added support for the new RSVP format introduced in Event Tickets v5.30+. #9421
-* WooCommerce - Stripe fee and payout tokens - Fixed compatibility with WooCommerce Stripe Gateway 10.7 and later.
-* WooCommerce Bookings - Fixed trigger errors caused by changes in WooCommerce Stripe Gateway 10.7. #9407
-
-= 8.0.2 [2026-11-05] =
-
-**Fixed:**
-
-* BuddyBoss - A user creates a topic in a forum - Fixed recipe builder errors when the Forums component is disabled. #9382
-* Core - Fixed recipe runs stopping unexpectedly when some triggers return user IDs as text instead of numbers. #9399
-* Core - Fixed the Trigger title token displaying field labels, extra braces or "Unknown token" instead of the correct trigger sentence. #9384
-* Recipe Builder - Added a Resolve dependencies dialog for triggers and actions with missing requirements. #9401
-* Recipe Builder - Fixed the missing remove button icon for selected files in file fields. #9402
-* Recipe Logs - Nested tokens now display their resolved values instead of raw tokens or "Unknown token". #9386
-
-= 8.0.1 [2026-11-04] =
-
-**Fixes and improvements:**
-
-* Recipe Builder - The Filter block is now indigo instead of pink, so it is no longer mistaken for a failed block. #9371
-* Connect your AI - Loops accept every valid loopable token, and the user selector and trigger schema guidance no longer mislead AI. #9347
-* Connect your AI - Error responses are now accurate, and run logs show the full actions flow. #9346 #9348
-* Connect your AI - Abilities from LifterLMS, WooCommerce and other plugins now run through run_ability instead of failing with an MCP OAuth token error. #9377
-* Connect Apps - Sites without an active license or connected account now go to the Dashboard instead of the License screen. #9351
-* Database - Sites whose options tables use different collations no longer get a database error on every page load. #9343
-* Licensing - Pro triggers and actions no longer show as Locked when the license check fails after the cache expires. #9332
-* Migrations - Actions that shared a position now keep their original run order when a condition group migrates to a filter. #9342
-* Recipe Builder - A Loop's token list is no longer saved to the trigger log multiple times when a recipe is loaded and run in the same request. #9356
-* Recipe Builder - Actions placed where they are not allowed now return a clear rule error. #9349
-* Recipe Builder - One invalid email "To" address no longer blocks later emails. #9349
-* Recipe Builder - The token button is back on "Use a token/custom value" fields for dropdowns such as MailPoet's Subscriber Status. #9352
-* Recipe Logs - Failed actions now show their error under Notes in Logs > Action again. #9359
-* Recipe Logs - A Loop block shows its configuration, and a Queue block after a background action shows Delayed. #9350 #9354
-* Recipe Logs - Reading the next run ID no longer changes database settings for the rest of the request. #9348
-* Recipe Logs - Searching the run log now finds failed actions' errors and token loop iterations. #9359 #9339
-* Recipe Logs - The run log screen no longer crashes when a Filter block has no conditions. #9331
-* Recipe Runs - Recipes set to run on all triggers no longer wait forever for a Pro trigger while Pro is inactive. #9344
-* Uncanny Agent - A valid token without the required capability now gets a permission error instead of an invalid credentials error. #9284
-* Uncanny Page Builder - Published full pages now load other plugins' scripts and styles, so forms such as WP Simple Pay work again. #9379
-* Webhooks - Send data to a webhook - A new Authorization header is no longer left in clear text when saving the action fails. #9353
-* Webhooks - Send data to a webhook - Failed responses no longer offer response tokens, and webhooks saved by Pro 1.x to 2.1 no longer write PHP warnings. #9357
-* Webhooks - Send data to a webhook - Form-data, GET, GraphQL and Raw webhooks now send correct requests. #9355
-* Webhooks - Send data to a webhook - The Send webhook test now passes any successful response, fails error responses and keeps the saved tokens. #9358
-* Webhooks - Send data to a webhook - XML webhooks now send application/xml, and a broken XML wrapper fails the action. #9357 #9358
-* WordPress - Post triggers no longer list the "Post categories (loop)" and "Post tags (loop)" tokens that returned empty values. #9345
-
-= 8.0.0 [2026-11-02] =
-
-**Major release:** Uncanny Automator 8.0 is a major release. Test the update on a staging site first, and if you have Uncanny Automator Pro, update it to 8.0 at the same time.
+= 8.1.0 [2026-11-23] =
 
 **New Feature:**
 
-* Connect your AI - Connect ChatGPT, Claude, Gemini, Perplexity and more to manage and automate your WordPress site via a built-in MCP server
-* Connect your AI - New MCP settings page to manage and monitor AI connections
-* Connect your AI - Individual MCP access controls for every tool, plugin ability and Automator action
-* Recipe Builder - Introduced new Flow UI with improved flexibility and readability, and nestable Filter, Queue and Loop elements that expand workflow capabilities
-* Recipe Builder - Redesigned the layout, navigation, token selector and template library
-* Recipe Builder - Simplified publishing controls
-* Recipe Builder - Added autosave indicators, unsaved change warnings and saved view preferences
-* Recipe Logs - Improved block controls, run details and added visual workflow display
+* Logs - Introduced a redesigned Logs page with improved navigation, filtering and visibility into recipe runs, triggers, actions and app events #8091
+* Recipe Builder - Added a welcome screen for empty recipes with three ways to start #7897
 
 **New Integration:**
 
-* [Dropbox](https://automatorplugin.com/integration/dropbox/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #6481
+* [Asgaros Forum](https://automatorplugin.com/integration/asgaros-forum/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7540
+* [Contact Form CFDB7](https://automatorplugin.com/integration/contact-form-cfdb7/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7543
+* [Favorites](https://automatorplugin.com/integration/favorites/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7544
+* [MainWP](https://automatorplugin.com/integration/mainwp/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #8468
+* [Masteriyo LMS](https://automatorplugin.com/integration/masteriyo-lms/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7549
+* [Sensei LMS](https://automatorplugin.com/integration/sensei-lms/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7557
+* [SportsPress](https://automatorplugin.com/integration/sportspress/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7560
+* [UsersWP](https://automatorplugin.com/integration/userswp/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7562
 
 **New Triggers:**
 
-* Dropbox - A file is updated in a folder #8790
-* Dropbox - A file or folder is created in a folder #8785
-* Dropbox - A file or folder is deleted in a folder #8784
-* Dropbox - A file or folder is moved to a folder #8788
-* Dropbox - A file or folder is renamed in a folder #8789
+* Asgaros Forum - A topic is approved #7574
+* Asgaros Forum - A user is added to a usergroup #8725
+* Asgaros Forum - A user reacts to a post with a reaction #7575
+* Asgaros Forum - A user replies to a topic in a forum #7576
+* Asgaros Forum - A user submits a topic in a forum #7577
+* Contact Form CFDB7 - An entry is saved for a form #7586
+* Easy Digital Downloads - A user receives a refund for an order paid with a payment gateway #9667
+* Favorites - A user clears all their favourites #8722
+* Favorites - A user favourites a post #7589
+* Favorites - A user unfavourites a post #8723
+* MainWP - A child site is added #8605
+* MainWP - A child site is removed #8601
+* MainWP - A plugin, theme or translation is updated on a child site #8603
+* MainWP - WordPress core is updated on a child site #8602
+* Masteriyo LMS - A user completes a course #7621
+* Masteriyo LMS - A user completes a lesson in a course #7620
+* Masteriyo LMS - A user enrolls in a course #7622
+* Masteriyo LMS - A user fails a quiz #7618
+* Masteriyo LMS - A user passes a quiz #7619
+* Masteriyo LMS - A user registers #7617
+* Masteriyo LMS - A user starts a quiz #8740
+* Sensei LMS - A user completes a course #7633
+* Sensei LMS - A user completes a lesson in a course #7632
+* Sensei LMS - A user is enrolled in a course #7634
+* Sensei LMS - A user submits a quiz #7683
+* SportsPress - A new event is created #7672
+* SportsPress - A new player is created #7671
+* SportsPress - A new team is created #7670
+* SportsPress - An event is updated #7669
+* UsersWP - A user activates their email #7658
+* UsersWP - A user changes their password #7657
+* UsersWP - A user deletes their account #7656
+* UsersWP - A user logs in #7661
+* UsersWP - A user registers #7662
+* UsersWP - A user updates their profile #7660
 
 **New Actions:**
 
-* Dropbox - Add a member to a file #8776
-* Dropbox - Add a member to a folder #8786
-* Dropbox - Copy a file or folder to a new location #8778
-* Dropbox - Create a folder in a parent folder #8782
-* Dropbox - Delete an item #8781
-* Dropbox - Get a shareable link to a file #8780
-* Dropbox - Move a file or folder to a new location #8779
-* Dropbox - Share a folder #8777
-* Dropbox - Upload a file to a folder #8783
+* Asgaros Forum - Add the user to a usergroup #7571
+* Asgaros Forum - Create a reply to a topic #7572
+* Asgaros Forum - Create a topic in a forum #7573
+* Asgaros Forum - Remove the user from a usergroup #8724
+* Contact Form CFDB7 - Delete an entry #7587
+* Contact Form CFDB7 - Mark an entry as read #7588
+* Masteriyo LMS - Enroll the user in a course #7616
+* Masteriyo LMS - Mark a course complete for the user #7615
+* Sensei LMS - Enroll the user in a course #7684
+* Sensei LMS - Mark a lesson complete for the user #7681
+* Sensei LMS - Unenroll the user from a course #7682
+* SportsPress - Create an event #7668
+* SportsPress - Update the results of an event #8737
+* UsersWP - Update the user's profile fields #7659
+
+**New Token:**
+
+* Easy Digital Downloads - A customer purchases a download - License key #9594
+
+**Updated:**
+
+* Automator MCP - Improved REST API discovery to help AI apps identify supported operations and available parameters. #9702
+* Automator MCP - Improved error messages and guidance for invalid requests, unavailable tools and failed operations. #9703
+* Logs - App events - Added a new tab to view incoming app events, their processing status and associated recipe runs. #9612
+* Template Library - Redesigned template previews and added a post-import setup screen showing recipe requirements. #9600
+* Template Library - Search now supports combined filters and includes integration names and recipe steps. #9599
+* Template Library - Updated to use the latest template feed, with improved previews and recipe requirement indicators. #9598
 
 **Fixed:**
 
-* Contact Form 7 - All triggers - Form field tokens now return submitted values instead of the form title when using the specific field value trigger. #9259
-* Contact Form 7 - All triggers - Form submissions no longer run recipes for rejected submissions, including spam, missing consent, and failed payments. #9261
-* Core - Prevented fatal errors when Action Scheduler is unavailable or a scheduled job is missing. #9030
-* Emails - Send an email - Send errors are now reported instead of being marked as successfully sent. #9279
-* Emails - Send an email - Emails blocked by User Lists now retain the reason for failure. #9281
-* Multisite - Prevented cached Automator options from being shared between sites when switching between them. #9267
-* One-off Actions - Custom dropdown values saved in recipes now work correctly when running actions individually. #9275
-* Recipe - Previously enabled triggers and actions now retain their active status when restoring recipes from the trash. #9271
-* Recipe Builder - Chained fields no longer remain stuck loading after a failed request and can be retried without reopening the editor. #9292
-* Recipe Caches - Prevented unnecessary cache rebuilding when unrelated posts are updated. #9265
-* Recipe Deletion - Permanently deleting a recipe now also removes its associated triggers and actions. #9269
-* Recipe Import - Invalid bulk import files no longer leave partially imported recipes. #9268
-* Recipe Post Type - Recipes are no longer accessible on the frontend. #9270
-* Recipe Runs - Trigger errors no longer leave recipe runs open. #9281
-* Redirect - Redirect to a URL - Other recipes now complete before the redirect occurs. #9256
-* Redirect - Redirect to a URL - Redirects now work after Contact Form 7 submissions. #9248
-* Tokens - Post tag tokens now return tags from the correct post. #9280
-* Tokens - Resolved errors when parsing child, nested, and list tokens. #9280
-* Webhooks - Send data to a webhook - Authentication credentials are now hidden in REST and MCP log responses. #9291
+* App Platform - Fixed an incorrect site copy notice appearing after restoring a site from a backup. #9646
+* Automator MCP - Database Access - Enhanced protection of sensitive credentials and restricted data. #9704
+* Automator MCP - Database Access - Fixed an issue where certain database queries could bypass configured redaction rules. #9697
+* Automator MCP - Database Access - Improved query accuracy, table pagination and retrieval of large values. #9705
+* Automator MCP - Media Uploads - Improved upload guidance and removed unsupported methods. #9707
+* Automator MCP - REST API - Improved request validation and restricted access to potentially destructive operations. #9706
+* Automator MCP - Site Connections - Improved handling of temporary license verification failures and previously connected sites. #9708
+* Core - Deleting a recipe now correctly removes its associated schema metadata. #9607
+* File Uploads - Fixed Media Library file uploads failing on sites using a CDN or proxy that compresses files, such as Cloudflare. #9709
+* FluentCRM - Add or update a contact - Fixed field values and Update settings being lost when field labels change. #9654
+* Google Sheets, Asana and GitHub - Fixed settings links in field descriptions not being clickable in the recipe builder. #9710
+* Recipe Builder - Corrected license restriction messages to clarify that existing live recipes continue running license-locked items. #9394
+* Recipe Builder - Fixed an issue where saved values in repeater fields with on/off settings disappeared when reopening an action. #9649
+* Recipe Logs - Action details now display output tokens returned by app actions, alongside their input values. #9640
+* Telegram - Connection - Fixed an issue preventing users from disconnecting and reconnecting with a new bot token when the existing token is invalid. #8904
+* WPForms - Name field tokens now correctly display First name and Last name when no name format is specified. #9596
 
 **Under the hood:**
 
-* Admin - Updated Action Scheduler to 3.9.3.
-* Admin - Centralized notices and added recipe notices to the builder.
-* Agent Readers - Excluded posts, users, and terms no longer appear in results when include lists are also specified. #9282
-* API Logs - Sensitive credentials are now redacted before requests are logged. #8802
-* App Connections - Added secure connections through the Automator App Platform, with staging support and reliable event delivery. #7821 #8849
-* Background App Actions - Added asynchronous processing for supported Dropbox and Instagram actions. #7295
-* Core - Prevented unnecessary recipe loading from specially crafted URLs. #8801
-* Fields - Improved compatibility with custom fields added through the `automator_options_callback_response` filter. #9283
-* Integration Loader - Prevented cached file paths from another installation from being used after site migrations or plugin copies. #9293
-* Logs - Failed actions now record the correct error type regardless of message language. #8806
-* MCP - Catalog lists now return usable item identifiers and include all available triggers instead of limiting results to three. #9273
-* MCP Search - Valid actions with "Delete...from..." in their descriptions now appear in search results. #9274
-* Recipe Builder - Added block deletion options and loopable token filtering. #9146
-* Recipe Builder - Added testing for individual triggers and actions.
-* Recipe Logs - Trigger and action sentences now reflect the settings used during the run. #9243
-* Recipe Runs - Added automatic recovery for interrupted runs and editing locks for active recipes. #7049
-* Redirect - Added a Redirect integration to replace closures, with automatic migration.
+* Core - Bug fixes and improvements. #9439 #9628 #9674 #9676 #9678
+* Logs - Failed action dialog header, list view by default, and how long ago a run finished. #9699
 
 [View the full changelog.](https://automatorplugin.com/plugin-changelog/uncanny-automator/?utm_source=wp-repo&utm_medium=readme&utm_content=view-full-changelog)
 

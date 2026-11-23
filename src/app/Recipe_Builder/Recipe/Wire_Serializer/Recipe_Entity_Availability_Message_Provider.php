@@ -15,7 +15,8 @@ use Uncanny_Automator\App\Recipe_Builder\Block\Enums\Block_Type;
  * via `set_dependency_description()`) and `get_cta()` for the upgrade link. The
  * only recipe-builder-owned copy is the runtime framing: what the runner does
  * with a node of that kind when the code that runs it is missing (see
- * `framing()`). No `scenario_id` string-matching. The description may span
+ * `framing()`), or that live recipes still run it when only Pro's license
+ * falls short (see `runs_anyway()`). The description may span
  * paragraphs and lists, so the framing and the link always start a paragraph
  * of their own.
  */
@@ -34,7 +35,7 @@ final class Recipe_Entity_Availability_Message_Provider {
 	 * @return string
 	 */
 	public function hidden( string $sentence, string $entity_type ): string {
-		return '' !== trim( $sentence ) ? trim( $sentence ) : $this->message( null, $entity_type );
+		return '' !== trim( $sentence ) ? trim( $sentence ) : $this->message( array(), $entity_type );
 	}
 
 	/**
@@ -42,14 +43,18 @@ final class Recipe_Entity_Availability_Message_Provider {
 	 * dependency's own description, the runtime framing, and the upgrade CTA link.
 	 *
 	 * @since 8.0.0 The framing says what the run does with the node's kind.
+	 * @since 8.1.0 Takes every unmet dependency, so the framing is decided from all of them.
 	 *
-	 * @param Dependency|null $blocking    First unmet dependency, or null if unresolved.
-	 * @param string          $entity_type item_type / block_type / block_modifier_type.
+	 * @param Dependency[] $unmet       The node's unmet dependencies, the blocking one first; none if unresolved.
+	 * @param string       $entity_type item_type / block_type / block_modifier_type.
+	 * @param bool         $never_runs  Whether the node does not run whatever the license says: an item whose own stored
+	 *                                  requirements are not met, or an app's node on a site with no license key to send.
 	 * @return string Composed markdown message: the description's paragraphs, then the framing and link as the last paragraph.
 	 */
-	public function message( ?Dependency $blocking, string $entity_type ): string {
-		$reason  = null !== $blocking ? trim( $blocking->get_description() ) : '';
-		$framing = $this->framing( $entity_type );
+	public function message( array $unmet, string $entity_type, bool $never_runs = false ): string {
+		$blocking = $unmet[0] ?? null;
+		$reason   = null !== $blocking ? trim( $blocking->get_description() ) : '';
+		$framing  = $this->runs_anyway( $unmet, $never_runs ) ? $this->live_framing( $entity_type ) : $this->framing( $entity_type );
 
 		if ( null !== $blocking ) {
 			$cta = $blocking->get_cta();
@@ -101,6 +106,76 @@ final class Recipe_Entity_Availability_Message_Provider {
 		return sprintf(
 			// translators: %s is the node kind (trigger / item).
 			esc_html_x( 'This %s is ignored when the recipe runs.', 'Recipe node availability', 'uncanny-automator' ),
+			$this->noun( $entity_type )
+		);
+	}
+
+	/**
+	 * Whether the node still runs although its dependencies aren't met: Pro is installed and active,
+	 * and only its license or plan falls short (the `license-requires-pro-installed-license-*`
+	 * scenarios). The node's code is loaded and nothing on the run path reads the license, so
+	 * recipes that are already live keep running it. Any other unmet dependency (Pro or a
+	 * plugin missing, app credits, an app account) means the node really doesn't run. So does a
+	 * node the caller marks as never running: an item whose own stored requirements are not met
+	 * is not registered, and an app's request is refused before it is sent on a site with no
+	 * license key.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param Dependency[] $unmet      The node's unmet dependencies.
+	 * @param bool         $never_runs Whether the node does not run whatever the license says: an item whose own stored
+	 *                                 requirements are not met, or an app's node on a site with no license key to send.
+	 * @return bool
+	 */
+	private function runs_anyway( array $unmet, bool $never_runs ): bool {
+		$license_only = array_filter(
+			$unmet,
+			static function ( Dependency $dependency ): bool {
+				return 'license' === $dependency->get_type()
+					&& 0 === strpos( (string) $dependency->get_scenario_id(), 'license-requires-pro-installed-license-' );
+			}
+		);
+
+		return ! $never_runs && 0 < count( $unmet ) && count( $license_only ) === count( $unmet );
+	}
+
+	/**
+	 * What recipes that are already live still do with a node only the license locks, in one
+	 * sentence.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $entity_type item_type / block_type / block_modifier_type.
+	 * @return string The translated sentence.
+	 */
+	private function live_framing( string $entity_type ): string {
+		if ( Block_Type::is_valid( $entity_type ) ) {
+			return sprintf(
+				// translators: %s is the block kind (loop / filter / queue).
+				esc_html_x( 'Recipes that are already live still run this %s.', 'Recipe node availability', 'uncanny-automator' ),
+				$this->noun( $entity_type )
+			);
+		}
+
+		if ( Integration_Item_Types::ACTION === $entity_type ) {
+			return esc_html_x( 'Recipes that are already live still run this action.', 'Recipe node availability', 'uncanny-automator' );
+		}
+
+		if ( Integration_Item_Types::TRIGGER === $entity_type ) {
+			return esc_html_x( 'Recipes that are already live still start from this trigger.', 'Recipe node availability', 'uncanny-automator' );
+		}
+
+		if ( Block_Modifier_Types::FILTER_CONDITION === $entity_type ) {
+			return esc_html_x( 'Recipes that are already live still check this condition.', 'Recipe node availability', 'uncanny-automator' );
+		}
+
+		if ( Block_Modifier_Types::LOOP_FILTER === $entity_type ) {
+			return esc_html_x( 'Recipes that are already live still apply this loop filter.', 'Recipe node availability', 'uncanny-automator' );
+		}
+
+		return sprintf(
+			// translators: %s is the node kind (run-as setting / item).
+			esc_html_x( 'Recipes that are already live still use this %s.', 'Recipe node availability', 'uncanny-automator' ),
 			$this->noun( $entity_type )
 		);
 	}

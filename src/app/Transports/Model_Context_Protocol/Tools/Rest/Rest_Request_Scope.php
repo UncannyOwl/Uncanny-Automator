@@ -403,8 +403,19 @@ final class Rest_Request_Scope {
 			if ( is_wp_error( $response ) ) {
 				$response = rest_convert_error_to_response( $response );
 			}
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, applied as WordPress applies it.
-			$response = apply_filters( 'rest_post_dispatch', rest_ensure_response( $response ), $server, $request );
+			// Added here so it is the last thing to run before WordPress trims to _fields at priority 10.
+			$older_wordpress = ! method_exists( \WP_REST_Server::class, 'resolve_data_processing' );
+			if ( $older_wordpress ) {
+				add_filter( 'rest_post_dispatch', array( self::class, 'trim_what_older_wordpress_cannot' ), 9, 3 );
+			}
+			try {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, applied as WordPress applies it.
+				$response = apply_filters( 'rest_post_dispatch', rest_ensure_response( $response ), $server, $request );
+			} finally {
+				if ( $older_wordpress ) {
+					remove_filter( 'rest_post_dispatch', array( self::class, 'trim_what_older_wordpress_cannot' ), 9 );
+				}
+			}
 			if ( is_wp_error( $response ) ) {
 				return $response;
 			}
@@ -420,6 +431,44 @@ final class Rest_Request_Scope {
 			self::$active     = $parent;
 			wp_set_current_user( $previous_user );
 		}
+	}
+
+	/**
+	 * Give a response the _fields treatment WordPress 7.2 gives it, where an older WordPress would throw.
+	 *
+	 * Before 7.2, rest_filter_response_fields() throws when the data, or an item of
+	 * a list, is not an array, and by then the callback has run. WordPress 7.2 serves
+	 * such data as returned and still trims the items of a list that are arrays.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param mixed            $response The response so far.
+	 * @param \WP_REST_Server  $server   The REST server.
+	 * @param \WP_REST_Request $request  The request.
+	 * @return mixed
+	 */
+	public static function trim_what_older_wordpress_cannot( $response, $server, $request ) {
+		if ( ! $response instanceof \WP_REST_Response || ! isset( $request['_fields'] ) || $response->is_error() ) {
+			return $response;
+		}
+		$data = $response->get_data();
+		$list = is_array( $data ) && wp_is_numeric_array( $data );
+		if ( is_array( $data ) && ( ! $list || array_filter( $data, 'is_array' ) === $data ) ) {
+			// WordPress trims this itself.
+			return $response;
+		}
+		// Like core, only rebuild a numeric list when at least one field is requested.
+		if ( $list && wp_parse_list( $request['_fields'] ) ) {
+			foreach ( $data as $key => $item ) {
+				if ( is_array( $item ) ) {
+					$data[ $key ] = rest_filter_response_fields( new \WP_REST_Response( array( $item ) ), $server, $request )->get_data()[0];
+				}
+			}
+			$response->set_data( array_values( $data ) );
+		}
+		// Nothing is left for WordPress to trim.
+		unset( $request['_fields'] );
+		return $response;
 	}
 
 	/**

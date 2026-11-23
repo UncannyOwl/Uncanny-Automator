@@ -8,6 +8,8 @@
 
 namespace Uncanny_Automator\Integrations\Facebook_Lead_Ads;
 
+use Uncanny_Automator\App\Integration_Catalog\App_Events\App_Event_Data;
+use Uncanny_Automator\App\Integration_Catalog\App_Events\Value_Objects\App_Event_Summary;
 use Uncanny_Automator\App_Integrations\App_Event_Fanout;
 
 /**
@@ -85,6 +87,69 @@ final class Facebook_Lead_Ads_Event_Fanout extends App_Event_Fanout {
 	 */
 	protected function get_integration_slug(): string {
 		return 'facebook_lead_ads';
+	}
+
+	/**
+	 * The integration code Facebook Lead Ads' trigger carries.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return string
+	 */
+	public function get_integration_code(): string {
+		return 'FACEBOOK_LEAD_ADS';
+	}
+
+	/**
+	 * What a delivery says on the Logs page: its leads counted ("2 leads"),
+	 * and the form each came through ("Form 1234"), once per form. Any other
+	 * kind of event is counted as a change.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array<string, mixed> $data The vendor event's data block.
+	 *
+	 * @return App_Event_Summary
+	 */
+	public function summarize( array $data ): App_Event_Summary {
+
+		$events = App_Event_Data::events( $data );
+		$leads  = 0;
+		$forms  = array();
+
+		foreach ( $events as $event ) {
+			if ( 'leadgen' !== self::text( $event, 'event_type' ) ) {
+				continue;
+			}
+
+			++$leads;
+			$form_id = self::text( $event, 'form_id' );
+
+			if ( '' !== $form_id ) {
+				$forms[ $form_id ] = $form_id;
+			}
+		}
+
+		if ( 0 === $leads ) {
+			return App_Event_Data::summarize_changes( $data );
+		}
+
+		/* translators: %d: How many Facebook leads the delivery held. */
+		$parts  = array( sprintf( esc_html( _nx( '%d lead', '%d leads', $leads, 'App event summary', 'uncanny-automator' ) ), $leads ) );
+		$others = count( $events ) - $leads;
+
+		if ( $others > 0 ) {
+			$parts[] = App_Event_Data::changes_label( $others );
+		}
+
+		$items = array();
+
+		foreach ( $forms as $form_id ) {
+			/* translators: %s: A Facebook lead form's ID. */
+			$items[] = sprintf( esc_html_x( 'Form %s', 'App event summary', 'uncanny-automator' ), $form_id );
+		}
+
+		return new App_Event_Summary( implode( ', ', $parts ), count( $events ), $items );
 	}
 
 	/**

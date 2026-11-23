@@ -75,6 +75,21 @@ final class Log_Status_Registry {
 	}
 
 	/**
+	 * The legacy Automator_Status integers a wire code stands for: the
+	 * reverse of from_legacy_int(), for reading log rows by status.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $code Status code, e.g. 'completed'.
+	 *
+	 * @return int[] Empty for a code no log row stores (a loop or condition
+	 *               status, or an unknown code).
+	 */
+	public static function legacy_ints_for_code( string $code ): array {
+		return array_keys( self::legacy_int_map(), $code, true );
+	}
+
+	/**
 	 * Frozen Automator_Status int => wire code map (13 entries).
 	 *
 	 * @return array<int, string>

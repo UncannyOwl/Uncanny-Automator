@@ -18,6 +18,8 @@ use Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Discovery\Items
 use Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Discovery\Items\Filter_Condition_Discoverer;
 use Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Discovery\Items\Loop_Filter_Discoverer;
 use Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Store\Catalog_Build_Report;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Block_Modifier_Types;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
 use Uncanny_Automator\App\Plan\Services\Plugin\Plugin_Service;
 use Uncanny_Automator\App\Recipe_Builder\Action\Registry\WP_Action_Registry;
 use Uncanny_Automator\App\Recipe_Builder\Condition\Services\Condition_Registry_Service;
@@ -255,7 +257,12 @@ class Integration_Discovery_Service {
 	 * Covers the version (a release still invalidates), the registration
 	 * manifest (type, tier, name, links) and the sorted codes of the
 	 * integration's triggers, actions, conditions and loop filters, read the
-	 * way Integration_Map_Builder::build_registered_map() reads them.
+	 * way Integration_Map_Builder::build_registered_map() reads them: each
+	 * type's codes include the unavailable ones discovery lists
+	 * (Item_Availability_Provider::listed_unavailable_codes(), the same rule,
+	 * so a blocked trigger the trigger registry refuses is neither listed nor
+	 * counted). Such an item's entry is the same on either list, so one that
+	 * flips between registered and unavailable keeps the fingerprint.
 	 *
 	 * @param string $code Integration code
 	 *
@@ -271,16 +278,18 @@ class Integration_Discovery_Service {
 		$this->trigger_registry = $this->trigger_registry ?? new WP_Trigger_Registry();
 		$this->action_registry  = $this->action_registry ?? new WP_Action_Registry();
 
-		$triggers = array_keys( $this->trigger_registry->get_triggers_by_integration( $code ) );
-		$actions  = array_keys( $this->action_registry->get_actions_by_integration( $code ) );
+		$availability = Item_Availability_Provider::instance();
+		$triggers     = array_merge( array_keys( $this->trigger_registry->get_triggers_by_integration( $code ) ), $availability->listed_unavailable_codes( Integration_Item_Types::TRIGGER, (string) $code ) );
+		$actions      = array_merge( array_keys( $this->action_registry->get_actions_by_integration( $code ) ), $availability->listed_unavailable_codes( Integration_Item_Types::ACTION, (string) $code ) );
 
 		$conditions = array();
 		$result     = Condition_Registry_Service::instance()->list_conditions( array( 'integration' => $code ) );
 		if ( ! is_wp_error( $result ) && ! empty( $result['conditions'] ) ) {
 			$conditions = array_column( $result['conditions'], 'condition_code' );
 		}
+		$conditions = array_merge( $conditions, $availability->listed_unavailable_codes( Block_Modifier_Types::FILTER_CONDITION, (string) $code ) );
 
-		$loop_filters = array_keys( Filter_Registry_Service::instance()->get_filters_by_integration( $code ) );
+		$loop_filters = array_merge( array_keys( Filter_Registry_Service::instance()->get_filters_by_integration( $code ) ), $availability->listed_unavailable_codes( Block_Modifier_Types::LOOP_FILTER, (string) $code ) );
 
 		sort( $triggers );
 		sort( $actions );

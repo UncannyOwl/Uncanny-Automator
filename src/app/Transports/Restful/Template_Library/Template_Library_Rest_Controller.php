@@ -6,13 +6,14 @@ namespace Uncanny_Automator\App\Transports\Restful\Template_Library;
 use Uncanny_Automator\App\Transports\Restful\Template_Library\Routes\Get_Template_Preview_Route;
 use Uncanny_Automator\App\Transports\Restful\Template_Library\Routes\Get_Templates_Route;
 use Uncanny_Automator\App\Transports\Restful\Template_Library\Routes\Import_Template_Route;
+use Uncanny_Automator\App\Transports\Restful\Template_Library\Routes\Record_Template_Usage_Route;
 use Uncanny_Automator\App\Transports\Restful\Utilities\Rest_Arg;
 use Uncanny_Automator\App\Transports\Restful\Utilities\Traits\Restful_Permissions;
 
 /**
  * Template-library REST registration hub.
  *
- * Static-only. Owns the three `recipe-template/*` routes the new
+ * Static-only. Owns the four `recipe-template/*` routes the new
  * template-library frontend consumes. Route handlers are class-string
  * callables so they stay autoload-cold until WP dispatches a matching
  * request.
@@ -82,7 +83,7 @@ final class Template_Library_Rest_Controller {
 					'callback'            => array( Import_Template_Route::class, 'handle' ),
 					'permission_callback' => array( self::class, 'permissions_check' ),
 					/*
-					 * No `args` schema for `template_id` — intentionally.
+					 * No `args` schema for `template_id` or `recipe_id` — intentionally.
 					 * WP_REST_Server::dispatch() runs has_valid_params() /
 					 * sanitize_params() BEFORE permission_callback, so any
 					 * registered required flag, validate_callback, or
@@ -91,8 +92,22 @@ final class Template_Library_Rest_Controller {
 					 * 400 (WP's rest_invalid_param shape) instead of 403,
 					 * and absint would silently turn -5 into 5. Permission
 					 * runs first; Import_Template_Route::handle() then does
-					 * ALL template_id validation.
+					 * ALL validation of both.
 					 */
+				),
+			)
+		);
+
+		// POST /uap/v2/recipe-template/usage-event
+		register_rest_route(
+			self::NAMESPACE_ID,
+			'/' . self::REST_BASE . '/usage-event',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( Record_Template_Usage_Route::class, 'handle' ),
+					'permission_callback' => array( self::class, 'permissions_check' ),
+					// No `args` schema for `type` or `value`, for the same reason as import: permission runs first, the handler reads it.
 				),
 			)
 		);

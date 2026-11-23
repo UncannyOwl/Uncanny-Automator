@@ -6,7 +6,8 @@ namespace Uncanny_Automator\App\Recipe_Runner\Services;
 use Uncanny_Automator\App\Bridge\Automator_Trigger_Definition_Bridge;
 use Uncanny_Automator\App\Bridge\Trigger_Definition_Bridge;
 use Uncanny_Automator\App\Infrastructure\License\License_Manager;
-use Uncanny_Automator\App\Integration_Catalog\Services\Hidden_Items;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
+use Uncanny_Automator\App\Integration_Catalog\Services\Item_Availability_Provider;
 
 use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
 
@@ -15,9 +16,8 @@ use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
  *
  * A trigger needs Pro when Pro is not active and no active plugin registers its code: Pro registers
  * every Pro trigger, including those in an integration Free also ships (WordPress, WooCommerce), so
- * with Pro inactive nothing listens for one. A trigger that hid itself through its own
- * `requirements_met()` is registered by Free under its integration and recorded in `Hidden_Items`,
- * so it is not counted here.
+ * with Pro inactive nothing listens for one. A trigger whose own requirements are not met is stored on
+ * the unavailable list under its integration instead of registering, so it is not counted here.
  *
  * @package Uncanny_Automator\App\Recipe_Runner\Services
  * @since   8.0.1
@@ -69,7 +69,7 @@ final class Trigger_Availability {
 			return false;
 		}
 
-		return null === Hidden_Items::reason( $integration, 'trigger', $code );
+		return null === Item_Availability_Provider::instance()->unavailable_definition( Integration_Item_Types::TRIGGER, $integration, $code );
 	}
 
 	/**

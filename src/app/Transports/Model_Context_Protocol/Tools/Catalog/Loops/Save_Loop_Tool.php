@@ -108,7 +108,7 @@ class Save_Loop_Tool extends Abstract_Loop_Tool {
 				'loopable_token' => $loopable_token_schema,
 				'fields'         => array(
 					'type'                 => 'object',
-					'description'          => 'Stored iterable-expression fields; normally omit. User and post selection is configured through save_loop_filter, or the discovered automator/save-loop-filter operation, not this object. user_ids, user_roles, post_type and post_status here do not select items. For token loops, pass loopable_token; the tool builds the TOKEN field automatically.',
+					'description'          => 'Stored iterable-expression fields. Usually omit this object. Configure user and post selection with automator/save-loop-filter. For token loops, pass loopable_token to build the TOKEN field automatically.',
 					'additionalProperties' => true,
 				),
 			),

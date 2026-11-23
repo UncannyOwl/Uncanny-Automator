@@ -14,10 +14,12 @@ namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Catalog;
 
 use Uncanny_Automator\App\Recipe_Builder\Shared\User\Value_Objects\User_Context;
 use Uncanny_Automator\App\Infrastructure\Search\Services\Search_Service;
+use Uncanny_Automator\App\Transports\Abilities\Automator_Abilities;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Json_Rpc_Response;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abilities\Ability_Catalog;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abstract_MCP_Tool;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Action_Availability_Policy;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Rest\Rest_Request_Scope;
 
 /**
  * Consolidated discovery tool.
@@ -81,7 +83,7 @@ class Search_Tool extends Abstract_MCP_Tool {
 			. '"list" returns a deterministic catalog for the given type. Integration-filtered hosted catalogs contain at most 100 candidates; catalog_may_be_truncated warns when the upstream limit is reached. '
 			. 'For loop_filter with mode=list, pass loop_id to get filters specific to that loop\'s type. '
 			. 'Type "ability" lists the WordPress abilities the site owner switched on for AI apps (e.g. from WooCommerce); run one with run_ability. '
-			. 'After finding a component, call get_component_schema to inspect its fields.';
+			. 'Inspect the component schema before configuring a trigger, action, condition or loop filter.';
 	}
 
 	/**
@@ -205,10 +207,14 @@ class Search_Tool extends Abstract_MCP_Tool {
 			$kept                    = $this->availability->filter_action_items( $result['data']['items'], $user_context );
 			$result['data']['items'] = array_values( array_slice( $kept, $offset, $limit ) );
 			$result['data']['total'] = count( $kept );
-			$result['message']       = sprintf( 'Found %d action(s). Use get_component_schema to inspect fields before configuring.', count( $result['data']['items'] ) );
+			$result['message']       = sprintf( 'Found %d action(s).', count( $result['data']['items'] ) );
 		}
 
-		return Json_Rpc_Response::create_success_response( $result['message'] ?? 'Search complete', $result['data'] ?? $result );
+		$message = $result['message'] ?? 'Search complete.';
+		if ( ! empty( $result['data']['items'] ) && in_array( $type, array( 'trigger', 'action', 'condition', 'loop_filter' ), true ) ) {
+			$message .= sprintf( ' Use %s to inspect fields before configuring.', self::component_schema_lookup() );
+		}
+		return Json_Rpc_Response::create_success_response( $message, $result['data'] ?? $result );
 	}
 
 	/**
@@ -246,11 +252,21 @@ class Search_Tool extends Abstract_MCP_Tool {
 		}
 
 		$off     = count( array_filter( $found['items'], static fn( array $item ): bool => false === ( $item['availability']['available'] ?? true ) ) );
-		$message = sprintf( 'Found %d ability(ies). Use get_component_schema (component_type "ability") for the arguments, then run_ability.', count( $found['items'] ) );
+		$message = sprintf( 'Found %d ability(ies). Use %s with component_type "ability" to inspect arguments, then run_ability.', count( $found['items'] ), self::component_schema_lookup() );
 		if ( $off > 0 ) {
 			$message .= sprintf( ' %d of them are off and controlled by their plugin; each one\'s availability says which plugin.', $off );
 		}
 
 		return Json_Rpc_Response::create_success_response( $message, $data );
+	}
+
+	/** Point to the schema lookup listed by the active operation catalog. */
+	private static function component_schema_lookup(): string {
+		if ( Automator_Abilities::has_native_operation( 'get_component_schema' ) ) {
+			return 'the automator/get-component-schema ability';
+		}
+		return Rest_Request_Scope::is_active()
+			? 'an available component schema reader from REST discovery'
+			: 'the get_component_schema tool';
 	}
 }

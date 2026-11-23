@@ -29,6 +29,17 @@ trait Information_Schema_Query {
 	/** @var bool|null Whether the server reported a valid table-name mode. */
 	private ?bool $known_table_name_mode = null;
 
+	/** @since 8.1.0 */
+	private function is_non_numeric_string( $value ): bool {
+		// Do not trim NUL bytes or accept text that MySQL would silently truncate.
+		return is_string( $value ) && ! is_numeric( trim( $value, " \t\r\n\f\v" ) );
+	}
+
+	/** @since 8.1.0 */
+	private function is_numeric_column_type( string $data_type ): bool {
+		return in_array( strtolower( $data_type ), array( 'bit', 'tinyint', 'smallint', 'mediumint', 'int', 'integer', 'bigint', 'decimal', 'numeric', 'float', 'double', 'real', 'year' ), true );
+	}
+
 	/**
 	 * Resolve the schema (database) name that holds the WordPress tables.
 	 *

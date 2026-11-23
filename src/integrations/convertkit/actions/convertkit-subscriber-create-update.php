@@ -11,6 +11,7 @@ namespace Uncanny_Automator\Integrations\ConvertKit;
 class CONVERTKIT_SUBSCRIBER_CREATE_UPDATE extends \Uncanny_Automator\Recipe\App_Action {
 
 	use ConvertKit_Subscriber_Tokens_Trait;
+	use ConvertKit_Setup_Requirements;
 
 	/**
 	 * Setup Action.
@@ -33,15 +34,6 @@ class CONVERTKIT_SUBSCRIBER_CREATE_UPDATE extends \Uncanny_Automator\Recipe\App_
 				$this->get_action_meta()
 			)
 		);
-	}
-
-	/**
-	 * Requires OAuth (v4) connection.
-	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return ! $this->helpers->is_v3();
 	}
 
 	/**

@@ -5,6 +5,9 @@ namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Template_Library;
 
 use Uncanny_Automator\App\Infrastructure\Template_Library\Template_Library_Client;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Portability\Legacy_Export_Adapter;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Recipe_Entity_Availability_Decorator;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Recipe_Entity_Token_Decorator;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Recipe_Entity_Token_Resolver;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Recipe_Wire_Serializer;
 use Uncanny_Automator\App\Recipe_Builder\Token\Services\Reference_Rewriter;
 use WP_Error;
@@ -14,13 +17,17 @@ use WP_Error;
  * for the read-only preview.
  *
  * No local post exists: the canonical tree from the export gets the
- * template id injected as `recipe_id`, is serialized through the same
+ * negated template id as `recipe_id` (preview_recipe_id()), is serialized through the same
  * Recipe_Wire_Serializer the builder uses, and is then normalized for
  * preview (`can_edit` forced false; the trash URL — which
  * get_delete_post_link() cannot build without a post — replaced with the
- * all-recipes URL so the FE's z.url() validation passes). The
- * transformed payload is transient-cached per template id with the same
- * TTL policy as the feed.
+ * all-recipes URL so the FE's z.url() validation passes). Every node is
+ * serialized as usable (Template_Preview_Availability_Resolver): the
+ * preview shows what the template does, and the requirements sidebar
+ * shows what this site lacks. Token rows read each item's meta from the
+ * template (Template_Preview_Item_Meta_Bridge), never from the site's post
+ * that shares the item's id. Nothing is cached here: the export is read
+ * on every request. Only the feed is cached, by Template_Library_Client.
  */
 final class Template_Preview_Service {
 
@@ -30,14 +37,6 @@ final class Template_Preview_Service {
 	 * @var string
 	 */
 	const ITEM_ID_PLACEHOLDER = '{{ID}}';
-
-	/**
-	 * Transient key prefix; the client's LIBRARY_VERSION rides in the key
-	 * so a version bump invalidates cached previews with the feed.
-	 *
-	 * @var string
-	 */
-	const TRANSIENT_PREFIX = 'automator_template_library_preview_v';
 
 	/**
 	 * Shared instance.
@@ -76,19 +75,15 @@ final class Template_Preview_Service {
 	}
 
 	/**
-	 * The read-only preview body: exactly `{ recipe: <wire> }`.
+	 * The read-only preview body: exactly `{ recipe: <wire> }`, built from the
+	 * current export on every request.
+	 *
+	 * @since 8.1.0 No longer cached, and every node reads as usable.
 	 *
 	 * @param int $template_id Upstream template id.
 	 * @return array{recipe: array<string,mixed>}|WP_Error
 	 */
 	public function get_preview( int $template_id ) {
-		$key = $this->transient_key( $template_id );
-
-		$cached = get_transient( $key );
-		if ( is_array( $cached ) ) {
-			return $cached;
-		}
-
 		$export = $this->client->get_template_export( $template_id );
 		if ( is_wp_error( $export ) ) {
 			return $export;
@@ -100,9 +95,9 @@ final class Template_Preview_Service {
 		}
 
 		$tree              = $this->with_item_id_placeholders( $tree );
-		$tree['recipe_id'] = $template_id;
+		$tree['recipe_id'] = self::preview_recipe_id( $template_id );
 
-		$wire = Recipe_Wire_Serializer::instance()->serialize( $tree );
+		$wire = $this->serializer_for( $tree )->serialize( $tree );
 
 		$wire['can_edit'] = false;
 		if ( empty( $wire['miscellaneous']['url_trash_recipe'] ) ) {
@@ -111,21 +106,52 @@ final class Template_Preview_Service {
 				: admin_url( 'edit.php?post_type=uo-recipe' );
 		}
 
-		$body = array( 'recipe' => $wire );
-
-		set_transient( $key, $body, Template_Library_Client::CACHE_TTL );
-
-		return $body;
+		return array( 'recipe' => $wire );
 	}
 
 	/**
-	 * Transient key for one template's transformed preview payload.
+	 * The `recipe_id` a template's preview carries: the template id negated.
+	 *
+	 * A preview has no post on this site. A positive id could be a real recipe
+	 * here: the serializer would read that recipe's runs, state flags, dates,
+	 * URLs and token data into the preview, and the builder's token pills and
+	 * loop, filter and delay blocks would fetch it (`GET uap/v2/recipe/{id}`).
+	 * A post id is never negative,
+	 * so every per-recipe lookup finds nothing, as for a recipe that doesn't
+	 * exist, and the FE keeps the preview in its recipe cache under an id no
+	 * real recipe has.
 	 *
 	 * @param int $template_id Upstream template id.
-	 * @return string
+	 * @return int
+	 *
+	 * @since 8.1.0
 	 */
-	public function transient_key( int $template_id ): string {
-		return self::TRANSIENT_PREFIX . Template_Library_Client::LIBRARY_VERSION . '_' . $template_id;
+	public static function preview_recipe_id( int $template_id ): int {
+		return -abs( $template_id );
+	}
+
+	/**
+	 * The serializer for one template's preview: every node reads as usable
+	 * (Template_Preview_Availability_Resolver), and token rows read each
+	 * item's meta from the template (Template_Preview_Item_Meta_Bridge),
+	 * never from the site's post with the same id.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array<string,mixed> $tree Canonical recipe tree of the template.
+	 * @return Recipe_Wire_Serializer
+	 */
+	private function serializer_for( array $tree ): Recipe_Wire_Serializer {
+		return new Recipe_Wire_Serializer(
+			null,
+			null,
+			null,
+			null,
+			new Recipe_Entity_Availability_Decorator( new Template_Preview_Availability_Resolver() ),
+			new Recipe_Entity_Token_Decorator(
+				new Recipe_Entity_Token_Resolver( null, null, new Template_Preview_Item_Meta_Bridge( $tree ) )
+			)
+		);
 	}
 
 	/**

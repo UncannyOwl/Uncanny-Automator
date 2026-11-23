@@ -52,6 +52,7 @@ function automator_uninstall_tables() {
 		'uap_async_jobs',
 		'uap_connections',
 		'uap_platform_inbox',
+		'uap_platform_inbox_runs',
 		// Pro tables.
 		'uap_loop_entries',
 		'uap_loop_entries_items',

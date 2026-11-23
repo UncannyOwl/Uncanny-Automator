@@ -10,6 +10,7 @@
 
 namespace Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Discovery\Items;
 
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
 use Uncanny_Automator\App\Recipe_Builder\Trigger\Services\Trigger_Registry_Service;
 
 /**
@@ -36,7 +37,7 @@ class Trigger_Discoverer extends Integration_Item_Discoverer {
 	}
 
 	/**
-	 * Discover triggers for integration.
+	 * Discover triggers for integration: the registered ones, then the unavailable ones the catalog lists.
 	 *
 	 * @param string $code Integration code
 	 * @param string $name Integration name
@@ -61,6 +62,8 @@ class Trigger_Discoverer extends Integration_Item_Discoverer {
 			$trigger['trigger_code'] = $trigger['trigger_code'] ?? $trigger_key;
 			$triggers[]              = $this->normalize_item( $trigger, 'trigger' );
 		}
+
+		$triggers = array_merge( $triggers, $this->discover_unavailable( Integration_Item_Types::TRIGGER, $code ) );
 
 		return $triggers;
 	}
@@ -170,6 +173,6 @@ class Trigger_Discoverer extends Integration_Item_Discoverer {
 	 * @return string Raw fallback description
 	 */
 	protected function get_fallback_description_raw( array $item ): string {
-		return $item['select_option_name'] ?? '';
+		return $item['sentence_human_readable'] ?? '';
 	}
 }

@@ -57,7 +57,7 @@ final class AgentPreviewController
                 return new \WP_Error('preview_page_not_owned', 'Use a Page Builder-owned page.', ['status' => 404]);
             }
             return new \WP_REST_Response($this->previews->create($pageId, $details->title(), $details->permalink()) + [
-                'read_only' => true,
+                'read_only' => false,
                 'live_page' => 'unchanged',
                 'notice' => 'Anyone with this link can view this fixed snapshot for 15 minutes. A new link replaces the old link. This standalone preview includes enabled JavaScript, but does not test theme chrome, server forms, or network requests. Check the static rendering report for omitted bindings. Source edits need a new preview. Publishing still requires a human.',
             ], 200, ['Cache-Control' => 'private, no-store']);

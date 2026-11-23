@@ -10,6 +10,7 @@
 
 namespace Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Discovery\Items;
 
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Block_Modifier_Types;
 use Uncanny_Automator\App\Recipe_Builder\Condition\Services\Condition_Registry_Service;
 
 /**
@@ -36,7 +37,7 @@ class Filter_Condition_Discoverer extends Integration_Item_Discoverer {
 	}
 
 	/**
-	 * Discover conditions for integration.
+	 * Discover conditions for integration: the registered ones, then the unavailable ones the catalog lists.
 	 *
 	 * @param string $code Integration code
 	 *
@@ -58,6 +59,8 @@ class Filter_Condition_Discoverer extends Integration_Item_Discoverer {
 		foreach ( $integration_conditions as $condition ) {
 			$conditions[] = $this->normalize_item( $condition, 'filter_condition' );
 		}
+
+		$conditions = array_merge( $conditions, $this->discover_unavailable( Block_Modifier_Types::FILTER_CONDITION, $code ) );
 
 		return $conditions;
 	}

@@ -180,14 +180,16 @@ $render_operations = static function ( array $tools, bool $abilities = false ) u
 						<div class="automator-mcp-tool-technical-note uap-spacing-bottom--small">
 							<?php echo esc_html_x( 'Names and descriptions used by AI apps.', 'MCP technical details explanation', 'uncanny-automator' ); ?>
 						</div>
-						<div class="automator-mcp-tool-name uap-spacing-bottom--small">
-							<strong><?php echo $abilities ? esc_html_x( 'Ability name', 'MCP registered ability name label', 'uncanny-automator' ) : esc_html_x( 'MCP tool name', 'MCP registered tool name label', 'uncanny-automator' ); ?>:</strong>
-							<span dir="ltr"><?php echo esc_html( $tool['public_name'] ); ?></span>
-						</div>
-						<div class="automator-mcp-tool-description">
-							<strong><?php echo esc_html_x( 'Instructions for the AI app', 'MCP registered tool description label', 'uncanny-automator' ); ?>:</strong>
-							<span><?php echo esc_html( $tool['description'] ); ?></span>
-						</div>
+						<?php foreach ( $tool['ai_tools'] as $ai_tool ) { ?>
+							<div class="automator-mcp-tool-name uap-spacing-bottom--small">
+								<strong><?php echo $abilities ? esc_html_x( 'Ability name', 'MCP registered ability name label', 'uncanny-automator' ) : esc_html_x( 'MCP tool name', 'MCP registered tool name label', 'uncanny-automator' ); ?>:</strong>
+								<span dir="ltr"><?php echo esc_html( $ai_tool['name'] ); ?></span>
+							</div>
+							<div class="automator-mcp-tool-description uap-spacing-bottom--small">
+								<strong><?php echo esc_html_x( 'Instructions for the AI app', 'MCP registered tool description label', 'uncanny-automator' ); ?>:</strong>
+								<span><?php echo esc_html( $ai_tool['description'] ); ?></span>
+							</div>
+						<?php } ?>
 					</div>
 
 					<div class="automator-mcp-tool-detail-heading uap-spacing-bottom--small">

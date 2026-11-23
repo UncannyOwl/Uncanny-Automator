@@ -127,6 +127,16 @@ class Integration_Item {
 	private array $unsupported_block_ancestors;
 
 	/**
+	 * The requirements the registration pass stored with the item, attached while the store builds; null when it
+	 * stored none (an item not on this site). Backend-only: it never goes into to_array() or to_rest().
+	 *
+	 * @since 8.1.0
+	 *
+	 * @var array|null
+	 */
+	private ?array $requirements;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array $item Item data.
@@ -138,6 +148,7 @@ class Integration_Item {
 	 *  @property string $required_tier Item required tier.
 	 *  @property bool $requires_user_data Item requires user data.
 	 *  @property string|null $url_support Item support URL.
+	 *  @property array|null $requirements The stored requirements, when the item has them.
 	 *
 	 * @return void
 	 * @throws InvalidArgumentException If invalid item.
@@ -160,6 +171,18 @@ class Integration_Item {
 
 		$this->required_block_ancestors    = $this->build_rules( $item['required_block_ancestors'] ?? array() );
 		$this->unsupported_block_ancestors = $this->build_rules( $item['unsupported_block_ancestors'] ?? array() );
+		$this->requirements                = is_array( $item['requirements'] ?? null ) ? $item['requirements'] : null;
+	}
+
+	/**
+	 * The requirements the registration pass stored with the item.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return array|null Null when the item stored none.
+	 */
+	public function get_requirements(): ?array {
+		return $this->requirements;
 	}
 
 	/**

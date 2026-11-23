@@ -714,9 +714,12 @@ final class Integrations_Webhook_Controller implements Durable_Webhook_Handler, 
 			0,
 			$event_id,
 			array(
-				'integration' => $integration,
-				'data'        => $data,
-				'event_name'  => $event_name,
+				'integration'   => $integration,
+				'data'          => $data,
+				'event_name'    => $event_name,
+				// The account the event came from, for the Logs page's App
+				// triggers tab. Dropbox fan-outs carry it only at the top level.
+				'connection_id' => (string) ( $data['connection_id'] ?? $envelope['connection_id'] ?? '' ),
 			),
 			$platform_received
 		);

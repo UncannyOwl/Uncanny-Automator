@@ -185,6 +185,21 @@ final class Ability_Catalog {
 	}
 
 	/**
+	 * Explain how the write gate treats an ability without a read-only declaration.
+	 *
+	 * @since 8.1.0
+	 * @param WP_Ability $ability The registered ability.
+	 * @return string|null An explanation when the effect is undeclared.
+	 */
+	public function undeclared_effect_message( WP_Ability $ability ): ?string {
+		$annotations = $ability->get_meta_item( 'annotations', array() );
+		if ( ( is_array( $annotations ) && is_bool( $annotations['readonly'] ?? null ) ) || $this->is_read_only( $ability ) ) {
+			return null;
+		}
+		return 'The provider did not declare whether this ability is read-only. It requires write access.';
+	}
+
+	/**
 	 * Abilities for the MCP search tool: the switched-on ones, ready to run, and
 	 * those their plugin keeps off for AI apps, marked off and naming the plugin
 	 * that controls them. Abilities the owner switched off stay out.
@@ -221,7 +236,7 @@ final class Ability_Catalog {
 					)
 					: array(
 						'available' => true,
-						'message'   => 'Ready to use.',
+						'message'   => $this->undeclared_effect_message( $ability ) ?? 'Ready to use.',
 						'blockers'  => array(),
 					);
 				$scored[]            = array( $score, $row );
@@ -261,7 +276,19 @@ final class Ability_Catalog {
 			return sprintf( 'The ability "%s" belongs to the WordPress MCP Adapter\'s own MCP server and cannot run here. Run the ability you need with run_ability directly.', $name );
 		}
 
-		if ( $ability instanceof WP_Ability && $this->is_plugin_off( $ability ) ) {
+		if ( Automator_Abilities::is_operation_name( strtolower( $name ) ) || ( ! $ability instanceof WP_Ability && 0 === stripos( $name, 'automator/' ) ) ) {
+			return 'Use REST discovery to find an available Automator operation at /wp-abilities/v1/abilities/automator/<name>/run, then use the method it lists.';
+		}
+
+		if ( ! $ability instanceof WP_Ability ) {
+			$lowercase = strtolower( $name );
+			if ( $lowercase !== $name && $this->find_enabled( $lowercase ) instanceof WP_Ability ) {
+				return sprintf( 'Ability names are case-sensitive. Use the exact name "%s".', $lowercase );
+			}
+			return sprintf( 'The ability "%s" was not found on this site. Search abilities by keyword, then use a name from the results exactly.', $name );
+		}
+
+		if ( $this->is_plugin_off( $ability ) ) {
 			return sprintf( 'The ability "%1$s" is off. %2$s', $name, $this->plugin_off_message( $this->provider_for( $ability )['name'] ) );
 		}
 

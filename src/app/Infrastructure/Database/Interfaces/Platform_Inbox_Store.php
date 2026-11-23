@@ -3,6 +3,8 @@ declare( strict_types=1 );
 
 namespace Uncanny_Automator\App\Infrastructure\Database\Interfaces;
 
+use Uncanny_Automator\App\Recipe_Logs\App_Events\Value_Objects\App_Event_Query;
+
 /**
  * Durable ingress inbox for platform callback batches.
  *
@@ -120,16 +122,22 @@ interface Platform_Inbox_Store {
 	public function buckets_with_pending( int $limit = 50 ): array;
 
 	/**
-	 * Drop every row older than the TTL regardless of status. This is the
-	 * ONLY path that removes rows, so the TTL is the audit-retention
-	 * window for completed and terminal-failed rows alike — not just a
-	 * dead-letter cleanup.
+	 * Drop every row older than its TTL regardless of status, with the runs
+	 * an app event linked. This is the ONLY path that removes rows, so the
+	 * TTL is the audit-retention window for completed and terminal-failed
+	 * rows alike — not just a dead-letter cleanup. An app event (a
+	 * `vendor_event` row) has a TTL of its own, since the Logs page's App
+	 * events tab lists them.
 	 *
-	 * @param int $ttl_seconds Age gate on received_at.
+	 * @since 8.0.0
+	 * @since 8.1.0 Takes an app event's TTL, and deletes its run links.
+	 *
+	 * @param int $ttl_seconds           Age gate on received_at for every row but an app event.
+	 * @param int $app_event_ttl_seconds Age gate on received_at for an app event.
 	 *
 	 * @return int Rows deleted.
 	 */
-	public function cleanup_expired( int $ttl_seconds ): int;
+	public function cleanup_expired( int $ttl_seconds, int $app_event_ttl_seconds ): int;
 
 	/**
 	 * Delete the processed rows of a recipe's runs, found through `uap_recipe_log`, so call it before the runs'
@@ -162,4 +170,94 @@ interface Platform_Inbox_Store {
 	 * @throws \Uncanny_Automator\App\Infrastructure\Exceptions\Store_Exception When the delete fails.
 	 */
 	public function delete_processed_for_run( int $recipe_log_id, int $max_attempts ): int;
+
+	/**
+	 * Link an app event to the runs it started while it was handled, in
+	 * `uap_platform_inbox_runs`. Adds to the runs an earlier attempt of the
+	 * same row linked; a run already linked stays linked once.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param int   $id             Inbox row ID.
+	 * @param int[] $recipe_log_ids Run IDs.
+	 *
+	 * @return void
+	 *
+	 * @throws \Uncanny_Automator\App\Infrastructure\Exceptions\Store_Exception When a link could not be written.
+	 */
+	public function add_started_runs( int $id, array $recipe_log_ids ): void;
+
+	/**
+	 * The runs each app event started that still exist: the first ones by
+	 * run ID, and how many there are in all.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param int[] $inbox_ids Inbox row IDs.
+	 * @param int   $limit     Most run IDs kept per event.
+	 *
+	 * @return array<int, array{run_ids: int[], total: int}> Per inbox row ID.
+	 */
+	public function find_started_runs( array $inbox_ids, int $limit ): array;
+
+	/**
+	 * One page of the app events the site received (`vendor_event` rows),
+	 * for the Logs page's App events tab.
+	 *
+	 * Each row: `ID`, `status`, `attempts`, `received_at` (Unix seconds),
+	 * `error_message` and `payload` (decoded: `integration`, `event_name`,
+	 * `data`, and `connection_id` on rows stored since <version>). The runs
+	 * an event started are read with {@see self::find_started_runs()}.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param App_Event_Query $query The read.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function find_app_events( App_Event_Query $query ): array;
+
+	/**
+	 * How many app events match the query across all pages.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param App_Event_Query $query The read.
+	 *
+	 * @return int
+	 */
+	public function count_app_events( App_Event_Query $query ): int;
+
+	/**
+	 * Fill the App events columns of app events stored before them, up to
+	 * $limit rows of each: `integration`, read from the payload, which has
+	 * always named the app first, and `search_text`, the event's values.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param int $limit Most rows filled.
+	 *
+	 * @return int Rows filled; fewer than $limit when none are left.
+	 *
+	 * @throws \Uncanny_Automator\App\Infrastructure\Exceptions\Store_Exception When the rows could not be filled.
+	 */
+	public function fill_app_event_columns( int $limit ): int;
+
+	/**
+	 * Whether the inbox holds any app event (a `vendor_event` row).
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return bool
+	 */
+	public function has_app_events(): bool;
+
+	/**
+	 * The integration slugs of the app events the inbox holds.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return string[]
+	 */
+	public function get_app_event_integrations(): array;
 }

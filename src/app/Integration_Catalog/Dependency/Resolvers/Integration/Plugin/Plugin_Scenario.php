@@ -196,6 +196,83 @@ class Plugin_Scenario extends Abstract_Scenario {
 	}
 
 	/**
+	 * Description for a plugin an item needs that is active below the item's minimum version.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $name        Plugin name.
+	 * @param string $min_version The minimum version the item needs.
+	 *
+	 * @return string Translated description
+	 */
+	public function get_outdated_description( string $name, string $min_version ): string {
+		return sprintf(
+			// translators: %1$s: Plugin name. %2$s: Minimum plugin version.
+			esc_attr__( 'Update %1$s to version %2$s or later.', 'uncanny-automator' ),
+			$name,
+			$min_version
+		);
+	}
+
+	/**
+	 * Call to action for a plugin below an item's minimum version: the WordPress updates screen.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $name Plugin name.
+	 *
+	 * @return Dependency_Cta
+	 */
+	public function create_update_cta( string $name ): Dependency_Cta {
+		return new Dependency_Cta(
+			array(
+				'type'  => 'link-external',
+				'label' => sprintf(
+					// translators: %s: Plugin name
+					esc_attr_x( 'Update %s', 'Dependency CTA', 'uncanny-automator' ),
+					esc_html( $name )
+				),
+				'url'   => admin_url( 'update-core.php' ),
+			)
+		);
+	}
+
+	/**
+	 * Description for a plugin an item needs that is active in a version the item's code cannot run against.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $name Plugin name.
+	 *
+	 * @return string Translated description
+	 */
+	public function get_unsupported_description( string $name ): string {
+		return sprintf(
+			// translators: %s: Plugin name
+			esc_attr__( "Automator doesn't support this version of %s yet.", 'uncanny-automator' ),
+			$name
+		);
+	}
+
+	/**
+	 * Call to action for a plugin version Automator does not support yet: the WordPress updates screen, where an
+	 * Automator update that supports it appears.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return Dependency_Cta
+	 */
+	public function create_check_updates_cta(): Dependency_Cta {
+		return new Dependency_Cta(
+			array(
+				'type'  => 'link-external',
+				'label' => esc_attr_x( 'Check for updates', 'Dependency CTA', 'uncanny-automator' ),
+				'url'   => admin_url( 'update-core.php' ),
+			)
+		);
+	}
+
+	/**
 	 * Get CTA configuration array.
 	 *
 	 * @param string $scenario_id Scenario ID (first argument)

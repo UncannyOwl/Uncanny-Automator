@@ -27,15 +27,6 @@ class Hs_Conversation_Customer_Reply_Received extends \Uncanny_Automator\Recipe\
 	const TRIGGER_META = 'HS_CONVERSATION_CUSTOMER_REPLY_RECEIVED_META';
 
 	/**
-	 * Check if trigger requirements are met
-	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return $this->webhooks->get_webhooks_enabled_status();
-	}
-
-	/**
 	 * Define and register the trigger by pushing it into the Automator object.
 	 *
 	 * @return void
@@ -49,6 +40,7 @@ class Hs_Conversation_Customer_Reply_Received extends \Uncanny_Automator\Recipe\
 		$this->set_is_login_required( false );
 		$this->set_trigger_type( 'anonymous' );
 		$this->set_uses_api( true );
+		$this->require_triggers_enabled();
 		$this->set_support_link( \Automator()->get_author_support_link( $this->get_trigger_code(), 'knowledge-base/helpscout/' ) );
 
 		$this->set_sentence(

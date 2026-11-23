@@ -13,18 +13,11 @@ use Uncanny_Automator\Recipe\App_Action;
  */
 class OPEN_AI_SENTIMENT_ANALYZE extends App_Action {
 
+	use OpenAI_Setup_Requirements;
+
 	const PROMPT = "Classify the sentiment of the following text as Positive, Neutral or Negative:\n{{content}}";
 
 	protected $model = 'gpt-4';
-
-	/**
-	 * GPT-4 gating - action only registers if user has GPT-4 access.
-	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return $this->helpers->has_gpt4_access();
-	}
 
 	/**
 	 * Setup Action.

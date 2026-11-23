@@ -57,7 +57,7 @@ final class Run_As_Availability_Resolver {
 
 		return array(
 			Wire_Key::STATUS  => Availability_Status::UNAVAILABLE,
-			Wire_Key::MESSAGE => $this->messages->message( $this->run_as->requirement(), 'run_as' ),
+			Wire_Key::MESSAGE => $this->messages->message( array( $this->run_as->requirement() ), 'run_as' ),
 		);
 	}
 }

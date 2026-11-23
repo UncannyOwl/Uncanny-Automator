@@ -23,7 +23,9 @@ namespace Uncanny_Automator\App\Infrastructure\Connections;
  *
  * Durable (one option): registration is asynchronous and the copy lifecycle
  * may finish on a later page load or cron tick, after the request that
- * recorded the answer. A record is replaced only when a new copy begins.
+ * recorded the answer. A record is replaced only when a new copy begins, and
+ * forgotten when the install is back at the source's address under the
+ * source's registration (a copy that never registered, restored there).
  *
  * @since 8.0.0
  */
@@ -122,7 +124,9 @@ final class Site_Copy_Record {
 	}
 
 	/**
-	 * Forget the record (a dev site's registration reset).
+	 * Forget the record: the install is the source site again
+	 * ({@see \Uncanny_Automator\App\Infrastructure\Automator_Platform\Registration\Copy_Registration::forget_if_back_at_source()}),
+	 * or a dev site's registration is reset.
 	 *
 	 * @return void
 	 */

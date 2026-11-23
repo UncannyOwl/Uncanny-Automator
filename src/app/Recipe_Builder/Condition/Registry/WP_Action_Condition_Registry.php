@@ -100,6 +100,33 @@ class WP_Action_Condition_Registry implements Action_Condition_Registry {
 	}
 
 	/**
+	 * A condition as the conditions list gives it, from its definition.
+	 *
+	 * Public so a condition whose requirements are not met reads in the same shape as a registered one.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $integration_code Integration code.
+	 * @param string $condition_code   Condition code.
+	 * @param array  $condition        The definition it registers, or would register.
+	 *
+	 * @return array
+	 */
+	public function to_listed_condition( string $integration_code, string $condition_code, array $condition ): array {
+		return array(
+			'integration_code' => $integration_code,
+			'integration_name' => $this->get_integration_name( $integration_code ),
+			'condition_code'   => $condition_code,
+			'name'             => $condition['name'] ?? '',
+			'dynamic_name'     => $condition['dynamic_name'] ?? '',
+			'is_pro'           => $condition['is_pro'] ?? true,
+			'requires_user'    => $condition['requires_user'] ?? false,
+			'deprecated'       => $condition['deprecated'] ?? false,
+			'manifest'         => $condition['manifest'] ?? array(),
+		);
+	}
+
+	/**
 	 * Check if a condition exists.
 	 *
 	 * @param string $integration_code Integration code.

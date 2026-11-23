@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Transports\Restful\Recipe\Routes;
 
+use Uncanny_Automator\App\Recipe_Logs\Status\Resend_Outcome_Status;
 use Uncanny_Automator\App\Transports\Restful\Utilities\Traits\Rest_Responses;
 use Uncanny_Automator\Resend_Action_Service;
 use WP_REST_Request;
@@ -24,6 +25,8 @@ use WP_REST_Request;
  * skipped — the body's `success` flag mirrors the service's `ok` and the
  * `outcome` string (`resent` | `failed` | `skipped`) carries the detail,
  * matching the service contract and the legacy delegator's semantics.
+ * `status` is the same outcome as a recipe-log status object, ready to
+ * show (`Resend_Outcome_Status`).
  */
 final class Resend_Action_Rest {
 
@@ -54,6 +57,7 @@ final class Resend_Action_Rest {
 				'outcome'    => $result['outcome'],
 				'message'    => $result['message'],
 				'api_log_id' => $result['api_log_id'],
+				'status'     => Resend_Outcome_Status::for_outcome( $result['outcome'] )->to_array(),
 			)
 		);
 	}

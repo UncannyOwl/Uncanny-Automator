@@ -3,6 +3,7 @@ declare( strict_types=1 );
 
 namespace Uncanny_Automator\App\Recipe_Runner\Services;
 
+use Uncanny_Automator\App\Events\Dispatcher;
 use Uncanny_Automator\App\Infrastructure\Database\Database;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Execution_Log_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Run_Snapshot_Store;
@@ -112,6 +113,9 @@ final class Replay_Service {
 		// 3. Build execution-ready result.
 		$result = new Pipeline_Result();
 		$result->set_execution_ready( $recipe_id, $user_id, $new_log_id, $args );
+
+		/** This action is documented in src/app/Recipe_Runner/Stages/Trigger_Complete_Stage.php */
+		Dispatcher::action( 'automator_recipe_run_started', $recipe_id, $user_id, $new_log_id, $result->get_execution_args() );
 
 		return $result;
 	}

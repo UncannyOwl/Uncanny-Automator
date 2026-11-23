@@ -9,6 +9,7 @@ use Uncanny_Automator\App\Recipe_Runner\Dtos\Pipeline_Result;
 use Uncanny_Automator\App\Recipe_Runner\Stages\Action_Run_Stage;
 use Uncanny_Automator\App\Recipe_Runner\Value_Objects\Execution_Context;
 use Uncanny_Automator\Automator_Status;
+use Uncanny_Automator\Logger\Tokens_Logger;
 
 /**
  * Runs one declared path of a block: the single primitive behind the initial walk, a delay
@@ -178,15 +179,22 @@ final class Block_Children_Runner {
 	 * @return void
 	 */
 	private function skip_untaken_paths( array $block_node, string $path_code, Execution_Context $context ): void {
+		$recipe_log_id = $context->get_recipe_log_id();
+		$token_place   = null;
 		foreach ( (array) ( $block_node['paths'] ?? array() ) as $path ) {
 			if ( (string) ( $path['path_code'] ?? '' ) === $path_code ) {
 				continue;
 			}
 			foreach ( Tree_Walk::action_ids( (array) ( $path['items'] ?? array() ) ) as $action_id ) {
-				if ( null === $context->action_log_id_for( $action_id ) ) {
+				$action_log_id = $context->action_log_id_for( $action_id );
+				if ( null === $action_log_id ) {
 					continue;
 				}
-				$this->log_store->mark_action_complete( $action_id, $context->get_recipe_log_id(), Automator_Status::SKIPPED );
+				if ( null === $this->log_store->get_action_meta_value( $action_log_id, Tokens_Logger::RECORD_META_KEY ) ) {
+					$token_place ??= $this->log_store->get_latest_tokens_record_id( $context->get_recipe_id(), $recipe_log_id, (int) ( $context->get_args()['run_number'] ?? 1 ) );
+					$this->log_store->add_action_meta( $context->get_user_id(), $action_log_id, $action_id, Tokens_Logger::RECORD_META_KEY, (string) $token_place );
+				}
+				$this->log_store->mark_action_complete_by_id( $action_log_id, Automator_Status::SKIPPED );
 			}
 		}
 	}

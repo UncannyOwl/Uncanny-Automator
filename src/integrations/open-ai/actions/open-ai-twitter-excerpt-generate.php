@@ -13,6 +13,8 @@ use Uncanny_Automator\Recipe\App_Action;
  */
 class OPEN_AI_TWITTER_EXCERPT_GENERATE extends App_Action {
 
+	use OpenAI_Setup_Requirements;
+
 	/**
 	 * Prompt for generating a single marketing tweet with hashtags.
 	 *
@@ -28,13 +30,6 @@ class OPEN_AI_TWITTER_EXCERPT_GENERATE extends App_Action {
 	const PROMPT_NO_HASHTAGS = "Generate a single marketing tweet without hashtags, that's less than 210 characters, with no more than 1 emoji and no links, as if you are the author of the content below, based on the following content:\n\n{{content}}";
 
 	protected $model = 'gpt-4';
-
-	/**
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return $this->helpers->has_gpt4_access();
-	}
 
 	/**
 	 * @return void

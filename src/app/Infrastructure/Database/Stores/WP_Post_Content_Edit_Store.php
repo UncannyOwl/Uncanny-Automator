@@ -65,7 +65,7 @@ final class WP_Post_Content_Edit_Store implements Post_Content_Edit_Store {
 			}
 			$finish = $nested ? 'RELEASE SAVEPOINT ' . $savepoint : 'COMMIT';
 			if ( false === $db->query( $finish ) ) {
-				return new \WP_Error( 'post_content_edit_unverified', 'The save could not be confirmed. Read the post before retrying.', array( 'status' => 503 ) );
+				return new \WP_Error( self::ERROR_UNVERIFIED, 'The save could not be confirmed. Read the post before retrying.', array( 'status' => 503 ) );
 			}
 			$complete = true;
 			return $result;
@@ -82,6 +82,6 @@ final class WP_Post_Content_Edit_Store implements Post_Content_Edit_Store {
 
 	/** Refuse a write when the adapter cannot guarantee the row lock. */
 	private function unavailable(): \WP_Error {
-		return new \WP_Error( 'post_content_edit_storage_unavailable', 'Content editing needs transactional WordPress posts storage. Nothing was saved.', array( 'status' => 503 ) );
+		return new \WP_Error( self::ERROR_STORAGE_UNAVAILABLE, 'Content editing needs transactional WordPress posts storage. Nothing was saved.', array( 'status' => 503 ) );
 	}
 }

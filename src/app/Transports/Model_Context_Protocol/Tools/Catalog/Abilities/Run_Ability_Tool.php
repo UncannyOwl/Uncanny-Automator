@@ -128,7 +128,8 @@ final class Run_Ability_Tool extends Abstract_MCP_Tool {
 			return Json_Rpc_Response::create_error_response( $this->catalog->refusal_for( $name ) );
 		}
 
-		if ( ! $user_context->can_write() && ! $this->catalog->is_read_only( $ability ) ) {
+		$read_only = $this->catalog->is_read_only( $ability );
+		if ( ! $user_context->can_write() && ! $read_only ) {
 			return Json_Rpc_Response::create_error_response( sprintf( 'The ability "%s" can make changes. This access token only allows reading.', $name ) );
 		}
 
@@ -160,7 +161,7 @@ final class Run_Ability_Tool extends Abstract_MCP_Tool {
 		}
 
 		if ( is_wp_error( $result ) ) {
-			return Json_Rpc_Response::create_wp_error_response( $result, $started, ! $started );
+			return Json_Rpc_Response::create_wp_error_response( $result, $started && ! $read_only, ! $started );
 		}
 
 		return Json_Rpc_Response::create_success_response(

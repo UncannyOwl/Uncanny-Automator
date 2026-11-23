@@ -64,6 +64,8 @@ final class SharedRestOperations implements SharedRestOperationRegistryInterface
                 if ($tool['name'] !== $operation['tool']) {
                     continue;
                 }
+                // The two patch previews calculate a result in memory.
+                // create_preview_link stores an expiring snapshot and replaces the previous link.
                 $readOnly = $method === 'GET' || in_array($tool['name'], ['preview_change', 'preview_runtime_change'], true);
                 $reviewedPolicy = [
                     'read_only' => $readOnly,

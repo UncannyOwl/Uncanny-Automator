@@ -14,6 +14,8 @@ use function Sugar_Calendar\AddOn\Ticketing\Common\Functions\add_ticket;
  */
 class Sugar_Calendar_Register_Attendee extends \Uncanny_Automator\Recipe\Action {
 
+	use Sugar_Calendar_Requirements;
+
 	/**
 	 * Setup action.
 	 *
@@ -44,14 +46,18 @@ class Sugar_Calendar_Register_Attendee extends \Uncanny_Automator\Recipe\Action 
 			),
 			$this->get_action_code()
 		);
+
+		$this->set_plugin_details( self::ticketing_plugin_details() );
 	}
 
 	/**
-	 * Check if the ticketing add-on is available.
+	 * Whether Sugar Calendar's ticketing functions are loaded: Sugar Calendar 3.1.0 or newer, or the Event Ticketing add-on.
 	 *
-	 * @return bool
+	 * @since 8.1.0
+	 *
+	 * @return bool|null True when the ticketing functions are loaded, false when they are not.
 	 */
-	public function requirements_met() {
+	protected function is_plugin_compatible(): ?bool {
 		return function_exists( 'Sugar_Calendar\\AddOn\\Ticketing\\Common\\Functions\\add_order' );
 	}
 

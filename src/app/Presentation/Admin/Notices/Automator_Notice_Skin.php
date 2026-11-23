@@ -254,7 +254,7 @@ final class Automator_Notice_Skin implements Notice_Skin {
 
 		if ( Notice_Action::POST === $action->kind() && $preview ) {
 			?>
-			<uas-button type="button" color="<?php echo esc_attr( $color ); ?>" size="<?php echo esc_attr( $size ); ?>">
+			<uas-button color="<?php echo esc_attr( $color ); ?>" size="<?php echo esc_attr( $size ); ?>">
 				<?php echo Notice_Html::text( $action->label() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Passed through wp_kses(). ?>
 			</uas-button>
 			<?php

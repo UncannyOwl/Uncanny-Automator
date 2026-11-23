@@ -113,7 +113,10 @@ class Wpf_Tokens {
 				}
 
 				if ( 'name' === $field['type'] ) {
-					if ( 'simple' === $field['format'] ) {
+					// WPForms treats a missing format as first-last (forms created programmatically can omit it).
+					$name_format = ! empty( $field['format'] ) ? $field['format'] : 'first-last';
+
+					if ( 'simple' === $name_format ) {
 						$fields[] = array(
 							'tokenId'         => $token_id . '|name',
 							'tokenName'       => $input_title,
@@ -121,7 +124,7 @@ class Wpf_Tokens {
 							'tokenIdentifier' => $trigger_meta,
 						);
 					} else {
-						$name_tokens = explode( '-', $field['format'] );
+						$name_tokens = explode( '-', $name_format );
 						$name_labels = array(
 							'first'  => esc_html_x( 'First name', 'WPForms', 'uncanny-automator' ),
 							'middle' => esc_html_x( 'Middle name', 'WPForms', 'uncanny-automator' ),

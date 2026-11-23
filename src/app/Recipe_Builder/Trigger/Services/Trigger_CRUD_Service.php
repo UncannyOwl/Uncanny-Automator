@@ -343,8 +343,30 @@ class Trigger_CRUD_Service {
 					return $trashed_error;
 				}
 
-				$saved_trigger_id = 0;
+				$saved_trigger_id    = 0;
+				$holds_type_decision = false;
 				try {
+					// A recipe's first trigger settles its type: an untyped draft takes the trigger's
+					// type, and a typed one is held to it. Hold that decision through the insert, so
+					// a second first trigger or the type chooser (Recipe_Settings_Service::set_recipe_type)
+					// waits and then meets this trigger. The recipe and its type are read below,
+					// inside the lock, fresh from the database. Later triggers need no lock: the
+					// chooser refuses a type that contradicts an existing trigger.
+					if ( null === $this->recipe_store->get_recipe_type_raw( $recipe_id )
+						|| array() === $this->trigger_store->get_recipe_trigger_posts( $recipe_id ) ) {
+						$holds_type_decision = false !== $this->recipe_store->lock_recipe_type( $recipe_id );
+						if ( ! $holds_type_decision ) {
+							return new WP_Error(
+								'recipe_type_busy',
+								esc_html_x( 'Another change to this recipe is still saving. Try again in a moment.', 'Trigger CRUD error', 'uncanny-automator' ),
+								array(
+									'status'    => 409,
+									'retryable' => true,
+								)
+							);
+						}
+					}
+
 					// Validate recipe exists
 					$recipe = $this->validate_recipe_exists( $recipe_id );
 					if ( ! $recipe ) {
@@ -383,9 +405,11 @@ class Trigger_CRUD_Service {
 						}
 					}
 
-					// Validate trigger type matches recipe type (user vs anonymous).
-					$recipe_type  = $recipe->get_recipe_type()->get_value();
+					// Validate trigger type matches recipe type (user vs anonymous). An untyped
+					// draft (the welcome screen hands one to an AI) takes the first trigger's type.
 					$trigger_type = $trigger->get_trigger_type()->get_value();
+					$adopts_type  = null === $this->recipe_store->get_recipe_type_raw( $recipe_id );
+					$recipe_type  = $adopts_type ? $trigger_type : $recipe->get_recipe_type()->get_value();
 
 					$type_validation = $this->validate_trigger_type_match( $recipe_type, $trigger_type );
 					if ( is_wp_error( $type_validation ) ) {
@@ -417,6 +441,16 @@ class Trigger_CRUD_Service {
 					$recipe_id_vo     = new Recipe_Id( $recipe_id );
 					$saved_trigger    = $this->trigger_store->add_trigger_to_recipe( $recipe_id_vo, $trigger );
 					$saved_trigger_id = (int) $saved_trigger->get_trigger_id()->get_value();
+					// A success must mean a typed recipe: undo the trigger if the type did not store.
+					if ( $adopts_type && $saved_trigger_id > 0 && ! $this->recipe_store->set_recipe_type( $recipe_id, $recipe_type ) ) {
+						$this->trigger_store->remove_trigger_from_recipe( $recipe_id_vo, $saved_trigger->get_trigger_id() );
+						$saved_trigger_id = 0;
+						return new WP_Error(
+							'recipe_type_not_saved',
+							esc_html_x( 'The recipe type could not be saved, so the trigger was not added. Try again.', 'Trigger CRUD error', 'uncanny-automator' ),
+							array( 'retryable' => true )
+						);
+					}
 
 					// Return success response with saved trigger data
 					$trigger_data = $saved_trigger->to_array();
@@ -449,6 +483,10 @@ class Trigger_CRUD_Service {
 							$e->getMessage()
 						)
 					);
+				} finally {
+					if ( $holds_type_decision ) {
+						$this->recipe_store->unlock_recipe_type( $recipe_id );
+					}
 				}
 			}
 		);

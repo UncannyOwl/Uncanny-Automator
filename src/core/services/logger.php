@@ -356,13 +356,16 @@ function tokens_logger( $hook_args = array() ) {
 	$run_number    = $hook_args['args']['run_number'];
 	$recipe_log_id = $hook_args['recipe_log_id'];
 
+	global $wpdb;
+	$record_id = 0;
+
 	// If tokens exist, log them using the Tokens_Logger class.
 	if ( is_array( $tokens_record ) && ! empty( $tokens_record ) ) {
 
 		// Create a new instance of Tokens_Logger and log the tokens.
 		$logger = new Tokens_Logger();
 
-		$logger->log(
+		$logged = $logger->log(
 			array(
 				'tokens_record' => $tokens_record,
 				'recipe_id'     => $recipe_id,
@@ -370,7 +373,33 @@ function tokens_logger( $hook_args = array() ) {
 				'run_number'    => $run_number,
 			)
 		);
+
+		$record_id = $logged ? (int) $wpdb->insert_id : 0;
 	}
+
+	// Tell the run log where this action stands among the run's token records. Records carry
+	// only a time, and two actions can finish in the same second (QA D103). An action that
+	// wrote no record stands at the run's latest one, or at 0 when the run has none yet, so
+	// it never shows a record a later action writes.
+	// The delayed-action hook names the action as ID.
+	$action_id     = absint( $hook_args['action_id'] ?? $hook_args['ID'] ?? 0 );
+	$action_log_id = absint( $hook_args['action_log_id'] ?? 0 );
+	if ( 0 === $action_log_id && $action_id > 0 && absint( $recipe_log_id ) > 0 ) {
+		// Some paths, such as a skipped action, fire the hook without the action's log ID.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$action_log_id = (int) $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}uap_action_log WHERE automator_action_id = %d AND automator_recipe_log_id = %d ORDER BY ID DESC LIMIT 1", $action_id, absint( $recipe_log_id ) ) );
+	}
+	if ( 0 === $action_log_id ) {
+		return;
+	}
+	if ( 0 === $record_id ) {
+		$record_id = Database::get_execution_log_store()->get_latest_tokens_record_id( absint( $recipe_id ), absint( $recipe_log_id ), absint( $run_number ) );
+	}
+	$user_id = absint( $hook_args['user_id'] ?? 0 );
+	if ( null !== Automator()->db->action->get_meta( $action_log_id, Tokens_Logger::RECORD_META_KEY ) ) {
+		Automator()->db->action->delete_meta( $user_id, $action_log_id, $action_id, Tokens_Logger::RECORD_META_KEY );
+	}
+	Automator()->db->action->add_meta( $user_id, $action_log_id, $action_id, Tokens_Logger::RECORD_META_KEY, (string) $record_id );
 }
 
 /**

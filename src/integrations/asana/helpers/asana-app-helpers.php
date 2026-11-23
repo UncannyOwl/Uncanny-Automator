@@ -830,7 +830,7 @@ class Asana_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers 
 	}
 
 	/**
-	 * Get a formatted link to the Asana settings page.
+	 * Get a formatted Markdown link to the Asana settings page.
 	 *
 	 * @return string
 	 */
@@ -838,11 +838,11 @@ class Asana_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers 
 		return sprintf(
 			// translators: %s is a link to the Asana settings page.
 			esc_html_x( 'Manage webhooks in your %s.', 'Asana', 'uncanny-automator' ),
+			// The builder renders a description as Markdown, so the link is a Markdown link.
 			sprintf(
-				// translators: %1$s is a link to the Asana settings page, %2$s is the text "Asana settings".
-				'<a href="%1$s" target="_blank">%2$s</a>',
-				esc_url( $this->get_settings_page_url() ),
-				esc_html_x( 'Asana settings', 'Asana', 'uncanny-automator' )
+				'[%1$s](%2$s)',
+				esc_html_x( 'Asana settings', 'Asana', 'uncanny-automator' ),
+				esc_url( $this->get_settings_page_url() )
 			)
 		);
 	}

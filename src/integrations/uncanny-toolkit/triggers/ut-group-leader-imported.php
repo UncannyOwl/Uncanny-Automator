@@ -9,6 +9,8 @@ namespace Uncanny_Automator\Integrations\Uncanny_Toolkit;
  */
 class UT_GROUP_LEADER_IMPORTED extends \Uncanny_Automator\Recipe\Trigger {
 
+	use Toolkit_Pro_Requirements;
+
 	/**
 	 * Static definition — opts the trigger into lazy loading.
 	 *
@@ -30,15 +32,8 @@ class UT_GROUP_LEADER_IMPORTED extends \Uncanny_Automator\Recipe\Trigger {
 		// translators: %1$s is a LearnDash group.
 		$this->set_sentence( sprintf( esc_html_x( 'A Group Leader is imported to {{a LearnDash group:%1$s}}', 'Uncanny Toolkit', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_html_x( 'A Group Leader is imported to {{a LearnDash group}}', 'Uncanny Toolkit', 'uncanny-automator' ) );
-	}
 
-	/**
-	 * Check if LearnDash and Toolkit Pro are active.
-	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return defined( 'LEARNDASH_VERSION' ) && defined( 'UNCANNY_TOOLKIT_PRO_VERSION' );
+		$this->set_plugin_details( self::toolkit_pro_learndash_plugin_details() );
 	}
 
 	/**

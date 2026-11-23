@@ -81,7 +81,9 @@ final class Discover_Ability_Tool extends Abstract_MCP_Tool {
 			if ( null === $ability ) {
 				return Json_Rpc_Response::create_error_response( $this->catalog->refusal_for( $name ) );
 			}
-			return Json_Rpc_Response::create_success_response( 'Ability schema retrieved. Use run_ability with this name and input schema.', $this->catalog->schema_for( $ability ) );
+			$message = 'Ability schema retrieved. Use run_ability with this name and input schema.';
+			$effect  = $this->catalog->undeclared_effect_message( $ability );
+			return Json_Rpc_Response::create_success_response( null === $effect ? $message : $message . ' ' . $effect, $this->catalog->schema_for( $ability ) );
 		}
 
 		$search   = trim( $params['search'] ?? '' );
@@ -90,8 +92,15 @@ final class Discover_Ability_Tool extends Abstract_MCP_Tool {
 		$offset   = $params['offset'] ?? 0;
 		$result   = $this->catalog->search( '' === $search ? 'list' : 'search', $search, '' === $provider ? null : $provider, $limit, $offset );
 
+		$message          = 'Ability catalog retrieved. Pass a returned name as ability to inspect its schemas.';
+		$automator_search = preg_match( '/\bautomator\b/i', $search ) || 'uncanny-automator' === strtolower( $provider );
+		$recipe_search    = '' === $provider && preg_match( '/\b(?:recipes?|triggers?|actions?)\b/i', $search );
+		if ( $automator_search || $recipe_search ) {
+			$guidance = 'Discover Automator operations through REST. Search for /wp-abilities/v1/abilities/automator/ with search_rest_operations in hosted MCP or rest_discover on a direct WordPress connection.';
+			$message  = 0 === $result['total'] ? $guidance : $message . ' ' . $guidance;
+		}
 		return Json_Rpc_Response::create_success_response(
-			'Ability catalog retrieved. Pass a returned name as ability to inspect its schemas.',
+			$message,
 			array(
 				'items'  => $result['items'],
 				'total'  => $result['total'],

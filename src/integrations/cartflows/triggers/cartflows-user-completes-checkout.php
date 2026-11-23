@@ -26,6 +26,8 @@ use WC_Order;
  */
 class Cartflows_User_Completes_Checkout extends \Uncanny_Automator\Recipe\Trigger {
 
+	use Cartflows_Requirements;
+
 	/**
 	 * Opt this trigger into the lazy loading path.
 	 */
@@ -51,16 +53,8 @@ class Cartflows_User_Completes_Checkout extends \Uncanny_Automator\Recipe\Trigge
 			)
 		);
 		$this->set_readable_sentence( esc_html_x( 'A checkout is completed in {{a flow}}', 'CartFlows', 'uncanny-automator' ) );
-	}
 
-	/**
-	 * WooCommerce is required — CartFlows checkout steps are WooCommerce
-	 * checkouts, and this trigger reads a WooCommerce order.
-	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return $this->item_helpers->woocommerce_active();
+		$this->set_plugin_details( self::woocommerce_plugin_details() );
 	}
 
 	/**

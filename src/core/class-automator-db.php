@@ -173,6 +173,8 @@ class Automator_DB {
 		// drain consumes rows so a mid-request fatal is retried instead
 		// of lost. Mirrors the platform's callback_outbox.
 		$tbl_platform_inbox = $wpdb->prefix . 'uap_platform_inbox';
+		// The runs each app event (an inbox vendor_event row) started.
+		$tbl_platform_inbox_runs = $wpdb->prefix . 'uap_platform_inbox_runs';
 
 		return "CREATE TABLE {$tbl_recipe_log} (
 `ID` bigint unsigned NOT NULL auto_increment,
@@ -407,10 +409,12 @@ KEY idx_integration_status (`integration`, `status`)
 CREATE TABLE {$tbl_platform_inbox} (
 `ID` bigint unsigned NOT NULL auto_increment,
 `payload_type` varchar(64) NOT NULL,
+`integration` varchar(64) NOT NULL DEFAULT '',
 `recipe_log_id` bigint unsigned NOT NULL DEFAULT 0,
 `run_node_id` bigint unsigned NULL,
 `job_id` varchar(191) NOT NULL,
 `payload` longtext NOT NULL,
+`search_text` longtext NULL,
 `status` varchar(16) NOT NULL DEFAULT 'pending',
 `claim_token` varchar(64) NOT NULL DEFAULT '',
 `attempts` smallint unsigned NOT NULL DEFAULT 0,
@@ -423,7 +427,15 @@ UNIQUE KEY uniq_event (`job_id`, `payload_type`),
 KEY pending_drain (`recipe_log_id`, `status`, `platform_received_at`),
 KEY recovery_scan (`status`, `last_attempt_at`),
 KEY retention_scan (`received_at`),
-KEY claim_token (`claim_token`)
+KEY claim_token (`claim_token`),
+KEY app_events (`payload_type`, `received_at`),
+KEY app_event_integration (`payload_type`, `integration`, `received_at`)
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_platform_inbox_runs} (
+`inbox_id` bigint unsigned NOT NULL,
+`recipe_log_id` bigint unsigned NOT NULL,
+PRIMARY KEY  (`inbox_id`, `recipe_log_id`),
+KEY recipe_log_id (`recipe_log_id`)
 ) ENGINE=InnoDB {$charset_collate};
 ";
 	}
@@ -1187,6 +1199,8 @@ KEY claim_token (`claim_token`)
 	}
 
 	/**
+	 * Empties the log tables and the links from app events to the runs they started, then fires automator_tables_purged.
+	 *
 	 * @return true
 	 */
 	public static function purge_tables() {
@@ -1202,6 +1216,8 @@ KEY claim_token (`claim_token`)
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_api_log`;" );
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_api_log_response`;" );
 		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_tokens_log`;" );
+		// The app events stay; their links name runs by an id that now starts over.
+		$wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}uap_platform_inbox_runs`;" );
 
 		do_action( 'automator_tables_purged' );
 

@@ -10,11 +10,13 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Catalog\Site_Commands;
 
 use Uncanny_Automator\App\Recipe_Builder\Shared\User\Value_Objects\User_Context;
+use Uncanny_Automator\App\Site_Commands\Application\Describe_Site_Commands;
 use Uncanny_Automator\App\Site_Commands\Application\Index_Site_Commands;
 use Uncanny_Automator\App\Site_Commands\Application\Run_Site_Command;
 use Uncanny_Automator\App\Site_Commands\Domain\Command_Line\Command_Parser;
 use Uncanny_Automator\App\Site_Commands\Domain\Output\Formats;
 use Uncanny_Automator\App\Site_Commands\Domain\Output\Formatter;
+use Uncanny_Automator\App\Site_Commands\Infrastructure\Builtin_Site_Command_Catalog;
 use Uncanny_Automator\App\Site_Commands\Infrastructure\Manage\Builtin_Site_Manage_Catalog;
 use Uncanny_Automator\App\Site_Commands\Infrastructure\Request_Time_Budget;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abstract_MCP_Tool;
@@ -46,9 +48,14 @@ class Site_Manage_Tool extends Abstract_MCP_Tool {
 	 */
 	public function __construct( ?Run_Site_Command $runner = null ) {
 		$this->sealed = null === $runner;
-		$this->runner = $runner ?? new Run_Site_Command(
-			new Index_Site_Commands( new Builtin_Site_Manage_Catalog() ),
-			null,
+		if ( null !== $runner ) {
+			$this->runner = $runner;
+			return;
+		}
+		$commands     = new Index_Site_Commands( new Builtin_Site_Manage_Catalog() );
+		$this->runner = new Run_Site_Command(
+			$commands,
+			new Describe_Site_Commands( $commands, new Index_Site_Commands( new Builtin_Site_Command_Catalog() ) ),
 			null,
 			new Formatter( 'wp_json_encode' ),
 			null,

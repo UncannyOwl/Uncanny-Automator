@@ -344,10 +344,16 @@ class WP_Registry implements Registry {
 	 * - Pro's 'loop_type' (string) -> domain's 'iteration_types' (array)
 	 * - Pro's 'sentence_readable' -> domain's 'sentence_readable'
 	 *
+	 * The `requirements` the registration pass stored with the filter are kept, when it stored them. Public so a
+	 * filter whose requirements are not met reads in the same shape as a registered one.
+	 *
+	 * @since 7.0.0
+	 * @since 8.1.0 Public; keeps `requirements`.
+	 *
 	 * @param array $definition Raw filter definition.
 	 * @return array Normalized definition with domain keys.
 	 */
-	private function normalize_filter_definition( array $definition ): array {
+	public function normalize_filter_definition( array $definition ): array {
 		// Map Pro's loop_type (string) to iteration_types (array).
 		$iteration_types = $definition['iteration_types'] ?? null;
 		if ( null === $iteration_types && ! empty( $definition['loop_type'] ) ) {
@@ -357,7 +363,7 @@ class WP_Registry implements Registry {
 			$iteration_types = array( Iteration_Type::USERS );
 		}
 
-		return array(
+		$normalized = array(
 			'code'              => strtoupper( $definition['code'] ?? $definition['meta'] ?? '' ),
 			'integration_code'  => strtoupper( $definition['integration'] ?? $definition['integration_code'] ?? '' ),
 			'integration'       => $definition['integration'] ?? '',
@@ -370,6 +376,12 @@ class WP_Registry implements Registry {
 			'is_pro'            => ! empty( $definition['is_pro'] ),
 			'is_deprecated'     => ! empty( $definition['is_deprecated'] ),
 		);
+
+		if ( is_array( $definition['requirements'] ?? null ) ) {
+			$normalized['requirements'] = $definition['requirements'];
+		}
+
+		return $normalized;
 	}
 
 	/**

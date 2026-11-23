@@ -39,6 +39,10 @@ class Automator_Compression {
 		$min_bytes = absint( apply_filters( 'automator_compression_min_bytes', 2048 ) );
 		$level     = absint( apply_filters( 'automator_compression_level', 4 ) );
 
+		if ( $level > 9 ) {
+			$level = 4;
+		}
+
 		if ( $min_bytes <= 0 ) {
 			$min_bytes = 2048;
 		}

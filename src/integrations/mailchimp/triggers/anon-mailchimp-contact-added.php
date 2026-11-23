@@ -26,6 +26,7 @@ class ANON_MAILCHIMP_CONTACT_ADDED extends \Uncanny_Automator\Recipe\App_Trigger
 		$this->set_is_login_required( false );
 		$this->set_is_pro( false );
 		$this->set_uses_api( true );
+		$this->require_triggers_enabled();
 		$this->add_action( 'automator_mailchimp_webhook_received_subscribe' );
 		$this->set_readable_sentence( esc_html_x( 'A contact is added to {{an audience}}', 'Mailchimp', 'uncanny-automator' ) );
 		$this->set_sentence(
@@ -35,14 +36,5 @@ class ANON_MAILCHIMP_CONTACT_ADDED extends \Uncanny_Automator\Recipe\App_Trigger
 				$this->get_trigger_meta()
 			)
 		);
-	}
-
-	/**
-	 * Check if the trigger requirements are met.
-	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return $this->webhooks->get_webhooks_enabled_status();
 	}
 }

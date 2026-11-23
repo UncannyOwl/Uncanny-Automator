@@ -8,6 +8,7 @@ use Uncanny_Automator\App\Transports\Restful\Blocks\Blocks_Rest_Controller;
 use Uncanny_Automator\App\Transports\Restful\Remote_Data\Remote_Data_Rest_Controller;
 use Uncanny_Automator\App\Transports\Restful\Post_Content\Post_Content_Rest_Controller;
 use Uncanny_Automator\App\Transports\Restful\Post_Meta\Post_Meta_Rest_Controller;
+use Uncanny_Automator\App\Transports\Restful\Logs\Logs_Rest_Controller;
 use Uncanny_Automator\App\Transports\Restful\Recipe_Log\Recipe_Log_Rest_Controller;
 use Uncanny_Automator\App\Transports\Restful\Template_Library\Template_Library_Rest_Controller;
 use Uncanny_Automator\App\Transports\Restful\License\License_Rest_Controller;
@@ -72,6 +73,9 @@ class Restful_Bootstrap {
 
 		// Register recipe-log routes.
 		Recipe_Log_Rest_Controller::register_routes();
+
+		// Logs page lists, filters and run delete.
+		Logs_Rest_Controller::register_routes();
 
 		// Register template-library routes.
 		Template_Library_Rest_Controller::register_routes();

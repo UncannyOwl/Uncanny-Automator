@@ -666,6 +666,18 @@ class Trigger_Complete_Stage implements Stage {
 		// the authoritative values from Pipeline_Result.
 		$result->set_execution_ready( $recipe_id, $user_id, $recipe_log_id, $args );
 
+		/**
+		 * A run has started: its triggers completed and its log row is final.
+		 *
+		 * @since 8.1.0
+		 *
+		 * @param int   $recipe_id     Recipe post ID.
+		 * @param int   $user_id       The run's user, 0 for a guest.
+		 * @param int   $recipe_log_id The run's log ID.
+		 * @param array $args          The run's arguments; `trigger_id` is the trigger that completed it.
+		 */
+		Dispatcher::action( 'automator_recipe_run_started', $recipe_id, $user_id, $recipe_log_id, $result->get_execution_args() );
+
 		// Deprecated hooks — kept for backward compat with old Pro versions
 		// whose license expired and still hook automator_actions_completed_run_flow.
 		$flow_type = apply_filters_deprecated(

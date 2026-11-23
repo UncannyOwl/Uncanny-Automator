@@ -4,12 +4,15 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Portability;
 
 use Uncanny_Automator\App\Events\Recipe_Change_Events;
+use Uncanny_Automator\App\Infrastructure\Cache\Recipe_Cache;
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Post_Content_Edit_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Recipe_Legacy_Meta_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Legacy_Meta_Store;
 use Uncanny_Automator\App\Events\Dispatcher;
 use Uncanny_Automator\App\Infrastructure\Database\Database;
 use Uncanny_Automator\App\Recipe_Builder\Block\Migration\Action_Conditions_Meta_Migrator;
 use Uncanny_Automator\App\Recipe_Builder\Block\Migration\Delay_Schedule_Meta_Migrator;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Schema\Recipe_Tree_Builder;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Schema\Value_Objects\Materialization_Result;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Status;
 use Uncanny_Automator\App\Recipe_Builder\Token\Services\Reference_Rewriter;
@@ -37,6 +40,10 @@ use WP_Error;
  * The imported-recipe warning meta, admin notices, and the
  * `automator_recipe_imported` action remain core-side concerns
  * (`Import_Recipe` fires them around this pipeline).
+ *
+ * `import_into()` and `import_legacy_into()` run the same pipeline into an
+ * existing blank draft instead of a new recipe, inside one database transaction:
+ * a fill that fails at any point, a PHP fatal included, leaves the draft as it was.
  */
 final class Recipe_Importer {
 
@@ -47,6 +54,54 @@ final class Recipe_Importer {
 	 * @var int
 	 */
 	const SCHEMA_VERSION = Recipe_Exporter::SCHEMA_VERSION;
+
+	/**
+	 * The recipe to fill doesn't exist, or isn't a recipe.
+	 *
+	 * @var string
+	 */
+	const ERROR_RECIPE_NOT_FOUND = 'recipe_not_found';
+
+	/**
+	 * The recipe to fill has a type, a trigger or a step.
+	 *
+	 * @var string
+	 */
+	const ERROR_RECIPE_NOT_BLANK = 'recipe_not_blank';
+
+	/**
+	 * The recipe to fill is live or in the trash.
+	 *
+	 * @var string
+	 */
+	const ERROR_RECIPE_NOT_DRAFT = 'recipe_not_draft';
+
+	/**
+	 * The site's posts storage can't roll a fill back, so no fill runs.
+	 *
+	 * @var string
+	 */
+	const ERROR_FILL_STORAGE_UNAVAILABLE = 'recipe_fill_storage_unavailable';
+
+	/**
+	 * The database didn't confirm the fill's commit.
+	 *
+	 * @var string
+	 */
+	const ERROR_FILL_UNVERIFIED = 'recipe_fill_unverified';
+
+	/**
+	 * The refusals a fill answers in its own words, which reach the person as they are.
+	 *
+	 * @var string[]
+	 */
+	const FILL_REFUSAL_CODES = array(
+		self::ERROR_RECIPE_NOT_FOUND,
+		self::ERROR_RECIPE_NOT_BLANK,
+		self::ERROR_RECIPE_NOT_DRAFT,
+		self::ERROR_FILL_STORAGE_UNAVAILABLE,
+		self::ERROR_FILL_UNVERIFIED,
+	);
 
 	/**
 	 * Replays the document tree as a new recipe (shared with duplication).
@@ -93,6 +148,20 @@ final class Recipe_Importer {
 	private Reference_Rewriter $rewriter;
 
 	/**
+	 * Holds a fill's writes in one transaction, with the recipe's row locked.
+	 *
+	 * @var Post_Content_Edit_Store
+	 */
+	private Post_Content_Edit_Store $lock;
+
+	/**
+	 * Reads the recipe a fill targets, in the shape the builder decides "blank" from.
+	 *
+	 * @var Recipe_Tree_Builder
+	 */
+	private Recipe_Tree_Builder $tree_builder;
+
+	/**
 	 * Lazy-default constructor injection (Rule 9c): tests inject fakes,
 	 * production gets the singletons / `new` defaults.
 	 *
@@ -102,6 +171,8 @@ final class Recipe_Importer {
 	 * @param Action_Conditions_Meta_Migrator|null $conditions_migrator
 	 * @param Reference_Rewriter|null              $rewriter
 	 * @param Delay_Schedule_Meta_Migrator|null    $delay_migrator
+	 * @param Post_Content_Edit_Store|null         $lock
+	 * @param Recipe_Tree_Builder|null             $tree_builder
 	 */
 	public function __construct(
 		?Recipe_Duplication_Service $duplication = null,
@@ -109,7 +180,9 @@ final class Recipe_Importer {
 		?Recipe_Legacy_Meta_Store $legacy_meta = null,
 		?Action_Conditions_Meta_Migrator $conditions_migrator = null,
 		?Reference_Rewriter $rewriter = null,
-		?Delay_Schedule_Meta_Migrator $delay_migrator = null
+		?Delay_Schedule_Meta_Migrator $delay_migrator = null,
+		?Post_Content_Edit_Store $lock = null,
+		?Recipe_Tree_Builder $tree_builder = null
 	) {
 		$this->duplication         = $duplication ?? new Recipe_Duplication_Service();
 		$this->adapter             = $adapter ?? new Legacy_Export_Adapter();
@@ -118,6 +191,8 @@ final class Recipe_Importer {
 			?? new Action_Conditions_Meta_Migrator( Database::get_block_store(), Database::get_block_modifier_store() );
 		$this->rewriter            = $rewriter ?? new Reference_Rewriter();
 		$this->delay_migrator      = $delay_migrator ?? new Delay_Schedule_Meta_Migrator( Database::get_block_store() );
+		$this->lock                = $lock ?? Database::get_post_content_edit_store();
+		$this->tree_builder        = $tree_builder ?? Recipe_Tree_Builder::instance();
 	}
 
 	/**
@@ -137,6 +212,197 @@ final class Recipe_Importer {
 				return $this->run( $document );
 			}
 		);
+	}
+
+	/**
+	 * Fill an existing blank draft from a portable document.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array<string,mixed> $document  Decoded portable document.
+	 * @param int                 $recipe_id The recipe to fill.
+	 * @return Materialization_Result|WP_Error Result (root = the filled recipe's id), or the failure with the recipe unchanged.
+	 */
+	public function import_into( array $document, int $recipe_id ) {
+		return Recipe_Change_Events::operation(
+			function () use ( $document, $recipe_id ) {
+				$refusal = $this->check( $document );
+				if ( null !== $refusal ) {
+					return $refusal;
+				}
+
+				return $this->fill( $document, $recipe_id );
+			}
+		);
+	}
+
+	/**
+	 * Fill an existing blank draft from an OLD-FORMAT export file.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param object $old_json  Decoded legacy export JSON.
+	 * @param int    $recipe_id The recipe to fill.
+	 * @return Materialization_Result|WP_Error Result (root = the filled recipe's id), or the failure with the recipe unchanged.
+	 */
+	public function import_legacy_into( object $old_json, int $recipe_id ) {
+		return Recipe_Change_Events::operation(
+			function () use ( $old_json, $recipe_id ) {
+				$document = $this->adapter->adapt( $old_json );
+				if ( $document instanceof WP_Error ) {
+					return $document;
+				}
+
+				return $this->fill( $document, $recipe_id );
+			}
+		);
+	}
+
+	/**
+	 * Run a fill in one transaction with the recipe's row locked, and report it once it is final.
+	 *
+	 * The lock makes the blank check and the writes one step: a second request for the same draft waits here, then finds it filled and is refused.
+	 *
+	 * A failed fill clears the recipe's caches after the rollback. The rollback restores the database but not a persistent object cache, and replay_document_into() keeps most values out of that cache. A refusal wrote nothing, so it leaves the caches alone.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array<string,mixed> $document  Validated or adapted portable document.
+	 * @param int                 $recipe_id The recipe to fill.
+	 * @return Materialization_Result|WP_Error
+	 */
+	private function fill( array $document, int $recipe_id ) {
+		$wrote  = false;
+		$filled = false;
+
+		try {
+			$result = $this->lock->with_post_lock(
+				$recipe_id,
+				function () use ( $document, $recipe_id, &$wrote ) {
+					$refusal = $this->fill_refusal( $recipe_id );
+					if ( null !== $refusal ) {
+						return $refusal;
+					}
+
+					$wrote = true;
+
+					return $this->replay_uncached( $document, $recipe_id );
+				}
+			);
+
+			$filled = $result instanceof Materialization_Result;
+		} finally {
+			if ( $wrote && ! $filled ) {
+				Recipe_Cache::invalidate( $recipe_id );
+			}
+		}
+
+		if ( $result instanceof WP_Error ) {
+			return $this->fill_error( $result );
+		}
+
+		Recipe_Change_Events::changed( new Recipe_Changed( Recipe_Change_Operation::UPDATED, Recipe_Changed::RECIPE, $recipe_id, $recipe_id ) );
+
+		return $result;
+	}
+
+	/**
+	 * Run the fill's pipeline with additions to the object cache suspended.
+	 *
+	 * Reads during a fill see writes that may still roll back, and a fatal or a killed process runs no cleanup. A persistent cache would keep those values after the database dropped them, so the fill doesn't add them.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array<string,mixed> $document  Validated or adapted portable document.
+	 * @param int                 $recipe_id The recipe to fill.
+	 * @return Materialization_Result|WP_Error
+	 */
+	private function replay_uncached( array $document, int $recipe_id ) {
+		$suspended = wp_suspend_cache_addition();
+		wp_suspend_cache_addition( true );
+
+		try {
+			return $this->replay_document_into( $document, $recipe_id );
+		} finally {
+			wp_suspend_cache_addition( $suspended );
+		}
+	}
+
+	/**
+	 * Why a recipe can't be filled: it has to be a blank draft.
+	 *
+	 * Blank is the frontend's isRecipeBlank(): no type, no triggers, nothing in the flow. Status is a rule of its own, because an import always lands on a draft: filling a live recipe would run whatever the document switches on.
+	 *
+	 * A caller whose fill the lock refused before this rule ran asks it directly, so it answers as a fill would. It writes nothing.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param int $recipe_id The recipe to fill.
+	 * @return WP_Error|null The refusal, or null when the recipe can be filled.
+	 */
+	public function fill_refusal( int $recipe_id ): ?WP_Error {
+		$target = $this->tree_builder->build( $recipe_id );
+
+		if ( null === $target ) {
+			return $this->recipe_not_found();
+		}
+
+		if ( Recipe_Status::DRAFT !== $target['status'] ) {
+			return new WP_Error(
+				self::ERROR_RECIPE_NOT_DRAFT,
+				esc_html_x( 'Only a draft recipe can be filled from a template.', 'Recipe import error', 'uncanny-automator' )
+			);
+		}
+
+		if ( null !== $target['recipe_type'] || array() !== $target['triggers'] || array() !== $target['content'] ) {
+			return new WP_Error(
+				self::ERROR_RECIPE_NOT_BLANK,
+				esc_html_x( 'Only a blank recipe can be filled from a template. This one already has a type, triggers or actions.', 'Recipe import error', 'uncanny-automator' )
+			);
+		}
+
+		return null;
+	}
+
+	/**
+	 * The refusal for an id that names no recipe.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return WP_Error
+	 */
+	private function recipe_not_found(): WP_Error {
+		return new WP_Error(
+			self::ERROR_RECIPE_NOT_FOUND,
+			esc_html_x( 'The recipe to fill could not be found.', 'Recipe import error', 'uncanny-automator' )
+		);
+	}
+
+	/**
+	 * Say the lock's failures in the fill's words. Every other failure passes through.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param WP_Error $error The fill's failure.
+	 * @return WP_Error
+	 */
+	private function fill_error( WP_Error $error ): WP_Error {
+		switch ( $error->get_error_code() ) {
+			case 'rest_post_invalid_id':
+				return $this->recipe_not_found();
+			case Post_Content_Edit_Store::ERROR_STORAGE_UNAVAILABLE:
+				return new WP_Error(
+					self::ERROR_FILL_STORAGE_UNAVAILABLE,
+					esc_html_x( 'Filling a recipe from a template needs transactional WordPress posts storage. Nothing was saved.', 'Recipe import error', 'uncanny-automator' )
+				);
+			case Post_Content_Edit_Store::ERROR_UNVERIFIED:
+				return new WP_Error(
+					self::ERROR_FILL_UNVERIFIED,
+					esc_html_x( 'The template could not be confirmed as saved. Reload the recipe before you try again.', 'Recipe import error', 'uncanny-automator' )
+				);
+			default:
+				return $error;
+		}
 	}
 
 	/**
@@ -260,14 +526,56 @@ final class Recipe_Importer {
 		$this->switch_on_switchless_triggers( (array) ( $tree['triggers'] ?? array() ), $result );
 		Recipe_Change_Events::changed( new Recipe_Changed( Recipe_Change_Operation::CREATED, Recipe_Changed::RECIPE, $root_id, $root_id ) );
 
+		$this->announce_new_parts( $result );
+
+		return $result;
+	}
+
+	/**
+	 * The fill's pipeline, the same steps as run() on an existing recipe. The recipe keeps the document's title as is, because the owner never named the draft. It runs inside the fill's transaction, so a failure at any step, the integration hook included, undoes every step.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array<string,mixed> $document  Validated or adapted portable document.
+	 * @param int                 $recipe_id The recipe to fill.
+	 * @return Materialization_Result|WP_Error Result or the first failure.
+	 */
+	private function replay_document_into( array $document, int $recipe_id ) {
+		$document = $this->transform_cross_site_urls( $document );
+		$tree     = $this->neutralize_item_status( $document['recipe'] );
+		$selector = is_array( $document['user_selector'] ?? null ) ? $document['user_selector'] : null;
+
+		$result = $this->duplication->replay_tree_into( $tree, $recipe_id, (string) $tree['title'], $selector );
+		if ( $result instanceof WP_Error ) {
+			return $result;
+		}
+
+		$legacy_error = $this->canonicalize_legacy_sidecar( (array) ( $document['_legacy'] ?? array() ), $result );
+		if ( $legacy_error instanceof WP_Error ) {
+			return $legacy_error;
+		}
+
+		$this->switch_on_switchless_triggers( (array) ( $tree['triggers'] ?? array() ), $result );
+		$this->announce_new_parts( $result );
+
+		return $result;
+	}
+
+	/**
+	 * Tell integrations which posts an import just wrote, so they can migrate their meta.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param Materialization_Result $result Replay result.
+	 * @return void
+	 */
+	private function announce_new_parts( Materialization_Result $result ): void {
 		/** This hook is documented in src/core/admin/class-import-recipe.php (legacy firing site). */
 		Dispatcher::action(
 			'automator_migrate_recipe_part_meta',
 			array_values( array_unique( array_merge( array( $result->get_root_id() ), array_map( 'intval', $result->get_id_map() ) ) ) ),
 			$result->get_root_id()
 		);
-
-		return $result;
 	}
 
 	/**

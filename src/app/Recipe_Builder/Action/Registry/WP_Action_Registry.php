@@ -238,12 +238,14 @@ class WP_Action_Registry implements Action_Registry {
 	 * Normalize action definition to domain format.
 	 *
 	 * The legacy `requires_user` flag is the single source of truth for the
-	 * user requirement; `action_type` is derived from it, never read.
+	 * user requirement; `action_type` is derived from it, never read. Public so
+	 * a definition that did not register (an action whose requirements are not
+	 * met) reads in the same shape as a registered one.
 	 *
 	 * @param array $definition Raw action definition.
 	 * @return array Normalized definition with domain keys.
 	 */
-	private function normalize_action_definition( array $definition ): array {
+	public function normalize_action_definition( array $definition ): array {
 		$requires_user = (bool) ( $definition['requires_user'] ?? true );
 
 		return array(

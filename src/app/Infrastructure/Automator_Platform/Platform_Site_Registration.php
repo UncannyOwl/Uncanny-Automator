@@ -305,6 +305,12 @@ final class Platform_Site_Registration {
 			return $this->copy->resume_copy( $copy_state );
 		}
 
+		// A copy that never registered, back at the address it was copied from
+		// under that address's registration (a backup restore), is that site
+		// again: forget the copy record it carries. This reads options unless it
+		// forgets, and registration goes on as for any site.
+		$this->copy->forget_if_back_at_source();
+
 		$drift = $this->address->drift();
 		if ( 'license' === $drift ) {
 			return $this->register->force_register();

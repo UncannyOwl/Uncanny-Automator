@@ -3,6 +3,7 @@
 namespace Uncanny_Automator\Integrations\Easy_Digital_Downloads;
 
 use Uncanny_Automator\Integration;
+use Uncanny_Automator\Integrations\Easy_Digital_Downloads\Dispatchers\Edd_Refund_Dispatcher;
 
 /**
  * Class Edd_Integration
@@ -53,6 +54,9 @@ class Edd_Integration extends Integration {
 		$user_orders_token = new \Uncanny_Automator\Integrations\Easy_Digital_Downloads\Tokens\Loopable\Universal\User_Orders( 'EDD' );
 		$user_orders_token->register_hooks();
 
+		// Turns EDD's refund paths into one event; runs even when the gateway ends the request before recipe parts load.
+		Edd_Refund_Dispatcher::boot();
+
 		// Register AJAX handlers
 		add_action( 'wp_ajax_automator_edd_price_options_handler', array( $this->helpers, 'get_download_price_options_ajax_handler' ) );
 	}
@@ -69,6 +73,7 @@ class Edd_Integration extends Integration {
 		new EDD_ORDERREFUNDED( $this->helpers );
 		new EDD_PRODUCTPURCHASE( $this->helpers );
 		new EDD_PRODUCTPURCHASEWITHPRICE( $this->helpers );
+		new Edd_User_Receives_Refund( $this->helpers );
 	}
 
 

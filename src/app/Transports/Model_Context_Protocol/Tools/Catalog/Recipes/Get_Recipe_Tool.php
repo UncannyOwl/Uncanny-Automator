@@ -20,7 +20,9 @@ use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Wire_Key;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Model_Recipe_Schema;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Recipe_Wire_Service;
 use Uncanny_Automator\App\Recipe_Builder\Shared\User\Value_Objects\User_Context;
+use Uncanny_Automator\App\Transports\Abilities\Automator_Abilities;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Json_Rpc_Response;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Rest\Rest_Request_Scope;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abstract_MCP_Tool;
 
 /**
@@ -65,7 +67,7 @@ class Get_Recipe_Tool extends Abstract_MCP_Tool {
 			. 'Triggers are in flow.entry.triggers with flow.entry.operator (all or any). The run-as user selector is flow.run_as. '
 			. 'flow.content is the execution-ordered list of items (type=item: trigger or action) and blocks (type=block: filter, delay_schedule or loop). '
 			. 'A block\'s children sit in its paths list, each { path_code, content }: FILTER-CONDITIONS-MET and FILTER-CONDITIONS-NOT-MET on a filter, DELAY-COMPLETED on a delay_schedule (the Queue block in the builder), LOOP-ITERATION-COMPLETED on a loop; '
-			. 'these are the same path_code values save_action and save_block accept. '
+			. 'Use these path_code values when saving an action or block with automator/save-action, automator/save-block, or their corresponding fallback tools. '
 			. 'Conditions are the modifiers of a filter block; loop filters are the modifiers of a loop block. '
 			. 'Every item and block carries tokens (use as {{id}}), availability (whether the step runs on this site) and tags. '
 			. 'Absorbs list_actions, loop_list, loop_get, loop_filter_list, loop_filter_get, list_conditions and get_user_selector.';
@@ -102,7 +104,7 @@ class Get_Recipe_Tool extends Abstract_MCP_Tool {
 		$recipe_id = isset( $params['recipe_id'] ) ? (int) $params['recipe_id'] : 0;
 
 		if ( $recipe_id <= 0 ) {
-			return Json_Rpc_Response::create_error_response( 'Parameter recipe_id must be a positive integer. Use list_recipes to find recipe IDs.' );
+			return Json_Rpc_Response::create_error_response( 'Parameter recipe_id must be a positive integer. ' . self::recipe_lookup_guidance() );
 		}
 
 		try {
@@ -115,11 +117,21 @@ class Get_Recipe_Tool extends Abstract_MCP_Tool {
 
 		if ( null === $recipe ) {
 			return Json_Rpc_Response::create_error_response(
-				sprintf( 'Recipe not found with ID %d. Use list_recipes to find valid recipe IDs.', $recipe_id )
+				sprintf( 'Recipe not found with ID %d. %s', $recipe_id, self::recipe_lookup_guidance() )
 			);
 		}
 
 		return Json_Rpc_Response::create_success_response( 'Recipe retrieved successfully', $this->strip_admin_only_keys( $recipe ) );
+	}
+
+	/** Point to the lookup available in the active operation catalog. */
+	private static function recipe_lookup_guidance(): string {
+		if ( Automator_Abilities::has_native_operation( 'list_recipes' ) ) {
+			return 'Use the automator/list-recipes ability to find valid recipe IDs.';
+		}
+		return Rest_Request_Scope::is_active()
+			? 'Check REST discovery for an available recipe lookup.'
+			: 'Use the list_recipes tool to find valid recipe IDs.';
 	}
 
 	/**

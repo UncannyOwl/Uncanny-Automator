@@ -164,6 +164,9 @@ final class Command_Line {
 				$pieces = array();
 				$quoted = false;
 				if ( '|' === $char ) {
+					if ( '|' === ( $line[ $i + 1 ] ?? '' ) ) {
+						throw new Command_Error( '|| is shell syntax. File commands use a single | to pass output to the next command.' );
+					}
 					if ( array() === $words ) {
 						throw new Command_Error( 'A pipe (|) needs a command on each side.' );
 					}

@@ -182,6 +182,7 @@ class EDD_ANON_PRODUCT_PURCHASE extends Trigger {
 			'EDD_CUSTOMER_ADDRESS_STATE'   => $address_state,
 			'EDD_CUSTOMER_ADDRESS_COUNTRY' => $address_country,
 			'EDD_CUSTOMER_ADDRESS_ZIP'     => $address_zip,
+			'EDD_LICENSE_KEY'              => $license_key,
 		);
 	}
 }

@@ -65,12 +65,22 @@ final class Run_Data_Bundle {
 	 */
 	private const MAX_NESTED_TOKEN_DEPTH = 5;
 
+	/** How long after a step's time its token record can still be written. */
+	private const TOKEN_RECORD_GRACE_SECONDS = 2;
+
 	/**
 	 * Run token map, keyed by braced token identifier.
 	 *
 	 * @var array<string,string>
 	 */
 	private $tokens_map;
+
+	/**
+	 * The run's token records, oldest first: array{added:int, tokens:array<string,string>}.
+	 *
+	 * @var array<int,array{added:int,tokens:array<string,string>}>
+	 */
+	private $tokens_records = array();
 
 	/**
 	 * Action-log meta bag, indexed by action_log_id then meta key.
@@ -96,6 +106,15 @@ final class Run_Data_Bundle {
 	private $trigger_properties;
 
 	/**
+	 * Every stored `action_tokens` value per action log, oldest row first, indexed by action_log_id.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @var array<int,array<int,string>>
+	 */
+	private $action_tokens;
+
+	/**
 	 * Recipe-log meta bag, indexed by meta key.
 	 *
 	 * @var array<string,string>
@@ -108,6 +127,14 @@ final class Run_Data_Bundle {
 	 * @var array<int,string>
 	 */
 	private $error_by_action_log = array();
+
+	/**
+	 * Error message indexed by action post id, for an action that failed before it had an
+	 * action-log row of its own (action_log_id 0), such as an integration that is not connected.
+	 *
+	 * @var array<int,string>
+	 */
+	private $error_by_action = array();
 
 	/**
 	 * Error rows recorded against a block, in row order, indexed by block id.
@@ -160,16 +187,26 @@ final class Run_Data_Bundle {
 	 *
 	 * @param array<string,mixed> $parts Prefetched raw structures. Keys:
 	 *   recipe_log_row, trigger_rows, action_rows, api_retries, api_logged, tokens_map,
-	 *   action_meta_bag, trigger_meta_bag, trigger_properties, recipe_meta_bag, error_rows,
+	 *   action_meta_bag, action_tokens, trigger_meta_bag, trigger_properties, recipe_meta_bag, error_rows,
 	 *   loop_entries, loop_breakdowns, node_created_map, legacy_filter_conditions.
 	 */
 	public function __construct( array $parts ) {
-		$this->recipe_log_row     = is_array( $parts['recipe_log_row'] ?? null ) ? $parts['recipe_log_row'] : array();
-		$this->api_retries        = is_array( $parts['api_retries'] ?? null ) ? $parts['api_retries'] : array();
-		$this->tokens_map         = $this->with_nested_tokens_filled_in( is_array( $parts['tokens_map'] ?? null ) ? $parts['tokens_map'] : array() );
+		$this->recipe_log_row = is_array( $parts['recipe_log_row'] ?? null ) ? $parts['recipe_log_row'] : array();
+		$this->api_retries    = is_array( $parts['api_retries'] ?? null ) ? $parts['api_retries'] : array();
+		$this->tokens_map     = $this->with_nested_tokens_filled_in( is_array( $parts['tokens_map'] ?? null ) ? $parts['tokens_map'] : array() );
+		foreach ( (array) ( $parts['tokens_records'] ?? array() ) as $record ) {
+			if ( is_array( $record ) && is_array( $record['tokens'] ?? null ) ) {
+				$this->tokens_records[] = array(
+					'id'     => (int) ( $record['id'] ?? 0 ),
+					'added'  => (int) ( $record['added'] ?? 0 ),
+					'tokens' => $record['tokens'],
+				);
+			}
+		}
 		$this->action_meta_bag    = is_array( $parts['action_meta_bag'] ?? null ) ? $parts['action_meta_bag'] : array();
 		$this->trigger_meta_bag   = is_array( $parts['trigger_meta_bag'] ?? null ) ? $parts['trigger_meta_bag'] : array();
 		$this->trigger_properties = is_array( $parts['trigger_properties'] ?? null ) ? $parts['trigger_properties'] : array();
+		$this->action_tokens      = is_array( $parts['action_tokens'] ?? null ) ? $parts['action_tokens'] : array();
 		$this->recipe_meta_bag    = is_array( $parts['recipe_meta_bag'] ?? null ) ? $parts['recipe_meta_bag'] : array();
 		$this->loop_entries       = is_array( $parts['loop_entries'] ?? null ) ? $parts['loop_entries'] : array();
 		$this->loop_breakdowns    = is_array( $parts['loop_breakdowns'] ?? null ) ? $parts['loop_breakdowns'] : array();
@@ -224,8 +261,27 @@ final class Run_Data_Bundle {
 			return;
 		}
 
-		if ( isset( $err['action_log_id'] ) ) {
+		if ( (int) ( $err['action_log_id'] ?? 0 ) > 0 ) {
 			$this->error_by_action_log[ (int) $err['action_log_id'] ] = $entry['message'];
+			return;
+		}
+
+		// No action-log row: show it on the action's step when that step reports a run,
+		// and otherwise against the run, so a recorded error is never dropped.
+		$context   = json_decode( (string) ( $err['error_context'] ?? '' ), true );
+		$action_id = is_array( $context ) ? (int) ( $context['action_id'] ?? 0 ) : 0;
+		$row       = $action_id > 0 ? ( $this->action_rows[ $action_id ] ?? null ) : null;
+		if ( null !== $row && \Uncanny_Automator\Automator_Status::NOT_COMPLETED !== (int) ( $row['completed'] ?? \Uncanny_Automator\Automator_Status::NOT_COMPLETED ) ) {
+			$this->error_by_action[ $action_id ] = $entry['message'];
+			return;
+		}
+		// An informational note (is_actionable 0), such as "A user found matching", is not a run error.
+		if ( isset( $err['is_actionable'] ) && 0 === (int) $err['is_actionable'] ) {
+			return;
+		}
+		// The same failure recorded more than once reads once.
+		if ( ! in_array( $entry, $this->run_errors, true ) ) {
+			$this->run_errors[] = $entry;
 		}
 	}
 
@@ -294,6 +350,42 @@ final class Run_Data_Bundle {
 	 */
 	public function recipe_log_row(): array {
 		return $this->recipe_log_row;
+	}
+
+	/**
+	 * When the run started, as a raw MySQL datetime, or '' when unknown.
+	 *
+	 * The run row's date_time is not it once the run finishes: mark_recipe_complete()
+	 * overwrites it with the completion time. A finished run's start is then its
+	 * earliest trigger or action row, and never later than date_time: a step row can
+	 * be rewritten after the run finished, by a resend for one. Read this, not
+	 * date_time, wherever a step or block needs the run's start.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return string
+	 */
+	public function run_started_at(): string {
+		$date_time = (string) ( $this->recipe_log_row['date_time'] ?? '' );
+		if ( ! \Uncanny_Automator\Automator_Status::finished( (int) ( $this->recipe_log_row['completed'] ?? \Uncanny_Automator\Automator_Status::NOT_COMPLETED ) ) ) {
+			return $date_time;
+		}
+
+		$dates = '' === $date_time ? array() : array( $date_time );
+		foreach ( $this->action_rows as $row ) {
+			if ( is_array( $row ) && '' !== (string) ( $row['date_time'] ?? '' ) ) {
+				$dates[] = (string) $row['date_time'];
+			}
+		}
+		foreach ( $this->trigger_rows as $rows ) {
+			foreach ( (array) $rows as $row ) {
+				if ( is_array( $row ) && '' !== (string) ( $row['date_time'] ?? '' ) ) {
+					$dates[] = (string) $row['date_time'];
+				}
+			}
+		}
+
+		return empty( $dates ) ? '' : (string) min( $dates );
 	}
 
 	/**
@@ -414,8 +506,141 @@ final class Run_Data_Bundle {
 	 * @return array<string,string>
 	 */
 	public function wire_tokens(): array {
+		return $this->bare_token_keys( $this->tokens_map );
+	}
+
+	/**
+	 * The token values a step that ran at this time used.
+	 *
+	 * tokens_map() merges every record of the run, the latest winning, which shows an early
+	 * step a value only recorded days later: a user deleted between a welcome email and a
+	 * delayed follow-up made the welcome email read as sent to nobody. This merges only the
+	 * records written up to the step's time. Without records, or a readable time, it is
+	 * tokens_map().
+	 *
+	 * @since 8.1.0
+	 *
+	 * An action that names where it stands among the run's records gets exactly the records up
+	 * to there, which holds even when two actions finish in the same second (QA D103). At 0
+	 * the run had no record yet, so the action shows none. Runs logged before actions named
+	 * their place use the step's time.
+	 *
+	 * @param string   $date_time The step's site-local MySQL datetime.
+	 * @param int|null $record_id The action's place among the run's token records, when it named one.
+	 * @return array<string,string> Token map keyed by braced token identifier.
+	 */
+	public function tokens_map_at( string $date_time, ?int $record_id = null ): array {
+		if ( 0 === $record_id ) {
+			return array();
+		}
+		if ( null !== $record_id && $record_id > 0 && in_array( $record_id, array_column( $this->tokens_records, 'id' ), true ) ) {
+			$merged = array();
+			foreach ( $this->tokens_records as $record ) {
+				if ( $record['id'] <= $record_id ) {
+					$merged = array_merge( $merged, $record['tokens'] );
+				}
+			}
+			return $this->with_nested_tokens_filled_in( $merged );
+		}
+		if ( empty( $this->tokens_records ) || '' === $date_time ) {
+			return $this->tokens_map;
+		}
+		$moment = date_create_immutable( $date_time, wp_timezone() );
+		if ( false === $moment ) {
+			return $this->tokens_map;
+		}
+		// A step's row and its token record are written in the same second or close to it,
+		// but never as late as the next step: that record holds the next step's values (QA D103).
+		$until = $moment->getTimestamp() + self::TOKEN_RECORD_GRACE_SECONDS;
+		$next  = $this->next_step_time( $moment->getTimestamp() );
+		if ( null !== $next ) {
+			$until = min( $until, $next - 1 );
+		}
+		$merged = array();
+		foreach ( $this->tokens_records as $record ) {
+			if ( $record['added'] <= $until ) {
+				$merged = array_merge( $merged, $record['tokens'] );
+			}
+		}
+		if ( empty( $merged ) ) {
+			// A step dated before every record still ran with the run's first values.
+			$merged = $this->tokens_records[0]['tokens'];
+		}
+
+		return $this->with_nested_tokens_filled_in( $merged );
+	}
+
+	/**
+	 * Where an action stands among the run's token records, or null for a run logged before
+	 * actions noted their place.
+	 *
+	 * An action notes its place when it runs or when the filter skips it. In a run with
+	 * recorded places, an unmarked action has no known boundary. Row IDs reflect initial
+	 * allocation order, so only recorded places can associate tokens with those actions.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param int $action_log_id The action's log row.
+	 * @return int|null
+	 */
+	public function token_place_for( int $action_log_id ): ?int {
+		$own = $this->action_meta( $action_log_id, \Uncanny_Automator\Logger\Tokens_Logger::RECORD_META_KEY );
+		if ( null !== $own ) {
+			return (int) $own;
+		}
+		foreach ( $this->action_rows as $row ) {
+			if ( null !== $this->action_meta( (int) $row['ID'], \Uncanny_Automator\Logger\Tokens_Logger::RECORD_META_KEY ) ) {
+				return 0;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * The time of the run's first trigger or action step after a moment, or null.
+	 *
+	 * @param int $after Unix time of the step being shown.
+	 * @return int|null
+	 */
+	private function next_step_time( int $after ): ?int {
+		$next = null;
+		$rows = array_values( $this->action_rows );
+		foreach ( $this->trigger_rows as $trigger_rows ) {
+			$rows = array_merge( $rows, $trigger_rows );
+		}
+		foreach ( $rows as $row ) {
+			$time = date_create_immutable( (string) ( $row['date_time'] ?? '' ), wp_timezone() );
+			if ( false === $time || '' === (string) ( $row['date_time'] ?? '' ) ) {
+				continue;
+			}
+			$at = $time->getTimestamp();
+			if ( $at > $after && ( null === $next || $at < $next ) ) {
+				$next = $at;
+			}
+		}
+		return $next;
+	}
+
+	/**
+	 * tokens_map_at(), keyed by bare token code as wire_tokens() is.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string   $date_time The step's site-local MySQL datetime.
+	 * @param int|null $record_id The token record the action wrote, when it named one.
+	 * @return array<string,string>
+	 */
+	public function wire_tokens_at( string $date_time, ?int $record_id = null ): array {
+		return $this->bare_token_keys( $this->tokens_map_at( $date_time, $record_id ) );
+	}
+
+	/**
+	 * @param array<string,string> $tokens Token map keyed by braced identifier.
+	 * @return array<string,string> The same map keyed by bare token code.
+	 */
+	private function bare_token_keys( array $tokens ): array {
 		$out = array();
-		foreach ( $this->tokens_map as $key => $value ) {
+		foreach ( $tokens as $key => $value ) {
 			$out[ (string) preg_replace( '/^\{\{|\}\}$/', '', (string) $key ) ] = $value;
 		}
 
@@ -431,6 +656,19 @@ final class Run_Data_Bundle {
 	 */
 	public function action_meta( int $action_log_id, string $key ): ?string {
 		return $this->action_meta_bag[ $action_log_id ][ $key ] ?? null;
+	}
+
+	/**
+	 * Every `action_tokens` value an action log stored, oldest row first: the action's own (`hydrate_tokens()`), and
+	 * the runner's completion status.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param int $action_log_id The action_log row ID.
+	 * @return array<int,string> The stored JSON values; empty when the run stored none.
+	 */
+	public function action_tokens( int $action_log_id ): array {
+		return $this->action_tokens[ $action_log_id ] ?? array();
 	}
 
 	/**
@@ -642,8 +880,8 @@ final class Run_Data_Bundle {
 	}
 
 	/**
-	 * What Pro's loop recorded for a loop filter that matched no items for a reason the owner should read (it threw,
-	 * or the plugin it needs is not active): `{ met: false, message }`, or null when nothing was recorded.
+	 * What Pro's loop recorded for a loop filter that matched no items, with why (the reasons are listed on
+	 * Execution_Log_Store::META_LOOP_FILTER_OUTCOMES): `{ met: false, message }`, or null when nothing was recorded.
 	 *
 	 * @since 8.0.0
 	 *
@@ -691,7 +929,20 @@ final class Run_Data_Bundle {
 	 * @return array<string,mixed>|null The decoded config, or null when absent.
 	 */
 	public function delay_config_for_action( int $action_id ): ?array {
-		$decoded = json_decode( (string) $this->recipe_meta( Execution_Log_Store::META_ACTION_DELAYS ), true );
+		return self::decode_delay_config( (string) $this->recipe_meta( Execution_Log_Store::META_ACTION_DELAYS ), $action_id );
+	}
+
+	/**
+	 * One action's record in a run's stored action_delays meta.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $stored    The run's action_delays meta value (JSON).
+	 * @param int    $action_id Action post id.
+	 * @return array|null The record, or null when the action has none.
+	 */
+	public static function decode_delay_config( string $stored, int $action_id ): ?array {
+		$decoded = json_decode( $stored, true );
 		if ( ! is_array( $decoded ) || ! isset( $decoded[ $action_id ] ) ) {
 			return null;
 		}
@@ -743,6 +994,18 @@ final class Run_Data_Bundle {
 	 */
 	public function error_message_for( int $action_log_id ): ?string {
 		return $this->error_by_action_log[ $action_log_id ] ?? null;
+	}
+
+	/**
+	 * Looks up an error recorded against an action before it had an action-log row.
+	 *
+	 * @since 8.0.5
+	 *
+	 * @param int $action_id The action post ID.
+	 * @return string|null The error message, or null when none was recorded that way.
+	 */
+	public function error_message_for_action( int $action_id ): ?string {
+		return $this->error_by_action[ $action_id ] ?? null;
 	}
 
 	/**

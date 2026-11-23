@@ -258,7 +258,19 @@ class Telegram_Settings extends App_Integration_Settings {
 	 * @return array Modified response array
 	 */
 	protected function after_platform_disconnect( $response = array(), $data = array() ) {
-		$this->webhooks->delete_telegram_webhook();
+		// A token Telegram no longer accepts must not block the disconnect, which is the
+		// only way to enter a new token.
+		try {
+			$this->webhooks->delete_telegram_webhook();
+		} catch ( Exception $e ) {
+			automator_log(
+				'Error deleting the webhook during disconnect: ' . $e->getMessage(),
+				'Telegram disconnect cleanup',
+				AUTOMATOR_DEBUG_MODE,
+				$this->get_id()
+			);
+		}
+
 		$this->helpers->delete_channel_data();
 
 		return $response;

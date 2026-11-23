@@ -136,7 +136,7 @@ final class Node_Run_Visibility {
 	 */
 	private function created_after_run_start( int $post_id, Run_Data_Bundle $bundle ): bool {
 		$created = $bundle->node_created_at( $post_id );
-		$started = (string) ( $bundle->recipe_log_row()['date_time'] ?? '' );
+		$started = $bundle->run_started_at();
 		if ( null === $created || '' === $created || '' === $started ) {
 			return false;
 		}

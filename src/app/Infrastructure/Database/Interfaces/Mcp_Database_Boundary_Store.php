@@ -38,6 +38,24 @@ interface Mcp_Database_Boundary_Store {
 	public function table_boundaries( string $schema, array $names, string $prefix, bool $ignore_case ): ?array;
 
 	/**
+	 * @since 8.1.0
+	 * @param string $schema Database name.
+	 * @param string $table Approved table name.
+	 * @param bool   $ignore_case Whether the server ignores name case.
+	 * @return array Columns keyed by name, with data type, charset, and primary key membership.
+	 */
+	public function continuation_columns( string $schema, string $table, bool $ignore_case ): array;
+
+	/**
+	 * @since 8.1.0
+	 * @param string   $schema Database name.
+	 * @param string[] $tables Approved table names.
+	 * @param bool     $ignore_case Whether the server ignores name case.
+	 * @return array<string,array<string,string>>|null Types by table and column, or null on failure.
+	 */
+	public function column_types( string $schema, array $tables, bool $ignore_case ): ?array;
+
+	/**
 	 * @since 8.0.0
 	 * @param string   $schema Database name.
 	 * @param string   $prefix Site prefix, or empty to omit automatic discovery.
@@ -48,7 +66,8 @@ interface Mcp_Database_Boundary_Store {
 	 * @param bool     $schema_case Whether the schema ignores case.
 	 * @param string   $search Literal name search.
 	 * @param int      $limit Maximum rows to retrieve.
+	 * @param int      $offset Number of matches to skip.
 	 * @return array|null Metadata rows, or null on failure.
 	 */
-	public function table_page( string $schema, string $prefix, array $extra, array $restricted, bool $network_main, bool $ignore_case, bool $schema_case, string $search, int $limit ): ?array;
+	public function table_page( string $schema, string $prefix, array $extra, array $restricted, bool $network_main, bool $ignore_case, bool $schema_case, string $search, int $limit, int $offset = 0 ): ?array;
 }

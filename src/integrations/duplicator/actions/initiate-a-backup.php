@@ -19,21 +19,27 @@ class INITIATE_A_BACKUP extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 		$this->set_sentence( esc_attr_x( 'Initiate a backup', 'Duplicator', 'uncanny-automator' ) );
 		$this->set_readable_sentence( esc_attr_x( 'Initiate a backup', 'Duplicator', 'uncanny-automator' ) );
+		$this->set_plugin_details(
+			array(
+				'plugin_file'       => 'duplicator-pro/duplicator-pro.php',
+				'plugin_name'       => 'Duplicator Pro',
+				'distribution_type' => 'commercial',
+			)
+		);
 	}
 
 	/**
-	 * requirements_met
+	 * Whether this action's code can run against the Duplicator Pro that is loaded.
 	 *
-	 * Backups run through Duplicator Pro; with only the free plugin the action is hidden.
+	 * Backups run through Duplicator Pro; with only the free plugin the action is unavailable.
 	 *
-	 * @since 8.0.4
+	 * @since 8.1.0
 	 *
-	 * @return bool
+	 * @return bool|null True when Duplicator Pro is loaded, false when it is not.
 	 */
-	public function requirements_met() {
+	protected function is_plugin_compatible(): ?bool {
 		return defined( 'DUPLICATOR_PRO_VERSION' );
 	}
-
 
 	/**
 	 * @param $user_id

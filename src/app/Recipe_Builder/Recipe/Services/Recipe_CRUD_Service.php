@@ -20,6 +20,9 @@ use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Status;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Throttle;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Recipe_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Trigger_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Recipe_Trigger_Store;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Id;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Utilities\Recipe_Validator;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Utilities\Recipe_Formatter;
 use Uncanny_Automator\App\Events\Enums\Recipe_Change_Operation;
@@ -39,6 +42,13 @@ class Recipe_CRUD_Service {
 	 * @var Recipe_Store
 	 */
 	private $recipe_store;
+
+	/**
+	 * The recipe's triggers, read when an untyped draft takes a type.
+	 *
+	 * @var Recipe_Trigger_Store
+	 */
+	private $trigger_store;
 
 	/**
 	 * Recipe validator.
@@ -87,12 +97,15 @@ class Recipe_CRUD_Service {
 	 * @param Recipe_Validator|null   $validator    Recipe validator.
 	 * @param Recipe_Formatter|null   $formatter    Recipe formatter.
 	 * @param Recipe_Violation_Service|null $violation_service The rules a recipe must pass to go live.
+	 * @param Recipe_Trigger_Store|null     $trigger_store     The recipe's triggers, read when an untyped draft takes a type.
 	 */
-	public function __construct( $recipe_store = null, $validator = null, $formatter = null, ?Recipe_Violation_Service $violation_service = null ) {
+	public function __construct( $recipe_store = null, $validator = null, $formatter = null, ?Recipe_Violation_Service $violation_service = null, ?Recipe_Trigger_Store $trigger_store = null ) {
+		global $wpdb;
 		$this->recipe_store      = $recipe_store ?? new WP_Recipe_Store();
 		$this->validator         = $validator ?? new Recipe_Validator();
 		$this->formatter         = $formatter ?? new Recipe_Formatter();
 		$this->violation_service = $violation_service ?? Recipe_Violation_Service::instance();
+		$this->trigger_store     = $trigger_store ?? new WP_Recipe_Trigger_Store( $wpdb );
 	}
 
 	/**
@@ -200,6 +213,43 @@ class Recipe_CRUD_Service {
 	 * @return array|\WP_Error Updated recipe data on success, WP_Error on failure.
 	 */
 	public function update_recipe( $recipe_id, array $data ) {
+		// Choosing an untyped draft's first type is held under the same lock as a first
+		// trigger add (Trigger_CRUD_Service::add_to_recipe) and the type chooser
+		// (Recipe_Settings_Service::set_recipe_type), so no two of them each choose. The
+		// type and the triggers are read inside the operation, after the lock, fresh from
+		// the database.
+		$holds_type_decision = false;
+		if ( isset( $data['type'] ) && null === $this->recipe_store->get_recipe_type_raw( $this->coerce_recipe_id( $recipe_id ) ) ) {
+			$holds_type_decision = false !== $this->recipe_store->lock_recipe_type( $this->coerce_recipe_id( $recipe_id ) );
+			if ( ! $holds_type_decision ) {
+				return $this->formatter->error_response(
+					'recipe_type_busy',
+					'Another change to this recipe is still saving. Try again in a moment.',
+					array(
+						'status'    => 409,
+						'retryable' => true,
+					)
+				);
+			}
+		}
+
+		try {
+			return $this->update_recipe_operation( $recipe_id, $data );
+		} finally {
+			if ( $holds_type_decision ) {
+				$this->recipe_store->unlock_recipe_type( $this->coerce_recipe_id( $recipe_id ) );
+			}
+		}
+	}
+
+	/**
+	 * The update itself, as one recipe change operation. See update_recipe().
+	 *
+	 * @param int|string $recipe_id Recipe ID.
+	 * @param array      $data      Recipe data to update.
+	 * @return array|\WP_Error
+	 */
+	private function update_recipe_operation( $recipe_id, array $data ) {
 		return Recipe_Change_Events::operation(
 			function () use ( $recipe_id, $data ) {
 
@@ -227,8 +277,32 @@ class Recipe_CRUD_Service {
 					}
 				}
 
+				// Business rule: an untyped draft (the welcome screen hands one to an AI) takes
+				// a type once, from an update that names one. An update that names none leaves it
+				// untyped, so a later Everyone trigger can still set it.
+				$stored_type = $this->recipe_store->get_recipe_type_raw( $this->coerce_recipe_id( $recipe_id ) );
+				if ( null === $stored_type && isset( $data['type'] ) && ! $this->validator->is_valid_type( $data['type'] ) ) {
+					return $this->formatter->error_response(
+						'recipe_type_invalid',
+						'Recipe type must be "user" or "anonymous".',
+						array( 'attempted_type' => $data['type'] )
+					);
+				}
+				$keep_untyped = null === $stored_type && ! isset( $data['type'] );
+
+				// A per-user run limit only applies to a logged-in-users recipe, and a draft that
+				// stays untyped may become an Everyone recipe. Refuse it rather than report it saved
+				// and drop it. A total run limit is kept: both types store it the same way.
+				if ( $keep_untyped && array_key_exists( 'times_per_user', $data ) ) {
+					return $this->formatter->error_response(
+						'recipe_run_limit_needs_type',
+						'A per-user run limit needs the recipe type first. Add the first trigger, or send type "user" in the same request. Nothing in this request was saved.',
+						array( 'recipe_id' => $this->coerce_recipe_id( $recipe_id ) )
+					);
+				}
+
 				// Business rule: Recipe type cannot be changed after creation.
-				if ( isset( $data['type'] ) && $data['type'] !== $existing_recipe->get_recipe_type()->get_value() ) {
+				if ( null !== $stored_type && isset( $data['type'] ) && $data['type'] !== $existing_recipe->get_recipe_type()->get_value() ) {
 					return $this->formatter->error_response(
 						'recipe_type_immutable',
 						sprintf(
@@ -240,6 +314,33 @@ class Recipe_CRUD_Service {
 							'attempted_type' => $data['type'],
 						)
 					);
+				}
+
+				// Business rule: an untyped draft that already holds triggers (saved before drafts
+				// took a type) only takes the type its triggers have; anything else leaves triggers
+				// that contradict the recipe. With the triggers matching, the publish check below
+				// judges the same type this update writes.
+				if ( null === $stored_type && isset( $data['type'] ) ) {
+					try {
+						$triggers = $this->trigger_store->get_recipe_triggers( new Recipe_Id( $this->coerce_recipe_id( $recipe_id ) ) )->get_triggers();
+					} catch ( \Exception $e ) {
+						return $this->formatter->error_response( 'recipe_type_unconfirmed', 'The recipe\'s triggers could not be read, so the type was not changed. Try again.', array( 'retryable' => true ) );
+					}
+					foreach ( $triggers as $trigger ) {
+						if ( $trigger->get_trigger_type()->get_value() !== $data['type'] ) {
+							return $this->formatter->error_response(
+								'recipe_type_conflicts_with_triggers',
+								sprintf(
+									'This recipe already has "%1$s" triggers, so its type can only be "%1$s". Nothing in this request was saved.',
+									$trigger->get_trigger_type()->get_value()
+								),
+								array(
+									'trigger_type'   => $trigger->get_trigger_type()->get_value(),
+									'attempted_type' => $data['type'],
+								)
+							);
+						}
+					}
 				}
 
 				// Going live passes the builder switch's rules, before anything is written.
@@ -294,26 +395,51 @@ class Recipe_CRUD_Service {
 					$config->throttle( $updated_data['throttle'] );
 				}
 
-				$recipe = new Recipe( $config );
+				// A value the recipe can't take (a status other than draft, publish or trash; an unknown
+				// trigger logic) is refused before anything is written, as create_recipe() refuses it.
+				try {
+					$recipe = new Recipe( $config );
+				} catch ( \InvalidArgumentException $e ) {
+					return $this->formatter->error_response( 'recipe_update_failed', 'Update recipe failed: ' . $e->getMessage(), array( 'recipe_id' => $recipe_id ) );
+				}
 
 				try {
-					$stored_recipe = $this->recipe_store->save( $recipe );
+					// A still-untyped draft is saved without a type, never written and then removed.
+					$stored_recipe = $keep_untyped
+						? $this->recipe_store->save_without_type( $recipe, array_key_exists( 'total_times', $data ) )
+						: $this->recipe_store->save( $recipe );
 
 					$this->complete_recipe_write( Recipe_Change_Operation::UPDATED, $this->coerce_recipe_id( $recipe_id ) );
 
+					// A full save does not check the type write. When this update chose the draft's
+					// first type, confirm it stored: otherwise the reply would show the fallback type.
+					if ( null === $stored_type && isset( $data['type'] ) && $data['type'] !== $this->recipe_store->get_recipe_type_raw( $this->coerce_recipe_id( $recipe_id ) ) ) {
+						return $this->update_unconfirmed( $recipe_id );
+					}
+
 					return $stored_recipe->to_array();
 				} catch ( \Exception $e ) {
-					return $this->formatter->error_response(
-						'recipe_update_unconfirmed',
-						'The recipe update could not be confirmed. Check the recipe on the site before retrying.',
-						array(
-							'status'    => 500,
-							'outcome'   => 'unconfirmed',
-							'recipe_id' => $this->coerce_recipe_id( $recipe_id ),
-						)
-					);
+					return $this->update_unconfirmed( $recipe_id );
 				}
 			}
+		);
+	}
+
+	/**
+	 * The reply when an update may have written some fields but its result could not be confirmed.
+	 *
+	 * @param int|string $recipe_id Recipe ID.
+	 * @return \WP_Error
+	 */
+	private function update_unconfirmed( $recipe_id ) {
+		return $this->formatter->error_response(
+			'recipe_update_unconfirmed',
+			'The recipe update could not be confirmed. Check the recipe on the site before retrying.',
+			array(
+				'status'    => 500,
+				'outcome'   => 'unconfirmed',
+				'recipe_id' => $this->coerce_recipe_id( $recipe_id ),
+			)
 		);
 	}
 

@@ -16,6 +16,7 @@ use Uncanny_Automator\App\Recipe_Builder\Action\Registry\WP_Action_Registry;
 use Uncanny_Automator\App\Recipe_Builder\Condition\Services\Condition_Registry_Service;
 use Uncanny_Automator\App\Recipe_Builder\Loop\Services\Filter\Filter_Registry_Service;
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
+use Uncanny_Automator\App\Integration_Catalog\Services\Item_Availability_Provider;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Block_Modifier_Types;
 
@@ -73,7 +74,9 @@ class Integration_Map_Builder {
 	 * Build indexed map of registered integrations.
 	 *
 	 * Fast extraction of item codes only - no full discovery.
-	 * Returns array keyed by integration code with item_codes only.
+	 * Returns array keyed by integration code with item_codes only. The trigger,
+	 * action, condition and loop filter codes include the unavailable ones the
+	 * catalog lists (Item_Availability_Provider::listed_unavailable_codes()).
 	 *
 	 * @return array Indexed map
 	 */
@@ -83,18 +86,19 @@ class Integration_Map_Builder {
 		$action_registry     = new WP_Action_Registry();
 		$condition_service   = Condition_Registry_Service::instance();
 		$loop_filter_service = Filter_Registry_Service::instance();
+		$availability        = Item_Availability_Provider::instance();
 		$all_integrations    = $registry->get_all_integrations();
 		$map                 = array();
 
 		foreach ( $all_integrations as $code => $integration ) {
 			$map[ $code ] = array(
 				'item_codes'           => array(
-					Integration_Item_Types::TRIGGER => $this->extract_trigger_codes( $code, $trigger_registry ),
-					Integration_Item_Types::ACTION  => $this->extract_action_codes( $code, $action_registry ),
+					Integration_Item_Types::TRIGGER => array_merge( $this->extract_trigger_codes( $code, $trigger_registry ), $availability->listed_unavailable_codes( Integration_Item_Types::TRIGGER, (string) $code ) ),
+					Integration_Item_Types::ACTION  => array_merge( $this->extract_action_codes( $code, $action_registry ), $availability->listed_unavailable_codes( Integration_Item_Types::ACTION, (string) $code ) ),
 				),
 				'block_modifier_codes' => array(
-					Block_Modifier_Types::FILTER_CONDITION => $this->extract_condition_codes( $code, $condition_service ),
-					Block_Modifier_Types::LOOP_FILTER      => $this->extract_loop_filter_codes( $code, $loop_filter_service ),
+					Block_Modifier_Types::FILTER_CONDITION => array_merge( $this->extract_condition_codes( $code, $condition_service ), $availability->listed_unavailable_codes( Block_Modifier_Types::FILTER_CONDITION, (string) $code ) ),
+					Block_Modifier_Types::LOOP_FILTER      => array_merge( $this->extract_loop_filter_codes( $code, $loop_filter_service ), $availability->listed_unavailable_codes( Block_Modifier_Types::LOOP_FILTER, (string) $code ) ),
 				),
 			);
 		}

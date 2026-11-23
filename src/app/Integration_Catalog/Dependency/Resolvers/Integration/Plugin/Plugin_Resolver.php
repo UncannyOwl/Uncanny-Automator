@@ -18,9 +18,15 @@ use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Serv
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Resolvers\Abstract_Resolver;
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Store;
 use Uncanny_Automator\App\Recipe_Builder\Services\Availability\Integration_Plugin_Presence;
+use Uncanny_Automator\App\Integration_Catalog\Dependency\Dependency;
+use Uncanny_Automator\App\Integration_Catalog\Dependency\Enums\Plugin_State;
+use Uncanny_Automator\App\Integration_Catalog\Dependency\Stated_Row_Id;
 
 /**
  * Resolves plugin installation/activation dependencies.
+ *
+ * For an item, also the plugin it needs beyond its integration and the other integration it needs, built from the
+ * requirements the registration pass stored with it (`$item['requirements']`); the item is never asked again.
  *
  * NOTE: This resolver is Integration-specific and will not evaluate for other entity types.
  *
@@ -30,6 +36,16 @@ use Uncanny_Automator\App\Recipe_Builder\Services\Availability\Integration_Plugi
  * @property Plugin_Scenario $scenario
  */
 class Plugin_Resolver extends Abstract_Resolver {
+
+	/**
+	 * The key in an item's answer naming the integration the plugin it needs belongs to, when that is not the item's
+	 * own (Automator's, for an item that needs a newer Automator). Its row shows that integration's developer and icon.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @var string
+	 */
+	public const PLUGIN_OWNER = 'plugin_owner';
 
 	/**
 	 * Plugin details.
@@ -89,8 +105,9 @@ class Plugin_Resolver extends Abstract_Resolver {
 	/**
 	 * Check if should be evaluated.
 	 *
-	 * Evaluates for plugin-type integrations, and for any integration naming a
-	 * parent it needs installed. Returns false for non-Integration entities.
+	 * Evaluates for plugin-type integrations, for any integration naming a
+	 * parent it needs installed, and for an item that names a plugin or another
+	 * integration it needs. Returns false for non-Integration entities.
 	 *
 	 * @param Dependency_Evaluatable $entity Entity object (Integration, Block, etc)
 	 * @param array|null $item Item data (null for entity-level)
@@ -109,13 +126,50 @@ class Plugin_Resolver extends Abstract_Resolver {
 		// whose code ships in a separate add-on — and is_plugin() is false for every
 		// one of them, so type alone cannot be the question.
 		return $this->entity->is_plugin()
-			|| ( $this->plugin && '' !== $this->plugin->get_integration_required() );
+			|| ( $this->plugin && '' !== $this->plugin->get_integration_required() )
+			|| $this->item_declares_plugin_details();
+	}
+
+	/**
+	 * Whether the item being resolved stored a plugin or another integration it needs.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return bool False at integration level.
+	 */
+	private function item_declares_plugin_details(): bool {
+		$details = $this->item_plugin_details();
+
+		return '' !== (string) ( $details['plugin_file'] ?? '' ) || '' !== (string) ( $details['integration_required'] ?? '' );
+	}
+
+	/**
+	 * The requirements the registration pass stored with the item being resolved.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return array Empty at integration level, or for an item that stored none.
+	 */
+	private function item_requirements(): array {
+		return null !== $this->item ? (array) ( $this->item['requirements'] ?? array() ) : array();
+	}
+
+	/**
+	 * The plugin details stored with the item being resolved.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return array Empty at integration level, or for an item that stored none.
+	 */
+	private function item_plugin_details(): array {
+		return (array) ( $this->item_requirements()['plugin_details'] ?? array() );
 	}
 
 	/**
 	 * Evaluate plugin dependency.
 	 *
-	 * Returns flat array with parent dependencies first, then self.
+	 * Returns flat array with parent dependencies first, then self, then, for an
+	 * item, the rows for what the item needs beyond its integration.
 	 *
 	 * @return array Array of Dependency objects
 	 */
@@ -151,7 +205,8 @@ class Plugin_Resolver extends Abstract_Resolver {
 				$dependencies[] = $this->resolve_self();
 			}
 
-			return $dependencies;
+			// 3. An item's own needs, from what it stored.
+			return array_merge( $dependencies, $this->resolve_item() );
 		} finally {
 			// Always pop from stack.
 			array_pop( self::$resolution_stack );
@@ -177,13 +232,13 @@ class Plugin_Resolver extends Abstract_Resolver {
 		// row to install and no name to give, and a disabled button with no reason reads as broken.
 		$dependency_ids = array();
 		if ( null !== $this->catalog_parent() ) {
-			$dependency_ids[] = sprintf( 'installable-%s', $this->plugin->get_integration_required() );
+			$dependency_ids[] = Stated_Row_Id::integration( $this->plugin->get_integration_required() );
 		}
 
 		return $this->create_dependency(
 			array(
 				'type'         => 'installable',
-				'id'           => sprintf( 'installable-%s', $this->get_code() ),
+				'id'           => Stated_Row_Id::integration( $this->get_code() ),
 				'name'         => $integration_name,
 				'description'  => $is_inactive
 					? $this->scenario->get_inactive_description( $integration_name, $blocked_by )
@@ -203,14 +258,142 @@ class Plugin_Resolver extends Abstract_Resolver {
 	}
 
 	/**
-	 * Get tags for this plugin dependency.
+	 * The rows for what the item being resolved needs beyond its integration, from the requirements it stored: the
+	 * other integration it needs while that one is not active (that integration's own install rows), then the
+	 * plugin it names.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return Dependency[] Empty at integration level, or when the item stored nothing it needs.
+	 */
+	private function resolve_item(): array {
+		$requirements = $this->item_requirements();
+		$details      = $this->item_plugin_details();
+		$rows         = array();
+
+		$required = (string) ( $details['integration_required'] ?? '' );
+		if ( '' !== $required && false === ( $requirements['integration_met'] ?? true ) ) {
+			$rows = $this->resolve_parent_integration( $required );
+		}
+
+		$state = (string) ( $requirements['plugin_state'] ?? Plugin_State::NONE );
+		if ( '' !== (string) ( $details['plugin_file'] ?? '' ) && Plugin_State::NONE !== $state ) {
+			$row = $this->resolve_item_plugin( $details, $state );
+			if ( null !== $row ) {
+				$rows[] = $row;
+			}
+		}
+
+		return $rows;
+	}
+
+	/**
+	 * The row for the plugin an item needs, in the state the registration pass stored. Missing and met read as the
+	 * integration's own install row does for that distribution type; inactive offers activation; outdated and
+	 * unsupported point to the WordPress updates screen.
+	 *
+	 * The developer and icon are those of the integration the plugin belongs to ({@see self::plugin_owner()}). A row
+	 * needs a name, an icon, and a developer name and site; without any of them, or without that integration in the
+	 * catalog, it cannot be built (and the builder could not read it), so it is left out and logged instead, and the
+	 * item's other rows still show.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array  $details The plugin details the item stored.
+	 * @param string $state   The plugin state, a {@see Plugin_State} value.
+	 *
+	 * @return Dependency|null Null when the row cannot be built.
+	 */
+	private function resolve_item_plugin( array $details, string $state ): ?Dependency {
+		$id    = Stated_Row_Id::plugin( $this->get_code(), (string) ( $this->item['code'] ?? '' ) );
+		$owner = $this->plugin_owner();
+
+		if ( null === $owner ) {
+			automator_log( sprintf( 'Item plugin row %s left out: the catalog has no %s integration to take the plugin\'s developer and icon from.', $id, (string) ( $this->item_requirements()[ self::PLUGIN_OWNER ] ?? '' ) ), 'Plugin_Resolver' );
+
+			return null;
+		}
+
+		$name      = (string) ( $details['plugin_name'] ?? '' );
+		$developer = $owner->get_details()->get_developer();
+		$site      = (string) $developer->get_site();
+		$icon      = $owner->get_details()->get_icon();
+
+		if ( '' === $name || '' === $site || '' === $developer->get_name() || '' === $icon ) {
+			automator_log( sprintf( 'Item plugin row %s left out: it needs a plugin name, an icon, and the developer name and site of the integration the plugin belongs to.', $id ), 'Plugin_Resolver' );
+
+			return null;
+		}
+
+		$distribution_type = (string) ( $details['distribution_type'] ?? '' );
+		$scenario_id       = $this->scenario->get_scenario_id( $distribution_type );
+
+		switch ( $state ) {
+			case Plugin_State::INACTIVE:
+				$description = $this->scenario->get_inactive_description( $name );
+				$cta         = $this->scenario->create_activate_cta( $name );
+				break;
+			case Plugin_State::OUTDATED:
+				$description = $this->scenario->get_outdated_description( $name, (string) ( $details['min_version'] ?? '' ) );
+				$cta         = $this->scenario->create_update_cta( $name );
+				break;
+			case Plugin_State::UNSUPPORTED:
+				$description = $this->scenario->get_unsupported_description( $name );
+				$cta         = $this->scenario->create_check_updates_cta();
+				break;
+			default:
+				$description = $this->scenario->get_description( $scenario_id, $name );
+				$cta         = $this->scenario->create_cta( $scenario_id, $name, $site );
+				break;
+		}
+
+		return $this->create_dependency(
+			array(
+				'type'        => 'installable',
+				'id'          => $id,
+				'name'        => $name,
+				'description' => $description,
+				'is_met'      => Plugin_State::MET === $state,
+				'cta'         => $cta,
+				'scenario_id' => $scenario_id,
+				'icon'        => $icon,
+				'developer'   => $developer->to_array(),
+				'tags'        => $this->get_tags( $distribution_type ),
+			)
+		);
+	}
+
+	/**
+	 * The integration the plugin an item needs belongs to, whose developer and icon its row shows: the one the
+	 * item's answer names under {@see self::PLUGIN_OWNER}, else the item's own integration.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return Integration|null Null when the answer names an integration the catalog does not know.
+	 */
+	private function plugin_owner(): ?Integration {
+		$owner = (string) ( $this->item_requirements()[ self::PLUGIN_OWNER ] ?? '' );
+
+		if ( '' === $owner ) {
+			return $this->entity;
+		}
+
+		return Integration_Store::get_instance()->get_by_code( $owner );
+	}
+
+	/**
+	 * Get tags for a plugin dependency.
+	 *
+	 * @param string|null $distribution_type The plugin's distribution type; null for this integration's own plugin.
 	 *
 	 * @return array Array of tag arrays.
 	 */
-	private function get_tags(): array {
-		$distribution_type = $this->plugin
-			? $this->plugin->get_distribution_type()
-			: Distribution_Type::COMMERCIAL;
+	private function get_tags( ?string $distribution_type = null ): array {
+		if ( null === $distribution_type ) {
+			$distribution_type = $this->plugin
+				? $this->plugin->get_distribution_type()
+				: Distribution_Type::COMMERCIAL;
+		}
 
 		// Base tag for all installable dependencies.
 		$tags = array(

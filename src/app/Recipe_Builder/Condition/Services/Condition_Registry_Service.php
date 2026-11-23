@@ -193,22 +193,11 @@ class Condition_Registry_Service {
 				$all_conditions = array( $integration => $all_conditions[ $integration ] ?? array() );
 			}
 
-			$conditions_list   = array();
-			$integration_names = array_column( $this->condition_registry->get_available_integrations(), 'name', 'code' );
+			$conditions_list = array();
 
 			foreach ( $all_conditions as $integration_code => $conditions ) {
 				foreach ( $conditions as $condition_code => $condition ) {
-					$conditions_list[] = array(
-						'integration_code' => $integration_code,
-						'integration_name' => $integration_names[ $integration_code ] ?? $integration_code,
-						'condition_code'   => $condition_code,
-						'name'             => $condition['name'] ?? '',
-						'dynamic_name'     => $condition['dynamic_name'] ?? '',
-						'is_pro'           => $condition['is_pro'] ?? true,
-						'requires_user'    => $condition['requires_user'] ?? false,
-						'deprecated'       => $condition['deprecated'] ?? false,
-						'manifest'         => $condition['manifest'] ?? array(),
-					);
+					$conditions_list[] = $this->condition_registry->to_listed_condition( (string) $integration_code, (string) $condition_code, $condition );
 				}
 			}
 
@@ -230,6 +219,20 @@ class Condition_Registry_Service {
 			);
 		}
 	}
+
+	/**
+	 * The definitions an integration's conditions registered, keyed by condition code, as they registered them.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $integration_code Integration code.
+	 *
+	 * @return array<string, array>
+	 */
+	public function get_conditions_by_integration( string $integration_code ): array {
+		return $this->condition_registry->get_conditions_by_integration( $integration_code );
+	}
+
 	/**
 	 * Condition exists.
 	 *

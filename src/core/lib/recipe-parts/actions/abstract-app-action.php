@@ -878,10 +878,12 @@ abstract class App_Action extends Action {
 	/**
 	 * Resolve the source's size + MIME + display label for P2 + P3.
 	 *
-	 * Three input shapes:
+	 * Four input shapes:
 	 *  - Numeric attachment id → media-library row.
 	 *  - Local path under `wp-content/uploads/` → filesystem inspection.
-	 *  - External URL (`https?://`) → wp_remote_head, requires explicit
+	 *  - Media-library URL (under the uploads folder's URL) → filesystem
+	 *    inspection of the file it names.
+	 *  - Any other URL (`https?://`) → wp_remote_head, requires explicit
 	 *    Content-Length + Content-Type.
 	 *
 	 * @param string $source Raw source from the recipe author.
@@ -919,9 +921,18 @@ abstract class App_Action extends Action {
 			);
 		}
 
-		// External URL.
+		// URL. A media-library URL names a file on this site's disk: read it
+		// there, as the serve endpoint does. A HEAD through the site's own
+		// front door can come back without Content-Length, from a CDN or a
+		// proxy that compresses the answer.
 		if ( 1 === preg_match( '#^https?://#i', $source ) ) {
-			return self::inspect_remote_url( $source );
+			$media_path = ( new Allowed_Path_Policy() )->media_library_path( $source );
+
+			if ( null === $media_path ) {
+				return self::inspect_remote_url( $source );
+			}
+
+			$source = $media_path;
 		}
 
 		// Local path — already absolute: prepare_upload_request() rebased a

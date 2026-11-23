@@ -53,12 +53,18 @@ class ET_RSVP_TICKETS_GENERATED_PRODUCT extends \Uncanny_Automator\Recipe\Trigge
 		/* translators: %1$s event field, %2$s ticket field, %3$s status field */
 		$this->set_sentence( sprintf( esc_html_x( 'RSVP tickets are generated for {{a ticket type:%2$s}} on {{an event:%1$s}} with {{a status:%3$s}}', 'The Events Calendar', 'uncanny-automator' ), $this->get_trigger_meta(), 'ECTICKET:' . $this->get_trigger_meta(), 'ECRSVPSTATUS:' . $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_html_x( 'RSVP tickets are generated for {{a ticket type}} on {{an event}} with {{a status}}', 'The Events Calendar', 'uncanny-automator' ) );
+
+		$this->set_plugin_details( self::event_tickets_plugin_details() );
 	}
 
 	/**
-	 * @return bool
+	 * Whether Event Tickets is loaded, from its own folder or a renamed one.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return bool|null True when Event Tickets is loaded, false when it is not.
 	 */
-	public function requirements_met() {
+	protected function is_plugin_compatible(): ?bool {
 		return $this->et_active();
 	}
 

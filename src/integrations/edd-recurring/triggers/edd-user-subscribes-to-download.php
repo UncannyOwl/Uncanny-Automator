@@ -72,8 +72,21 @@ class EDD_USER_SUBSCRIBES_TO_DOWNLOAD extends Trigger {
 		$subscription        = $hook_args[1];
 		$download_id         = $subscription['id'];
 
-		// Set user ID for the trigger
-		$user_id = get_current_user_id();
+		// The subscriber comes from the subscription's customer, not from the session: Stripe and PayPal
+		// record the signup in a webhook with nobody signed in. The signed-in user is the fallback.
+		$user_id = 0;
+		$signup  = $hook_args[0];
+		if ( is_object( $signup ) && ! empty( $signup->customer_id ) && function_exists( 'edd_get_customer' ) ) {
+			$customer = edd_get_customer( $signup->customer_id );
+			if ( $customer && ! empty( $customer->user_id ) ) {
+				$user_id = absint( $customer->user_id );
+			}
+		}
+
+		if ( 0 === $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
 		if ( $user_id ) {
 			$this->set_user_id( $user_id );
 		}

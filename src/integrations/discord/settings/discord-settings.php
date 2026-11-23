@@ -31,15 +31,16 @@ class Discord_Settings extends App_Integration_Settings {
 	 * @return array Formatted account information for UI display
 	 */
 	protected function get_formatted_account_info() {
-		$account    = $this->helpers->get_account_info();
-		$avatar_url = ! empty( $account['avatar'] )
+		$account = $this->helpers->get_account_info();
+		$picture = ! empty( $account['avatar'] )
 			? 'https://cdn.discordapp.com/avatars/' . $account['id'] . '/' . $account['avatar'] . '.png'
 			: '';
 
 		return array(
-			'avatar_url' => $avatar_url,
-			'main_info'  => $account['email'],
-			'additional' => $account['username'],
+			'avatar_type'  => '' !== $picture ? 'image' : 'icon',
+			'avatar_value' => '' !== $picture ? $picture : $this->get_icon(),
+			'main_info'    => $account['email'],
+			'additional'   => $account['username'],
 		);
 	}
 

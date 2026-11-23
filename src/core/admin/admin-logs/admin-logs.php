@@ -24,9 +24,6 @@ class Admin_Logs {
 
 		// Register the options menu
 		$this->submenu_page();
-
-		// Load tabs
-		$this->load_tabs();
 	}
 	/**
 	 * Set asset.
@@ -60,57 +57,34 @@ class Admin_Logs {
 	}
 
 	/**
-	 * Load the tabs classes
-	 */
-	private function load_tabs() {
-
-		$this->load_tab( 'recipe' );
-
-		$this->load_tab( 'trigger' );
-
-		$this->load_tab( 'action' );
-
-		$this->load_tab( 'ai-activity' );
-
-		// $this->load_tab( 'api' );
-	}
-
-	/**
-	 * Loads the PHP file with the class that defines a tab
+	 * Creates the output of the Logs page: the Logs viewer and the run dialog.
 	 *
-	 * @param  string $tab_key The tab ID
-	 */
-	private function load_tab( $tab_key ) {
-
-		include_once __DIR__ . DIRECTORY_SEPARATOR . 'tabs/' . sanitize_file_name( $tab_key ) . '.php';
-	}
-
-	/**
-	 * Creates the output of the "Settings" page
+	 * @since 8.1.0 Renders the Logs viewer in place of the list tables.
+	 *
+	 * @return void
 	 */
 	public function submenu_page_output() {
 
-		// Get the tabs.
-		$tabs = $this->get_top_level_tabs();
+		// A link to one of the old Logs tabs (?tab=trigger) opens the viewer's matching tab.
+		$legacy_tabs   = array(
+			'recipe'      => 'recipe',
+			'trigger'     => 'trigger',
+			'action'      => 'action',
+			'ai-activity' => 'ai-activity',
+		);
+		$requested_tab = automator_filter_has_var( 'tab' ) ? sanitize_text_field( automator_filter_input( 'tab' ) ) : '';
 
-		// Get the current tab
-		$current_tab = automator_filter_has_var( 'tab' ) ? sanitize_text_field( automator_filter_input( 'tab' ) ) : 'recipe';
+		// A link to one run leaves the hash to the viewer, which opens the run only while the address has none, over the tab ?tab= names.
+		$names_a_run     = automator_filter_has_var( 'log_dialog_id' ) && automator_filter_has_var( 'log_recipe_id' ) && automator_filter_has_var( 'log_run_number' );
+		$legacy_tab_hash = $names_a_run ? '' : ( $legacy_tabs[ $requested_tab ] ?? '' );
 
-		// Check if the user is requesting the focus version.
-		$layout_version = automator_filter_has_var( 'automator_hide_settings_tabs' ) ? 'focus' : 'default';
+		// The AI activity tab shows only to a user who can manage AI, as before.
+		$show_ai_activity = Admin_Ai_Settings::current_user_can_manage_ai();
 
-		// Add the actions and get the selected tab.
-		foreach ( $tabs as $tab_key => $tab ) {
-
-			// Check if the function is defined.
-			if ( isset( $tab->function ) ) {
-				add_action( 'automator_admin_logs_top_level_tabs_item_content_' . $tab_key, $tab->function );
-			}
-
-			// Check if this is the selected tab
-			$tab->is_selected = $tab_key === $current_tab;
-
-		}
+		// The App events tab shows only to an administrator of Automator, since an app event carries what the app sent,
+		// and only on a site that has app events, or an app connected that sends them.
+		$show_app_events = current_user_can( automator_get_admin_capability() ) // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- The admin capability is filterable.
+			&& ( new \Uncanny_Automator\App\Recipe_Logs\App_Events\Services\App_Events_Availability() )->has_app_events();
 
 		// Load the view.
 		include Utilities::automator_get_view( 'admin-logs/admin-logs.php' );

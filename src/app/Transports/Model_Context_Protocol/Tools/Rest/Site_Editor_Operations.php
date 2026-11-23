@@ -56,7 +56,9 @@ final class Site_Editor_Operations {
 		if ( ! ( $read || $edit || $create || $delete ) || array( $callback[0], $permission ) !== ( $handler['permission_callback'] ?? null ) ) {
 			return null;
 		}
-		// Core's theme GET can initialize the active theme's global-styles post.
+		// WP_REST_Themes_Controller::prepare_links() can create the active theme's
+		// wp_global_styles post while building its edit link. Keep the write scope
+		// and site-management consent so readers cannot initialize that record.
 		$read_only = $read && 'themes' !== $family;
 		$policy    = array(
 			'read_only'       => $read_only,

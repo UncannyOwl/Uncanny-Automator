@@ -28,6 +28,19 @@ use Uncanny_Automator\App\Recipe_Builder\Trigger\Services\Trigger_Registry_Servi
 class Integration_Details_Normalizer {
 
 	/**
+	 * The query args that open an integration's settings page as the connect popup: no admin chrome, no settings
+	 * tabs. Each is set to '1'.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @var string[]
+	 */
+	const SETTINGS_URL_POPUP_ARGS = array(
+		'automator_minimal',
+		'automator_hide_settings_tabs',
+	);
+
+	/**
 	 * Reads a registered action's requires_user_data.
 	 *
 	 * @since 8.0.0
@@ -372,13 +385,7 @@ class Integration_Details_Normalizer {
 	 * @return string URL with settings parameters
 	 */
 	private function apply_settings_url_minimal_params( string $url ) {
-		return add_query_arg(
-			array(
-				'automator_minimal'            => '1',
-				'automator_hide_settings_tabs' => '1',
-			),
-			$url
-		);
+		return add_query_arg( array_fill_keys( self::SETTINGS_URL_POPUP_ARGS, '1' ), $url );
 	}
 
 	/**

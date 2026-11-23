@@ -12,6 +12,8 @@ use Uncanny_Automator\Integrations\Sugar_Calendar\Tokens\Trigger\Loopable\Attend
  */
 class Sugar_Calendar_Ticket_Purchased extends \Uncanny_Automator\Recipe\Trigger {
 
+	use Sugar_Calendar_Requirements;
+
 	/**
 	 * Setup trigger.
 	 *
@@ -33,14 +35,18 @@ class Sugar_Calendar_Ticket_Purchased extends \Uncanny_Automator\Recipe\Trigger 
 		$this->set_loopable_tokens( array( 'ATTENDEES' => Attendees::class ) );
 
 		$this->add_action( 'sc_et_checkout_pre_redirect', 10, 2 );
+
+		$this->set_plugin_details( self::ticketing_plugin_details() );
 	}
 
 	/**
-	 * Check if the ticketing add-on is available.
+	 * Whether Sugar Calendar's ticketing functions are loaded: Sugar Calendar 3.1.0 or newer, or the Event Ticketing add-on.
 	 *
-	 * @return bool
+	 * @since 8.1.0
+	 *
+	 * @return bool|null True when the ticketing functions are loaded, false when they are not.
 	 */
-	public function requirements_met() {
+	protected function is_plugin_compatible(): ?bool {
 		return function_exists( 'Sugar_Calendar\\AddOn\\Ticketing\\Common\\Functions\\add_order' );
 	}
 

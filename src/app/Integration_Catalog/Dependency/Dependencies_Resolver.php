@@ -14,17 +14,20 @@ use Uncanny_Automator\App\Integration_Catalog\Dependency\Resolvers\Integration\L
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Resolvers\Integration\Plugin\Plugin_Resolver;
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Resolvers\Integration\Account\Account_Resolver;
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Resolvers\Integration\Environment\Environment_Resolver;
+use Uncanny_Automator\App\Integration_Catalog\Dependency\Resolvers\Integration\Setup\Setup_Resolver;
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Resolvers\Block\License\License_Resolver as Block_License_Resolver;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Integration;
+use Uncanny_Automator\App\Integration_Catalog\Services\Item_Availability_Provider;
 use Uncanny_Automator\App\Recipe_Builder\Block\Block;
 
 /**
  * Orchestrates dependency resolution for blocks, integrations, and their items.
  *
- * Coordinates four types of dependencies:
+ * Coordinates five types of dependencies:
  * - license: Automator license/tier requirements
  * - plugin: Plugin installation/activation requirements (integrations only)
  * - account: App connection requirements (integrations only)
+ * - setup: The setup steps an item (trigger, action, condition or loop filter) needs on the site, on plugin and app integrations (items only)
  * - environment: What the site itself must be, e.g. a multisite network (integrations only)
  *
  * @since 7.0.0
@@ -68,7 +71,7 @@ class Dependencies_Resolver {
 	/**
 	 * Register integration dependency resolvers, keyed by dependency type.
 	 *
-	 * Insertion order (license, plugin, account, environment) is preserved so
+	 * Insertion order (license, plugin, account, setup, environment) is preserved so
 	 * `resolve_integration_dependencies()`'s merged output order is
 	 * unchanged; the keys let `resolve_integration_setup_dependencies()`
 	 * skip the license resolver before evaluation.
@@ -80,6 +83,7 @@ class Dependencies_Resolver {
 			'license'     => new License_Resolver( $this->context ),
 			'plugin'      => new Plugin_Resolver( $this->context ),
 			'account'     => new Account_Resolver( $this->context ),
+			'setup'       => new Setup_Resolver( $this->context ),
 			'environment' => new Environment_Resolver( $this->context ),
 		);
 	}
@@ -152,19 +156,27 @@ class Dependencies_Resolver {
 	/**
 	 * Resolve item-level dependencies.
 	 *
-	 * Items run through the same dependency checks as integrations,
-	 * but use the item's tier for license checks.
+	 * Items and block modifiers run through the same dependency checks as
+	 * integrations, but use their own tier for license checks. The plugin and
+	 * setup rows an item (trigger, action, condition or loop filter) needs beyond
+	 * its integration are built from the answer the registration pass stored with
+	 * it, which every caller hands over from the store entry
+	 * (`get_requirements()`), so the scoped catalog and a saved recipe's nodes get
+	 * the same rows. A requirements key on `$item` is never read.
 	 * Filters out dependencies that are already present in the integration dependencies,
 	 * as items inherit the parent integration's dependencies.
 	 *
-	 * @param array $item Item data with code, name, required_tier
+	 * @param array $item Item data with code, type, name, required_tier
 	 * @param Integration $integration Integration object
 	 * @param array $integration_dependencies Integration-level dependencies (optional)
+	 * @param array|null $requirements The item's stored requirements; null when it has none
 	 *
 	 * @return array Dependencies array with 'all_met' and 'items'
 	 */
-	public function resolve_item_dependencies( array $item, Integration $integration, array $integration_dependencies = array() ) {
+	public function resolve_item_dependencies( array $item, Integration $integration, array $integration_dependencies = array(), ?array $requirements = null ) {
 		$dependencies = array();
+
+		$item['requirements'] = $requirements ?? array();
 
 		// Loop through registered resolvers and evaluate if applicable.
 		foreach ( $this->resolvers as $resolver ) {
@@ -175,9 +187,40 @@ class Dependencies_Resolver {
 		}
 
 		// Filter out dependencies that are already present in integration dependencies.
-		$dependencies = $this->filter_inherited_dependencies( $dependencies, $integration_dependencies );
+		$dependencies = $this->filter_inherited_dependencies(
+			$dependencies,
+			$integration_dependencies,
+			$integration->get_entity_code(),
+			(string) ( $item['code'] ?? '' ),
+			(string) ( $item['requirements']['plugin_details']['integration_required'] ?? '' )
+		);
 
 		return $this->format_dependencies_response( $dependencies );
+	}
+
+	/**
+	 * Whether a listed blocked item reads as one that declares nothing: it declares something
+	 * (Item_Availability_Provider::declares_something()) and its stored answer is not met, yet neither it nor its
+	 * integration has an unmet row (no row could be built for what it needs: a setup step with no page to link to, a
+	 * plugin row without the integration's developer or icon, or an item kept out by a filter alone), so nothing would
+	 * show it locked. The scoped catalog leaves such an item out and a saved recipe resolves it unavailable in its own
+	 * sentence, as for a blocked item that declares nothing (which the catalog does not list, and which keeps its feed
+	 * reading). An unmet integration row (an app that is not connected, whose setup rows are built only once it is)
+	 * already locks the item and tells why, so the item stays.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array|null $requirements             The item's stored requirements; null when it has none.
+	 * @param array      $item_dependencies        What resolve_item_dependencies() returned for it.
+	 * @param array      $integration_dependencies What resolve_integration_dependencies() returned for its integration.
+	 *
+	 * @return bool
+	 */
+	public function is_unmet_without_a_row( ?array $requirements, array $item_dependencies, array $integration_dependencies ): bool {
+		return false === ( $requirements['is_met'] ?? null )
+			&& Item_Availability_Provider::declares_something( $requirements )
+			&& true === ( $item_dependencies['all_met'] ?? true )
+			&& true === ( $integration_dependencies['all_met'] ?? true );
 	}
 
 	/**
@@ -205,31 +248,47 @@ class Dependencies_Resolver {
 	 * Filter out dependencies that are already present in integration dependencies.
 	 *
 	 * Items inherit their parent integration's dependencies, so we only need to
-	 * include dependencies that are unique to the item (different type).
+	 * include dependencies that are unique to the item (different type). The rows
+	 * built from what the item stated it needs beyond its integration are its own
+	 * and always kept, beside an integration row of the same type: its plugin row,
+	 * its setup rows, and the install rows of the integration it requires, except
+	 * one the integration's own rows already carry (never shown twice).
 	 *
-	 * @param array $item_dependencies Array of Dependency objects from item
-	 * @param array $integration_dependencies Integration dependencies array with 'items' key (Dependency objects)
+	 * @param array  $item_dependencies Array of Dependency objects from item
+	 * @param array  $integration_dependencies Integration dependencies array with 'items' key (Dependency objects)
+	 * @param string $integration_code The item's integration code
+	 * @param string $item_code The item code
+	 * @param string $required_code The integration the item requires; '' when none
 	 *
 	 * @return array Filtered array of Dependency objects
 	 */
-	private function filter_inherited_dependencies( array $item_dependencies, array $integration_dependencies ) {
+	private function filter_inherited_dependencies( array $item_dependencies, array $integration_dependencies, string $integration_code, string $item_code, string $required_code = '' ) {
 		// If no integration dependencies provided, return all item dependencies.
 		if ( empty( $integration_dependencies['items'] ) ) {
 			return $item_dependencies;
 		}
 
-		// Extract dependency types from integration dependencies.
+		// Extract dependency types and ids from integration dependencies.
 		$integration_types = array();
+		$integration_ids   = array();
 		foreach ( $integration_dependencies['items'] as $integration_dep ) {
 			$integration_types[ $integration_dep->get_type() ] = true;
+			$integration_ids[]                                 = $integration_dep->get_id();
 		}
 
-		// Filter out item dependencies that have the same type as integration dependencies.
-		return array_filter(
-			$item_dependencies,
-			function ( $item_dep ) use ( $integration_types ) {
-				return ! isset( $integration_types[ $item_dep->get_type() ] );
-			}
+		$required_ids = array_diff( Stated_Row_Id::required_integration( $required_code, $item_dependencies ), $integration_ids );
+
+		// Filter out item dependencies that have the same type as integration dependencies,
+		// except the rows the item stated. Re-indexed so a stated row after a dropped one keeps the list a list.
+		return array_values(
+			array_filter(
+				$item_dependencies,
+				static function ( $item_dep ) use ( $integration_types, $integration_code, $item_code, $required_ids ) {
+					return Stated_Row_Id::is_stated( $item_dep->get_id(), $integration_code, $item_code )
+						|| in_array( $item_dep->get_id(), $required_ids, true )
+						|| ! isset( $integration_types[ $item_dep->get_type() ] );
+				}
+			)
 		);
 	}
 

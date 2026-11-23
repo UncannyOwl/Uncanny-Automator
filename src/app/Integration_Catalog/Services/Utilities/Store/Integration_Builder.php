@@ -47,15 +47,29 @@ class Integration_Builder {
 	private $item_enricher;
 
 	/**
+	 * Stored-requirements enricher, for items and block modifiers.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @var Item_Requirements_Enricher
+	 */
+	private $requirements_enricher;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Loop_Filter_Ancestor_Rule_Enricher|null $ancestor_enricher Optional loop-filter enricher (lazy default: new instance).
-	 * @param Item_Ancestor_Rule_Enricher|null        $item_enricher     Optional action enricher (lazy default: new instance).
+	 * @since 7.0.0
+	 * @since 8.1.0 Takes the stored-requirements enricher.
+	 *
+	 * @param Loop_Filter_Ancestor_Rule_Enricher|null $ancestor_enricher     Optional loop-filter enricher (lazy default: new instance).
+	 * @param Item_Ancestor_Rule_Enricher|null        $item_enricher         Optional action enricher (lazy default: new instance).
+	 * @param Item_Requirements_Enricher|null         $requirements_enricher Optional stored-requirements enricher (lazy default: new instance).
 	 */
-	public function __construct( ?Loop_Filter_Ancestor_Rule_Enricher $ancestor_enricher = null, ?Item_Ancestor_Rule_Enricher $item_enricher = null ) {
-		$this->normalizer        = new Integration_Details_Normalizer();
-		$this->ancestor_enricher = $ancestor_enricher ?? new Loop_Filter_Ancestor_Rule_Enricher();
-		$this->item_enricher     = $item_enricher ?? new Item_Ancestor_Rule_Enricher();
+	public function __construct( ?Loop_Filter_Ancestor_Rule_Enricher $ancestor_enricher = null, ?Item_Ancestor_Rule_Enricher $item_enricher = null, ?Item_Requirements_Enricher $requirements_enricher = null ) {
+		$this->normalizer            = new Integration_Details_Normalizer();
+		$this->ancestor_enricher     = $ancestor_enricher ?? new Loop_Filter_Ancestor_Rule_Enricher();
+		$this->item_enricher         = $item_enricher ?? new Item_Ancestor_Rule_Enricher();
+		$this->requirements_enricher = $requirements_enricher ?? new Item_Requirements_Enricher();
 	}
 
 	/**
@@ -64,6 +78,9 @@ class Integration_Builder {
 	 * complete.json includes:
 	 * - integration_triggers/actions/conditions/loop_filters: All item codes and data
 	 * - plugin_details: Plugin metadata (plugin_file, developer_name, etc.)
+	 *
+	 * Each trigger, action, condition and loop filter row also gets the requirements the registration pass stored
+	 * with it, here and only here, so the built store entry is where every reader takes them from.
 	 *
 	 * @param string $code Integration code
 	 * @param array  $json_data Integration data from complete.json
@@ -80,16 +97,33 @@ class Integration_Builder {
 			'required_tier'   => $this->determine_tier( $json_data ),
 			'details'         => $this->normalizer->normalize_details( $json_data ),
 			'items'           => array(
-				Integration_Item_Types::TRIGGER => $this->normalizer->normalize_items( $json_data['integration_triggers'] ?? array(), 'item', $code ),
-				Integration_Item_Types::ACTION  => $this->item_enricher->enrich(
+				Integration_Item_Types::TRIGGER => $this->requirements_enricher->enrich(
 					$code,
-					$this->normalizer->normalize_items( $json_data['integration_actions'] ?? array(), 'item', $code )
+					Integration_Item_Types::TRIGGER,
+					$this->normalizer->normalize_items( $json_data['integration_triggers'] ?? array(), 'item', $code )
+				),
+				Integration_Item_Types::ACTION  => $this->requirements_enricher->enrich(
+					$code,
+					Integration_Item_Types::ACTION,
+					$this->item_enricher->enrich(
+						$code,
+						$this->normalizer->normalize_items( $json_data['integration_actions'] ?? array(), 'item', $code )
+					)
 				),
 			),
 			'block_modifiers' => array(
-				Block_Modifier_Types::FILTER_CONDITION => $this->normalizer->normalize_items( $json_data['integration_conditions'] ?? array(), 'block_modifier', $code ),
-				Block_Modifier_Types::LOOP_FILTER      => $this->ancestor_enricher->enrich(
-					$this->normalizer->normalize_items( $json_data['integration_loop_filters'] ?? array(), 'block_modifier', $code )
+				Block_Modifier_Types::FILTER_CONDITION => $this->requirements_enricher->enrich(
+					$code,
+					Block_Modifier_Types::FILTER_CONDITION,
+					$this->normalizer->normalize_items( $json_data['integration_conditions'] ?? array(), 'block_modifier', $code )
+				),
+				Block_Modifier_Types::LOOP_FILTER      => $this->requirements_enricher->enrich(
+					$code,
+					Block_Modifier_Types::LOOP_FILTER,
+					$this->ancestor_enricher->enrich(
+						$code,
+						$this->normalizer->normalize_items( $json_data['integration_loop_filters'] ?? array(), 'block_modifier', $code )
+					)
 				),
 			),
 			'tokens'          => $this->get_integration_tokens( $code ),

@@ -53,6 +53,11 @@
  */
 
 /**
+ * @license almond 0.3.3 Copyright jQuery Foundation and other contributors.
+ * Released under MIT license, http://github.com/requirejs/almond/LICENSE
+ */
+
+/**
  * @remix-run/router v1.23.4
  *
  * Copyright (c) Remix Software Inc.
@@ -60,5 +65,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE.md file in the root directory of this source tree.
  *
+ * @license MIT
+ */
+
+/**!
+ * Sortable 1.15.7
+ * @author	RubaXa   <trash@rubaxa.org>
+ * @author	owenm    <owen23355@gmail.com>
  * @license MIT
  */

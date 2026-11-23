@@ -13,16 +13,11 @@ use Uncanny_Automator\Recipe\App_Action;
  */
 class OPEN_AI_INSTAGRAM_EXCERPT_GENERATE extends App_Action {
 
+	use OpenAI_Setup_Requirements;
+
 	const PROMPT = "Generate an Instagram post of the following content in 1000 characters or less:\n{{content}}";
 
 	protected $model = 'gpt-4';
-
-	/**
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return $this->helpers->has_gpt4_access();
-	}
 
 	/**
 	 * @return void

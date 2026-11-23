@@ -52,12 +52,18 @@ class ET_ATTENDEE_CHECKED_IN extends \Uncanny_Automator\Recipe\Trigger {
 		/* translators: %1$s is the event field token */
 		$this->set_sentence( sprintf( esc_html_x( 'An attendee is checked in to {{an event:%1$s}}', 'The Events Calendar', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_html_x( 'An attendee is checked in to {{an event}}', 'The Events Calendar', 'uncanny-automator' ) );
+
+		$this->set_plugin_details( self::event_tickets_plugin_details() );
 	}
 
 	/**
-	 * @return bool
+	 * Whether Event Tickets is loaded, from its own folder or a renamed one.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return bool|null True when Event Tickets is loaded, false when it is not.
 	 */
-	public function requirements_met() {
+	protected function is_plugin_compatible(): ?bool {
 		return $this->et_active();
 	}
 
