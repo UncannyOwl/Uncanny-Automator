@@ -40,7 +40,7 @@ use Uncanny_Automator\App\Presentation\Recipe_View\Recipe_View_Preference_Servic
  * @param array $data {
  *     Recipe configuration data.
  *     @type string $title         Recipe title (required).
- *     @type string $status        Recipe status ('draft', 'published'). Default 'draft'.
+ *     @type string $status        Recipe status ('draft', 'publish'). Default 'draft'.
  *     @type string $type          Recipe type ('user', 'anonymous'). Default 'user'.
  *     @type string $trigger_logic Recipe trigger logic ('all', 'any'). Default 'all'.
  *     @type string $notes         Recipe notes. Default ''.
@@ -68,8 +68,11 @@ function automator_create_recipe( array $data ) {
 		);
 	}
 
-	$crud_service = automator_get_recipe_crud_service();
-	return $crud_service->create_recipe( $data );
+	try {
+		return automator_get_recipe_crud_service()->create_recipe( $data );
+	} catch ( \Throwable $e ) {
+		return new WP_Error( 'recipe_create_failed', $e->getMessage() );
+	}
 }
 
 /**
@@ -105,8 +108,11 @@ function automator_update_recipe( int $recipe_id, array $data ) {
 		);
 	}
 
-	$crud_service = automator_get_recipe_crud_service();
-	$result       = $crud_service->update_recipe( $recipe_id, $data );
+	try {
+		$result = automator_get_recipe_crud_service()->update_recipe( $recipe_id, $data );
+	} catch ( \Throwable $e ) {
+		return new WP_Error( 'recipe_update_failed', $e->getMessage() );
+	}
 
 	if ( is_wp_error( $result ) ) {
 		return $result;
@@ -241,15 +247,20 @@ function automator_export_recipe( int $recipe_id ) {
 }
 
 /**
- * Import a portable recipe document as a new draft recipe. Mirrors
- * automator_duplicate_recipe's return envelope so core consumes one shape.
+ * Import a portable recipe document as a new draft recipe, or into an existing
+ * blank draft. Mirrors automator_duplicate_recipe's return envelope so core
+ * consumes one shape.
  *
- * @param array $document Decoded portable document (schema_version envelope).
+ * @since 8.1.0 Takes the recipe to fill.
+ *
+ * @param array $document  Decoded portable document (schema_version envelope).
+ * @param int   $recipe_id The blank draft to fill. 0 imports a new recipe.
  * @return array|WP_Error {success, recipe_id} on success, WP_Error on failure.
  */
-function automator_import_recipe( array $document ) {
+function automator_import_recipe( array $document, int $recipe_id = 0 ) {
 	try {
-		$result = ( new Recipe_Importer() )->import( $document );
+		$importer = new Recipe_Importer();
+		$result   = 0 === $recipe_id ? $importer->import( $document ) : $importer->import_into( $document, $recipe_id );
 		if ( is_wp_error( $result ) ) {
 			return $result;
 		}
@@ -264,15 +275,19 @@ function automator_import_recipe( array $document ) {
 
 /**
  * Import an OLD-FORMAT recipe export file (raw post+meta dump) as a new
- * draft recipe through the adapter path. Same return envelope as
- * automator_import_recipe.
+ * draft recipe through the adapter path, or into an existing blank draft.
+ * Same return envelope as automator_import_recipe.
  *
- * @param object $old_json Decoded legacy export JSON.
+ * @since 8.1.0 Takes the recipe to fill.
+ *
+ * @param object $old_json  Decoded legacy export JSON.
+ * @param int    $recipe_id The blank draft to fill. 0 imports a new recipe.
  * @return array|WP_Error {success, recipe_id} on success, WP_Error on failure.
  */
-function automator_import_legacy_recipe( object $old_json ) {
+function automator_import_legacy_recipe( object $old_json, int $recipe_id = 0 ) {
 	try {
-		$result = ( new Recipe_Importer() )->import_legacy( $old_json );
+		$importer = new Recipe_Importer();
+		$result   = 0 === $recipe_id ? $importer->import_legacy( $old_json ) : $importer->import_legacy_into( $old_json, $recipe_id );
 		if ( is_wp_error( $result ) ) {
 			return $result;
 		}
@@ -294,7 +309,7 @@ function automator_import_legacy_recipe( object $old_json ) {
  *
  * @param array $filters {
  *     Optional filters for recipe listing.
- *     @type string $status   Recipe status ('draft', 'published').
+ *     @type string $status   Recipe status ('draft', 'publish').
  *     @type string $type     Recipe type ('user', 'anonymous').
  *     @type string $title    Title search term.
  *     @type int    $limit    Maximum results. Default 50, max 500.

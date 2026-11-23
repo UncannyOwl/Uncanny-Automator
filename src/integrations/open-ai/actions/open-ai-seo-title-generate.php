@@ -13,16 +13,11 @@ use Uncanny_Automator\Recipe\App_Action;
  */
 class OPEN_AI_SEO_TITLE_GENERATE extends App_Action {
 
+	use OpenAI_Setup_Requirements;
+
 	const PROMPT = "Generate an SEO-friendly title for the following content that is no more than 55 characters long (and must never exceed 58 characters, including spaces and special characters; please double-check that the response is less than 58 characters before posting, but never output a character count, only the title):\n{{content}}";
 
 	protected $model = 'gpt-4';
-
-	/**
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return $this->helpers->has_gpt4_access();
-	}
 
 	/**
 	 * @return void

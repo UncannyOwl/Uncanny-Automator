@@ -14,17 +14,28 @@ use Uncanny_Automator\App\Recipe_Builder\Shared\User\Value_Objects\User_Context;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abilities\Ability_Input;
 use WP_Error;
 use WP_REST_Request;
+use WP_REST_Response;
 
 /**
  * Uses the registered native handlers; it never sends credential-bearing HTTP.
  */
 final class Rest_Operation_Service {
 
+	public const NO_UPDATE_FIELDS = 'rest_no_update_fields';
+
 	/** Contract and discovery output stay bounded independently of upload input. */
 	private const MAX_INPUT_BYTES         = Rest_Operation_Policy::DEFAULT_MAX_INPUT_BYTES;
 	private const MAX_INLINE_SCHEMA_BYTES = 65536;
 	private const SCHEMA_CHUNK_BYTES      = 16384;
 
+	private const UNEXPOSED_OPERATION         = 'This registered operation is not exposed through MCP.';
+	private const REVISION_DELETE_UNAVAILABLE = 'Revision deletion is unavailable through MCP. Discover an available GET operation to read revisions.';
+
+	/** WordPress trims any response to these fields, yet no route registers the argument. */
+	private const RESPONSE_FIELDS_ARGUMENT = array(
+		'type'        => 'string',
+		'description' => 'Optional. Comma-separated response fields to return instead of the whole item, such as id,status,title.rendered. A list is trimmed item by item. Use dot paths only for supported nested fields. Some WordPress controllers return whole objects, such as labels for /wp/v2/types/post. A response that maps names to items, such as /wp/v2/types, needs both the names and item fields, such as post,page,name,slug. Leave out _links unless you will follow one.',
+	);
 
 	/**
 	 * Find short operation summaries, or inspect one registered/concrete path.
@@ -47,17 +58,24 @@ final class Rest_Operation_Service {
 		}
 		$routes = $server->get_routes();
 		if ( '' !== $path && ! isset( $routes[ $path ] ) && ! self::valid_path( $path ) ) {
-			return $this->error( 'rest_invalid_path', 'Use a registered route pattern or a concrete site-relative REST path.', 400 );
+			$path = self::registered_template_route( $path, array_keys( $routes ) );
+			if ( null === $path ) {
+				return $this->error( 'rest_invalid_path', 'Use a registered route pattern or a concrete site-relative REST path.' . self::missing_leading_slash_hint( $params['path'], $routes ), 400 );
+			}
 		}
 		// A concrete path must describe the handler native dispatch will execute,
 		// rather than every registered pattern that happens to match it.
-		$selected = null;
+		$selected         = null;
+		$revision_blocked = false;
 		if ( '' !== $path && self::valid_path( $path ) ) {
 			$selected = array();
 			foreach ( $method ? array( $method ) : array( 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE' ) as $verb ) {
 				$operation = $this->resolve( $path, $verb );
 				if ( ! is_wp_error( $operation ) ) {
 					$selected[ $verb ] = $operation;
+				} elseif ( '' !== $method && 'rest_forbidden' === $operation->get_error_code()
+					&& self::REVISION_DELETE_UNAVAILABLE === $operation->get_error_message() ) {
+					$revision_blocked = true;
 				}
 			}
 		}
@@ -80,7 +98,8 @@ final class Rest_Operation_Service {
 		$terms = preg_split( '/[\s|]+/u', trim( $search ), -1, PREG_SPLIT_NO_EMPTY );
 		$terms = array_unique( array_map( 'strtolower', $terms ) );
 		ksort( $routes, SORT_STRING );
-		$operations = array();
+		$operations    = array();
+		$hidden_upload = null;
 		foreach ( $routes as $route => $handlers ) {
 			$pattern = isset( $ability_paths[ $route ] ) ? $ability_route : $route;
 			$options = $server->get_route_options( $pattern );
@@ -105,8 +124,9 @@ final class Rest_Operation_Service {
 				if ( ! is_array( $handler ) || ! isset( $handler['methods'] ) ) {
 					continue;
 				}
-				$methods = $handler['methods'];
-				if ( ! empty( $methods['GET'] ) ) {
+				$methods        = $handler['methods'];
+				$synthetic_head = empty( $methods['HEAD'] ) && ! empty( $methods['GET'] );
+				if ( $synthetic_head ) {
 					$methods['HEAD'] = true;
 				}
 				foreach ( array_keys( array_filter( $methods ) ) as $verb ) {
@@ -114,6 +134,10 @@ final class Rest_Operation_Service {
 						continue;
 					}
 					$seen[ $verb ] = true;
+					// A GET fallback still takes precedence over later HEAD handlers.
+					if ( 'HEAD' === $verb && $synthetic_head && 'HEAD' !== $method ) {
+						continue;
+					}
 					if ( '' !== $method && $method !== $verb ) {
 						continue;
 					}
@@ -122,16 +146,25 @@ final class Rest_Operation_Service {
 					}
 					$exposure = $policy->describe( $pattern, $verb, $handler, isset( $ability_paths[ $route ] ) ? array( 'name' => $ability_paths[ $route ] ) : array() );
 					if ( null === $exposure ) {
+						if ( '' !== $path && '' !== $method && null === $selected ) {
+							if ( Rest_Operation_Policy::REVISION_DELETE === Rest_Operation_Policy::unsupported_core_operation( $verb, $handler['callback'] ?? null ) ) {
+								$revision_blocked = true;
+							}
+						}
 						continue;
 					}
-					$reason       = $policy->unavailable_reason( $exposure, $context, 'rest_discover' );
+					$reason = $policy->unavailable_reason( $exposure, $context, 'rest_discover' );
+					if ( Rest_Operation_Policy::requires_external_media_transfer( $exposure, $context ) ) {
+						$hidden_upload = $reason;
+						continue;
+					}
 					$entry        = array(
 						'route'           => $route,
 						'method'          => $verb,
 						'namespace'       => $options['namespace'] ?? '',
 						'read_only'       => $exposure['read_only'],
 						'available'       => null === $reason,
-						'reason'          => $reason,
+						'reason'          => self::explain_unavailability( $reason ),
 						'max_input_bytes' => $exposure['max_input_bytes'],
 					);
 					$operations[] = array(
@@ -146,7 +179,13 @@ final class Rest_Operation_Service {
 			}
 		}
 		if ( '' !== $path && empty( $operations ) ) {
-			return $this->error( 'rest_operation_unavailable', 'No reviewed registered operation matches this path and method.', 404 );
+			if ( $revision_blocked ) {
+				return $this->error( 'rest_forbidden', self::REVISION_DELETE_UNAVAILABLE, 403 );
+			}
+			$message = null !== $hidden_upload
+				? self::explain_unavailability( $hidden_upload )
+				: 'No reviewed registered operation matches this path and method.';
+			return $this->error( 'rest_operation_unavailable', $message, 404 );
 		}
 		if ( '' === $path && count( $terms ) > 1 ) {
 			// Rank before paging; ties retain the existing route/handler order.
@@ -194,7 +233,8 @@ final class Rest_Operation_Service {
 	 */
 	private function schema_entry( array $entry, array $contract, array $params ) {
 		if ( isset( $params['schema_hash'] ) && $params['schema_hash'] !== $contract['schema_hash'] ) {
-			return $this->error( 'rest_schema_changed', 'The operation definition changed. Restart discovery before combining schema chunks.', 409 );
+			// A hash from another method or path fails the same way as a changed definition.
+			return $this->error( 'rest_schema_changed', 'This schema_hash does not match the current definition of this path and method. It came from another method or path, or the definition changed. Restart discovery for this exact path and method before combining schema chunks.', 409 );
 		}
 		$encoded = wp_json_encode( $contract );
 		if ( false === $encoded ) {
@@ -205,10 +245,10 @@ final class Rest_Operation_Service {
 			return array_merge( $entry, $contract, array( 'schema_complete' => true ) );
 		}
 		if ( isset( $contract['upload'] ) ) {
-			// The available memory can change between chunk requests. Return the
-			// current transfer details separately so reassembled schema bytes stay stable.
+			// Keep the transfer contract in one place. Its live file limit can
+			// change between chunks, and a hosted caller uses its own upload flow.
 			$entry['upload'] = $contract['upload'];
-			unset( $contract['upload']['max_file_bytes'] );
+			unset( $contract['upload'] );
 			$encoded = wp_json_encode( $contract );
 			if ( false === $encoded ) {
 				return $this->error( 'rest_invalid_schema', 'The operation definition could not be encoded. No partial schema was returned.', 500 );
@@ -240,9 +280,9 @@ final class Rest_Operation_Service {
 	/**
 	 * Resolve exactly the first registered native handler WordPress will use.
 	 */
-	public function resolve( string $path, string $method ) {
+	public function resolve( string $path, string $method, ?User_Context $context = null ) {
 		if ( ! self::valid_path( $path ) ) {
-			return $this->error( 'rest_invalid_path', 'Use a concrete site-relative REST path, without a URL, query string or encoded separators.', 400 );
+			return $this->error( 'rest_invalid_path', 'Use a concrete site-relative REST path, without a URL, query string or encoded separators.' . self::missing_leading_slash_hint( $path ), 400 );
 		}
 		// Mirror native namespace precedence, including overlapping namespaces.
 		$server = rest_get_server();
@@ -267,7 +307,7 @@ final class Rest_Operation_Service {
 				}
 				$options = $server->get_route_options( $route );
 				if ( false === ( $options['show_in_index'] ?? true ) ) {
-					return $this->error( 'rest_forbidden', 'This registered operation is not exposed through MCP.', 403 );
+					return $this->error( 'rest_forbidden', self::unexposed_operation_message( $path, $method, $handler ), 403 );
 				}
 				preg_match( '@^' . $route . '$@i', $path, $matches );
 				$path_params = array_filter( $matches, 'is_string', ARRAY_FILTER_USE_KEY );
@@ -276,9 +316,11 @@ final class Rest_Operation_Service {
 				if ( null === $policy ) {
 					// WordPress runs an ability with one method, set by its annotations.
 					$exposed = Rest_Operation_Policy::ABILITY_ROUTE === $route ? $this->exposed_ability_method( $policies, $route, $handler, $path_params ) : null;
-					return null === $exposed
-						? $this->error( 'rest_forbidden', 'This registered operation is not exposed through MCP.', 403 )
-						: $this->ability_method_error( ...$exposed );
+					if ( null === $exposed ) {
+						return $this->error( 'rest_forbidden', self::unexposed_operation_message( $path, $method, $handler ), 403 );
+					}
+					$refusal = null === $context ? null : $this->operation_refusal( $exposed[1], $context );
+					return $refusal ?? $this->ability_method_error( ...$exposed );
 				}
 				return array(
 					'route'       => $route,
@@ -297,24 +339,31 @@ final class Rest_Operation_Service {
 	 * @param User_Context $context Verified executor and access.
 	 * @param array $params Operation parameters.
 	 * @param bool|null $dispatch_started Set when the native callback ran without refusing first, for any upload, or when dispatch threw.
+	 * @param array|null $feedback Verified post state and request notices for the tool envelope.
 	 * @return array|WP_Error Native result or a refusal.
 	 */
-	public function request( User_Context $context, array $params, ?bool &$dispatch_started = null ) {
+	public function request( User_Context $context, array $params, ?bool &$dispatch_started = null, ?array &$feedback = null ) {
 		$dispatch_started = false;
-		$operation        = $this->resolve( $params['path'], $params['method'] );
+		$feedback         = array();
+		$operation        = $this->resolve( $params['path'], $params['method'], $context );
 		if ( is_wp_error( $operation ) ) {
-			return $operation;
+			return 'rest_no_route' === $operation->get_error_code()
+				? $this->explain_missing_operation( $params['path'], $params['method'], $context, $operation )
+				: $operation;
 		}
-		$reason = ( new Rest_Operation_Policy() )->unavailable_reason( $operation['policy'], $context, 'rest_request' );
-		if ( null !== $reason ) {
-			return $this->error( 'rest_forbidden', $reason, 403 );
+		$feedback['read_only'] = $operation['policy']['read_only'];
+		$refusal               = $this->operation_refusal( $operation['policy'], $context );
+		if ( null !== $refusal ) {
+			return $refusal;
 		}
 		$contract = $this->contract( $operation['route'], $params['method'], $operation['handler'], $operation['policy'] );
 		if ( is_wp_error( $contract ) ) {
 			return $contract;
 		}
 		if ( isset( $params['schema_hash'] ) && $params['schema_hash'] !== $contract['schema_hash'] ) {
-			return $this->error( 'rest_schema_changed', 'The operation inputs changed. Discover them again before retrying.', 409 );
+			// A hash from another method or path fails the same way as a changed definition,
+			// so name both causes; rediscovering this exact path and method fixes either.
+			return $this->error( 'rest_schema_changed', 'Automator stopped the request before REST dispatch: this schema_hash does not match the current definition of this path and method. It came from another method or path, or the inputs changed. Discover this exact path and method and use its schema_hash.', 409 );
 		}
 		$request = isset( $operation['policy']['upload'] )
 			? new Media_Upload_Request( $params['method'], $params['path'] )
@@ -360,6 +409,19 @@ final class Rest_Operation_Service {
 		if ( is_wp_error( $error ) ) {
 			return $error;
 		}
+		$selector = $request->get_param( '_fields' );
+		$fields   = is_array( $selector ) || is_string( $selector )
+			? array_map( 'trim', is_array( $selector ) ? array_filter( $selector, 'is_string' ) : wp_parse_list( $selector ) )
+			: array();
+		$error    = $this->validate_response_fields( $request, $operation['handler'], $fields );
+		if ( is_wp_error( $error ) ) {
+			return $error;
+		}
+		$undeclared_update = self::undeclared_post_update( $params, $operation );
+		if ( $undeclared_update ) {
+			$feedback['undeclared_inputs'] = $undeclared_update;
+			return $this->error( self::NO_UPDATE_FIELDS, 'No recognized post update fields were supplied. Automator stopped the request before WordPress ran it. Nothing changed.', 400 );
+		}
 		$attachment_id    = 0;
 		$may_have_changed = false;
 		// Stays true if dispatch throws, and for uploads, whose single-use file is already taken.
@@ -382,6 +444,19 @@ final class Rest_Operation_Service {
 		}
 		if ( is_wp_error( $response ) ) {
 			return $response;
+		}
+		$callback   = $operation['handler']['callback'] ?? null;
+		$controller = is_array( $callback ) ? ( $callback[0] ?? null ) : null;
+		if ( Rest_Operation_Policy::is_core_controller( $operation['route'], $controller ) ) {
+			if ( $response->get_status() >= 200 && $response->get_status() < 300 ) {
+				// Fields a plugin registered while WordPress ran the request, such as ACF's acf, were accepted (QA D100).
+				$feedback['undeclared_inputs'] = self::undeclared_input_sources( $params, $operation['handler'], self::registered_fields( $controller ) );
+				if ( \WP_REST_Posts_Controller::class === get_class( $controller ) ) {
+					self::omit_unrequested_seo_head( $response, $fields );
+				}
+			} elseif ( $dispatch_started && 'DELETE' === $params['method'] && \WP_REST_Posts_Controller::class === get_class( $controller ) && 'delete_item' === $callback[1] ) {
+				$feedback['already_trashed'] = self::confirm_trashed_post( $response, (int) ( $operation['path_params']['id'] ?? 0 ) );
+			}
 		}
 		if ( isset( $operation['policy']['upload'] ) && ( $response->get_status() < 200 || $response->get_status() >= 300 ) ) {
 			$data = $response->get_data();
@@ -428,6 +503,297 @@ final class Rest_Operation_Service {
 			'body'        => $response->get_data(),
 			'schema_hash' => $contract['schema_hash'],
 		);
+	}
+
+	/**
+	 * Core posts can update the modified date even when every update field is a typo.
+	 * Plugin handlers and custom post types can legitimately use undeclared inputs.
+	 * Only names that read as a typo of a declared field are refused. A plugin such
+	 * as ACF registers its field once WordPress starts handling the request, after
+	 * this check, so any other unknown name may be real and goes through (QA D100).
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array $params Original parameters sent by the caller.
+	 * @param array $operation Resolved native REST operation.
+	 * @return array Warnings for an input-only typo, or an empty array.
+	 */
+	private static function undeclared_post_update( array $params, array $operation ): array {
+		$handler  = $operation['handler'];
+		$callback = $handler['callback'] ?? null;
+		if ( '/wp/v2/posts/(?P<id>[\d]+)' !== $operation['route']
+			|| ! in_array( $params['method'], array( 'POST', 'PUT', 'PATCH' ), true )
+			|| ! is_array( $callback ) || ! is_object( $callback[0] ?? null )
+			|| \WP_REST_Posts_Controller::class !== get_class( $callback[0] )
+			|| 'update_item' !== ( $callback[1] ?? null )
+			|| 'post' !== ( $callback[0]->get_item_schema()['title'] ?? null ) ) {
+			return array();
+		}
+		$supplied = (array) ( $params['body'] ?? array() ) + (array) ( $params['query'] ?? array() );
+		$controls = array_flip( array( 'id', 'context', '_fields', '_locale' ) );
+		$declared = array_diff_key( $handler['args'] ?? array(), $controls );
+		// WordPress runs registered update callbacks even when their field has no schema.
+		foreach ( $GLOBALS['wp_rest_additional_fields']['post'] ?? array() as $name => $field ) {
+			if ( ! empty( $field['update_callback'] ) ) {
+				$declared[ $name ] = true;
+			}
+		}
+		if ( array_intersect_key( $supplied, $declared ) ) {
+			return array();
+		}
+		$sources = self::undeclared_input_sources( $params, $handler );
+		$known   = ( $handler['args'] ?? array() ) + array(
+			'_fields' => true,
+			'_locale' => true,
+		);
+		$unknown = 0;
+		foreach ( array( 'query', 'body' ) as $source ) {
+			$unknown += count( array_diff_key( (array) ( $params[ $source ] ?? array() ), $known ) );
+		}
+		$typos = 0;
+		foreach ( $sources as $parameters ) {
+			foreach ( $parameters as $parameter ) {
+				$typos += isset( $parameter['suggestion'] ) ? 1 : 0;
+			}
+		}
+		return 0 < $unknown && $typos === $unknown ? $sources : array();
+	}
+
+	/**
+	 * Report which parts of the request supplied names not declared by core or a plugin.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array $params Original parameters sent by the caller.
+	 * @param array $handler Matched native handler.
+	 *
+	 * @return array<string,array{name:string,suggestion?:string}[]> Parameters grouped by query or body.
+	 */
+	private static function undeclared_input_sources( array $params, array $handler, array $registered = array() ): array {
+		$declared       = ( $handler['args'] ?? array() ) + $registered + array(
+			'_fields' => true,
+			'_locale' => true,
+		);
+		$declared_names = array_keys( $declared );
+		$sources        = array();
+		foreach ( array( 'query', 'body' ) as $source ) {
+			$unknown = array_diff_key( (array) ( $params[ $source ] ?? array() ), $declared );
+			if ( ! $unknown ) {
+				continue;
+			}
+			$sources[ $source ] = array();
+			foreach ( array_keys( $unknown ) as $name ) {
+				if ( ! self::is_reportable_parameter( $name ) ) {
+					continue;
+				}
+				$parameter  = array( 'name' => $name );
+				$suggestion = self::suggest_parameter_name( $name, $declared_names );
+				if ( null !== $suggestion ) {
+					$parameter['suggestion'] = $suggestion;
+				}
+				$sources[ $source ][] = $parameter;
+				if ( 5 === count( $sources[ $source ] ) ) {
+					break;
+				}
+			}
+		}
+		return $sources;
+	}
+
+	/**
+	 * REST fields plugins registered for a core controller's object type, keyed by name.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param mixed $controller The matched core controller.
+	 * @return array<string,true>
+	 */
+	private static function registered_fields( $controller ): array {
+		if ( ! is_object( $controller ) || ! method_exists( $controller, 'get_item_schema' ) ) {
+			return array();
+		}
+		$type = $controller->get_item_schema()['title'] ?? null;
+		if ( ! is_string( $type ) ) {
+			return array();
+		}
+		return array_fill_keys( array_keys( (array) ( $GLOBALS['wp_rest_additional_fields'][ $type ] ?? array() ) ), true );
+	}
+
+	/**
+	 * Report ordinary parameter names without echoing arbitrary text.
+	 *
+	 * @since 8.1.0
+	 */
+	private static function is_reportable_parameter( $name ): bool {
+		return is_string( $name ) && 1 === preg_match( '/^[a-zA-Z_][a-zA-Z0-9_-]{0,39}$/D', $name );
+	}
+
+	/**
+	 * Suggest a name only when there is one clearly closest declared key.
+	 *
+	 * @since 8.1.0
+	 */
+	private static function suggest_parameter_name( string $name, array $declared ): ?string {
+		$closest = array();
+		$best    = 2;
+		foreach ( $declared as $candidate ) {
+			if ( ! self::is_reportable_parameter( $candidate ) ) {
+				continue;
+			}
+			$distance = levenshtein( $name, $candidate );
+			if ( $distance < $best ) {
+				$best    = $distance;
+				$closest = array();
+			}
+			if ( $distance === $best ) {
+				$closest[] = $candidate;
+			}
+		}
+		return 1 === count( $closest ) ? $closest[0] : null;
+	}
+
+	/**
+	 * Confirm the core 410 response against the stored status of the requested post.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param WP_REST_Response $response Native REST response.
+	 * @param int $post_id Post selected by the matched route.
+	 *
+	 * @return bool
+	 */
+	private static function confirm_trashed_post( WP_REST_Response $response, int $post_id ): bool {
+		$data = $response->get_data();
+		if ( $post_id <= 0 || 410 !== $response->get_status() || ! is_array( $data ) || 'rest_already_trashed' !== ( $data['code'] ?? null ) ) {
+			return false;
+		}
+		$post = get_post( $post_id );
+		if ( ! $post instanceof \WP_Post || 'trash' !== $post->post_status ) {
+			return false;
+		}
+		$data['message'] = 'This post is already in the trash.';
+		$response->set_data( $data );
+		return true;
+	}
+
+	/**
+	 * Return AIOSEO's head only when the caller requests it.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param WP_REST_Response $response Native REST response after WordPress projection.
+	 * @param string[] $fields Caller-supplied field selectors before dispatch.
+	 *
+	 * @return void
+	 */
+	private static function omit_unrequested_seo_head( WP_REST_Response $response, array $fields ): void {
+		$data = $response->get_data();
+		$omit = array();
+		foreach ( array( 'aioseo_head', 'aioseo_head_json' ) as $field ) {
+			if ( ! rest_is_field_included( $field, $fields ) ) {
+				$omit[ $field ] = true;
+			}
+		}
+		if ( ! is_array( $data ) || ! $omit ) {
+			return;
+		}
+		if ( ! wp_is_numeric_array( $data ) ) {
+			$response->set_data( array_diff_key( $data, $omit ) );
+			return;
+		}
+		foreach ( $data as &$item ) {
+			if ( is_array( $item ) ) {
+				$item = array_diff_key( $item, $omit );
+			}
+		}
+		unset( $item );
+		$response->set_data( $data );
+	}
+
+	/** Explain how to correct the path or use an available method. */
+	private function explain_missing_operation( string $path, string $method, User_Context $context, WP_Error $error ): WP_Error {
+		$message = $error->get_error_message();
+		if ( '/wp-json' === $path || 0 === strpos( $path, '/wp-json/' ) ) {
+			return $this->error( 'rest_no_route', $message . ' Remove /wp-json from the start of the path and use a concrete REST path such as /wp/v2/posts.', 404 );
+		}
+
+		$policy  = new Rest_Operation_Policy();
+		$methods = array();
+		// The hosted REST tools cannot send HEAD or OPTIONS.
+		foreach ( array( 'GET', 'POST', 'PUT', 'PATCH', 'DELETE' ) as $candidate ) {
+			if ( $candidate === $method ) {
+				continue;
+			}
+			$operation = $this->resolve( $path, $candidate );
+			if ( ! is_wp_error( $operation ) && null === $policy->unavailable_reason( $operation['policy'], $context, 'rest_discover' ) ) {
+				$methods[] = $candidate;
+			}
+		}
+		if ( empty( $methods ) ) {
+			return $error;
+		}
+		$guidance = sprintf( 'This path supports %s for this connection. Use rest_request with an available method. Inspect the operation with REST discovery first.', implode( ', ', $methods ) );
+		return $this->error( 'rest_method_not_allowed', $guidance, 405 );
+	}
+
+	/**
+	 * Explain unsupported operations without exposing their arguments.
+	 *
+	 * @since 8.1.0
+	 */
+	private static function unexposed_operation_message( string $path, string $method, array $handler ): string {
+		if ( 'POST' === $method && '/automator/v1/mcp/media-transfer' === strtolower( $path ) ) {
+			return 'Use prepare_upload when available. For a direct WordPress connection, discover POST /wp/v2/media and follow its upload instructions.';
+		}
+		switch ( Rest_Operation_Policy::unsupported_core_operation( $method, $handler['callback'] ?? null ) ) {
+			case Rest_Operation_Policy::ATTACHMENT_DERIVATIVE:
+				return 'Uploading a derivative to an existing attachment is unavailable through MCP. For a new attachment, discover POST /wp/v2/media and follow its upload instructions.';
+			case Rest_Operation_Policy::REVISION_DELETE:
+				return self::REVISION_DELETE_UNAVAILABLE;
+		}
+		return self::UNEXPOSED_OPERATION;
+	}
+
+	/** Tell callers how to select fields that these core controllers cannot project with dot paths. */
+	private function validate_response_fields( WP_REST_Request $request, array $handler, array $fields ): ?WP_Error {
+		if ( 'GET' !== $request->get_method() || ! $fields ) {
+			return null;
+		}
+		$callback   = $handler['callback'] ?? null;
+		$target     = is_array( $callback ) ? ( $callback[0] ?? null ) : null;
+		$controller = is_object( $target ) ? get_class( $target ) : null;
+
+		$is_types            = \WP_REST_Post_Types_Controller::class === $controller;
+		$is_types_collection = $is_types && '/wp/v2/types' === strtolower( $request->get_route() );
+		$is_media            = \WP_REST_Attachments_Controller::class === $controller;
+		if ( ! $is_types && ! $is_media ) {
+			return null;
+		}
+		foreach ( $fields as $field ) {
+			$parts = explode( '.', $field, 3 );
+			if ( count( $parts ) < 2 ) {
+				continue;
+			}
+			$parent = $parts[0];
+			if ( $is_types && ! $is_types_collection && in_array( $parent, array( 'labels', 'capabilities' ), true ) && ! in_array( $parent, $fields, true ) ) {
+				return $this->error( 'rest_invalid_parameters', sprintf( 'WordPress returns %1$s as a whole. Use context=edit and _fields=name,%1$s, then read the needed properties from %1$s.', $parent ), 400 );
+			}
+			if ( $is_types_collection ) {
+				// The types controller prepares each item using the same list of fields as the collection.
+				$post_type = get_post_type_object( $parent );
+				if ( $post_type && $post_type->show_in_rest && ! rest_is_field_included( $parts[1], $fields ) ) {
+					$message = in_array( $parts[1], array( 'labels', 'capabilities' ), true )
+						? sprintf( 'WordPress returns %1$s as a whole. Use context=edit and _fields=%2$s,%1$s, then read the needed properties from %1$s.', $parts[1], $parent )
+						: 'WordPress selects post types and their fields separately. For example, use _fields=post,page,name,rest_base to get the names and REST bases for posts and pages.';
+					return $this->error( 'rest_invalid_parameters', $message, 400 );
+				}
+			}
+			if ( $is_media && in_array( $parent, array( 'media_details', 'caption', 'description' ), true ) && ! in_array( $parent, $fields, true ) ) {
+				$message = sprintf( 'WordPress returns %1$s as a whole. Use _fields=id,%1$s and read the needed properties from %1$s.', $parent );
+				return $this->error( 'rest_invalid_parameters', $message, 400 );
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -587,6 +953,61 @@ final class Rest_Operation_Service {
 	}
 
 	/**
+	 * Explain a missing leading slash on an otherwise path-shaped input.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $path Path supplied by the caller.
+	 * @param array  $routes Registered patterns when hinting for discovery.
+	 * @return string Additional guidance, or an empty string.
+	 */
+	private static function missing_leading_slash_hint( string $path, array $routes = array() ): string {
+		if ( '/' === ( $path[0] ?? '' ) ) {
+			return '';
+		}
+		$prefixed = 0 === strpos( $path, 'wp-json/' );
+		$example  = '/' . ( $prefixed ? substr( $path, strlen( 'wp-json/' ) ) : $path );
+		if ( ! self::valid_path( $example ) && ! isset( $routes[ $example ] )
+			&& ( ! $routes || null === self::registered_template_route( $example, array_keys( $routes ) ) ) ) {
+			return '';
+		}
+		if ( 'wp-json' === $path || $prefixed ) {
+			return ' Remove the wp-json prefix and start the path with a slash (/), for example /wp/v2/posts.';
+		}
+		return ' Start the path with a slash (/), for example /wp/v2/posts.';
+	}
+
+	/**
+	 * Resolve a discovery-only brace template to one registered route pattern.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $path Discovery path with placeholders such as {id}.
+	 * @param string[] $routes Registered route patterns.
+	 * @return string|null The unique pattern with those literal path segments and capture positions.
+	 */
+	private static function registered_template_route( string $path, array $routes ): ?string {
+		$placeholder = '/\{[a-zA-Z_][a-zA-Z0-9_]*\}/';
+		if ( strlen( $path ) > 2048 || 1 !== preg_match( '~^(?:/(?:[a-zA-Z0-9_-]+|\{[a-zA-Z_][a-zA-Z0-9_]*\}))+$~D', $path ) || 1 !== preg_match( $placeholder, $path ) ) {
+			return null;
+		}
+		$template = preg_replace( $placeholder, '{}', $path );
+		$matched  = null;
+		foreach ( $routes as $route ) {
+			// Match simple named captures as whole path segments. Never compile a caller's template as a regex.
+			$shape = preg_replace( '~(?<=/)\(\?(?:P?<\w+>|\x27\w+\x27)[^()/]+\)(?=/|$)~', '{}', $route );
+			if ( $template !== $shape ) {
+				continue;
+			}
+			if ( null !== $matched ) {
+				return null;
+			}
+			$matched = $route;
+		}
+		return $matched;
+	}
+
+	/**
 	 * Matches.
 	 *
 	 * @param string $route The route.
@@ -616,14 +1037,27 @@ final class Rest_Operation_Service {
 			}
 			$handler['args']['input'] = $ability->get_input_schema();
 		}
+		$registered_arguments = $handler['args'] ?? array();
+		if ( 0 === strpos( strtolower( $route ), '/uncanny-page-builder/v1/agent/' ) ) {
+			// The reviewed schema owns which fields belong in query or body and
+			// which combinations are valid. List only its unconditional fields here.
+			$parts                 = $policy['request_schema']['properties'] ?? array();
+			$registered_arguments += ( $parts['query']['properties'] ?? array() ) + ( $parts['body']['properties'] ?? array() );
+		}
 		try {
-			foreach ( $handler['args'] ?? array() as $name => $schema ) {
+			foreach ( $registered_arguments as $name => $schema ) {
+				if ( in_array( $name, $policy['upload']['unsupported_parameters'] ?? array(), true ) ) {
+					continue;
+				}
 				$schema = $this->schema_data( (array) $schema );
 				if ( array_key_exists( $name, $path_parameters ) ) {
 					$path_parameters[ $name ] = $schema;
 				} else {
 					$arguments[ $name ] = $schema;
 				}
+			}
+			if ( ! isset( $arguments['_fields'] ) && ! isset( $path_parameters['_fields'] ) && $this->trims_to_fields( $route, $method, $handler, $policy ) ) {
+				$arguments['_fields'] = self::RESPONSE_FIELDS_ARGUMENT;
 			}
 			$output         = $ability instanceof \WP_Ability && $ability->get_output_schema() ? $this->schema_data( $ability->get_output_schema() ) : null;
 			$request_schema = isset( $policy['request_schema'] ) ? $this->schema_data( $policy['request_schema'] ) : null;
@@ -636,10 +1070,18 @@ final class Rest_Operation_Service {
 			unset( $stable_policy['upload']['max_file_bytes'] );
 		}
 		$definition = array( $route, $method, $arguments, $stable_policy );
+		if ( isset( $policy['upload'] ) ) {
+			// A continuation from an older release must restart before it can
+			// combine chunks from the prior encoding and this one.
+			$definition[] = 'upload-details-outside-schema-chunks';
+		}
 		if ( $path_parameters ) {
 			$definition[] = $path_parameters;
 		}
 		if ( $ability instanceof \WP_Ability ) {
+			// Ability discovery always returns a URL with the name already bound.
+			// Change the hash so callers restart any older partial schema read.
+			$definition[] = 'ability-name-in-route';
 			$definition[] = $output;
 		}
 		$encoded = wp_json_encode( $definition );
@@ -651,7 +1093,7 @@ final class Rest_Operation_Service {
 			'schema_hash'     => hash( 'sha256', $encoded ),
 			'max_input_bytes' => $policy['max_input_bytes'],
 		);
-		if ( $path_parameters ) {
+		if ( $path_parameters && ! $ability instanceof \WP_Ability ) {
 			$contract['path_parameters'] = (object) $path_parameters;
 		}
 		if ( isset( $policy['upload'] ) ) {
@@ -662,6 +1104,13 @@ final class Rest_Operation_Service {
 		}
 		if ( isset( $policy['request_schema'] ) ) {
 			$contract['request_schema'] = $request_schema;
+			// Show a restricted argument the way request_schema enforces it, so a caller reading only
+			// arguments does not try force=true. Applied after the hash, which stays as before.
+			$parts = $policy['request_schema']['properties'] ?? array();
+			$force = $parts['query']['properties']['force'] ?? $parts['body']['properties']['force'] ?? null;
+			if ( is_array( $force ) && isset( $arguments['force'] ) ) {
+				$contract['arguments'] = (object) array_merge( (array) $contract['arguments'], array( 'force' => $force ) );
+			}
 		}
 		if ( isset( $policy['response_fields'] ) ) {
 			$contract['arguments']       = (object) array_intersect_key( $arguments, array_flip( $policy['response_fields'] ) );
@@ -671,6 +1120,20 @@ final class Rest_Operation_Service {
 			$contract['native_tool'] = $policy['native_tool'];
 		}
 		return $contract;
+	}
+
+	/**
+	 * Whether a request to this operation can name _fields and get a trimmed response.
+	 *
+	 * @since 8.1.0
+	 */
+	private function trims_to_fields( string $route, string $method, array $handler, array $policy ): bool {
+		// HEAD has no body to trim, and a reviewed request schema states the whole query itself.
+		if ( 'HEAD' === $method || isset( $policy['request_schema'] ) ) {
+			return false;
+		}
+		// Since WordPress 7.2 a route can serve its data as returned, as an ability run does.
+		return ! method_exists( \WP_REST_Server::class, 'resolve_data_processing' ) || \WP_REST_Server::resolve_data_processing( $handler, rest_get_server()->get_route_options( $route ) )['fields'];
 	}
 
 	/**
@@ -723,6 +1186,23 @@ final class Rest_Operation_Service {
 	 */
 	private function error( string $code, string $message, int $status ): WP_Error {
 		return new WP_Error( $code, $message, array( 'status' => $status ) );
+	}
+
+	/** Return the same authorization refusal regardless of which ability method was requested. */
+	private function operation_refusal( array $policy, User_Context $context ): ?WP_Error {
+		$reason = ( new Rest_Operation_Policy() )->unavailable_reason( $policy, $context, 'rest_request' );
+		if ( null === $reason ) {
+			return null;
+		}
+		return $this->error( 'rest_forbidden', self::explain_unavailability( $reason ), 403 );
+	}
+
+	/** Use the same explanation in discovery and when an operation is refused. */
+	private static function explain_unavailability( ?string $reason ): ?string {
+		if ( Rest_Operation_Policy::HOSTED_UPLOAD_REQUIRED === $reason ) {
+			return 'Use prepare_upload when available, then use the returned attachment in the page builder. Direct WordPress clients can follow the upload instructions for POST /wp/v2/media.';
+		}
+		return 'first_party_only' === $reason ? 'This operation is not available to this connection.' : $reason;
 	}
 
 	/**

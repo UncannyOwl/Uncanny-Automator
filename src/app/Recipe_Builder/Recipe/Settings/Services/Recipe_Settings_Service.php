@@ -8,6 +8,8 @@ use Uncanny_Automator\App\Events\Enums\Recipe_Change_Operation;
 use Uncanny_Automator\App\Events\Dtos\Recipe_Changed;
 use Uncanny_Automator\App\Infrastructure\Database\Database;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Trigger_Store;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Id;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Settings\Enums\Recipe_Setting_Id;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Status;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Recipe_Violation_Service;
@@ -51,12 +53,21 @@ final class Recipe_Settings_Service {
 	private Recipe_Store $recipe_store;
 
 	/**
+	 * Reads the triggers a type choice must agree with.
+	 *
+	 * @var Recipe_Trigger_Store
+	 */
+	private Recipe_Trigger_Store $trigger_store;
+
+	/**
 	 * Lazy-default DI (Rule 9c): tests inject a fake store; production gets the default.
 	 *
-	 * @param Recipe_Store|null $recipe_store
+	 * @param Recipe_Store|null         $recipe_store
+	 * @param Recipe_Trigger_Store|null $trigger_store
 	 */
-	public function __construct( ?Recipe_Store $recipe_store = null ) {
-		$this->recipe_store = $recipe_store ?? Database::get_recipe_store();
+	public function __construct( ?Recipe_Store $recipe_store = null, ?Recipe_Trigger_Store $trigger_store = null ) {
+		$this->recipe_store  = $recipe_store ?? Database::get_recipe_store();
+		$this->trigger_store = $trigger_store ?? Database::get_recipe_trigger_store();
 	}
 
 	/**
@@ -92,6 +103,12 @@ final class Recipe_Settings_Service {
 	 * Validates the value and writes through the store, whose write invalidates
 	 * the cached tree.
 	 *
+	 * Business rule: a recipe's type must agree with its triggers. The choice is
+	 * made under the same per-recipe lock as an untyped draft's first trigger
+	 * (Trigger_CRUD_Service::add_to_recipe), and the triggers are read inside
+	 * it. So a type chooser left open in another tab cannot overwrite the type
+	 * an AI's first trigger just set.
+	 *
 	 * @param int    $recipe_id
 	 * @param string $recipe_type 'user' | 'anonymous'
 	 * @return bool|\WP_Error
@@ -103,15 +120,61 @@ final class Recipe_Settings_Service {
 					return new \WP_Error( 'automator_invalid_recipe_type', 'Recipe type must be user or anonymous.' );
 				}
 
-				$ok = $this->recipe_store->set_recipe_type( $recipe_id, $recipe_type );
+				if ( 0 >= $recipe_id ) {
+					return $this->recipe_store->set_recipe_type( $recipe_id, $recipe_type );
+				}
 
-				if ( false !== $ok && 0 < $recipe_id ) {
+				if ( false === $this->recipe_store->lock_recipe_type( $recipe_id ) ) {
+					return new \WP_Error( 'recipe_type_busy', 'Another change to this recipe is still saving. Try again in a moment.', array( 'retryable' => true ) );
+				}
+
+				try {
+					$conflict = $this->trigger_type_conflict( $recipe_id, $recipe_type );
+					if ( null !== $conflict ) {
+						return $conflict;
+					}
+
+					$ok = $this->recipe_store->set_recipe_type( $recipe_id, $recipe_type );
+				} finally {
+					$this->recipe_store->unlock_recipe_type( $recipe_id );
+				}
+
+				if ( false !== $ok ) {
 					Recipe_Change_Events::changed( new Recipe_Changed( Recipe_Change_Operation::UPDATED, Recipe_Changed::RECIPE, $recipe_id, $recipe_id ) );
 				}
 
 				return $ok;
 			}
 		);
+	}
+
+	/**
+	 * The refusal for a type the recipe's triggers contradict, or null when they agree.
+	 *
+	 * @return \WP_Error|null
+	 */
+	private function trigger_type_conflict( int $recipe_id, string $recipe_type ): ?\WP_Error {
+		try {
+			$triggers = $this->trigger_store->get_recipe_triggers( new Recipe_Id( $recipe_id ) )->get_triggers();
+		} catch ( \Exception $e ) {
+			return new \WP_Error( 'recipe_type_unconfirmed', 'The recipe\'s triggers could not be read, so the type was not changed. Try again.', array( 'retryable' => true ) );
+		}
+
+		foreach ( $triggers as $trigger ) {
+			$trigger_type = $trigger->get_trigger_type()->get_value();
+			if ( $trigger_type !== $recipe_type ) {
+				return new \WP_Error(
+					'recipe_type_conflicts_with_triggers',
+					sprintf( 'This recipe already has "%1$s" triggers, so its type can only be "%1$s".', $trigger_type ),
+					array(
+						'trigger_type'   => $trigger_type,
+						'attempted_type' => $recipe_type,
+					)
+				);
+			}
+		}
+
+		return null;
 	}
 
 	/**

@@ -23,6 +23,23 @@ namespace Uncanny_Automator\Integrations\The_Events_Calendar;
 trait Has_Dependency {
 
 	/**
+	 * The plugin an item that needs Event Tickets states through set_plugin_details().
+	 *
+	 * Only the literal, so the feed exporter can read it as text.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return array The plugin details.
+	 */
+	public static function event_tickets_plugin_details(): array {
+		return array(
+			'plugin_file'       => 'event-tickets/event-tickets.php',
+			'plugin_name'       => 'Event Tickets',
+			'distribution_type' => 'wp_org',
+		);
+	}
+
+	/**
 	 * Is Event Tickets active?
 	 *
 	 * @return bool

@@ -50,15 +50,18 @@ class EC_REGISTER extends Trigger {
 		/* translators: %1$s is the event field token */
 		$this->set_sentence( sprintf( esc_html_x( 'A user registers for {{an event:%1$s}}', 'The Events Calendar', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_html_x( 'A user registers for {{an event}}', 'The Events Calendar', 'uncanny-automator' ) );
+
+		$this->set_plugin_details( self::event_tickets_plugin_details() );
 	}
 
 	/**
-	 * Gate registration on Event Tickets being active — the provider
-	 * hooks that feed this trigger only exist when ET is present.
+	 * Whether Event Tickets is loaded, from its own folder or a renamed one.
 	 *
-	 * @return bool
+	 * @since 8.1.0
+	 *
+	 * @return bool|null True when Event Tickets is loaded, false when it is not.
 	 */
-	public function requirements_met() {
+	protected function is_plugin_compatible(): ?bool {
 		return $this->et_active();
 	}
 

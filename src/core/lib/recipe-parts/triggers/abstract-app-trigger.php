@@ -45,6 +45,54 @@ abstract class App_Trigger extends Trigger {
 	protected $webhooks;
 
 	/**
+	 * Whether this trigger needs the integration's "Enable triggers" switch on.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @var bool
+	 */
+	private $requires_triggers_enabled = false;
+
+	/**
+	 * State that this trigger needs the integration's "Enable triggers" switch on. Called in setup_trigger().
+	 *
+	 * The trigger then has one setup step, answered by the integration's helpers.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return void
+	 */
+	protected function require_triggers_enabled(): void {
+		$this->requires_triggers_enabled = true;
+	}
+
+	/**
+	 * The "Enable triggers" step, for a trigger that called require_triggers_enabled(). Its row is named after the
+	 * integration's settings page, where the step is done.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return array The steps, each with its answer; empty when the trigger needs none.
+	 */
+	protected function setup_requirements(): array {
+		if ( ! $this->requires_triggers_enabled ) {
+			return array();
+		}
+
+		return array(
+			array(
+				'key'         => 'enable-triggers',
+				'description' => sprintf(
+					/* translators: %s: The app's name */
+					esc_html_x( 'Enable triggers on the %s settings page.', 'Setup step description', 'uncanny-automator' ),
+					$this->helpers->get_name()
+				),
+				'is_met'      => (bool) $this->helpers->triggers_enabled(),
+			),
+		);
+	}
+
+	/**
 	 * Override the parent method to set all dependencies from the dependencies object.
 	 * This provides clean access to helpers, api, and webhooks without manual property setting.
 	 *

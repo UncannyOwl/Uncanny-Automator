@@ -182,8 +182,8 @@ class Telegram_Entity_Renderer {
 		$chars = mb_str_split( $text, 1, 'UTF-8' );
 		foreach ( $chars as $char ) {
 			$map[ $u16 ] = $php;
-			$code        = mb_ord( $char, 'UTF-8' );
-			$u16        += ( false !== $code && $code >= 0x10000 ) ? 2 : 1;
+			// A four-byte UTF-8 character occupies two UTF-16 code units.
+			$u16 += 4 === strlen( $char ) ? 2 : 1;
 			++$php;
 		}
 

@@ -4,8 +4,9 @@
  *
  * Resolves availability-related scope tags (Locked).
  *
- * Shows "Locked" tag only when license dependencies are not met.
- * Does NOT show locked tag for plugin/account dependency issues.
+ * An integration shows the "Locked" tag only when its license dependencies are not met, never for its own
+ * plugin/account dependency issues. An item shows it when any row of its own is unmet: its license, or the plugin
+ * or setup step it needs beyond its integration.
  *
  * @package Uncanny_Automator\App\Integration_Catalog\Scope_Tag\Resolvers\Availability
  * @since 7.0.0
@@ -28,8 +29,8 @@ class Availability_Tag_Resolver extends Abstract_Scope_Tag_Resolver {
 	/**
 	 * Check if should be evaluated.
 	 *
-	 * Availability tags are evaluated when LICENSE dependencies are not met.
-	 * Plugin/account dependencies do NOT trigger the locked tag.
+	 * For an integration, availability tags are evaluated when LICENSE dependencies are not met; its
+	 * plugin/account dependencies do NOT trigger the locked tag. For an item, when any row of its own is unmet.
 	 *
 	 * @param Scope_Tag_Evaluatable $entity Entity object (Integration, Block, etc)
 	 * @param array|null $item Item data (null for entity-level)
@@ -52,7 +53,7 @@ class Availability_Tag_Resolver extends Abstract_Scope_Tag_Resolver {
 			return false;
 		}
 
-		return $this->has_unmet_license_dependencies( $this->item_dependencies );
+		return $this->has_unmet_dependencies( $this->item_dependencies );
 	}
 
 	/**
@@ -69,8 +70,8 @@ class Availability_Tag_Resolver extends Abstract_Scope_Tag_Resolver {
 			return array();
 		}
 
-		// For items: check item-level license lock (parent lock already handled in main resolver).
-		if ( $this->has_unmet_license_dependencies( $this->item_dependencies ) ) {
+		// For items: any unmet row of the item's own (parent lock already handled in main resolver).
+		if ( $this->has_unmet_dependencies( $this->item_dependencies ) ) {
 			return array( $this->get_locked_tag() );
 		}
 
@@ -103,6 +104,26 @@ class Availability_Tag_Resolver extends Abstract_Scope_Tag_Resolver {
 		foreach ( $dependencies['items'] as $dependency ) {
 			// Only check license type dependencies.
 			if ( 'license' === $dependency->get_type() && ! $dependency->is_met() ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if any dependency is unmet. An item's dependencies are its own rows only: what its integration shows
+	 * is taken out before they get here.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array $dependencies Dependencies array with 'items' key
+	 *
+	 * @return bool True if any dependency is unmet
+	 */
+	private function has_unmet_dependencies( array $dependencies ) {
+		foreach ( $dependencies['items'] ?? array() as $dependency ) {
+			if ( ! $dependency->is_met() ) {
 				return true;
 			}
 		}

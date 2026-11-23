@@ -185,12 +185,16 @@ final class Recipe_Schema_Store {
 	 *
 	 * Bumps the write generation, then deletes the persisted tree. Stores call this for writes no WordPress hook covers — meta-only writes, every `uo-recipe` write, and any method whose LAST write is meta (the hook fired earlier, against pre-edit values). The next read rebuilds from final storage through `Recipe_Schema_Reader`.
 	 *
+	 * A recipe whose post is gone is ignored: deleting a recipe fires its change event after WordPress has removed the post and its meta, and a bump then would leave a generation row behind on a post that no longer exists.
+	 *
+	 * @since 8.1.0 Ignores a recipe whose post is gone.
+	 *
 	 * @param int $recipe_id Recipe post id. Non-positive ids are ignored.
 	 *
 	 * @return void
 	 */
 	public function invalidate( int $recipe_id ): void {
-		if ( $recipe_id <= 0 ) {
+		if ( $recipe_id <= 0 || null === get_post( $recipe_id ) ) {
 			return;
 		}
 

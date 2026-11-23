@@ -49,6 +49,7 @@ use Uncanny_Automator\App\Recipe_Builder\Condition\Services\Condition_Registry_S
 use Uncanny_Automator\App\Plan\Services\Plan_Service;
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
 use Uncanny_Automator\App\Infrastructure\Database\Database;
+use Uncanny_Automator\App\Integration_Catalog\App_Events\App_Event_Sources;
 
 // =============================================================================
 // DATABASE FACTORY FUNCTIONS
@@ -499,4 +500,20 @@ function automator_recipe_notice_center(): Recipe_Notice_Center {
 		$center = new Recipe_Notice_Center();
 	}
 	return $center;
+}
+
+/**
+ * The apps that send this site events through the Automator platform, as
+ * their integrations registered them on this request.
+ *
+ * @since 8.1.0
+ *
+ * @return App_Event_Sources
+ */
+function automator_app_event_sources(): App_Event_Sources {
+	static $sources = null;
+	if ( null === $sources ) {
+		$sources = new App_Event_Sources();
+	}
+	return $sources;
 }

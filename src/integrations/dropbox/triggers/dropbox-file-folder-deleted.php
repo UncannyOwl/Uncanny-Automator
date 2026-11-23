@@ -41,6 +41,7 @@ class Dropbox_File_Folder_Deleted extends App_Trigger {
 	 */
 	protected function setup_trigger() {
 		$this->set_uses_api( true );
+		$this->require_triggers_enabled();
 
 		$this->set_sentence(
 			sprintf(
@@ -51,24 +52,6 @@ class Dropbox_File_Folder_Deleted extends App_Trigger {
 		);
 
 		$this->set_readable_sentence( esc_html_x( 'A file or folder is deleted in {{a folder}}', 'Dropbox', 'uncanny-automator' ) );
-	}
-
-	/**
-	 * Show only once the site has enabled Dropbox triggers.
-	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return $this->helpers->triggers_enabled();
-	}
-
-	/**
-	 * Why a recipe holding this trigger never runs while Dropbox triggers are off.
-	 *
-	 * @return string
-	 */
-	public function requirements_unmet_message(): string {
-		return $this->helpers->triggers_off_message();
 	}
 
 	/**

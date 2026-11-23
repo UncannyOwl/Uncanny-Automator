@@ -62,23 +62,33 @@ final class Log_Item_Serializer {
 	private $integrations;
 
 	/**
+	 * What an action returned on its run.
+	 *
+	 * @var Log_Action_Outputs
+	 */
+	private $outputs;
+
+	/**
 	 * Wires up the item serializer's collaborators, defaulting each to its production implementation.
 	 *
 	 * @param Node_Status_Resolver|null        $resolver     Status derivation.
 	 * @param Field_Output_Serializer|null      $fields       Tree-field → FieldsOutput serializer.
 	 * @param Log_Properties_Mapper|null        $properties   Property mapper.
 	 * @param Integration_Registry_Bridge|null  $integrations Integration-name resolver.
+	 * @param Log_Action_Outputs|null           $outputs      What an action returned on its run.
 	 */
 	public function __construct(
 		?Node_Status_Resolver $resolver = null,
 		?Field_Output_Serializer $fields = null,
 		?Log_Properties_Mapper $properties = null,
-		?Integration_Registry_Bridge $integrations = null
+		?Integration_Registry_Bridge $integrations = null,
+		?Log_Action_Outputs $outputs = null
 	) {
 		$this->resolver     = $resolver ?? new Node_Status_Resolver();
 		$this->fields       = $fields ?? new Field_Output_Serializer();
 		$this->properties   = $properties ?? new Log_Properties_Mapper();
 		$this->integrations = $integrations ?? new Automator_Integration_Registry_Bridge();
+		$this->outputs      = $outputs ?? new Log_Action_Outputs();
 	}
 
 	/**
@@ -107,7 +117,7 @@ final class Log_Item_Serializer {
 			Wire_Key::CODE             => '' !== $code ? $code : self::UNKNOWN_CODE,
 			Wire_Key::CUSTOM_NAME      => $node['custom_name'] ?? null,
 			Wire_Key::FIELDS           => $this->fields->serialize( $this->configuration( $kind, (int) $id, $node, $bundle ), $field_ctx ),
-			'execution'                => $this->execution( $kind, (int) $id, $bundle, $ctx, $field_ctx ),
+			'execution'                => $this->execution( $kind, (int) $id, $code, $bundle, $ctx, $field_ctx ),
 		);
 
 		if ( '' !== $integration_code ) {
@@ -122,16 +132,17 @@ final class Log_Item_Serializer {
 	 *
 	 * @param string                $kind      Item kind.
 	 * @param int                   $id        Item post id.
+	 * @param string                $code      Item code from the recipe, '' when unknown.
 	 * @param Run_Data_Bundle       $bundle    Run data.
 	 * @param array<string,mixed>   $ctx       Context flags.
 	 * @param Field_Context|null    $field_ctx The item's field context, or null.
 	 * @return array<string,mixed> The item's execution sub-object.
 	 */
-	private function execution( string $kind, int $id, Run_Data_Bundle $bundle, array $ctx, ?Field_Context $field_ctx = null ): array {
+	private function execution( string $kind, int $id, string $code, Run_Data_Bundle $bundle, array $ctx, ?Field_Context $field_ctx = null ): array {
 		$exec = array( 'status' => $this->resolver->item( $id, $bundle, $ctx )->to_array() );
 
 		if ( $this->resolver->item_ships_breakdown( $ctx ) ) {
-			$exec['date_started'] = $this->fmt( (string) ( $bundle->recipe_log_row()['date_time'] ?? '' ) );
+			$exec['date_started'] = $this->fmt( $bundle->run_started_at() );
 			$message              = $this->with_block_errors( '', $ctx );
 			if ( '' !== $message ) {
 				$exec['result_message'] = $message;
@@ -146,7 +157,7 @@ final class Log_Item_Serializer {
 			$ended   = '' !== $runs['last_date'] && $runs['last_date'] !== $runs['first_date'] ? $runs['last_date'] : null;
 			$message = $runs['last_message'];
 		} else {
-			$runs                    = $this->action_runs( $id, $bundle, $field_ctx );
+			$runs                    = $this->action_runs( $id, $code, $bundle, $field_ctx );
 			list( $started, $ended ) = $this->action_dates( $id, $bundle, $runs['last_date'] );
 			// A step that never ran (skipped, or not reached) did not run early either.
 			$message = '' !== $runs['last_message'] || '' === $started ? $runs['last_message'] : $this->ran_early_message( $id, $bundle );
@@ -213,9 +224,10 @@ final class Log_Item_Serializer {
 			return array( '', null );
 		}
 
+		// An action that did not wait started with the run, not when the run finished.
 		$delay   = $bundle->delay_config_for_action( $id );
 		$due     = $delay['ran_now_at'] ?? $delay['time'] ?? null;
-		$started = is_numeric( $due ) ? (string) wp_date( 'Y-m-d H:i:s', (int) $due ) : (string) ( $bundle->recipe_log_row()['date_time'] ?? '' );
+		$started = is_numeric( $due ) ? (string) wp_date( 'Y-m-d H:i:s', (int) $due ) : $bundle->run_started_at();
 
 		return array( $started, Automator_Status::finished( $status ) ? $last_date : null );
 	}
@@ -260,14 +272,18 @@ final class Log_Item_Serializer {
 	}
 
 	/**
-	 * Assemble runs for an action: primary log row + api-response retries.
+	 * Assemble runs for an action: primary log row + api-response retries. The primary run carries what the action
+	 * returned: a retry replays the stored API request and stores no values of its own.
+	 *
+	 * @since 8.1.0 The primary run ships `outputs`.
 	 *
 	 * @param int                $id        Action post id.
+	 * @param string             $code      Action code from the recipe, '' when unknown.
 	 * @param Run_Data_Bundle    $bundle    Run data.
 	 * @param Field_Context|null $field_ctx The item's field context, or null.
 	 * @return array{runs: array<int,array<string,mixed>>, first_date: string, last_date: string, last_message: string} The assembled runs and summary dates.
 	 */
-	private function action_runs( int $id, Run_Data_Bundle $bundle, ?Field_Context $field_ctx = null ): array {
+	private function action_runs( int $id, string $code, Run_Data_Bundle $bundle, ?Field_Context $field_ctx = null ): array {
 		$row = $bundle->action_row( $id );
 		// A row at NOT_COMPLETED was born at run start and nothing ran on it yet: no run to report.
 		if ( null === $row || Automator_Status::NOT_COMPLETED === (int) ( $row['completed'] ?? Automator_Status::NOT_COMPLETED ) ) {
@@ -279,8 +295,9 @@ final class Log_Item_Serializer {
 			);
 		}
 		$action_log_id = (int) $row['ID'];
-		$tokens        = $bundle->tokens_map();
-		$primary_msg   = Log_Message_Text::from_stored( (string) ( $bundle->error_message_for( $action_log_id ) ?? ( $row['error_message'] ?? '' ) ) );
+		$record_id     = $bundle->token_place_for( $action_log_id );
+		$tokens        = $bundle->tokens_map_at( (string) ( $row['date_time'] ?? '' ), $record_id );
+		$primary_msg   = Log_Message_Text::from_stored( (string) ( $bundle->error_message_for( $action_log_id ) ?? $bundle->error_message_for_action( $id ) ?? ( $row['error_message'] ?? '' ) ) );
 
 		$run = array(
 			'run_number' => 1,
@@ -291,7 +308,7 @@ final class Log_Item_Serializer {
 			$run['result_message'] = $primary_msg;
 		}
 		if ( ! empty( $tokens ) ) {
-			$run['tokens'] = $bundle->wire_tokens();
+			$run['tokens'] = $bundle->wire_tokens_at( (string) ( $row['date_time'] ?? '' ), $record_id );
 		}
 		$overlay = $this->run_fields_overlay( (string) ( $bundle->action_meta( $action_log_id, 'action_fields' ) ?? '' ), $tokens, $field_ctx );
 		if ( null !== $overlay ) {
@@ -300,6 +317,10 @@ final class Log_Item_Serializer {
 		$props = $this->properties->map( automator_safe_unserialize( (string) ( $bundle->action_meta( $action_log_id, 'properties' ) ?? '' ) ) );
 		if ( ! empty( $props ) ) {
 			$run['properties'] = $props;
+		}
+		$outputs = $this->outputs->map( $bundle->action_tokens( $action_log_id ), $id, $code, (int) ( $bundle->recipe_log_row()['automator_recipe_id'] ?? 0 ) );
+		if ( ! empty( $outputs ) ) {
+			$run['outputs'] = $outputs;
 		}
 
 		$runs      = array( $run );
@@ -339,12 +360,11 @@ final class Log_Item_Serializer {
 	 * @return array{runs: array<int,array<string,mixed>>, first_date: string, last_date: string, last_message: string} The assembled runs and summary dates.
 	 */
 	private function trigger_runs( int $id, Run_Data_Bundle $bundle, ?Field_Context $field_ctx = null ): array {
-		$rows   = $bundle->trigger_rows_for( $id );
-		$tokens = $bundle->tokens_map();
-		$runs   = array();
-		$n      = 0;
-		$first  = '';
-		$last   = '';
+		$rows  = $bundle->trigger_rows_for( $id );
+		$runs  = array();
+		$n     = 0;
+		$first = '';
+		$last  = '';
 		foreach ( $rows as $row ) {
 			++$n;
 			$date = (string) ( $row['date_time'] ?? '' );
@@ -352,6 +372,7 @@ final class Log_Item_Serializer {
 				$first = $date;
 			}
 			$last    = $date;
+			$tokens  = $bundle->tokens_map_at( $date );
 			$entry   = array(
 				'run_number' => $n,
 				'status'     => Log_Status_Registry::from_legacy_int( (int) ( $row['completed'] ?? Automator_Status::NOT_COMPLETED ) )->to_array(),
@@ -362,7 +383,7 @@ final class Log_Item_Serializer {
 				$entry['fields'] = $overlay;
 			}
 			if ( ! empty( $tokens ) ) {
-				$entry['tokens'] = $bundle->wire_tokens();
+				$entry['tokens'] = $bundle->wire_tokens_at( $date );
 			}
 			$props = $this->trigger_properties( (int) $row['ID'], $bundle );
 			if ( ! empty( $props ) ) {

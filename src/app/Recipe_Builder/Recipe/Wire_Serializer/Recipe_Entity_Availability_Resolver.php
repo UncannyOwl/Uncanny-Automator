@@ -3,18 +3,25 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer;
 
+use Uncanny_Automator\App\Infrastructure\License\License_Manager;
+use Uncanny_Automator\App\Infrastructure\License\License_Provider_Interface;
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Query_Service;
+use Uncanny_Automator\App\Integration_Catalog\Services\Item_Availability_Provider;
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Dependencies_Resolver;
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Dependency_Context;
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Dependency;
 use Uncanny_Automator\App\Integration_Catalog\Scope_Tag\Scope_Tag_Resolver;
-use Uncanny_Automator\App\Integration_Catalog\Services\Hidden_Items;
 use Uncanny_Automator\App\Integration_Catalog\Integration\Integration;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Block_Modifier_Types;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integration_Block_Modifier;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integration_Item;
 use Uncanny_Automator\App\Recipe_Builder\Block\Registry\WP_Block_Registry;
 use Uncanny_Automator\App\Recipe_Builder\Block\Block;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Availability_Status;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Wire_Key;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Wire_Node_Type;
+
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
 
 /**
  * Resolves one serialized wire flow-node to `{ availability, tags }` by reusing
@@ -62,6 +69,13 @@ final class Recipe_Entity_Availability_Resolver {
 	private WP_Block_Registry $block_registry;
 
 	/**
+	 * The license whose key an app's request carries to the platform.
+	 *
+	 * @var License_Provider_Interface
+	 */
+	private License_Provider_Interface $license;
+
+	/**
 	 * Per-request memo of integration-level dependency results, keyed by code.
 	 *
 	 * @var array<string, array{all_met:bool, items:Dependency[]}>
@@ -83,19 +97,22 @@ final class Recipe_Entity_Availability_Resolver {
 	 * @param Scope_Tag_Resolver|null                          $tags
 	 * @param Recipe_Entity_Availability_Message_Provider|null $messages
 	 * @param WP_Block_Registry|null                           $block_registry
+	 * @param License_Provider_Interface|null                  $license
 	 */
 	public function __construct(
 		?Integration_Query_Service $query = null,
 		?Dependencies_Resolver $deps = null,
 		?Scope_Tag_Resolver $tags = null,
 		?Recipe_Entity_Availability_Message_Provider $messages = null,
-		?WP_Block_Registry $block_registry = null
+		?WP_Block_Registry $block_registry = null,
+		?License_Provider_Interface $license = null
 	) {
 		$this->query          = $query ?? Integration_Query_Service::get_instance();
 		$this->deps           = $deps ?? new Dependencies_Resolver( new Dependency_Context() );
 		$this->tags           = $tags ?? new Scope_Tag_Resolver();
 		$this->messages       = $messages ?? new Recipe_Entity_Availability_Message_Provider();
 		$this->block_registry = $block_registry ?? new WP_Block_Registry();
+		$this->license        = $license ?? automator_license_manager() ?? new License_Manager();
 	}
 
 	/**
@@ -144,24 +161,32 @@ final class Recipe_Entity_Availability_Resolver {
 			return $this->unknown( $entity_type );
 		}
 
-		$item_obj = $this->query->get_item( $int_code, $item_code, $entity_type );
+		return $this->resolve_entry( $integration, $int_code, $item_code, $entity_type, $this->query->get_item( $int_code, $item_code, $entity_type ) );
+	}
 
-		// Not in the catalog because its own requirements hid it on this site
-		// (decision A4): not usable, told in its own sentence.
-		$hidden = null === $item_obj ? Hidden_Items::reason( $int_code, $entity_type, $item_code ) : null;
-		if ( null !== $hidden ) {
-			return array(
-				Wire_Key::AVAILABILITY => array(
-					Wire_Key::STATUS  => Availability_Status::UNAVAILABLE,
-					Wire_Key::MESSAGE => $this->messages->hidden( $hidden, $entity_type ),
-				),
-				Wire_Key::TAGS         => array(),
-			);
+	/**
+	 * Resolve an item or block modifier from its store entry.
+	 *
+	 * Not in the catalog yet stored as unavailable: an item whose requirements are not met and that declares nothing
+	 * (the catalog lists a blocked item only when it states a plugin, another integration or a setup step; such an
+	 * item resolves below, with its rows). Not usable, told in its own sentence (decision A4).
+	 *
+	 * @param Integration                                      $integration The owning integration.
+	 * @param string                                           $int_code    Integration code.
+	 * @param string                                           $code        Item or modifier code.
+	 * @param string                                           $entity_type The item or modifier type.
+	 * @param Integration_Item|Integration_Block_Modifier|null $entry       Its store entry; null when the catalog lacks it.
+	 * @return array{availability: array, tags: array}
+	 */
+	private function resolve_entry( Integration $integration, string $int_code, string $code, string $entity_type, $entry ): array {
+		$unavailable = null === $entry ? Item_Availability_Provider::instance()->unavailable_definition( $entity_type, $int_code, $code ) : null;
+		if ( null !== $unavailable ) {
+			return $this->hidden( (array) ( $unavailable['requirements'] ?? array() ), $entity_type );
 		}
 
-		$item = null !== $item_obj ? $item_obj->to_array() : array( 'code' => $item_code );
+		$item = null !== $entry ? $entry->to_array() : array( 'code' => $code );
 
-		return $this->resolve_from_item_array( $integration, $int_code, $item, $entity_type );
+		return $this->resolve_from_item_array( $integration, $int_code, $item, $entity_type, null !== $entry ? $entry->get_requirements() : null );
 	}
 
 	/**
@@ -188,8 +213,7 @@ final class Recipe_Entity_Availability_Resolver {
 	/**
 	 * Resolve a block modifier (loop_filter / filter_condition). Modifiers live
 	 * in the integration's `block_modifiers` slot, not its items — so `get_item`
-	 * can't find them. Look the row up there (for its `required_tier`), then
-	 * reuse the shared item resolution.
+	 * can't find them. Look the entry up there, then resolve it as an item is.
 	 *
 	 * @param string $int_code    Integration code.
 	 * @param string $code        Modifier code.
@@ -202,9 +226,7 @@ final class Recipe_Entity_Availability_Resolver {
 			return $this->unknown( $entity_type );
 		}
 
-		$item = $this->modifier_row( $integration, $entity_type, $code ) ?? array( 'code' => $code );
-
-		return $this->resolve_from_item_array( $integration, $int_code, $item, $entity_type );
+		return $this->resolve_entry( $integration, $int_code, $code, $entity_type, $this->modifier_entry( $integration, $entity_type, $code ) );
 	}
 
 	/**
@@ -215,15 +237,44 @@ final class Recipe_Entity_Availability_Resolver {
 	 * @param string      $int_code    Integration code (memo key).
 	 * @param array       $item        Catalog item/modifier row (carries required_tier).
 	 * @param string      $entity_type The node kind, for the message noun.
+	 * @param array|null  $requirements The item's stored requirements, from its store entry; null when none.
 	 * @return array{availability: array, tags: array}
 	 */
-	private function resolve_from_item_array( Integration $integration, string $int_code, array $item, string $entity_type ): array {
+	private function resolve_from_item_array( Integration $integration, string $int_code, array $item, string $entity_type, ?array $requirements = null ): array {
 		$int_deps  = $this->integration_deps( $integration, $int_code );
-		$item_deps = $this->deps->resolve_item_dependencies( $item, $integration, $int_deps );
+		$item_deps = $this->deps->resolve_item_dependencies( $item, $integration, $int_deps, $requirements );
+
+		// Not met, yet no row of its own or its integration's to show it locked: read as a blocked item that declares nothing.
+		if ( $this->deps->is_unmet_without_a_row( $requirements, $item_deps, $int_deps ) ) {
+			return $this->hidden( (array) $requirements, $entity_type );
+		}
+
+		// An item whose own requirements are not met is not registered; an app's request is refused without a license key.
+		$never_runs = false === ( $requirements['is_met'] ?? null ) || ( $integration->is_app() && '' === $this->license->get_key() );
 
 		return array(
-			Wire_Key::AVAILABILITY => $this->availability( $int_deps, $item_deps, $entity_type ),
+			Wire_Key::AVAILABILITY => $this->availability( $int_deps, $item_deps, $entity_type, $never_runs ),
 			Wire_Key::TAGS         => $this->tags->resolve_item_tags( $item, $integration, $int_deps, $item_deps )->to_array(),
+		);
+	}
+
+	/**
+	 * An item that is not usable and shows no row: unavailable, in its own sentence (decision A4), or the generic one
+	 * when it gives none.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array  $requirements The item's stored requirements.
+	 * @param string $entity_type  The node kind, for the generic sentence.
+	 * @return array{availability: array, tags: array}
+	 */
+	private function hidden( array $requirements, string $entity_type ): array {
+		return array(
+			Wire_Key::AVAILABILITY => array(
+				Wire_Key::STATUS  => Availability_Status::UNAVAILABLE,
+				Wire_Key::MESSAGE => $this->messages->hidden( (string) ( $requirements['message'] ?? '' ), $entity_type ),
+			),
+			Wire_Key::TAGS         => array(),
 		);
 	}
 
@@ -246,29 +297,19 @@ final class Recipe_Entity_Availability_Resolver {
 	}
 
 	/**
-	 * Find a modifier row (by code) in the integration's block_modifiers slot,
-	 * normalised to an array. Null when the row isn't present.
+	 * Find a modifier's store entry (by code) in the integration's block_modifiers slot.
 	 *
 	 * @param Integration $integration   The owning integration.
 	 * @param string      $modifier_type loop_filter or filter_condition.
 	 * @param string      $code          Modifier code.
-	 * @return array|null
+	 * @return Integration_Block_Modifier|null Null when the catalog lacks it.
 	 */
-	private function modifier_row( Integration $integration, string $modifier_type, string $code ): ?array {
-		$modifiers = 'loop_filter' === $modifier_type
+	private function modifier_entry( Integration $integration, string $modifier_type, string $code ): ?Integration_Block_Modifier {
+		$modifiers = Block_Modifier_Types::LOOP_FILTER === $modifier_type
 			? $integration->get_block_modifiers()->get_loop_filters()
 			: $integration->get_block_modifiers()->get_filter_conditions();
 
-		$row = $modifiers[ $code ] ?? null;
-		if ( null === $row ) {
-			return null;
-		}
-
-		if ( is_array( $row ) ) {
-			return $row;
-		}
-
-		return method_exists( $row, 'to_array' ) ? $row->to_array() : array( 'code' => $code );
+		return $modifiers[ $code ] ?? null;
 	}
 
 	/**
@@ -292,9 +333,11 @@ final class Recipe_Entity_Availability_Resolver {
 	 * @param array      $primary     Integration (or block) deps: { all_met, items }.
 	 * @param array|null $secondary   Item deps when present, else null.
 	 * @param string     $entity_type The node kind, for the message noun.
+	 * @param bool       $never_runs  Whether the node does not run whatever the license says: an item whose own stored
+	 *                                requirements are not met, or an app's node on a site with no license key to send.
 	 * @return array{status:string, message?:string}
 	 */
-	private function availability( array $primary, ?array $secondary, string $entity_type ): array {
+	private function availability( array $primary, ?array $secondary, string $entity_type, bool $never_runs = false ): array {
 		$all_met = ( $primary['all_met'] ?? true ) && ( null === $secondary || ( $secondary['all_met'] ?? true ) );
 		if ( $all_met ) {
 			return array( Wire_Key::STATUS => Availability_Status::USABLE );
@@ -302,19 +345,23 @@ final class Recipe_Entity_Availability_Resolver {
 
 		return array(
 			Wire_Key::STATUS  => Availability_Status::UNAVAILABLE,
-			Wire_Key::MESSAGE => $this->messages->message( $this->blocking_dependency( $primary, $secondary ), $entity_type ),
+			Wire_Key::MESSAGE => $this->messages->message( $this->unmet_dependencies( $primary, $secondary ), $entity_type, $never_runs ),
 		);
 	}
 
 	/**
-	 * The first unmet dependency — integration/block deps before item deps —
-	 * whose authoritative copy drives the unavailable message. Null if none.
+	 * Every unmet dependency, integration/block deps before item deps. The first
+	 * one's authoritative copy drives the unavailable message.
+	 *
+	 * @since 8.1.0
 	 *
 	 * @param array      $primary   Integration (or block) deps.
 	 * @param array|null $secondary Item deps, or null.
-	 * @return Dependency|null
+	 * @return Dependency[]
 	 */
-	private function blocking_dependency( array $primary, ?array $secondary ): ?Dependency {
+	private function unmet_dependencies( array $primary, ?array $secondary ): array {
+		$unmet = array();
+
 		foreach ( array( $primary, $secondary ) as $result ) {
 			if ( ! is_array( $result ) ) {
 				continue;
@@ -322,12 +369,12 @@ final class Recipe_Entity_Availability_Resolver {
 
 			foreach ( (array) ( $result['items'] ?? array() ) as $dep ) {
 				if ( $dep instanceof Dependency && ! $dep->is_met() ) {
-					return $dep;
+					$unmet[] = $dep;
 				}
 			}
 		}
 
-		return null;
+		return $unmet;
 	}
 
 	/**
@@ -341,7 +388,7 @@ final class Recipe_Entity_Availability_Resolver {
 		return array(
 			Wire_Key::AVAILABILITY => array(
 				Wire_Key::STATUS  => Availability_Status::UNAVAILABLE,
-				Wire_Key::MESSAGE => $this->messages->message( null, $entity_type ),
+				Wire_Key::MESSAGE => $this->messages->message( array(), $entity_type ),
 			),
 			Wire_Key::TAGS         => array(),
 		);

@@ -21,6 +21,15 @@ use wpdb;
 
 class WP_Recipe_Store extends WP_Post_Store implements Recipe_Store {
 
+	/**
+	 * Recipes whose first-type decision this request holds: recipe id => whether a MySQL lock backs it.
+	 * Static, because each service builds its own store.
+	 *
+	 * @var array<int, bool>
+	 */
+	private static array $held_type_decisions = array();
+
+
 	const POST_TYPE                   = AUTOMATOR_POST_TYPE_RECIPE;
 	const _META_RECIPE_TYPE           = 'uap_recipe_type';
 	const _META_RECIPE_NOTES          = 'uap_recipe_notes';
@@ -286,6 +295,102 @@ class WP_Recipe_Store extends WP_Post_Store implements Recipe_Store {
 		Recipe_Cache::invalidate( $recipe_id );
 
 		return false !== $result;
+	}
+
+	/**
+	 * Save an existing recipe without its type or a run limit nobody asked for.
+	 *
+	 * @inheritDoc
+	 */
+	public function save_without_type( Recipe $recipe, bool $with_total_times = false ): Recipe {
+		$recipe_id = (int) $recipe->get_recipe_id()->get_value();
+
+		$meta_input = $this->prepare_meta_input_from_recipe( $recipe );
+		unset(
+			$meta_input[ self::$recipe_version_key ],
+			$meta_input[ self::_META_RECIPE_TYPE ],
+			$meta_input[ self::_META_RECIPE_TIMES_PER_USER ]
+		);
+		if ( ! $with_total_times ) {
+			unset( $meta_input[ self::_META_RECIPE_TOTAL_TIMES ] );
+		}
+
+		$this->update_recipe_post( $recipe_id, $recipe );
+		$this->persist_recipe_meta( $recipe_id, $meta_input );
+		Recipe_Cache::invalidate( $recipe_id );
+
+		return $this->get( $recipe_id );
+	}
+
+	/**
+	 * A MySQL named lock: it serializes writers across PHP processes and is
+	 * released by the server if the request dies.
+	 *
+	 * Two things the lock alone does not give, handled here:
+	 * - MySQL hands a connection its own lock again, so a write nested inside
+	 *   this request's decision (a hook firing during the save) would also get
+	 *   it. This request's held decisions are tracked, and a nested one is busy.
+	 * - The waiting request may still hold its own cached copy of the recipe
+	 *   from before the wait. Once held, that copy is dropped, so the type and
+	 *   triggers read next are the ones the other request stored.
+	 *
+	 * Deliberate, do not change: when the database cannot lock (GET_LOCK
+	 * returns NULL, as on SQLite-backed WordPress such as Playground, or a
+	 * proxy that does not support named locks) this returns null and callers
+	 * go on without the cross-request lock. Refusing instead would mean an
+	 * untyped draft on those sites could never take a type. The nested-write
+	 * guard and the fresh reads still apply.
+	 *
+	 * @inheritDoc
+	 */
+	public function lock_recipe_type( int $recipe_id, int $wait_seconds = 5 ): ?bool {
+		global $wpdb;
+
+		if ( array_key_exists( $recipe_id, self::$held_type_decisions ) ) {
+			return false;
+		}
+
+		$held = $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, %d)', $this->recipe_type_lock_name( $recipe_id ), $wait_seconds ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- A lock, not data; nothing to cache.
+		if ( null !== $held && '1' !== (string) $held ) {
+			return false;
+		}
+
+		self::$held_type_decisions[ $recipe_id ] = null !== $held;
+
+		wp_cache_delete( $recipe_id, 'posts' );
+		wp_cache_delete( $recipe_id, 'post_meta' );
+		wp_cache_set_posts_last_changed(); // Cached trigger lists are keyed on it.
+
+		return null === $held ? null : true;
+	}
+
+	/**
+	 * Release the recipe's first-type decision. Does nothing unless this request holds it.
+	 *
+	 * @inheritDoc
+	 */
+	public function unlock_recipe_type( int $recipe_id ): void {
+		global $wpdb;
+
+		if ( ! array_key_exists( $recipe_id, self::$held_type_decisions ) ) {
+			return;
+		}
+
+		$has_database_lock = self::$held_type_decisions[ $recipe_id ];
+		unset( self::$held_type_decisions[ $recipe_id ] );
+
+		if ( $has_database_lock ) {
+			$wpdb->query( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $this->recipe_type_lock_name( $recipe_id ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- A lock, not data; nothing to cache.
+		}
+	}
+
+	/**
+	 * The lock name, unique per site on a shared MySQL server and within its 64-character limit.
+	 */
+	private function recipe_type_lock_name( int $recipe_id ): string {
+		global $wpdb;
+
+		return 'uap_recipe_type_' . substr( md5( $wpdb->prefix ), 0, 12 ) . '_' . $recipe_id;
 	}
 
 	/**

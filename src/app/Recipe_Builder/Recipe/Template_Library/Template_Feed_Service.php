@@ -11,26 +11,25 @@ use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Query_Service
 use WP_Error;
 
 /**
- * Projects the upstream template feed into the strict FE contract.
+ * Projects the upstream template feed (v2 cards) into the strict FE contract.
  *
- * The upstream entry carries trigger/action trees and license booleans;
- * this service strips everything down to the seven-key template shape:
- * license tags resolved via License_Tag_Catalog, integration codes
- * extracted from the item trees, and per-site usability collapsed into
- * the single `dependencies_met` boolean via the catalog's
- * setup-dependency resolution (plugin chains installed + apps
- * connected; tier/credits entitlements ride on `tags`, never here).
+ * A card already names its tier, integrations and block types; this
+ * service turns the tier into a license tag (License_Tag_Catalog), collapses
+ * per-site usability into the single `dependencies_met` boolean via the
+ * catalog's setup-dependency resolution (plugin chains installed + apps
+ * connected; tier/credits entitlements ride on `tags`, never here), and hides
+ * cards whose `min_version` is above this site's Automator. Categories come
+ * from the feed index, headed by the "All templates" entry the library's menu
+ * expects, each listing the shown templates it holds.
  */
 final class Template_Feed_Service {
 
 	/**
-	 * Keys under which a feed item holds the items nested in it, in the
-	 * order they are read: a filter's conditions, a loop's filters, then
-	 * the actions a filter or loop runs.
+	 * Slug of the "All templates" category the FE's menu and filter look for.
 	 *
-	 * @var array<int,string>
+	 * @var string
 	 */
-	const NESTED_ITEM_KEYS = array( 'conditions', 'loops_filters', 'items' );
+	const ALL_CATEGORY_SLUG = 'all';
 
 	/**
 	 * Shared instance.
@@ -61,6 +60,13 @@ final class Template_Feed_Service {
 	private $dependencies_resolver;
 
 	/**
+	 * This site's Automator version, compared with each card's min_version.
+	 *
+	 * @var string
+	 */
+	private $plugin_version;
+
+	/**
 	 * Per-request memo of code => usable checks.
 	 *
 	 * @var array<string,bool>
@@ -74,12 +80,15 @@ final class Template_Feed_Service {
 	 * @param Template_Library_Client|null   $client                Upstream client.
 	 * @param Integration_Query_Service|null $query_service         Catalog query service.
 	 * @param Dependencies_Resolver|null     $dependencies_resolver Catalog dependency resolver.
+	 * @param string|null                    $plugin_version        This site's Automator version.
 	 */
 	public function __construct(
 		?Template_Library_Client $client = null,
 		?Integration_Query_Service $query_service = null,
-		?Dependencies_Resolver $dependencies_resolver = null
+		?Dependencies_Resolver $dependencies_resolver = null,
+		?string $plugin_version = null
 	) {
+		$this->plugin_version        = $plugin_version ?? (string) AUTOMATOR_PLUGIN_VERSION;
 		$this->client                = $client ?? Template_Library_Client::instance();
 		$this->query_service         = $query_service ?? Integration_Query_Service::get_instance();
 		$this->dependencies_resolver = $dependencies_resolver ?? new Dependencies_Resolver( new Dependency_Context() );
@@ -109,18 +118,29 @@ final class Template_Feed_Service {
 			return $feed;
 		}
 
-		$templates = array();
-		foreach ( (array) ( $feed['templates'] ?? array() ) as $entry ) {
-			if ( is_array( $entry ) ) {
-				$templates[] = $this->project_template( $entry );
+		$templates   = array();
+		$in_category = array();
+		foreach ( $feed['cards'] as $card ) {
+			if ( ! $this->is_for_this_version( $card ) ) {
+				continue;
+			}
+			$templates[] = $this->project_template( $card );
+			foreach ( (array) ( $card['categories'] ?? array() ) as $category_id ) {
+				$in_category[ (int) $category_id ][] = (int) ( $card['id'] ?? 0 );
 			}
 		}
 
-		$categories = array();
-		foreach ( (array) ( $feed['categories'] ?? array() ) as $category ) {
-			if ( is_array( $category ) ) {
-				$categories[] = $this->project_category( $category );
-			}
+		$categories = array(
+			array(
+				'id'           => -1,
+				'name'         => esc_html_x( 'All templates', 'Template library', 'uncanny-automator' ),
+				'slug'         => self::ALL_CATEGORY_SLUG,
+				'count'        => count( $templates ),
+				'template_ids' => array(),
+			),
+		);
+		foreach ( $feed['categories'] as $category ) {
+			$categories[] = $this->project_category( $category, $in_category[ (int) ( $category['id'] ?? 0 ) ] ?? array() );
 		}
 
 		return array(
@@ -130,84 +150,48 @@ final class Template_Feed_Service {
 	}
 
 	/**
-	 * Project one upstream entry to the seven-key template contract.
+	 * Whether a card's template works with this site's Automator (no min_version, or one at or below it).
 	 *
-	 * @param array<string,mixed> $entry Upstream feed entry.
+	 * @param array<string,mixed> $card Feed card.
+	 * @return bool
+	 */
+	private function is_for_this_version( array $card ): bool {
+		$min_version = (string) ( $card['min_version'] ?? '' );
+
+		return '' === $min_version || version_compare( $this->plugin_version, $min_version, '>=' );
+	}
+
+	/**
+	 * Project one card to the template contract.
+	 *
+	 * @param array<string,mixed> $card Feed card.
 	 * @return array<string,mixed>
 	 */
-	private function project_template( array $entry ): array {
-		$codes = $this->integration_codes( $entry );
+	private function project_template( array $card ): array {
+		$codes = array_values( array_map( 'strval', (array) ( $card['integrations'] ?? array() ) ) );
 
 		return array(
-			'id'                => (int) ( $entry['id'] ?? 0 ),
-			'title'             => (string) ( $entry['title'] ?? '' ),
-			'description'       => (string) ( $entry['description'] ?? '' ),
-			'tags'              => $this->license_tags( $entry ),
+			'id'                => (int) ( $card['id'] ?? 0 ),
+			'title'             => (string) ( $card['title'] ?? '' ),
+			'description'       => (string) ( $card['description'] ?? '' ),
+			'tags'              => $this->license_tags( (string) ( $card['tier'] ?? 'lite' ) ),
 			'integration_codes' => $codes,
 			'dependencies_met'  => $this->dependencies_met( $codes ),
-			'priority'          => (int) ( $entry['priority'] ?? 0 ),
+			'priority'          => (int) ( $card['priority'] ?? 0 ),
+			'blocks'            => array_values( array_map( 'strval', (array) ( $card['blocks'] ?? array() ) ) ),
 		);
 	}
 
 	/**
-	 * License display tags for an upstream entry. Free templates get [].
+	 * License display tags for a card's tier. Free (`lite`) templates get [].
 	 *
-	 * @param array<string,mixed> $entry Upstream feed entry.
+	 * @param string $tier lite, pro-basic, pro-plus or pro-elite.
 	 * @return array<int,array<string,string>>
 	 */
-	private function license_tags( array $entry ): array {
-		if ( ! empty( $entry['requires_elite'] ) ) {
-			return array( License_Tag_Catalog::for_tier( 'pro-elite' ) );
-		}
-		if ( ! empty( $entry['requires_pro'] ) ) {
-			return array( License_Tag_Catalog::for_tier( 'pro-basic' ) );
-		}
+	private function license_tags( string $tier ): array {
+		$tag = License_Tag_Catalog::for_tier( $tier );
 
-		return array();
-	}
-
-	/**
-	 * Unique integration codes from the entry's trigger + action items,
-	 * including the items nested in filters and loops, first-seen order
-	 * (triggers before actions).
-	 *
-	 * @param array<string,mixed> $entry Upstream feed entry.
-	 * @return array<int,string>
-	 */
-	private function integration_codes( array $entry ): array {
-		$codes = array();
-		foreach ( array( 'triggers', 'actions' ) as $branch ) {
-			$this->collect_integration_codes( (array) ( $entry[ $branch ]['items'] ?? array() ), $codes );
-		}
-
-		return $codes;
-	}
-
-	/**
-	 * Adds each item's integration code, then those of the items nested
-	 * in it, to $codes unless already there.
-	 *
-	 * @param array<int|string,mixed> $items Feed items.
-	 * @param array<int,string>       $codes Codes collected so far.
-	 * @return void
-	 */
-	private function collect_integration_codes( array $items, array &$codes ): void {
-		foreach ( $items as $item ) {
-			if ( ! is_array( $item ) ) {
-				continue;
-			}
-
-			$code = isset( $item['integration_code'] ) ? (string) $item['integration_code'] : '';
-			if ( '' !== $code && ! in_array( $code, $codes, true ) ) {
-				$codes[] = $code;
-			}
-
-			foreach ( self::NESTED_ITEM_KEYS as $key ) {
-				if ( isset( $item[ $key ] ) && is_array( $item[ $key ] ) ) {
-					$this->collect_integration_codes( $item[ $key ], $codes );
-				}
-			}
-		}
+		return null === $tag ? array() : array( $tag );
 	}
 
 	/**
@@ -253,19 +237,19 @@ final class Template_Feed_Service {
 	}
 
 	/**
-	 * Project one upstream category to the five-key contract
-	 * (`templates` renamed to `template_ids`, ints enforced).
+	 * Project one index category to the five-key contract, with the shown templates it holds.
 	 *
-	 * @param array<string,mixed> $category Upstream category entry.
+	 * @param array<string,mixed> $category     Index category.
+	 * @param array<int,int>      $template_ids Shown templates in it.
 	 * @return array<string,mixed>
 	 */
-	private function project_category( array $category ): array {
+	private function project_category( array $category, array $template_ids ): array {
 		return array(
 			'id'           => (int) ( $category['id'] ?? 0 ),
 			'name'         => (string) ( $category['name'] ?? '' ),
 			'slug'         => (string) ( $category['slug'] ?? '' ),
-			'count'        => (int) ( $category['count'] ?? 0 ),
-			'template_ids' => array_map( 'intval', (array) ( $category['templates'] ?? array() ) ),
+			'count'        => count( $template_ids ),
+			'template_ids' => $template_ids,
 		);
 	}
 }

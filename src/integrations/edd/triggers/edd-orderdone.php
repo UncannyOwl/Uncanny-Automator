@@ -116,15 +116,6 @@ class EDD_ORDERDONE extends Trigger {
 		}
 
 		$payment_id = $hook_args[0];
-		$user_id    = get_current_user_id();
-
-		// Check if user is logged in
-		if ( ! $user_id ) {
-			return false;
-		}
-
-		// Set user ID for the trigger
-		$this->set_user_id( $user_id );
 
 		// Get payment details
 		$payment = new \EDD_Payment( $payment_id );
@@ -132,10 +123,15 @@ class EDD_ORDERDONE extends Trigger {
 			return false;
 		}
 
-		// Check if payment belongs to current user
-		if ( absint( $payment->user_id ) !== absint( $user_id ) ) {
+		// The buyer comes from the payment, not from the session: Stripe and PayPal complete the
+		// order in a webhook with nobody signed in. A guest payment has no user and is rejected.
+		$user_id = absint( $payment->user_id );
+		if ( 0 === $user_id ) {
 			return false;
 		}
+
+		// Set user ID for the trigger
+		$this->set_user_id( $user_id );
 
 		// Get order total from trigger meta
 		$selected_total = $trigger['meta'][ self::TRIGGER_META ];

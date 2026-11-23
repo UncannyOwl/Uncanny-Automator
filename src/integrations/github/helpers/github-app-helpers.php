@@ -485,6 +485,81 @@ class Github_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers
 			'options'         => $this->get_webhook_repo_options( $event ),
 			'options_show_id' => false,
 			'relevant_tokens' => array(),
+			'description'     => $this->get_webhook_repo_description( $event ),
+		);
+	}
+
+	/**
+	 * Get the description of the webhook repository field.
+	 *
+	 * Names the event when it has a label, otherwise describes the repositories of any event.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $event The webhook event the field is for, or `all`.
+	 *
+	 * @return string
+	 */
+	private function get_webhook_repo_description( $event ) {
+		$link  = $this->get_formatted_manage_webhooks_link();
+		$label = $this->get_event_label( $event );
+
+		if ( '' === $label ) {
+			return sprintf(
+				// translators: %s is common text with a link to the GitHub settings page.
+				esc_html_x( 'Only repositories with a connected webhook will be shown. %s', 'GitHub', 'uncanny-automator' ),
+				$link
+			);
+		}
+
+		return sprintf(
+			// translators: %1$s is the webhook event, %2$s is common text with a link to the GitHub settings page.
+			esc_html_x( 'Only repositories with a connected webhook for %1$s will be shown. %2$s', 'GitHub', 'uncanny-automator' ),
+			$label,
+			$link
+		);
+	}
+
+	/**
+	 * Get the label of a webhook event.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $event The webhook event value.
+	 *
+	 * @return string The label, or an empty string for `all` and for an event with no label.
+	 */
+	private function get_event_label( $event ) {
+		if ( 'all' === $event ) {
+			return '';
+		}
+
+		foreach ( $this->get_event_options() as $option ) {
+			if ( ( $option['value'] ?? null ) === $event ) {
+				return (string) ( $option['text'] ?? '' );
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Get a formatted Markdown link to the GitHub settings page.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return string
+	 */
+	public function get_formatted_manage_webhooks_link() {
+		return sprintf(
+			// translators: %s is a link to the GitHub settings page.
+			esc_html_x( 'Manage webhooks in your %s.', 'GitHub', 'uncanny-automator' ),
+			// The builder renders a description as Markdown, so the link is a Markdown link.
+			sprintf(
+				'[%1$s](%2$s)',
+				esc_html_x( 'GitHub settings', 'GitHub', 'uncanny-automator' ),
+				esc_url( $this->get_settings_page_url() )
+			)
 		);
 	}
 

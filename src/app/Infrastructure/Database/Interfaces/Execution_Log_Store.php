@@ -72,9 +72,10 @@ interface Execution_Log_Store extends Error_Message_Rewrite_Store {
 
 	/**
 	 * Recipe-log meta: `{ "<loop_filter_id>": { "met": false, "message": "<plain text>" } }`, the loop filters of this
-	 * run that matched no items for a reason the owner should read: the filter threw (the loop could not start), or
-	 * the plugin it needs is not active. Written by Pro's loop, one entry per filter, through
-	 * merge_recipe_log_meta_entry(); the run log shows such a filter as not met, with the message.
+	 * run that matched no items, each with why: the filter threw (the loop could not start), needs a plugin that is
+	 * not active, ran and matched nothing, returned an error instead of its items, or could not be loaded. An older
+	 * Pro records only the first two, and the run log shows the others as met. Written by Pro's loop, one entry per
+	 * filter, through merge_recipe_log_meta_entry(); the run log shows a recorded filter as not met, with the message.
 	 *
 	 * @since 8.0.0
 	 *
@@ -88,6 +89,15 @@ interface Execution_Log_Store extends Error_Message_Rewrite_Store {
 	 * @var string
 	 */
 	public const META_ACTION_DELAYS = 'action_delays';
+
+	/**
+	 * Recipe-log meta: the user the run started with (0 when nobody was signed in), written when
+	 * an Everyone recipe stores the run under the account it chose. The run's own user_id then
+	 * names that account, so this is the only record of whether the visitor was signed in.
+	 *
+	 * @var string
+	 */
+	public const META_STARTED_BY_USER = 'started_by_user_id';
 
 	/**
 	 * Action-log meta: the Action Scheduler job id that will resume the row's delay block.
@@ -484,12 +494,52 @@ interface Execution_Log_Store extends Error_Message_Rewrite_Store {
 	public function get_tokens_record_map( int $recipe_id, int $recipe_log_id, int $run_number ): array;
 
 	/**
+	 * Each token record of a run, oldest first, with when it was written.
+	 *
+	 * A run writes a record each time it resolves tokens, so a delayed step adds one
+	 * days after the first. Reading them in order shows a step the values it used.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param int $recipe_id     Recipe post id.
+	 * @param int $recipe_log_id Recipe-log row id.
+	 * @param int $run_number    1-indexed run number.
+	 * @return array<int,array{id:int,added:int,tokens:array<string,string>}> id is the record's row ID; added is a Unix timestamp.
+	 */
+	public function get_tokens_records( int $recipe_id, int $recipe_log_id, int $run_number ): array;
+
+	/**
+	 * Latest token record for a run, or zero before it records any tokens.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param int $recipe_id     Recipe post ID.
+	 * @param int $recipe_log_id Recipe log ID.
+	 * @param int $run_number    Run number.
+	 * @return int
+	 */
+	public function get_latest_tokens_record_id( int $recipe_id, int $recipe_log_id, int $run_number ): int;
+
+	/**
 	 * Action-log meta indexed [action_log_id][meta_key] => value.
 	 *
 	 * @param array<int,int> $action_log_ids Action-log row ids.
 	 * @return array<int,array<string,string>>
 	 */
 	public function get_action_log_meta_bag( array $action_log_ids ): array;
+
+	/**
+	 * Every value one meta key holds per action log, oldest row first, indexed [action_log_id] => values. An action
+	 * log can hold several rows under one key: the action's `hydrate_tokens()` stores one `action_tokens` row and the
+	 * runner stores the completion status in another, which get_action_log_meta_bag() would collapse into one.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array<int,int> $action_log_ids Action-log row ids.
+	 * @param string         $meta_key       Meta key.
+	 * @return array<int,array<int,string>>
+	 */
+	public function get_action_log_meta_values( array $action_log_ids, string $meta_key ): array;
 
 	/**
 	 * Every value one meta key holds per trigger log, oldest row first, indexed [trigger_log_id] => values. A trigger

@@ -13,16 +13,11 @@ use Uncanny_Automator\Recipe\App_Action;
  */
 class OPEN_AI_EXCERPT_GENERATE extends App_Action {
 
+	use OpenAI_Setup_Requirements;
+
 	const PROMPT = "Generate a summary of the following content in {{max_length}} words or less:\n\n {{content}}";
 
 	protected $model = 'gpt-4';
-
-	/**
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return $this->helpers->has_gpt4_access();
-	}
 
 	/**
 	 * @return void

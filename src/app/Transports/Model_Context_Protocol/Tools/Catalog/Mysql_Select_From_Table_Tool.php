@@ -15,6 +15,7 @@ namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Catalog;
 use Uncanny_Automator\App\Recipe_Builder\Shared\User\Value_Objects\User_Context;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Json_Rpc_Response;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Abstract_MCP_Tool;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Database_Column_Redaction_Settings;
 
 /**
  * MySQL Select From Table Tool.
@@ -38,17 +39,83 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 	private const PREVIEW_MAX_CHARS = 8000;
 
 	/**
-	 * Columns redacted from all query results.
+	 * Output keys of each selected value column (option_value, meta_value) with the
+	 * output key of the hidden column that names its row, set while the columns are read.
 	 *
-	 * These contain sensitive authentication data the agent never needs.
-	 * The agent should use the dedicated `list_users` tool for user lookups.
+	 * @var array<int,array{value:string,name:string,prefixes:string[]}>
+	 */
+	private $setting_pairs = array();
+
+	/**
+	 * What each output name of the column list reads, keyed by the lower-cased name:
+	 * the column reference as written, or '' for a function.
+	 *
+	 * @var array<string,string>
+	 */
+	private $output_sources = array();
+
+	/**
+	 * Name columns whose redacted rows the query leaves out, because it filters, sorts,
+	 * groups or aggregates by their value column, keyed by the reference.
+	 *
+	 * @var array<string,string[]> Sanitized name column reference => owner prefixes for its table.
+	 */
+	private $setting_exclusions = array();
+
+	/** Whether the query left credential settings out, so the result can say so. */
+	private $left_out_settings = false;
+
+	/** Whether the select list is being read, where a value column is returned rather than matched on. */
+	private $in_select = false;
+
+	/**
+	 * The owner's table column redaction for the request being built, or null outside one.
+	 *
+	 * @var Database_Column_Redaction_Settings|null
+	 */
+	private $redaction = null;
+
+	/**
+	 * Table names in the request, keyed by lower-cased table name and alias.
+	 *
+	 * @var array<string,string>
+	 */
+	private $query_tables = array();
+
+	/**
+	 * Each lower-cased table name and alias in the request, as the caller wrote it.
+	 * MySQL on Linux matches aliases by case, so SQL Automator adds uses these (QA D101).
+	 *
+	 * @var array<string,string>
+	 */
+	private $query_aliases = array();
+
+	/**
+	 * How many of the request's tables the predicate being built can name: a JOIN ON sees the
+	 * tables joined up to it. Null outside a JOIN ON, where every table is in scope.
+	 *
+	 * @var int|null
+	 */
+	private $tables_in_scope = null;
+
+	/** @var string[] Table references in FROM and JOIN order for predicate type lookup. */
+	private array $predicate_table_refs = array();
+
+	/** @var array|null Column types for the current request, loaded only when needed. */
+	private ?array $predicate_column_types = null;
+
+	/**
+	 * Redacted column references the request tried to filter, join, sort, group or aggregate by.
 	 *
 	 * @var string[]
 	 */
-	private const REDACTED_COLUMNS = array(
-		'user_pass',
-		'user_activation_key',
-	);
+	private $redaction_violations = array();
+
+	/** Whether a redacted column may be referenced here (a COUNT shows no value). */
+	private $allow_redacted = false;
+
+	/** Prefix of the hidden column that names a selected setting's row. */
+	private const HIDDEN_SETTING_NAME = 'automator_setting_name_';
 
 	/**
 	 * Get tool name.
@@ -83,8 +150,7 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 				),
 				'columns' => array(
 					'type'        => 'string',
-					'description' => 'Comma-separated column names to select. Use "*" for all columns. For JOINs, use table.column syntax (e.g., "p.ID, p.post_title, pm.meta_value"). Supports aliases with AS.',
-					'default'     => '*',
+					'description' => 'Select named columns, such as "p.ID, p.post_title". List the table columns to find available names. Each column needs its own name in the response: when two would share one, rename one with AS, such as "p.ID AS post_id". For a total without row data, use "COUNT(*) AS total".',
 				),
 				'joins'   => array(
 					'type'        => 'array',
@@ -166,6 +232,19 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 							'original_chars'  => array( 'type' => 'integer' ),
 							'returned_chars'  => array( 'type' => 'integer' ),
 							'chars_remaining' => array( 'type' => 'integer' ),
+							'next_offset'     => array(
+								'type'        => 'integer',
+								'description' => 'Character offset for mysql_get_cell_chunk. Excludes the preview note. If column is an AS alias, use the unqualified database column as target_column, such as post_content for p.post_content AS body.',
+							),
+							'row_key'         => array(
+								'type'        => 'object',
+								'description' => 'Key arguments for mysql_get_cell_chunk when a permitted single-column primary key is known.',
+								'properties'  => array(
+									'key_column' => array( 'type' => 'string' ),
+									'key_value'  => array( 'type' => array( 'string', 'integer' ) ),
+								),
+								'required'    => array( 'key_column', 'key_value' ),
+							),
 						),
 					),
 				),
@@ -185,7 +264,7 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 		global $wpdb;
 
 		$table   = $params['table'] ?? '';
-		$columns = $params['columns'] ?? '*';
+		$columns = $params['columns'] ?? '';
 		$joins   = $params['joins'] ?? array();
 		$where   = $params['where'] ?? '';
 		$groupby = $params['groupby'] ?? '';
@@ -206,14 +285,14 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 		}
 
 		// Collect all table names to verify (primary + joined).
-		$all_tables = array( $table );
+		$table_refs = array( (string) $params['table'] );
 
 		foreach ( $joins as $join ) {
 			if ( ! empty( $join['table'] ) ) {
-				// Extract table name (may include alias: "wp_postmeta pm").
-				$all_tables[] = $this->extract_table_name( (string) $join['table'] );
+				$table_refs[] = (string) $join['table'];
 			}
 		}
+		$all_tables = array_map( array( $this, 'extract_table_name' ), $table_refs );
 
 		if ( in_array( '', $all_tables, true ) ) {
 			return Json_Rpc_Response::create_error_response( 'Invalid table name in query request.' );
@@ -250,25 +329,27 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 			);
 		}
 
-		// Build SELECT columns - sanitize while allowing explicit aggregate functions and table.column syntax.
-		$select_cols = $this->sanitize_columns( $columns );
-		if ( is_wp_error( $select_cols ) ) {
-			return Json_Rpc_Response::create_error_response( $select_cols->get_error_message() );
-		}
+		$from = ' FROM ' . $table_ref;
 
-		// Build query — table_ref includes backticked name + optional alias.
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$query = "SELECT {$select_cols} FROM {$table_ref}";
+		$this->redaction            = new Database_Column_Redaction_Settings();
+		$this->redaction_violations = array();
+		$this->setting_exclusions   = array();
+		$this->left_out_settings    = false;
+		$this->query_aliases        = array();
+		$this->query_tables         = $this->query_table_names( (string) $params['table'], $joins );
+
+		$this->predicate_table_refs   = $table_refs;
+		$this->predicate_column_types = null;
 
 		// Build JOIN clauses.
 		if ( ! empty( $joins ) ) {
 			$join_sql = $this->build_joins( $joins );
 
 			if ( is_wp_error( $join_sql ) ) {
-				return Json_Rpc_Response::create_error_response( $join_sql->get_error_message() );
+				return $this->redaction_refusal() ?? Json_Rpc_Response::create_error_response( $join_sql->get_error_message() );
 			}
 
-			$query .= $join_sql;
+			$from .= $join_sql;
 		}
 
 		// Add WHERE clause if provided.
@@ -276,33 +357,66 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 			$where_sql = $this->build_where_clause( $where );
 
 			if ( is_wp_error( $where_sql ) ) {
-				return Json_Rpc_Response::create_error_response( $where_sql->get_error_message() );
+				return $this->redaction_refusal() ?? Json_Rpc_Response::create_error_response( $where_sql->get_error_message() );
 			}
 
 			if ( '' !== $where_sql ) {
+				// Bracketed, so exclusions added below apply to every branch of an OR.
 				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$query .= ' WHERE ' . $where_sql;
+				$from .= ' WHERE ( ' . $where_sql . ' )';
 			}
 		}
 
-		// Add GROUP BY if provided.
-		if ( ! empty( $groupby ) ) {
-			$groupby_clean = $this->sanitize_identifier( $groupby );
+		// Validate the projection after the table and predicates so existing clients retain their recovery guidance.
+		$grouped     = '' !== trim( (string) $groupby );
+		$select_cols = $this->sanitize_columns( $columns, $grouped );
+		if ( is_wp_error( $select_cols ) ) {
+			return $this->redaction_refusal() ?? Json_Rpc_Response::create_error_response( $select_cols->get_error_message() );
+		}
+		$groupby_clean = ! empty( $groupby ) ? $this->sanitize_identifier( $groupby ) : '';
+		$orderby_clean = ! empty( $orderby ) ? $this->sanitize_orderby( $orderby ) : '';
 
-			if ( ! empty( $groupby_clean ) ) {
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$query .= ' GROUP BY ' . $groupby_clean;
-			}
+		// A part that cannot be used is refused: dropping it would return ungrouped or unsorted
+		// rows that look like the answer.
+		$refusal = $this->redaction_refusal();
+		if ( null !== $refusal ) {
+			return $refusal;
+		}
+		$unusable = $this->unusable_identifiers( (string) $groupby, true );
+		if ( $unusable ) {
+			return Json_Rpc_Response::create_error_response( $this->identifier_refusal( 'groupby', $unusable, 'column names such as post_date or p.ID', 'Separate several columns with commas, such as "p.post_type, p.post_status".' ) );
+		}
+		$unusable = $this->unusable_identifiers( (string) $orderby, false );
+		if ( $unusable ) {
+			return Json_Rpc_Response::create_error_response( $this->identifier_refusal( 'orderby', $unusable, 'one column name such as post_date or p.ID', 'Use order for the direction.' ) );
 		}
 
-		// Add ORDER BY if provided (single identifier only).
-		if ( ! empty( $orderby ) ) {
-			$orderby_clean = $this->sanitize_orderby( $orderby );
-
-			if ( ! empty( $orderby_clean ) ) {
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$query .= " ORDER BY {$orderby_clean} {$order}";
+		if ( $this->setting_exclusions ) {
+			// A value matched on, grouped or aggregated cannot be withheld per row afterwards; leave those rows out.
+			$this->left_out_settings = true;
+			$exclusions              = array();
+			foreach ( $this->setting_exclusions as $name_column => $prefixes ) {
+				$exclusions[] = Database_Secrets::sql_not_secret_setting( $name_column, $prefixes );
 			}
+			$from .= ( empty( $where_sql ) ? ' WHERE ' : ' AND ' ) . implode( ' AND ', $exclusions );
+		}
+		$query = 'SELECT ' . $select_cols . $from;
+
+		if ( ! empty( $groupby_clean ) ) {
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$query .= ' GROUP BY ' . $groupby_clean;
+		}
+
+		// ORDER BY takes a single identifier.
+		if ( ! empty( $orderby_clean ) ) {
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$query .= " ORDER BY {$orderby_clean} {$order}";
+		}
+
+		// Sorting or grouping by a redacted column would show its order or distinct values.
+		$refusal = $this->redaction_refusal();
+		if ( null !== $refusal ) {
+			return $refusal;
 		}
 
 		// Probe one extra row to distinguish a full final page from more results.
@@ -328,13 +442,20 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 		$has_more = count( $results ) > $limit;
 		$results  = array_slice( $results, 0, $limit );
 
-		// Strip sensitive columns from results (covers SELECT * on wp_users, etc.).
+		// Apply the sensitive-column boundary to output aliases as well.
 		$results         = $this->redact_sensitive_columns( $results );
 		$truncation_meta = array();
 		$results         = $this->truncate_large_cell_values( $results, self::PREVIEW_MAX_CHARS, $truncation_meta );
+		if ( $truncation_meta && ! $joins && ! $grouped ) {
+			$this->add_truncated_cell_row_keys( $truncation_meta, $results, $table, $columns, $has_more ? null : $where );
+		}
 
 		return Json_Rpc_Response::create_success_response(
-			sprintf( 'Retrieved %d rows', count( $results ) ),
+			// There is no offset, so say how to reach the rows after this page.
+			sprintf( 'Retrieved %d rows', count( $results ) )
+				. ( $has_more ? '. More rows match. To read the next rows, order by a unique column such as the primary key and add a WHERE condition past the last value received; there is no offset.' : '' )
+				// An empty or lower total here does not prove a withheld setting is absent.
+				. ( $this->left_out_settings ? '. Withheld settings are left out of filters, sorts, groups, joins and totals on setting values, so they are not counted here.' : '' ),
 			array(
 				'table'           => $table,
 				'rows'            => $results,
@@ -375,10 +496,26 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 			}
 
 			// Build ON predicates from identifiers only; never interpolate raw SQL.
-			$on_sql = $this->build_join_on_clause( $join['on'], $index );
+			$outer_exclusions         = $this->setting_exclusions;
+			$this->setting_exclusions = array();
+			$this->tables_in_scope    = $index + 2;
+			$on_sql                   = $this->build_join_on_clause( $join['on'], $index );
+			$this->tables_in_scope    = null;
 
 			if ( is_wp_error( $on_sql ) ) {
 				return $on_sql;
+			}
+
+			// A join matched on a setting's value leaves redacted rows out of the join itself. Left
+			// out in WHERE instead, an outer join would drop the whole row only when a guess is right.
+			$on_exclusions = array();
+			foreach ( $this->setting_exclusions as $name_column => $prefixes ) {
+				$on_exclusions[] = Database_Secrets::sql_not_secret_setting( $name_column, $prefixes );
+			}
+			$this->setting_exclusions = $outer_exclusions;
+			if ( $on_exclusions ) {
+				$this->left_out_settings = true;
+				$on_sql                  = '( ' . $on_sql . ' ) AND ' . implode( ' AND ', $on_exclusions );
 			}
 
 			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -512,17 +649,24 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 	/**
 	 * Build one prepared column-to-value WHERE predicate.
 	 *
-	 * @param mixed $condition Predicate object.
+	 * @param mixed    $condition Predicate object.
+	 * @param int|null $join_index Zero-based index when used in a JOIN.
 	 * @return string|\WP_Error SQL predicate or error.
 	 */
-	private function build_where_value_predicate( $condition ) {
+	private function build_where_value_predicate( $condition, ?int $join_index = null ) {
 		global $wpdb;
 
 		if ( ! is_array( $condition ) ) {
 			return new \WP_Error( 'invalid_where', 'WHERE predicate must be an object.' );
 		}
 
-		$column = $this->sanitize_column_ref( (string) ( $condition['column'] ?? '' ) );
+		$reference = trim( (string) ( $condition['column'] ?? '' ) );
+		$column    = $this->sanitize_column_ref( $reference, $restricted );
+		if ( $restricted ) {
+			return null === $join_index
+				? new \WP_Error( 'invalid_where', sprintf( 'WHERE predicate cannot use a restricted column (%s). Credential columns are never read or compared; filter on another column.', $reference ) )
+				: new \WP_Error( 'invalid_join', sprintf( 'Join #%d ON predicate cannot use a restricted column (%s). Credential columns are never read or compared; join on another column.', $join_index + 1, $reference ) );
+		}
 		if ( '' === $column ) {
 			return new \WP_Error( 'invalid_where', 'WHERE predicate column must be a valid identifier.' );
 		}
@@ -535,7 +679,7 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 		$value = $condition['value'] ?? null;
 
 		if ( in_array( $operator, array( 'IS', 'IS NOT' ), true ) ) {
-			if ( null === $value || 'NULL' === strtoupper( (string) $value ) ) {
+			if ( null === $value || ( is_string( $value ) && 'NULL' === strtoupper( $value ) ) ) {
 				return "{$column} {$operator} NULL";
 			}
 
@@ -552,6 +696,10 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 			foreach ( $value as $item ) {
 				if ( null === $item || ! is_scalar( $item ) ) {
 					return new \WP_Error( 'invalid_where', 'WHERE IN predicate values must be non-null scalar values.' );
+				}
+				$error = $this->numeric_predicate_error( $reference, $item, $join_index );
+				if ( null !== $error ) {
+					return $error;
 				}
 				$placeholders[] = $this->placeholder_for_value( $item );
 				$values[]       = $item;
@@ -579,10 +727,91 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 			return new \WP_Error( 'invalid_where', 'NULL values only support =, !=, <>, IS, or IS NOT.' );
 		}
 
+		// LIKE compares text patterns even when its left operand is numeric.
+		if ( ! in_array( $operator, array( 'LIKE', 'NOT LIKE' ), true ) ) {
+			$error = $this->numeric_predicate_error( $reference, $value, $join_index );
+			if ( null !== $error ) {
+				return $error;
+			}
+		}
 		$sql = "{$column} {$operator} " . $this->placeholder_for_value( $value );
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Column/operator are allowlisted and the value is bound here.
 		return $wpdb->prepare( $sql, $value );
+	}
+
+	/**
+	 * Reject a malformed numeric comparison only when SQL resolves the column unambiguously.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string   $reference Validated column name or table-qualified name.
+	 * @param mixed    $value Comparison value.
+	 * @param int|null $join_index Zero-based JOIN index, or null for WHERE.
+	 * @return \WP_Error|null Predicate refusal, if any.
+	 */
+	private function numeric_predicate_error( string $reference, $value, ?int $join_index ): ?\WP_Error {
+		if ( ! $this->is_non_numeric_string( $value ) ) {
+			return null;
+		}
+		if ( null === $this->predicate_column_types && ! $this->load_predicate_column_types() ) {
+			return new \WP_Error( 'database_column_types_unavailable', 'Could not check the database column types for this comparison.' );
+		}
+
+		$parts     = explode( '.', $reference );
+		$column    = strtolower( array_pop( $parts ) );
+		$qualifier = $parts[0] ?? '';
+		if ( $this->table_names_ignore_case() ) {
+			$qualifier = strtolower( $qualifier );
+		}
+		// JOIN ON can reference the tables introduced up to that join.
+		$sources = null === $join_index ? $this->predicate_column_types : array_slice( $this->predicate_column_types, 0, $join_index + 2 );
+		$types   = array();
+		foreach ( $sources as $source ) {
+			if ( ( '' === $qualifier || $source['qualifier'] === $qualifier ) && isset( $source['columns'][ $column ] ) ) {
+				$types[] = $source['columns'][ $column ];
+			}
+		}
+		if ( 1 !== count( $types ) || ! $this->is_numeric_column_type( $types[0] ) ) {
+			return null;
+		}
+		$context = null === $join_index ? 'WHERE' : sprintf( 'Join #%d ON', $join_index + 1 );
+		return new \WP_Error(
+			null === $join_index ? 'invalid_where' : 'invalid_join',
+			sprintf( '%s predicate value must be numeric for column %s.', $context, $reference )
+		);
+	}
+
+	/**
+	 * Read the types of columns in the already approved tables without reading row values.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return bool Whether all table metadata was loaded.
+	 */
+	private function load_predicate_column_types(): bool {
+		$refs     = array_filter( array_map( array( $this, 'parse_table_ref' ), $this->predicate_table_refs ) );
+		$names    = array_unique( array_column( $refs, 'table' ) );
+		$by_table = $this->database_boundary_service()->column_types( $names );
+		if ( ! $by_table ) {
+			return false;
+		}
+
+		$ignore_case = $this->table_names_ignore_case();
+		$sources     = array();
+		foreach ( $refs as $ref ) {
+			$name      = $ignore_case ? strtolower( $ref['table'] ) : $ref['table'];
+			$qualifier = '' === $ref['alias'] ? $name : $ref['alias'];
+			if ( ! isset( $by_table[ $name ] ) ) {
+				return false;
+			}
+			$sources[] = array(
+				'qualifier' => $ignore_case ? strtolower( $qualifier ) : $qualifier,
+				'columns'   => $by_table[ $name ],
+			);
+		}
+		$this->predicate_column_types = $sources;
+		return true;
 	}
 
 	/**
@@ -598,12 +827,18 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 		}
 
 		if ( isset( $condition['column'] ) ) {
-			return $this->build_where_value_predicate( $condition );
+			return $this->build_where_value_predicate( $condition, $join_index );
 		}
 
-		$left  = $this->sanitize_column_ref( (string) ( $condition['left'] ?? '' ) );
-		$right = $this->sanitize_column_ref( (string) ( $condition['right'] ?? '' ) );
+		$left_ref  = trim( (string) ( $condition['left'] ?? '' ) );
+		$right_ref = trim( (string) ( $condition['right'] ?? '' ) );
+		$left      = $this->sanitize_column_ref( $left_ref, $left_restricted );
+		$right     = $this->sanitize_column_ref( $right_ref, $right_restricted );
 
+		if ( $left_restricted || $right_restricted ) {
+			$restricted = array_filter( array( $left_restricted ? $left_ref : '', $right_restricted ? $right_ref : '' ) );
+			return new \WP_Error( 'invalid_join', sprintf( 'Join #%d ON predicate cannot use a restricted column (%s).', $join_index + 1, implode( ', ', array_unique( $restricted ) ) ) );
+		}
 		if ( '' === $left || '' === $right ) {
 			return new \WP_Error( 'invalid_join', sprintf( 'Join #%d ON predicate must use valid identifiers.', $join_index + 1 ) );
 		}
@@ -850,6 +1085,11 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 	 */
 	private function normalize_where_operator( string $operator ): string {
 		$operator = strtoupper( preg_replace( '/\s+/', ' ', trim( $operator ) ) );
+		$aliases  = array(
+			'IS NULL'     => 'IS',
+			'IS NOT NULL' => 'IS NOT',
+		);
+		$operator = $aliases[ $operator ] ?? $operator;
 		$allowed  = array( '=', '!=', '<>', '>', '>=', '<', '<=', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN', 'IS', 'IS NOT' );
 
 		return in_array( $operator, $allowed, true ) ? $operator : '';
@@ -909,10 +1149,12 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 	/**
 	 * Sanitize a one- or two-part column reference.
 	 *
-	 * @param string $column_ref Raw column reference.
+	 * @param string    $column_ref Raw column reference.
+	 * @param bool|null $restricted Whether a valid reference is a credential column.
 	 * @return string Backticked column reference or empty string.
 	 */
-	private function sanitize_column_ref( string $column_ref ): string {
+	private function sanitize_column_ref( string $column_ref, ?bool &$restricted = null ): string {
+		$restricted = false;
 		$column_ref = trim( $column_ref );
 		if ( ! preg_match( '/^[a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)?$/', $column_ref ) ) {
 			return '';
@@ -920,11 +1162,177 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 
 		$parts       = explode( '.', $column_ref );
 		$column_name = end( $parts );
-		if ( in_array( strtolower( (string) $column_name ), self::REDACTED_COLUMNS, true ) ) {
+		$restricted  = Database_Secrets::is_secret_column( (string) $column_name );
+		if ( $restricted ) {
 			return '';
+		}
+		if ( ! $this->allow_redacted && $this->is_owner_redacted( $column_ref ) ) {
+			$this->redaction_violations[] = $column_ref;
+			return '';
+		}
+		$name_column = Database_Secrets::name_column_for( (string) $column_name );
+		if ( null !== $name_column && ! $this->in_select && null !== $this->redaction ) {
+			// Matching on a setting's value would reveal a redacted one by guessing; leave those rows out.
+			$this->exclude_redacted_settings( 2 === count( $parts ) ? strtolower( $parts[0] ) : '', $name_column, (string) $column_name );
 		}
 
 		return '`' . implode( '`.`', $parts ) . '`';
+	}
+
+	/**
+	 * Leave the redacted settings of a name/value table out of the query.
+	 *
+	 * @param string $qualifier    Table alias or name, or '' when unqualified.
+	 * @param string $name_column  The column that names each row.
+	 * @param string $value_column The value column the request uses, such as meta_value.
+	 * @return void
+	 */
+	private function exclude_redacted_settings( string $qualifier, string $name_column, string $value_column ): void {
+		$prefix = $this->name_qualifier( $qualifier, $value_column, $name_column );
+		if ( null === $prefix ) {
+			return;
+		}
+		$reference = '`' . ( '' !== $prefix ? $prefix . '`.`' : '' ) . $name_column . '`';
+
+		$this->setting_exclusions[ $reference ] = $this->owner_setting_prefixes( '' !== $prefix ? strtolower( $prefix ) : $qualifier );
+	}
+
+	/**
+	 * A lower-cased table name or alias as the caller wrote it.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $qualifier Lower-cased table alias or name.
+	 * @return string
+	 */
+	private function as_written( string $qualifier ): string {
+		return $this->query_aliases[ $qualifier ] ?? $qualifier;
+	}
+
+	/**
+	 * How to name the setting-name column of the table a value column comes from.
+	 *
+	 * The name must come from the table that supplies the value. A plugin table can
+	 * have meta_value and no meta_key; its rows have no setting name to check, so
+	 * nothing is paired with or excluded by one. An unqualified value in a join is
+	 * matched to the one table that has that column, and its name column is
+	 * qualified with that table, never taken from another table (QA D101). Inside
+	 * a JOIN ON, only the tables joined up to it are looked at, as MySQL does. When
+	 * column metadata can't be read, the reference is used as written, as before.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $qualifier    Lower-cased table alias or name, or '' when unqualified.
+	 * @param string $value_column The value column, such as meta_value.
+	 * @param string $name_column  The column that names each row, such as meta_key.
+	 * @return string|null The qualifier as written ('' for none), or null when there is no name column to use.
+	 */
+	private function name_qualifier( string $qualifier, string $value_column, string $name_column ): ?string {
+		if ( null === $this->predicate_column_types && ! $this->load_predicate_column_types() ) {
+			return '' !== $qualifier ? $this->as_written( $qualifier ) : '';
+		}
+		$value_column = strtolower( $value_column );
+		$name_column  = strtolower( $name_column );
+		$in_scope     = null === $this->tables_in_scope ? $this->predicate_column_types : array_slice( $this->predicate_column_types, 0, $this->tables_in_scope );
+		$sources      = array();
+		foreach ( $in_scope as $source ) {
+			$matches = '' !== $qualifier ? strtolower( $source['qualifier'] ) === $qualifier : isset( $source['columns'][ $value_column ] );
+			if ( $matches ) {
+				$sources[] = $source;
+			}
+		}
+		if ( 1 !== count( $sources ) || ! isset( $sources[0]['columns'][ $name_column ] ) ) {
+			return null;
+		}
+		if ( '' === $qualifier && 1 === count( $this->predicate_column_types ) ) {
+			// One table in the whole request: the name needs no qualifier.
+			return '';
+		}
+		return $this->as_written( strtolower( $sources[0]['qualifier'] ) );
+	}
+
+	/**
+	 * The owner's redacted setting-name prefixes for the table a qualifier names.
+	 *
+	 * An unqualified reference could come from any table in the request.
+	 *
+	 * @param string $qualifier Table alias or name, or ''.
+	 * @return string[]
+	 */
+	private function owner_setting_prefixes( string $qualifier ): array {
+		if ( null === $this->redaction ) {
+			return array();
+		}
+		$tables = '' !== $qualifier ? array( $this->query_tables[ $qualifier ] ?? $qualifier ) : array_values( array_unique( $this->query_tables ) );
+		return $this->redaction->setting_prefixes( $tables );
+	}
+
+	/**
+	 * Every table the request reads, keyed by its lower-cased name and alias.
+	 *
+	 * @param string $table Primary table reference.
+	 * @param array  $joins Join definitions.
+	 * @return array<string,string>
+	 */
+	private function query_table_names( string $table, array $joins ): array {
+		$refs = array( $table );
+		foreach ( $joins as $join ) {
+			if ( is_array( $join ) && ! empty( $join['table'] ) ) {
+				$refs[] = (string) $join['table'];
+			}
+		}
+		$names = array();
+		foreach ( $refs as $ref ) {
+			$parsed = $this->parse_table_ref( $ref );
+			if ( null === $parsed ) {
+				continue;
+			}
+			$name                          = strtolower( $parsed['table'] );
+			$alias                         = '' !== $parsed['alias'] ? strtolower( $parsed['alias'] ) : $name;
+			$names[ $name ]                = $name;
+			$names[ $alias ]               = $name;
+			$this->query_aliases[ $name ]  = $parsed['table'];
+			$this->query_aliases[ $alias ] = '' !== $parsed['alias'] ? $parsed['alias'] : $parsed['table'];
+		}
+		return $names;
+	}
+
+	/**
+	 * Whether the owner's table column redaction covers a column reference.
+	 *
+	 * A qualified reference is matched against its table. An unqualified one could
+	 * come from any table in the request, so it counts as redacted if any of them is.
+	 *
+	 * @param string $column_ref A one- or two-part column reference.
+	 * @return bool
+	 */
+	private function is_owner_redacted( string $column_ref ): bool {
+		if ( null === $this->redaction ) {
+			return false;
+		}
+		$parts = explode( '.', $column_ref );
+		if ( 2 === count( $parts ) ) {
+			$qualifier = strtolower( $parts[0] );
+			return $this->redaction->is_redacted( $parts[1], array( $this->query_tables[ $qualifier ] ?? $qualifier ) );
+		}
+		return $this->redaction->is_redacted( $parts[0], array_values( array_unique( $this->query_tables ) ) );
+	}
+
+	/**
+	 * The refusal for a request that used a redacted column other than by selecting it.
+	 *
+	 * @return array|null JSON-RPC error, or null when none was used.
+	 */
+	private function redaction_refusal(): ?array {
+		if ( empty( $this->redaction_violations ) ) {
+			return null;
+		}
+		return Json_Rpc_Response::create_error_response(
+			sprintf(
+				'These columns are redacted on this site (Table column redaction) and cannot be used to filter, join, sort or group, or in SUM, AVG, MIN or MAX: %s. You can select them, and COUNT them; their values read as [REDACTED].',
+				implode( ', ', array_unique( $this->redaction_violations ) )
+			)
+		);
 	}
 
 	/**
@@ -1030,6 +1438,64 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 	}
 
 	/**
+	 * The parts of a groupby or orderby value that are not a usable column reference.
+	 *
+	 * @param string $value Raw groupby or orderby value.
+	 * @param bool   $several Whether the value may list several columns.
+	 * @return string[] Unusable parts, as given.
+	 */
+	private function unusable_identifiers( string $value, bool $several ): array {
+		$value = trim( $value );
+		if ( '' === $value ) {
+			return array();
+		}
+		$parts = $several ? array_filter( array_map( 'trim', explode( ',', $value ) ), 'strlen' ) : array( $value );
+
+		$unusable = array();
+		foreach ( $parts as $part ) {
+			// Checked without recording exclusions or redaction again; sanitizing already did that.
+			if ( 1 !== preg_match( '/^[a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)?$/', $part ) ) {
+				$unusable[] = $part;
+				continue;
+			}
+			$column = substr( (string) strrchr( '.' . $part, '.' ), 1 );
+			if ( Database_Secrets::is_secret_column( $column ) ) {
+				$unusable[] = $part;
+			}
+		}
+		return $unusable;
+	}
+
+	/**
+	 * A refusal naming the unusable groupby or orderby parts and what the parameter accepts.
+	 *
+	 * @param string   $parameter groupby or orderby.
+	 * @param string[] $unusable  The parts that cannot be used.
+	 * @param string   $accepts   What the parameter takes.
+	 * @param string   $hint      How to give several columns or a direction.
+	 * @return string
+	 */
+	private function identifier_refusal( string $parameter, array $unusable, string $accepts, string $hint ): string {
+		$restricted = array_filter(
+			$unusable,
+			static function ( $part ) {
+				return Database_Secrets::is_secret_column( substr( (string) strrchr( '.' . $part, '.' ), 1 ) );
+			}
+		);
+		if ( count( $restricted ) === count( $unusable ) ) {
+			return sprintf( '%s cannot use %s: password hashes, post passwords, activation keys and WooCommerce API keys are restricted.', $parameter, implode( ', ', $unusable ) );
+		}
+
+		return sprintf(
+			'%1$s takes %2$s, or a name given with AS in columns. It cannot use %3$s: functions, expressions and restricted columns are not supported. %4$s',
+			$parameter,
+			$accepts,
+			implode( ', ', $unusable ),
+			$hint
+		);
+	}
+
+	/**
 	 * Sanitize ORDER BY identifier.
 	 *
 	 * Single identifier only. Supports table.column syntax.
@@ -1041,7 +1507,15 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 	 */
 	private function sanitize_orderby( string $orderby ): string {
 		$orderby = trim( $orderby );
-		return $this->sanitize_column_ref( $orderby );
+		$source  = $this->output_sources[ strtolower( $orderby ) ] ?? null;
+		if ( null === $source ) {
+			return $this->sanitize_column_ref( $orderby );
+		}
+		// MySQL sorts by an output name before a column name, so the sort is judged by the column that output reads.
+		if ( Database_Secrets::is_secret_column( $orderby ) || ( '' !== $source && '' === $this->sanitize_column_ref( $source ) ) ) {
+			return '';
+		}
+		return '`' . $orderby . '`';
 	}
 
 	/**
@@ -1052,16 +1526,18 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 	 * @since 7.2.4
 	 *
 	 * @param string $columns Raw columns string.
+	 * @param bool   $grouped Whether the query groups rows.
 	 * @return string|\WP_Error Sanitized SQL column list or error.
 	 */
-	private function sanitize_columns( string $columns ) {
-		if ( '*' === $columns ) {
-			return '*';
-		}
-
-		$refused     = array();
-		$column_list = array_map(
-			function ( $col ) use ( &$refused ) {
+	private function sanitize_columns( string $columns, bool $grouped = false ) {
+		$refused              = array();
+		$selected             = array();
+		$aggregated           = array();
+		$outputs              = array();
+		$this->setting_pairs  = array();
+		$this->output_sources = array();
+		$column_list          = array_map(
+			function ( $col ) use ( &$refused, &$selected, &$aggregated, &$outputs ) {
 				$raw = trim( $col );
 				if ( '' === $raw ) {
 					return '';
@@ -1076,11 +1552,46 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 					$alias = $matches[2];
 				}
 
-				$expr = $this->sanitize_select_expression( $expr );
+				// A sum, average, minimum or maximum of a stored setting can be one row's value, so its
+				// credential rows are left out. A count shows no value and is left as asked.
+				if ( preg_match( '/^(?:SUM|AVG|MIN|MAX)\(\s*(?:([a-zA-Z_][a-zA-Z0-9_]*)\.)?([a-zA-Z_][a-zA-Z0-9_]*)\s*\)$/i', $expr, $aggregate ) && null !== Database_Secrets::name_column_for( $aggregate[2] ) ) {
+					$aggregated[] = array(
+						'qualifier' => strtolower( $aggregate[1] ),
+						'column'    => strtolower( $aggregate[2] ),
+					);
+				}
+				$source = '';
+				if ( preg_match( '/^(?:([a-zA-Z_][a-zA-Z0-9_]*)\.)?([a-zA-Z_][a-zA-Z0-9_]*)$/', $expr, $reference ) ) {
+					$key    = '' !== $alias ? $alias : $reference[2];
+					$source = $expr;
+					// The owner redacted this column: select a constant, so its value never leaves the database.
+					if ( ! Database_Secrets::is_secret_column( $reference[2] ) && $this->is_owner_redacted( $expr ) ) {
+						$outputs[] = array(
+							'name'   => $key,
+							'source' => $source,
+						);
+						return "'" . Database_Secrets::MARKER . "' AS `" . $key . '`';
+					}
+					$selected[] = array(
+						'qualifier' => strtolower( $reference[1] ),
+						'column'    => strtolower( $reference[2] ),
+						'key'       => $key,
+					);
+				}
+
+				$this->in_select = true;
+				$expr            = $this->sanitize_select_expression( $expr );
+				$this->in_select = false;
 				if ( '' === $expr ) {
 					$refused[] = $raw;
 					return '';
 				}
+
+				// MySQL names an unnamed function after its text, and a column after the column alone.
+				$outputs[] = array(
+					'name'   => '' !== $alias ? $alias : ( $reference[2] ?? $expr ),
+					'source' => $source,
+				);
 
 				if ( '' !== $alias ) {
 					$expr .= ' AS `' . $alias . '`';
@@ -1092,7 +1603,7 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 		);
 
 		$column_list = array_filter( $column_list );
-		$supported   = 'Use column names, table.column, AS aliases, or COUNT, SUM, AVG, MIN or MAX of one column; authentication columns are never returned.';
+		$supported   = 'List the table columns and select the names you need, or use COUNT(*) AS total to count matching rows. Named columns support AS, COUNT, SUM, AVG, MIN and MAX. Password hashes, post passwords, activation keys and WooCommerce API keys are never returned.';
 
 		if ( empty( $column_list ) ) {
 			return new \WP_Error( 'invalid_columns', trim( 'No valid SELECT columns were provided. ' . ( $refused ? 'Not supported: ' . implode( '; ', $refused ) . '. ' : '' ) . $supported ) );
@@ -1103,7 +1614,80 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 			return new \WP_Error( 'invalid_columns', sprintf( 'These SELECT columns are not supported: %s. %s', implode( '; ', $refused ), $supported ) );
 		}
 
+		$refusal = $this->output_name_refusal( array_column( $outputs, 'name' ) );
+		if ( null !== $refusal ) {
+			return $refusal;
+		}
+		$this->output_sources = array_change_key_case( array_column( $outputs, 'source', 'name' ), CASE_LOWER );
+
+		// A stored setting is a credential or not by its name, so read the name with it. The name is
+		// always read under a key of Automator's own: a column the caller selected can be renamed,
+		// and an output name that reads like a credential column is dropped before the value is judged.
+		foreach ( $selected as $value ) {
+			$name_column = Database_Secrets::name_column_for( $value['column'] );
+			$prefix      = null === $name_column ? null : $this->name_qualifier( $value['qualifier'], $value['column'], $name_column );
+			if ( null === $name_column || null === $prefix ) {
+				continue;
+			}
+			if ( $grouped ) {
+				// A grouped row can stand for several settings, so leave the redacted ones out of it.
+				$this->exclude_redacted_settings( $value['qualifier'], $name_column, $value['column'] );
+				continue;
+			}
+			$hidden                = self::HIDDEN_SETTING_NAME . count( $this->setting_pairs );
+			$column_list[]         = $this->sanitize_column_ref( ( '' !== $prefix ? $prefix . '.' : '' ) . $name_column ) . ' AS `' . $hidden . '`';
+			$this->setting_pairs[] = array(
+				'value'    => $value['key'],
+				'name'     => $hidden,
+				'prefixes' => $this->owner_setting_prefixes( '' !== $prefix ? strtolower( $prefix ) : $value['qualifier'] ),
+			);
+		}
+		foreach ( $aggregated as $value ) {
+			$this->exclude_redacted_settings( $value['qualifier'], (string) Database_Secrets::name_column_for( $value['column'] ), $value['column'] );
+		}
+
 		return implode( ', ', $column_list );
+	}
+
+	/**
+	 * The refusal for a column list whose output names cannot each stand for one column.
+	 *
+	 * A row is keyed by output name, so of two columns with one name only the last
+	 * reaches the response. A setting's value is judged by the name read under its
+	 * name column's output name; a second column under that name would have the value
+	 * judged by the wrong name and returned (#9697). MySQL compares these names
+	 * without case, so they are compared that way here. A name that starts like the
+	 * one Automator reads a setting's name under is removed from every row.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string[] $outputs Output names in the order selected.
+	 * @return \WP_Error|null
+	 */
+	private function output_name_refusal( array $outputs ): ?\WP_Error {
+		$first    = array();
+		$repeated = array();
+		$reserved = array();
+		foreach ( $outputs as $output ) {
+			$key = strtolower( $output );
+			if ( 0 === strpos( $key, self::HIDDEN_SETTING_NAME ) ) {
+				$reserved[] = $output;
+			}
+			if ( isset( $first[ $key ] ) ) {
+				$repeated[ $key ] = $first[ $key ];
+				continue;
+			}
+			$first[ $key ] = $output;
+		}
+
+		if ( $reserved ) {
+			return new \WP_Error( 'invalid_columns', sprintf( 'These output names are reserved by Automator: %s. Choose another name after AS.', implode( ', ', $reserved ) ) );
+		}
+		if ( $repeated ) {
+			return new \WP_Error( 'invalid_columns', sprintf( 'These output names are used more than once: %s. Each selected column needs its own name in the response. Give one of the repeated columns another name with AS, such as "p.ID AS post_id".', implode( ', ', $repeated ) ) );
+		}
+
+		return null;
 	}
 
 	/**
@@ -1144,10 +1728,6 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 			return '';
 		}
 
-		if ( '*' === $expr ) {
-			return '*';
-		}
-
 		$column = $this->sanitize_column_ref( $expr );
 		if ( '' !== $column ) {
 			return $column;
@@ -1155,9 +1735,12 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 
 		if ( preg_match( '/^(COUNT|SUM|AVG|MIN|MAX)\(\s*(\*|[a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)?)\s*\)$/i', $expr, $matches ) ) {
 			$function = strtoupper( $matches[1] );
-			$argument = '*' === $matches[2] ? '*' : $this->sanitize_column_ref( $matches[2] );
+			// A count shows no value, so it may count a redacted column.
+			$this->allow_redacted = 'COUNT' === $function;
+			$argument             = '*' === $matches[2] ? '*' : $this->sanitize_column_ref( $matches[2] );
+			$this->allow_redacted = false;
 
-			if ( '' === $argument ) {
+			if ( '' === $argument || ( '*' === $argument && 'COUNT' !== $function ) ) {
 				return '';
 			}
 
@@ -1170,9 +1753,7 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 	/**
 	 * Remove sensitive columns from query result rows.
 	 *
-	 * Catches SELECT * on tables like wp_users where redacted columns
-	 * would otherwise be returned. The agent never needs password hashes
-	 * or activation keys — the dedicated list_users tool covers user lookups.
+	 * Output aliases receive the same authentication-field checks as selected columns.
 	 *
 	 * @param array $rows Query result rows.
 	 *
@@ -1184,23 +1765,31 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 			return $rows;
 		}
 
-		// Check first row for redacted columns to avoid per-row overhead.
+		// An alias can name a column like a credential; drop it as the column would be.
 		$columns_to_strip = array_filter(
 			array_keys( $rows[0] ),
-			function ( $col ) {
-				return in_array( strtolower( (string) $col ), self::REDACTED_COLUMNS, true );
+			static function ( $col ) {
+				return Database_Secrets::is_secret_column( (string) $col );
 			}
 		);
-
-		if ( empty( $columns_to_strip ) ) {
-			return $rows;
-		}
+		$setting_names    = array_column( $this->setting_pairs, 'name', 'value' );
+		$setting_prefixes = array_column( $this->setting_pairs, 'prefixes', 'value' );
 
 		foreach ( $rows as &$row ) {
 			foreach ( $columns_to_strip as $col ) {
 				unset( $row[ $col ] );
 			}
+			foreach ( $row as $key => $value ) {
+				$name_key    = $setting_names[ $key ] ?? null;
+				$row[ $key ] = Database_Secrets::redact_cell( $value, null !== $name_key ? (string) ( $row[ $name_key ] ?? '' ) : null, $setting_prefixes[ $key ] ?? array() );
+			}
+			foreach ( array_keys( $row ) as $key ) {
+				if ( 0 === strpos( (string) $key, self::HIDDEN_SETTING_NAME ) ) {
+					unset( $row[ $key ] );
+				}
+			}
 		}
+		unset( $row );
 
 		return $rows;
 	}
@@ -1254,13 +1843,136 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 					'row_index'       => (int) $row_index,
 					'column'          => (string) $column,
 					'original_chars'  => $original_chars,
-					'returned_chars'  => $this->char_length( $truncated ),
+					// The value's characters in the preview, without the note: the read_cell offset to continue from.
+					'returned_chars'  => $prefix_chars,
 					'chars_remaining' => $chars_remaining,
+					'next_offset'     => $prefix_chars,
 				);
 			}
 		}
 
 		return $rows;
+	}
+
+	/**
+	 * Offer a continuation key only for a direct projection of one table.
+	 *
+	 * @since 8.1.0
+	 * @param array $cells Truncated cell metadata.
+	 * @param array $rows Returned, redacted row previews.
+	 * @param string $table Validated base table name.
+	 * @param string $columns Requested projection.
+	 * @param mixed $where Requested predicate, or null when another row might exist.
+	 */
+	private function add_truncated_cell_row_keys( array &$cells, array $rows, string $table, string $columns, $where ): void {
+		// Keep provenance for plain column references, including AS aliases.
+		// Expressions can hide which source supplied a value. Output names are unique by now.
+		$projection = array();
+		foreach ( self::split_columns( $columns ) as $column ) {
+			if ( ! preg_match( '/^(?:[a-zA-Z_][a-zA-Z0-9_]*\.)?([a-zA-Z_][a-zA-Z0-9_]*)(?:\s+AS\s+([a-zA-Z_][a-zA-Z0-9_]*))?$/iD', trim( $column ), $matches ) ) {
+				return;
+			}
+			$projection[ strtolower( $matches[2] ?? $matches[1] ) ] = strtolower( $matches[1] );
+		}
+
+		$definitions = $this->database_boundary_service()->continuation_columns( $table );
+		$primary     = array_keys(
+			array_filter(
+				$definitions,
+				static function ( array $column ): bool {
+					return (bool) $column['is_primary'];
+				}
+			)
+		);
+		if ( 1 !== count( $primary ) ) {
+			return;
+		}
+
+		$key     = $primary[0];
+		$integer = in_array( $definitions[ $key ]['data_type'], array( 'tinyint', 'smallint', 'mediumint', 'int', 'bigint' ), true );
+		if ( ( ! $integer && empty( $definitions[ $key ]['charset'] ) )
+			|| Database_Secrets::is_secret_column( $key ) || null !== Database_Secrets::name_column_for( $key ) || $this->is_owner_redacted( $key ) ) {
+			return;
+		}
+
+		// Values already supplied in an exact primary-key predicate need no extra SELECT field.
+		$predicate_key = 1 === count( $rows ) ? $this->exact_row_key( $where, $key ) : null;
+		$key_output    = array_search( strtolower( $key ), $projection, true );
+		$definitions   = array_change_key_case( $definitions, CASE_LOWER );
+		foreach ( $cells as &$cell ) {
+			$source = $projection[ strtolower( $cell['column'] ) ] ?? '';
+			$target = $definitions[ $source ] ?? array();
+			if ( empty( $target['charset'] ) && 'json' !== ( $target['data_type'] ?? '' ) ) {
+				continue;
+			}
+
+			$row   = array_change_key_case( $rows[ $cell['row_index'] ], CASE_LOWER );
+			$value = false !== $key_output && array_key_exists( $key_output, $row ) ? $row[ $key_output ] : $predicate_key;
+			$value = $this->continuation_key_value( $value, $integer );
+			if ( null !== $value ) {
+				$cell['row_key'] = array(
+					'key_column' => $key,
+					'key_value'  => $value,
+				);
+			}
+		}
+		unset( $cell );
+	}
+
+	/**
+	 * Read a key value supplied in an already validated equality predicate.
+	 *
+	 * @since 8.1.0
+	 * @param mixed $where Approved WHERE input.
+	 * @param string $key Actual primary key column.
+	 * @return mixed Value passed to the equality predicate, when known.
+	 */
+	private function exact_row_key( $where, string $key ) {
+		$predicate = is_string( $where ) ? $this->parse_legacy_where_string( $where ) : $where;
+		if ( $this->is_condition_list( $predicate ) && 1 === count( $predicate ) ) {
+			$predicate = $predicate[0];
+		}
+		if ( ! is_array( $predicate ) || isset( $predicate['conditions'] ) || '=' !== ( $predicate['operator'] ?? '=' ) ) {
+			return null;
+		}
+
+		$reference = explode( '.', trim( (string) ( $predicate['column'] ?? '' ) ) );
+		$value     = $predicate['value'] ?? null;
+		if ( 0 !== strcasecmp( $key, end( $reference ) ) ) {
+			return null;
+		}
+		// A legacy decimal outside PHP's integer range can be clamped when parsed.
+		if ( is_string( $where ) && is_int( $value ) && ! preg_match( '/=\s*' . preg_quote( (string) $value, '/' ) . '\s*$/D', $where ) ) {
+			return null;
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Preserve key identity across JSON and the database's parameter binding.
+	 *
+	 * @since 8.1.0
+	 * @param mixed $value Key from the redacted row or the original predicate.
+	 * @param bool  $integer Whether the column uses integer storage.
+	 * @return int|string|null A key that read_cell can bind exactly.
+	 */
+	private function continuation_key_value( $value, bool $integer ) {
+		if ( $integer ) {
+			if ( ! is_int( $value ) && ( ! is_string( $value ) || (string) (int) $value !== $value ) ) {
+				return null;
+			}
+			$key = (int) $value;
+			// Stay within the exact integer range of JavaScript MCP clients.
+			return $key >= -9007199254740991 && $key <= 9007199254740991 ? $key : null;
+		}
+
+		if ( is_string( $value ) && false === strpos( $value, Database_Secrets::MARKER )
+			&& $this->char_length( $value ) < self::PREVIEW_MAX_CHARS && Database_Secrets::redact_cell( $value ) === $value ) {
+			return $value;
+		}
+
+		return null;
 	}
 
 	/**

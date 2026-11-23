@@ -104,6 +104,58 @@ final class WP_Mcp_Database_Boundary_Store implements Mcp_Database_Boundary_Stor
 		return $result;
 	}
 	/**
+	 * @since 8.1.0
+	 * @inheritDoc
+	 */
+	public function continuation_columns( string $schema, string $table, bool $ignore_case ): array {
+		$params   = array();
+		$scope    = $this->schema_scope( 'c', $schema, $ignore_case, $params );
+		$scope   .= $ignore_case ? ' AND BINARY LOWER(c.TABLE_NAME) = BINARY LOWER(%s)' : ' AND BINARY c.TABLE_NAME = BINARY %s';
+		$params[] = $table;
+
+		// Match an actual primary constraint. A unique index on a table without a
+		// primary key can also look like a primary key in COLUMNS.COLUMN_KEY.
+		$query = "SELECT c.COLUMN_NAME AS column_name, c.DATA_TYPE AS data_type, c.CHARACTER_SET_NAME AS charset,
+			EXISTS (SELECT 1 FROM information_schema.KEY_COLUMN_USAGE k
+				WHERE k.TABLE_SCHEMA = c.TABLE_SCHEMA AND k.TABLE_NAME = c.TABLE_NAME
+				AND BINARY k.TABLE_SCHEMA = BINARY c.TABLE_SCHEMA AND BINARY k.TABLE_NAME = BINARY c.TABLE_NAME
+				AND BINARY k.COLUMN_NAME = BINARY c.COLUMN_NAME AND k.CONSTRAINT_NAME = 'PRIMARY') AS is_primary
+			FROM information_schema.COLUMNS c WHERE " . $scope;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Read live metadata with a literal SQL scope and prepared name parameters.
+		$rows = $this->wpdb->get_results( $this->wpdb->prepare( $query, $params ), ARRAY_A );
+		return '' === (string) $this->wpdb->last_error ? array_column( (array) $rows, null, 'column_name' ) : array();
+	}
+
+	/**
+	 * @since 8.1.0
+	 * @inheritDoc
+	 */
+	public function column_types( string $schema, array $tables, bool $ignore_case ): ?array {
+		if ( ! $tables ) {
+			return array();
+		}
+		$wpdb         = $this->wpdb;
+		$params       = array();
+		$scope        = $this->schema_scope( 'c', $schema, $ignore_case, $params );
+		$table_name   = $ignore_case ? 'LOWER(c.TABLE_NAME)' : 'c.TABLE_NAME';
+		$placeholders = implode( ', ', array_fill( 0, count( $tables ), $ignore_case ? 'LOWER(%s)' : '%s' ) );
+		$params       = array_merge( $params, array_values( $tables ) );
+		$query        = 'SELECT ' . $table_name . ' AS table_name, c.COLUMN_NAME AS column_name, c.DATA_TYPE AS data_type FROM information_schema.COLUMNS c WHERE '
+			. $scope . ' AND BINARY ' . $table_name . ' IN (' . $placeholders . ')';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Live metadata is scoped to the selected schema and approved table names. Every value uses a placeholder.
+		$rows = $wpdb->get_results( $wpdb->prepare( $query, $params ), ARRAY_A );
+		if ( '' !== (string) $wpdb->last_error || ! is_array( $rows ) ) {
+			return null;
+		}
+
+		$types = array();
+		foreach ( $rows as $row ) {
+			$types[ $row['table_name'] ][ strtolower( $row['column_name'] ) ] = $row['data_type'];
+		}
+		return $types;
+	}
+
+	/**
 	 * Table page.
 	 *
 	 * @param string $schema The schema.
@@ -115,9 +167,10 @@ final class WP_Mcp_Database_Boundary_Store implements Mcp_Database_Boundary_Stor
 	 * @param bool $schema_case The schema case.
 	 * @param string $search The search term.
 	 * @param int $limit The limit.
+	 * @param int $offset Number of matches to skip.
 	 * @return ?
 	 */
-	public function table_page( string $schema, string $prefix, array $extra, array $restricted, bool $network_main, bool $ignore_case, bool $schema_case, string $search, int $limit ): ?array {
+	public function table_page( string $schema, string $prefix, array $extra, array $restricted, bool $network_main, bool $ignore_case, bool $schema_case, string $search, int $limit, int $offset = 0 ): ?array {
 		$params  = array();
 		$query   = 'SELECT candidate.TABLE_NAME, candidate.TABLE_ROWS, candidate.TABLE_TYPE FROM information_schema.TABLES candidate WHERE '
 			. $this->schema_scope( 'candidate', $schema, $schema_case, $params );
@@ -150,8 +203,9 @@ final class WP_Mcp_Database_Boundary_Store implements Mcp_Database_Boundary_Stor
 			$query   .= ' AND LOCATE(%s, candidate.TABLE_NAME) > 0';
 			$params[] = $search;
 		}
-		$query   .= ' ORDER BY candidate.TABLE_NAME ASC LIMIT %d';
+		$query   .= ' ORDER BY candidate.TABLE_NAME ASC, BINARY candidate.TABLE_NAME ASC LIMIT %d OFFSET %d';
 		$params[] = $limit;
+		$params[] = $offset;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Live information_schema read, must not be cached. The SQL is assembled from literal fragments only and every value is a placeholder.
 		$rows = $this->wpdb->get_results( $this->wpdb->prepare( $query, $params ) );
 		if ( '' !== (string) $this->wpdb->last_error || ! is_array( $rows ) ) {

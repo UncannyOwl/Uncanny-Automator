@@ -10,6 +10,8 @@ namespace Uncanny_Automator\Integrations\ConvertKit;
  */
 class CONVERTKIT_SUBSCRIBER_UNSUBSCRIBE extends \Uncanny_Automator\Recipe\App_Action {
 
+	use ConvertKit_Setup_Requirements;
+
 	/**
 	 * Setup Action.
 	 *
@@ -31,15 +33,6 @@ class CONVERTKIT_SUBSCRIBER_UNSUBSCRIBE extends \Uncanny_Automator\Recipe\App_Ac
 				$this->get_action_meta()
 			)
 		);
-	}
-
-	/**
-	 * Requires OAuth (v4) connection.
-	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return ! $this->helpers->is_v3();
 	}
 
 	/**

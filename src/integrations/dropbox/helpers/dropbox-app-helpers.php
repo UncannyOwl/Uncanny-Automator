@@ -173,16 +173,6 @@ class Dropbox_App_Helpers extends App_Helpers {
 	}
 
 	/**
-	 * What a recipe holding a Dropbox trigger is told while triggers are off
-	 * (decision A4, 29 Oct).
-	 *
-	 * @return string
-	 */
-	public function triggers_off_message(): string {
-		return esc_html_x( 'Dropbox triggers are turned off on this site, so this trigger never runs. Turn on Enable triggers on the Dropbox settings page.', 'Dropbox', 'uncanny-automator' );
-	}
-
-	/**
 	 * Folder picker options: the root, then the top-level folders. The root's
 	 * value is '/', because the picker drops an empty value.
 	 *

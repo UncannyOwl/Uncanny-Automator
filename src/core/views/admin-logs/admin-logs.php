@@ -14,17 +14,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included inside a method; these variables are local to that call.
 
-// In "Focus" mode the tab strip is hidden, so the tabs component has no tab to resolve the active panel from; pass the selected tab's key as the controlled value so its panel still shows.
-$focus_active_value = '';
-if ( 'focus' === $layout_version ) {
-	foreach ( $tabs as $focus_tab_key => $focus_tab ) {
-		if ( ! empty( $focus_tab->is_selected ) ) {
-			$focus_active_value = (string) $focus_tab_key;
-			break;
-		}
-	}
-}
-
 ?>
 <style>
 #wpcontent { padding-left: 0 !important; }
@@ -34,84 +23,45 @@ if ( 'focus' === $layout_version ) {
 	float: none!important;
 	padding-bottom: 0!important;
 }
+/* The settings frame is a sticky box one screen tall, made for panels that scroll inside it. The Logs viewer takes its own height (the list alone grows with its rows), so the page has to scroll instead, or every row below the first screen is out of reach. */
+.uo-recipe_page_uncanny-automator-admin-logs .uap-settings {
+	position: static;
+	height: auto;
+}
+/* The page is never shorter than the admin menu, so a viewer shorter than the menu (loading, or a short list) leaves room below it, which takes the viewer's white instead of the admin grey. */
+body.uo-recipe_page_uncanny-automator-admin-logs {
+	background: #fff;
+}
 </style>
 
 <uap-d-site-auth
 	site-api-url="<?php echo esc_attr( rest_url() . AUTOMATOR_REST_API_END_POINT ); ?>"
 	site-api-nonce="<?php echo esc_attr( wp_create_nonce( 'wp_rest' ) ); ?>"
 >
+
 	<div id="uap-settings" class="uap uap-settings" >
 
 		<?php do_action( 'automator_tools_header_after' ); ?>
 
 		<div id="uap-settings-content" class="uap-settings-content">
 
-			<uas-tabs class="uap-settings-content-main-tabs"<?php echo '' !== $focus_active_value ? ' value="' . esc_attr( $focus_active_value ) . '"' : ''; ?>>
-
-				<?php if ( 'focus' !== $layout_version ) { ?>
-
-					<?php foreach ( $tabs as $tab_key => $setting_tab ) { ?>
-
-						<uas-tab value="<?php echo esc_attr( $tab_key ); ?>"
-
-							<?php echo $setting_tab->is_selected ? 'active' : ''; ?>
-
-							href="<?php echo esc_url( Admin_Logs::utility_get_settings_page_link( $tab_key ) ); ?>"
-
-						>
-
-							<?php echo esc_html( $setting_tab->name ); ?>
-
-						</uas-tab>
-
-						<?php
-
-					}
-				}
-
-				// Add tab panels.
-				foreach ( $tabs as $tab_key => $setting_tab ) {
-
-					if ( $setting_tab->is_selected || $setting_tab->preload ) {
-						?>
-
-						<uas-tab-panel slot="panel" name="<?php echo esc_attr( $tab_key ); ?>" <?php echo $setting_tab->is_selected ? 'active' : ''; ?>>
-
-							<?php do_action( 'automator_admin_logs_top_level_tabs_item_content_' . $tab_key ); ?>
-
-						</uas-tab-panel>
-
-						<?php
-
-					}
-				}
-
-				?>
-
-			</uas-tabs>
+			<?php /* The Logs viewer: recipe runs, triggers, actions, failed actions, app events and AI activity, each routed from the hash (#/logs/recipe, #/logs/trigger, #/logs/action, #/logs/failed-actions, #/logs/app-events, #/logs/ai-activity). */ ?>
+			<uap-f-page-logs-viewer<?php echo $show_ai_activity ? ' show-ai-activity' : ''; ?><?php echo $show_app_events ? ' show-app-events' : ''; ?>></uap-f-page-logs-viewer>
 
 		</div>
 
 	</div>
 
-	<?php /* Single page-level dialog host. Per-row "Details" buttons just write the matching hash; this element listens for it and opens. */ ?>
+	<?php /* Single page-level dialog host. The viewer writes a run's hash; this element listens for it and opens. */ ?>
 	<uap-f-recipe-log></uap-f-recipe-log>
 
 </uap-d-site-auth>
 
+<?php if ( '' !== $legacy_tab_hash ) { ?>
 <script>
-<?php
-/**
- * This is more like a temporary/hack`ish solution since the page value
- * is implemented in the Pro version. Updating free while leaving
- * Pro behind will cause the filter to redirect into the old recipe page.
- *
- * This script can be removed soon.
- */
-?>
-jQuery(document).ready(function($){
-	'use strict';
-	$('form.uap-report-filters').append("<input type='hidden' name='tab' value='<?php echo esc_html( $this->get_current_tab() ); ?>' />")
-	$('form.uap-report-filters input[name=page]').val('uncanny-automator-admin-logs');
-});
+	<?php /* A link to one of the old Logs tabs (?tab=trigger) opens the viewer's tab, unless it already names one. */ ?>
+	if ( ! window.location.hash ) {
+		window.location.replace( '#/logs/<?php echo esc_js( $legacy_tab_hash ); ?>' );
+	}
 </script>
+<?php } ?>

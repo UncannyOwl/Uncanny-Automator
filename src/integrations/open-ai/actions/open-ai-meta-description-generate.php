@@ -13,19 +13,14 @@ use Uncanny_Automator\Recipe\App_Action;
  */
 class OPEN_AI_META_DESCRIPTION_GENERATE extends App_Action {
 
+	use OpenAI_Setup_Requirements;
+
 	const PROMPT = "Generate an SEO-friendly description for the following content
 		that is no more than 150 characters long (and must never exceed 155 characters,
 		including spaces and special characters; please double-check that the response
 		is less than 155 characters before posting):\n{{content}}";
 
 	protected $model = 'gpt-4';
-
-	/**
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return $this->helpers->has_gpt4_access();
-	}
 
 	/**
 	 * @return void

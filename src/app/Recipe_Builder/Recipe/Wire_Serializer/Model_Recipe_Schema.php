@@ -177,7 +177,7 @@ final class Model_Recipe_Schema {
 				),
 				Wire_Key::PATHS              => array(
 					'type'        => 'array',
-					'description' => 'The block\'s branches in order. path_code is what save_action and save_block accept as path_code.',
+					'description' => 'The block\'s branches in order. Pass one of these path_code values when saving an action or block. Use automator/save-action or automator/save-block when listed.',
 					'items'       => array(
 						'type'       => 'object',
 						'properties' => array(
@@ -209,7 +209,7 @@ final class Model_Recipe_Schema {
 				Wire_Key::LOOPABLE_TOKEN_IDS => array(
 					'type'        => 'array',
 					'items'       => array( 'type' => 'string' ),
-					'description' => 'Present on a loop block: the ids of the loopable tokens a token loop here can iterate. They are the recipe\'s triggers\' loopable tokens, those of the actions that run before the loop at its level or in a block it is in, and the active integrations\' universal ones. save_loop accepts only these.',
+					'description' => 'Present on a loop block: the ids of the loopable tokens a token loop here can iterate. They are the recipe\'s triggers\' loopable tokens, those of the actions that run before the loop at its level or in a block it is in, and the active integrations\' universal ones. Pass one of these IDs when configuring a token loop. Use automator/save-loop when listed.',
 				),
 			),
 			'required'   => Wire_Key::BLOCK_KEYS,
@@ -358,9 +358,12 @@ final class Model_Recipe_Schema {
 			),
 			Wire_Key::RUN_AS_AVAILABILITY          => array_merge(
 				self::availability(),
-				array( 'description' => 'Whether this site can use the run-as user selector: usable when a user resolver is registered (Uncanny Automator Pro). When unavailable, a saved selector is ignored when the recipe runs and save_recipe refuses user_selector.' )
+				array( 'description' => 'Whether this site can use the run-as user selector. Uncanny Automator Pro registers the user resolver. Without a resolver, the recipe runner ignores a saved selector, and automator/save-recipe refuses user_selector.' )
 			),
-			Wire_Key::LATEST_RECIPE_LOG_ID         => array( 'type' => array( 'integer', 'null' ) ),
+			Wire_Key::LATEST_RECIPE_LOG_ID         => array(
+				'type'        => array( 'integer', 'null' ),
+				'description' => 'Latest execution log ID supplied by the Run now feature in Uncanny Automator Pro for a recipe with a manual trigger. Other recipes can have execution history while this field is null. Use get-logs for execution history.',
+			),
 			Wire_Key::LATEST_RUN_NUMBER            => array( 'type' => array( 'integer', 'null' ) ),
 			Wire_Key::URL_DUPLICATE_RECIPE         => array( 'type' => 'string' ),
 			Wire_Key::URL_TRASH_RECIPE             => array( 'type' => 'string' ),

@@ -2,6 +2,7 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Portability\Recipe_Importer;
 use WP_Error;
 
 /**
@@ -296,15 +297,20 @@ class Import_Recipe {
 	 * `uap_recipe_imported` sentence, which the `recipe_imported` recipe
 	 * notice sends to the builder until the recipe's first change.
 	 *
-	 * @param object|array $json The decoded JSON to import.
+	 * @since 8.1.0 Takes the recipe to fill.
 	 *
-	 * @return int|\WP_Error The new recipe ID on success, WP_Error on failure.
+	 * @param object|array $json      The decoded JSON to import.
+	 * @param int          $recipe_id The blank draft to fill. 0 imports a new recipe.
+	 *
+	 * @return int|\WP_Error The new or filled recipe's ID on success, WP_Error on failure.
 	 */
-	public function import_recipe_json( $json ) {
+	public function import_recipe_json( $json, $recipe_id = 0 ) {
+
+		$recipe_id = (int) $recipe_id;
 
 		$result = $this->is_old_format( $json )
-			? automator_import_legacy_recipe( $json )
-			: automator_import_recipe( $this->portable_document( $json ) );
+			? automator_import_legacy_recipe( $json, $recipe_id )
+			: automator_import_recipe( $this->portable_document( $json ), $recipe_id );
 
 		if ( is_wp_error( $result ) ) {
 			return $this->user_facing_import_error( $result );
@@ -363,11 +369,14 @@ class Import_Recipe {
 	 */
 	private function user_facing_import_error( WP_Error $error ) {
 
-		$user_level_codes = array(
-			'invalid-recipe-json',
-			'invalid_import_document',
-			'import_unsupported_schema_version',
-			'import_invalid_document',
+		$user_level_codes = array_merge(
+			array(
+				'invalid-recipe-json',
+				'invalid_import_document',
+				'import_unsupported_schema_version',
+				'import_invalid_document',
+			),
+			Recipe_Importer::FILL_REFUSAL_CODES
 		);
 
 		if ( in_array( $error->get_error_code(), $user_level_codes, true ) ) {

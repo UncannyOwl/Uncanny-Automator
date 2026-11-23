@@ -15,7 +15,7 @@
 namespace Uncanny_Automator\Recipe;
 
 use Exception;
-use Uncanny_Automator\App\Integration_Catalog\Services\Hidden_Items;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
 use Uncanny_Automator\Token_Identifier_Partitioner;
 
 /**
@@ -29,6 +29,11 @@ abstract class Trigger {
 	 * Trigger Setup. This trait handles trigger definitions.
 	 */
 	use Trigger_Setup;
+
+	/**
+	 * Item Requirements. What the trigger needs beyond its integration, and the answer stored at registration.
+	 */
+	use \Uncanny_Automator\Item_Requirements;
 
 	/**
 	 * True while constructing via late_construct(). When set, the constructor
@@ -345,46 +350,20 @@ abstract class Trigger {
 	}
 
 	/**
-	 * requirements_met
+	 * Define the trigger and store it with its requirements: in the triggers the filter builds when they
+	 * are met, on Automator's unavailable items when they are not.
 	 *
-	 * Override this method if the trigger has any pre-requisites
+	 * `automator_item_requirement_meta` has the last word. A trigger it keeps out is stored as unavailable; one
+	 * it lets in although its own answer is not met registers without that answer, so it shows no locked rows.
 	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return true;
-	}
-
-	/**
-	 * Why the trigger's requirements are not met on this site, for a recipe
-	 * that already holds it. Override alongside requirements_met(); '' tells
-	 * the generic sentence.
+	 * @param mixed $triggers The triggers registered so far, keyed by trigger code.
 	 *
-	 * @since 8.0.0
-	 *
-	 * @return string
-	 */
-	public function requirements_unmet_message(): string {
-		return '';
-	}
-
-	/**
-	 * register_trigger
-	 *
-	 * @param mixed $triggers
-	 *
-	 * @return array
+	 * @return array The triggers, with this one when its requirements are met.
 	 */
 	public function register_trigger( $triggers ) {
 
-		$requirement_met = $this->requirements_met();
-		$requirement_met = apply_filters( 'automator_item_requirement_meta', $requirement_met, $triggers );
-		if ( ! $requirement_met ) {
-			// Not offered; a recipe that already holds it is told why (decision A4).
-			Hidden_Items::record( (string) $this->get_integration(), 'trigger', (string) $this->get_trigger_code(), $this->requirements_unmet_message() );
-
-			return $triggers;
-		}
+		$requirements = $this->evaluate_requirements();
+		$is_met       = (bool) apply_filters( 'automator_item_requirement_meta', $requirements['is_met'], $triggers );
 
 		$trigger = array(
 			'author'              => $this->get_author(), // author of the trigger.
@@ -429,7 +408,28 @@ abstract class Trigger {
 			}
 		}
 
+		if ( ! $is_met ) {
+			// The item filter turned away a trigger whose own requirements are met: it has nothing to show, so it is kept
+			// as one that states nothing (not listed; a saved recipe reads it unavailable with its sentence).
+			if ( $requirements['is_met'] ) {
+				$requirements['plugin_details'] = array();
+				$requirements['setup']          = array();
+				$requirements['message']        = $this->requirements_unmet_message();
+			}
+
+			$requirements['is_met']  = false;
+			$trigger['requirements'] = $requirements;
+
+			Automator()->set_unavailable_item( Integration_Item_Types::TRIGGER, (string) $this->get_integration(), (string) $this->get_code(), $trigger );
+
+			return $triggers;
+		}
+
 		$trigger = apply_filters( 'automator_register_trigger', $trigger );
+
+		if ( $requirements['is_met'] ) {
+			$trigger['requirements'] = $requirements;
+		}
 
 		$triggers[ $this->get_code() ] = $trigger;
 

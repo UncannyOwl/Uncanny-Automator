@@ -9,6 +9,8 @@ namespace Uncanny_Automator\Integrations\Uncanny_Toolkit;
  */
 class UT_USERS_TIME_IN_COURSE_EXCEEDS extends \Uncanny_Automator\Recipe\Trigger {
 
+	use Toolkit_Pro_Requirements;
+
 	/**
 	 * Static definition — opts the trigger into lazy loading.
 	 *
@@ -30,15 +32,8 @@ class UT_USERS_TIME_IN_COURSE_EXCEEDS extends \Uncanny_Automator\Recipe\Trigger 
 		// translators: %1$s is a course, %2$s is a number of minutes.
 		$this->set_sentence( sprintf( esc_html_x( "A user's time in {{a course:%1\$s}} exceeds {{a specific number of:%2\$s}} minutes", 'Uncanny Toolkit', 'uncanny-automator' ), $this->get_trigger_meta(), $this->get_trigger_meta() . '_COURSEMINUTES' ) );
 		$this->set_readable_sentence( esc_html_x( "A user's time in {{a course}} exceeds {{a specific number of}} minutes", 'Uncanny Toolkit', 'uncanny-automator' ) );
-	}
 
-	/**
-	 * Check if Toolkit Pro and LearnDash are active.
-	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return defined( 'UNCANNY_TOOLKIT_PRO_VERSION' ) && defined( 'LEARNDASH_VERSION' );
+		$this->set_plugin_details( self::toolkit_pro_learndash_plugin_details() );
 	}
 
 	/**

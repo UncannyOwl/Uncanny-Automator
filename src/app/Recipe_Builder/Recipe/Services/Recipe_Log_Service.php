@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Services;
 
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Execution_Log_Store;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Utilities\Recipe_Formatter;
 use Uncanny_Automator\Automator_DB;
 use WP_Error;
@@ -78,8 +79,29 @@ class Recipe_Log_Service {
 		}
 
 		if ( isset( $filters['completed'] ) ) {
-			$where_conditions[] = 'recipe_completed = %d';
-			$where_values[]     = (int) $filters['completed'];
+			$codes = array_map( 'intval', (array) $filters['completed'] );
+			if ( ! is_array( $filters['completed'] ) ) {
+				$where_conditions[] = 'recipe_completed = %d';
+			} elseif ( $codes ) {
+				// A list matches a run in any of its statuses.
+				$where_conditions[] = 'recipe_completed IN (' . implode( ', ', array_fill( 0, count( $codes ), '%d' ) ) . ')';
+			} else {
+				// An empty list names no status, so no run matches.
+				$where_conditions[] = '1=0';
+			}
+			$where_values = array_merge( $where_values, array_values( $codes ) );
+		}
+
+		if ( isset( $filters['signed_in'] ) ) {
+			// A run nobody was signed in for stores no user, as 0 or NULL. When an Everyone recipe
+			// stores the run under the account it chose, the user the run started with is kept in
+			// the run's meta, and that decides. It is read from the run itself, so changing the
+			// recipe later never changes a past run's answer (QA D104).
+			global $wpdb;
+			$started            = "SELECT started.recipe_log_id FROM {$wpdb->prefix}uap_recipe_log_meta started WHERE started.meta_key = '" . Execution_Log_Store::META_STARTED_BY_USER . "'";
+			$where_conditions[] = $filters['signed_in']
+				? "( recipe_log_id IN ( {$started} AND CAST( started.meta_value AS UNSIGNED ) > 0 ) OR ( user_id > 0 AND recipe_log_id NOT IN ( {$started} ) ) )"
+				: "( recipe_log_id IN ( {$started} AND CAST( started.meta_value AS UNSIGNED ) = 0 ) OR ( ( user_id IS NULL OR user_id = 0 ) AND recipe_log_id NOT IN ( {$started} ) ) )";
 		}
 
 		if ( ! empty( $filters['date_from'] ) ) {
@@ -150,6 +172,10 @@ class Recipe_Log_Service {
 		try {
 			// Merge filters with defaults
 			$filters = $this->merge_filter_defaults( $filters );
+
+			if ( ! empty( $filters['count_only'] ) ) {
+				return array( 'total_logs' => $this->count_recipe_logs_with_filters( $filters ) );
+			}
 
 			// Query logs
 			$logs = $this->query_recipe_logs_with_filters( $filters );
@@ -232,7 +258,7 @@ class Recipe_Log_Service {
 		$where_clause = implode( ' AND ', $where_conditions );
 
 		$source         = $this->recipe_log_source();
-		$query          = "SELECT * FROM {$source} WHERE {$where_clause} ORDER BY recipe_date_time DESC LIMIT %d OFFSET %d";
+		$query          = "SELECT * FROM {$source} WHERE {$where_clause} ORDER BY recipe_date_time DESC, recipe_log_id DESC LIMIT %d OFFSET %d";
 		$where_values[] = (int) $filters['limit'];
 		$where_values[] = (int) $filters['offset'];
 

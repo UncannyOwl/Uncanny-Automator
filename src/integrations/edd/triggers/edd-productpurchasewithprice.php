@@ -40,7 +40,8 @@ class EDD_PRODUCTPURCHASEWITHPRICE extends Trigger {
 		$this->set_trigger_code( $this->trigger_code );
 		$this->set_trigger_meta( $this->trigger_meta );
 		$this->set_trigger_type( 'user' );
-		$this->set_is_login_required( true );
+		// No login check: Stripe and PayPal complete the order in a webhook with nobody signed in.
+		// validate() takes the buyer from the order and rejects guest orders.
 		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/easy-digital-downloads/' ) );
 		$this->set_sentence(
 			sprintf(
@@ -198,6 +199,9 @@ class EDD_PRODUCTPURCHASEWITHPRICE extends Trigger {
 	/**
 	 * Validate the trigger.
 	 *
+	 * The buyer comes from the order, not from the session: Stripe and PayPal complete the
+	 * order in a webhook with nobody signed in. A guest order has no user and is rejected.
+	 *
 	 * @param array $trigger
 	 * @param array $hook_args
 	 *
@@ -205,56 +209,23 @@ class EDD_PRODUCTPURCHASEWITHPRICE extends Trigger {
 	 */
 	public function validate( $trigger, $hook_args ) {
 
-		if ( empty( $hook_args ) || count( $hook_args ) < 3 ) {
+		$order = $this->get_order( $hook_args );
+		if ( null === $order ) {
 			return false;
 		}
 
-		$order_id = $hook_args[0];
-		$payment  = isset( $hook_args[1] ) ? $hook_args[1] : null;
-		$customer = isset( $hook_args[2] ) ? $hook_args[2] : null;
-
-		// Get order items from the new EDD 3.0+ structure
-		$order = edd_get_order( $order_id );
-		if ( ! $order ) {
+		$user_id = absint( $order->user_id );
+		if ( 0 === $user_id ) {
 			return false;
 		}
 
-		$order_items = $order->items;
-		if ( empty( $order_items ) ) {
+		if ( null === $this->find_matching_item( $trigger, $order ) ) {
 			return false;
 		}
 
-		$user_id = $order->user_id;
-
-		// Check if user is logged in
-		if ( ! $user_id ) {
-			return false;
-		}
-
-		// Set user ID for the trigger
 		$this->set_user_id( $user_id );
 
-		// Get selected download and price option from trigger
-		$selected_download     = $trigger['meta'][ $this->trigger_meta ];
-		$selected_price_option = $this->get_selected_price_option( $trigger );
-
-		foreach ( $order_items as $item ) {
-			$download_id     = $item->product_id;
-			$price_option_id = $item->price_id;
-
-			// Check if download matches (allow "Any download" option (-1) or specific download)
-			$download_matches = ( intval( '-1' ) === intval( $selected_download ) || $selected_download === $download_id );
-
-			// Check if price option matches (allow "Any price option" option (-1) or specific price option)
-			$price_option_matches = ( intval( '-1' ) === intval( $selected_price_option ) || $selected_price_option === $price_option_id );
-
-			// Both download and price option must match
-			if ( $download_matches && $price_option_matches ) {
-				return true;
-			}
-		}
-
-		return false;
+		return true;
 	}
 
 	/**
@@ -267,42 +238,15 @@ class EDD_PRODUCTPURCHASEWITHPRICE extends Trigger {
 	 */
 	public function hydrate_tokens( $trigger, $hook_args ) {
 
-		if ( empty( $hook_args ) || count( $hook_args ) < 3 ) {
+		$order = $this->get_order( $hook_args );
+		if ( null === $order ) {
 			return array();
 		}
 
-		$order_id = $hook_args[0];
-		$payment  = isset( $hook_args[1] ) ? $hook_args[1] : null;
-		$customer = isset( $hook_args[2] ) ? $hook_args[2] : null;
+		$order_id      = $hook_args[0];
+		$matching_item = $this->find_matching_item( $trigger, $order );
 
-		// Get order items from the new EDD 3.0+ structure
-		$order = edd_get_order( $order_id );
-		if ( ! $order ) {
-			return array();
-		}
-
-		$order_items = $order->items;
-
-		// Find the matching item for token data
-		$selected_download     = $trigger['meta'][ $this->trigger_meta ];
-		$selected_price_option = $this->get_selected_price_option( $trigger );
-
-		$matching_item = null;
-
-		foreach ( $order_items as $item ) {
-			$download_id     = $item->product_id;
-			$price_option_id = $item->price_id;
-
-			$download_matches     = ( intval( '-1' ) === intval( $selected_download ) || $selected_download === $download_id );
-			$price_option_matches = ( intval( '-1' ) === intval( $selected_price_option ) || $selected_price_option === $price_option_id );
-
-			if ( $download_matches && $price_option_matches ) {
-				$matching_item = $item;
-				break;
-			}
-		}
-
-		if ( ! $matching_item ) {
+		if ( null === $matching_item ) {
 			return array();
 		}
 
@@ -326,6 +270,8 @@ class EDD_PRODUCTPURCHASEWITHPRICE extends Trigger {
 		// Get order URL (User) - receipt page
 		$order_url_user = edd_get_receipt_page_uri( $order_id );
 
+		$discounts = $order->get_discounts();
+
 		$tokens = array(
 			'EDD_DOWNLOAD_TITLE'              => $download_post ? $download_post->post_title : '',
 			'EDD_DOWNLOAD_ID'                 => $download_id,
@@ -342,7 +288,7 @@ class EDD_PRODUCTPURCHASEWITHPRICE extends Trigger {
 			'EDD_ORDER_TAX'                   => number_format( floatval( $order->tax ), 2 ),
 			'EDD_ORDER_TOTAL'                 => number_format( floatval( $order->total ), 2 ),
 			'EDD_PAYMENT_METHOD'              => $order->gateway,
-			'EDD_DISCOUNT_CODES'              => $order->get_discounts() ? implode( ', ', wp_list_pluck( $order->get_discounts(), 'description' ) ) : '',
+			'EDD_DISCOUNT_CODES'              => $discounts ? implode( ', ', wp_list_pluck( $discounts, 'description' ) ) : '',
 			'EDD_LICENSE_KEY'                 => $this->get_item_helpers()->get_licenses( $order_id ),
 		);
 
@@ -350,23 +296,93 @@ class EDD_PRODUCTPURCHASEWITHPRICE extends Trigger {
 	}
 
 	/**
-	 * Get selected price option with fallback logic.
+	 * Get the order EDD completed.
 	 *
-	 * @param array $trigger The trigger data.
-	 * @return string The selected price option.
+	 * EDD passes the order ID first; the payment and customer that follow are not needed.
+	 *
+	 * @param array $hook_args The edd_complete_purchase arguments.
+	 *
+	 * @return \EDD\Orders\Order|null Null when EDD 3.0+ is absent, the order is missing or it has no items.
 	 */
-	private function get_selected_price_option( $trigger ) {
-		$selected_price_option = $trigger['meta'][ $this->price_option_meta ] ?? '';
+	private function get_order( $hook_args ) {
 
-		// Fallback: try to get price option from different possible keys
-		if ( empty( $selected_price_option ) ) {
-			if ( isset( $trigger['meta']['EDDPRICEOPTION'] ) ) {
-				$selected_price_option = $trigger['meta']['EDDPRICEOPTION'];
-			} elseif ( isset( $trigger['meta'][ 'EDDPRICEOPTION:' . $this->get_trigger_meta() ] ) ) {
-				$selected_price_option = $trigger['meta'][ 'EDDPRICEOPTION:' . $this->get_trigger_meta() ];
+		if ( empty( $hook_args ) || ! isset( $hook_args[0] ) || ! function_exists( 'edd_get_order' ) ) {
+			return null;
+		}
+
+		$order = edd_get_order( $hook_args[0] );
+
+		if ( empty( $order ) || empty( $order->items ) ) {
+			return null;
+		}
+
+		return $order;
+	}
+
+	/**
+	 * Find the first order item that matches the selected download and price option.
+	 *
+	 * @param array             $trigger The trigger data.
+	 * @param \EDD\Orders\Order $order   The order.
+	 *
+	 * @return \EDD\Orders\Order_Item|null
+	 */
+	private function find_matching_item( $trigger, $order ) {
+
+		$selected_download     = $trigger['meta'][ $this->trigger_meta ] ?? '';
+		$selected_price_option = $this->get_selected_price_option( $trigger );
+
+		foreach ( $order->items as $item ) {
+			if ( $this->id_matches( $selected_download, $item->product_id ) && $this->id_matches( $selected_price_option, $item->price_id ) ) {
+				return $item;
 			}
 		}
 
-		return $selected_price_option;
+		return null;
+	}
+
+	/**
+	 * Whether a selected ID matches an ID on the order item.
+	 *
+	 * The recipe stores IDs as strings and EDD may return either type, so both sides
+	 * are compared as integers. "Any" (-1) matches everything; an empty selection or an
+	 * item without the ID (a download with no price options has a null price ID) matches nothing else.
+	 *
+	 * @param mixed $selected The ID from the trigger options.
+	 * @param mixed $actual   The ID on the order item.
+	 *
+	 * @return bool
+	 */
+	private function id_matches( $selected, $actual ) {
+
+		if ( ! is_numeric( $selected ) ) {
+			return false;
+		}
+
+		if ( -1 === intval( $selected ) ) {
+			return true;
+		}
+
+		return is_numeric( $actual ) && absint( $selected ) === absint( $actual );
+	}
+
+	/**
+	 * Get the selected price option from the trigger's options.
+	 *
+	 * @param array $trigger The trigger data.
+	 *
+	 * @return string The selected price option, empty when none is stored.
+	 */
+	private function get_selected_price_option( $trigger ) {
+
+		// "0" is a real price option (the first), so test for an empty string, not empty().
+		if ( isset( $trigger['meta'][ $this->price_option_meta ] ) && '' !== $trigger['meta'][ $this->price_option_meta ] ) {
+			return $trigger['meta'][ $this->price_option_meta ];
+		}
+
+		// Recipes saved with the compound key from the sentence.
+		$compound_key = $this->price_option_meta . ':' . $this->get_trigger_meta();
+
+		return $trigger['meta'][ $compound_key ] ?? '';
 	}
 }

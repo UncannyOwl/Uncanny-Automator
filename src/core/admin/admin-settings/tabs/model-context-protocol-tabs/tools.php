@@ -7,10 +7,12 @@ use Uncanny_Automator\App\Transports\Abilities\Automator_Abilities;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Authenticated_Token_Context;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Tool_Authorization_Policy;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Database_Access_Settings;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Database_Column_Redaction_Settings;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Database_Table_Access_Settings;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\File_Reading_Settings;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Site_Management_Settings;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Tool_Availability_Settings;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Hosted_Tool_Names;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Tool_Registry;
 use WP_Error;
 
@@ -41,6 +43,9 @@ class Admin_Settings_Model_Context_Protocol_Tools {
 
 	/** Admin-post and nonce action for the database table allowlist. */
 	public const DATABASE_TABLES_ACTION = 'automator_mcp_database_tables';
+
+	/** Admin-post and nonce action for the owner's table column redaction. */
+	public const DATABASE_REDACTION_ACTION = 'automator_mcp_database_redaction';
 
 	/** AJAX and nonce action that turns code and file reading on or off. */
 	public const FILE_READING_ACTION = 'automator_mcp_file_reading';
@@ -145,6 +150,7 @@ class Admin_Settings_Model_Context_Protocol_Tools {
 		add_action( 'wp_ajax_' . self::TOGGLE_ACTION, array( $this, 'handle_toggle' ) );
 		add_action( 'wp_ajax_' . self::DATABASE_ACCESS_ACTION, array( $this, 'handle_database_access' ) );
 		add_action( 'admin_post_' . self::DATABASE_TABLES_ACTION, array( $this, 'handle_database_tables' ) );
+		add_action( 'admin_post_' . self::DATABASE_REDACTION_ACTION, array( $this, 'handle_database_redaction' ) );
 		add_action( 'wp_ajax_' . self::FILE_READING_ACTION, array( $this, 'handle_file_reading' ) );
 		add_action( 'wp_ajax_' . self::FILE_READING_EXCLUSIONS_ACTION, array( $this, 'handle_file_reading_exclusions' ) );
 	}
@@ -189,6 +195,11 @@ class Admin_Settings_Model_Context_Protocol_Tools {
 		$database_extra_tables   = ( new Database_Table_Access_Settings() )->tables();
 		$database_table_prefix   = (string) $wpdb->prefix;
 		$database_tables_notice  = automator_filter_input( 'mcp_database_tables' );
+		// The owner's own rules only; an extension's rules are added at query time.
+		$database_redacted_columns = ( new Database_Column_Redaction_Settings() )->saved_rules();
+		$database_redaction_notice = automator_filter_input( 'mcp_database_redaction' );
+		// The line the last save stopped at, shown back so the owner can find it.
+		$database_redaction_rule = mb_substr( (string) automator_filter_input( 'mcp_database_redaction_rule' ), 0, 200 );
 		$can_manage_tools        = $this->can_manage_tools();
 		// Database consent is reserved for network administrators, even though
 		// the tools are restricted to the current site's tables.
@@ -402,6 +413,26 @@ class Admin_Settings_Model_Context_Protocol_Tools {
 		// A core API function alone does not prove this operation registered safely.
 		$public_name = Automator_Abilities::has_native_operation( $name ) ? $ability_name : $name;
 
+		// Show the tools as an AI app sees them through the hosted service; one switch can
+		// cover two of them. The plugin keeps serving the native names (see Hosted_Tool_Names).
+		$ai_tools = array();
+		foreach ( Hosted_Tool_Names::for_tool( $name ) as $hosted ) {
+			$ai_tools[] = array(
+				'name'        => $hosted['name'],
+				'description' => $hosted['description'],
+			);
+		}
+		$title = $friendly_copy['title'];
+		if ( $ai_tools ) {
+			$public_name = implode( ' / ', array_column( $ai_tools, 'name' ) );
+			$title       = esc_html( implode( ' / ', array_column( Hosted_Tool_Names::for_tool( $name ), 'title' ) ) );
+		} else {
+			$ai_tools[] = array(
+				'name'        => $public_name,
+				'description' => $description,
+			);
+		}
+
 		$requires_database_consent = Database_Access_Settings::requires_consent( $name );
 		$consent_missing           = $requires_database_consent && ! $this->database_access->is_enabled();
 		// Site management has no separate consent: its switch is the consent, on by default.
@@ -410,7 +441,8 @@ class Admin_Settings_Model_Context_Protocol_Tools {
 		return array(
 			'name'            => $name,
 			'public_name'     => $public_name,
-			'title'           => $friendly_copy['title'],
+			'ai_tools'        => $ai_tools,
+			'title'           => $title,
 			'purpose'         => $friendly_copy['purpose'],
 			'description'     => $description,
 			'scope'           => $scope,
@@ -631,6 +663,54 @@ class Admin_Settings_Model_Context_Protocol_Tools {
 		$url    = Admin_Settings_Model_Context_Protocol::utility_get_model_context_protocol_page_link( 'tools' );
 		wp_safe_redirect( add_query_arg( 'mcp_database_tables', $status, $url ) );
 		exit;
+	}
+
+	/**
+	 * Save the owner's table column redaction and return to Site tools.
+	 *
+	 * @since 8.1.0
+	 * @return void
+	 */
+	public function handle_database_redaction(): void {
+		nocache_headers();
+		try {
+			$rules  = isset( $_POST['columns'] ) && is_string( $_POST['columns'] ) ? $this->get_post_lines( 'columns' ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Validated before the request can change the list.
+			$result = $this->process_database_redaction_request( $this->get_post_string( '_wpnonce' ), $rules );
+		} catch ( Throwable $throwable ) {
+			error_log( sprintf( '[Automator MCP] Table column redaction setting failed (%s).', get_class( $throwable ) ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Log the exception type only.
+			$result = new WP_Error( 'mcp_database_redaction_unknown' );
+		}
+
+		$args = array( 'mcp_database_redaction' => is_wp_error( $result ) ? $result->get_error_code() : 'saved' );
+		$data = is_wp_error( $result ) ? $result->get_error_data() : null;
+		if ( is_array( $data ) && isset( $data['rule'] ) && '' !== $data['rule'] ) {
+			$args['mcp_database_redaction_rule'] = rawurlencode( mb_substr( (string) $data['rule'], 0, 200 ) );
+		}
+		$url = Admin_Settings_Model_Context_Protocol::utility_get_model_context_protocol_page_link( 'tools' );
+		wp_safe_redirect( add_query_arg( $args, $url ) );
+		exit;
+	}
+
+	/**
+	 * Validate the owner and nonce before changing the redacted columns.
+	 *
+	 * @since 8.1.0
+	 * @param string        $nonce Submitted nonce.
+	 * @param string[]|null $rules Submitted rules; null means the input was too long.
+	 * @return true|WP_Error
+	 */
+	private function process_database_redaction_request( string $nonce, ?array $rules ) {
+		if ( ! $this->can_manage_tools() ) {
+			return new WP_Error( 'mcp_database_redaction_forbidden' );
+		}
+		if ( ! wp_verify_nonce( $nonce, self::DATABASE_REDACTION_ACTION ) ) {
+			return new WP_Error( 'mcp_database_redaction_nonce' );
+		}
+		if ( null === $rules ) {
+			return new WP_Error( 'mcp_database_redaction_invalid' );
+		}
+
+		return ( new Database_Column_Redaction_Settings() )->set_rules( array_map( 'trim', $rules ) );
 	}
 
 	/**
@@ -998,9 +1078,9 @@ class Admin_Settings_Model_Context_Protocol_Tools {
 			'post_apply_content_edit' => array( esc_html_x( 'Apply content edits', 'MCP tool title', 'uncanny-automator' ), esc_html_x( 'Apply precise edits to existing WordPress content after checking that the saved content has not changed.', 'MCP tool purpose', 'uncanny-automator' ) ),
 			'post_apply_meta_edit'    => array( esc_html_x( 'Change custom fields', 'MCP tool title', 'uncanny-automator' ), esc_html_x( 'Change custom fields of posts and pages after checking that they have not changed, keeping each value in the form its plugins expect.', 'MCP tool purpose', 'uncanny-automator' ) ),
 			'rest_discover'           => array( esc_html_x( 'Find WordPress operations', 'MCP tool title', 'uncanny-automator' ), esc_html_x( 'Find supported site operations and the information each one needs.', 'MCP tool purpose', 'uncanny-automator' ) ),
-			'rest_request'            => array( esc_html_x( 'Run a WordPress operation', 'MCP tool title', 'uncanny-automator' ), esc_html_x( 'Run a supported site operation or an Automator ability. Automator’s abilities require this tool as well as their own switches. The selected operation determines the required access and whether it makes changes.', 'MCP tool purpose', 'uncanny-automator' ) ),
+			'rest_request'            => array( esc_html_x( 'Run a WordPress operation', 'MCP tool title', 'uncanny-automator' ), esc_html_x( 'Run a supported site operation or an Automator ability. AI apps see this switch as two tools: read_rest for reading and write_rest for changes. Automator’s abilities require it as well as their own switches. The selected operation determines the required access and whether it makes changes.', 'MCP tool purpose', 'uncanny-automator' ) ),
 			'discover_ability'        => array( esc_html_x( 'Find WordPress abilities', 'MCP tool title', 'uncanny-automator' ), esc_html_x( 'Search enabled abilities and read their required inputs. This is a shortcut to the ability search and schema lookup. It does not run abilities or change your site.', 'MCP tool purpose', 'uncanny-automator' ) ),
-			'run_ability'             => array( esc_html_x( 'Run a WordPress ability', 'MCP tool title', 'uncanny-automator' ), esc_html_x( 'Run an enabled ability from WordPress or another provider. Automator’s abilities use Run a WordPress operation instead. The ability determines the required access and whether it changes your site or connected services.', 'MCP tool purpose', 'uncanny-automator' ) ),
+			'run_ability'             => array( esc_html_x( 'Run a WordPress ability', 'MCP tool title', 'uncanny-automator' ), esc_html_x( 'Run an enabled ability from WordPress or another provider. Automator’s abilities run through read_rest and write_rest instead. The ability determines the required access and whether it changes your site or connected services.', 'MCP tool purpose', 'uncanny-automator' ) ),
 		);
 
 		if ( isset( $copy[ $name ] ) ) {

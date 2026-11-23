@@ -127,6 +127,91 @@ return array (
       ),
     ),
   ),
+  'ASGAROS_FORUM_TOPIC_APPROVED' => 
+  array (
+    'code' => 'ASGAROS_FORUM_TOPIC_APPROVED',
+    'class' => 'Uncanny_Automator\\Integrations\\Asgaros_Forum\\Asgaros_Forum_Topic_Approved',
+    'integration' => 'ASGAROS_FORUM',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'ASGAROS_FORUM_TOPIC',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'asgarosforum_after_topic_approve',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'ASGAROS_FORUM_USER_ADDED_TO_USERGROUP' => 
+  array (
+    'code' => 'ASGAROS_FORUM_USER_ADDED_TO_USERGROUP',
+    'class' => 'Uncanny_Automator\\Integrations\\Asgaros_Forum\\Asgaros_Forum_User_Added_To_Usergroup',
+    'integration' => 'ASGAROS_FORUM',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'ASGAROS_FORUM_USERGROUP',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_asgaros_forum_user_added_to_usergroup',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'ASGAROS_FORUM_USER_PUBLISHES_TOPIC' => 
+  array (
+    'code' => 'ASGAROS_FORUM_USER_PUBLISHES_TOPIC',
+    'class' => 'Uncanny_Automator\\Integrations\\Asgaros_Forum\\Asgaros_Forum_User_Publishes_Topic',
+    'integration' => 'ASGAROS_FORUM',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'ASGAROS_FORUM_FORUM',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'asgarosforum_after_add_topic_submit',
+        1 => 10,
+        2 => 6,
+      ),
+    ),
+  ),
+  'ASGAROS_FORUM_USER_REACTS_TO_POST' => 
+  array (
+    'code' => 'ASGAROS_FORUM_USER_REACTS_TO_POST',
+    'class' => 'Uncanny_Automator\\Integrations\\Asgaros_Forum\\Asgaros_Forum_User_Reacts_To_Post',
+    'integration' => 'ASGAROS_FORUM',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'ASGAROS_FORUM_POST',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'asgarosforum_after_add_reaction',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'ASGAROS_FORUM_USER_REPLIES_TO_TOPIC' => 
+  array (
+    'code' => 'ASGAROS_FORUM_USER_REPLIES_TO_TOPIC',
+    'class' => 'Uncanny_Automator\\Integrations\\Asgaros_Forum\\Asgaros_Forum_User_Replies_To_Topic',
+    'integration' => 'ASGAROS_FORUM',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'ASGAROS_FORUM_TOPIC',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'asgarosforum_after_add_post_submit',
+        1 => 10,
+        2 => 6,
+      ),
+    ),
+  ),
   'BB_CONTACT_FORM_SUBMITTED' => 
   array (
     'code' => 'BB_CONTACT_FORM_SUBMITTED',
@@ -348,6 +433,23 @@ return array (
       ),
     ),
   ),
+  'CFDB7_ENTRY_SAVED' => 
+  array (
+    'code' => 'CFDB7_ENTRY_SAVED',
+    'class' => 'Uncanny_Automator\\Integrations\\Cfdb7\\Cfdb7_Entry_Saved',
+    'integration' => 'CFDB7',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'CFDB7_FORM',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'cfdb7_after_save_data',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
   'ANON_DIVI_SUBMIT_FORM' => 
   array (
     'code' => 'ANON_DIVI_SUBMIT_FORM',
@@ -467,6 +569,24 @@ return array (
       ),
     ),
   ),
+  'EDD_USER_RECEIVES_REFUND' => 
+  array (
+    'code' => 'EDD_USER_RECEIVES_REFUND',
+    'class' => 'Uncanny_Automator\\Integrations\\Easy_Digital_Downloads\\Edd_User_Receives_Refund',
+    'integration' => 'EDD',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'EDDREFUNDGATEWAY',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_edd_order_refunded',
+        1 => 10,
+        2 => 4,
+      ),
+    ),
+    'dispatcher' => 'Uncanny_Automator\\Integrations\\Easy_Digital_Downloads\\Dispatchers\\Edd_Refund_Dispatcher',
+  ),
   'EDD_SL_LICENSE_EXPIRED' => 
   array (
     'code' => 'EDD_SL_LICENSE_EXPIRED',
@@ -583,6 +703,57 @@ return array (
         0 => 'automator_eventin_order_completed',
         1 => 10,
         2 => 1,
+      ),
+    ),
+  ),
+  'FAVORITES_CLEARED' => 
+  array (
+    'code' => 'FAVORITES_CLEARED',
+    'class' => 'Uncanny_Automator\\Integrations\\Favorites\\Favorites_Cleared',
+    'integration' => 'FAVORITES',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'FAVORITES_CLEARED_META',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_favorites_favourites_cleared',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'FAVORITES_POST_FAVORITED' => 
+  array (
+    'code' => 'FAVORITES_POST_FAVORITED',
+    'class' => 'Uncanny_Automator\\Integrations\\Favorites\\Favorites_Post_Favorited',
+    'integration' => 'FAVORITES',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'FAVORITES_POST',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'favorites_after_favorite',
+        1 => 10,
+        2 => 4,
+      ),
+    ),
+  ),
+  'FAVORITES_POST_UNFAVORITED' => 
+  array (
+    'code' => 'FAVORITES_POST_UNFAVORITED',
+    'class' => 'Uncanny_Automator\\Integrations\\Favorites\\Favorites_Post_Unfavorited',
+    'integration' => 'FAVORITES',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'FAVORITES_POST',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'favorites_after_favorite',
+        1 => 10,
+        2 => 4,
       ),
     ),
   ),
@@ -1325,6 +1496,194 @@ return array (
       ),
     ),
   ),
+  'MAINWP_CHILD_SITE_ADDED' => 
+  array (
+    'code' => 'MAINWP_CHILD_SITE_ADDED',
+    'class' => 'Uncanny_Automator\\Integrations\\Mainwp\\Mainwp_Child_Site_Added',
+    'integration' => 'MAINWP',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'MAINWP_SITE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'mainwp_added_new_site',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'MAINWP_CHILD_SITE_REMOVED' => 
+  array (
+    'code' => 'MAINWP_CHILD_SITE_REMOVED',
+    'class' => 'Uncanny_Automator\\Integrations\\Mainwp\\Mainwp_Child_Site_Removed',
+    'integration' => 'MAINWP',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'MAINWP_SITE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'mainwp_delete_site',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'MAINWP_CORE_UPDATED' => 
+  array (
+    'code' => 'MAINWP_CORE_UPDATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Mainwp\\Mainwp_Core_Updated',
+    'integration' => 'MAINWP',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'MAINWP_SITE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'mainwp_website_updated',
+        1 => 10,
+        2 => 4,
+      ),
+    ),
+  ),
+  'MAINWP_SOFTWARE_UPDATED' => 
+  array (
+    'code' => 'MAINWP_SOFTWARE_UPDATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Mainwp\\Mainwp_Software_Updated',
+    'integration' => 'MAINWP',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'MAINWP_SOFTWARE_TYPE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'mainwp_after_plugin_theme_translation_update',
+        1 => 10,
+        2 => 4,
+      ),
+    ),
+  ),
+  'MASTERIYO_USER_COMPLETES_COURSE' => 
+  array (
+    'code' => 'MASTERIYO_USER_COMPLETES_COURSE',
+    'class' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_User_Completes_Course',
+    'integration' => 'MASTERIYO',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'MASTERIYO_COURSE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'masteriyo_course_progress_status_completed',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'MASTERIYO_USER_COMPLETES_LESSON' => 
+  array (
+    'code' => 'MASTERIYO_USER_COMPLETES_LESSON',
+    'class' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_User_Completes_Lesson',
+    'integration' => 'MASTERIYO',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'MASTERIYO_LESSON',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'masteriyo_course_progress_item_completion_status_changed',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'MASTERIYO_USER_ENROLLS_COURSE' => 
+  array (
+    'code' => 'MASTERIYO_USER_ENROLLS_COURSE',
+    'class' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_User_Enrolls_Course',
+    'integration' => 'MASTERIYO',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'MASTERIYO_COURSE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_masteriyo_user_enrolled',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+    'dispatcher' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_Enrollment_Dispatcher',
+  ),
+  'MASTERIYO_USER_FAILS_QUIZ' => 
+  array (
+    'code' => 'MASTERIYO_USER_FAILS_QUIZ',
+    'class' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_User_Fails_Quiz',
+    'integration' => 'MASTERIYO',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'MASTERIYO_QUIZ',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'masteriyo_quiz_attempt_status_changed',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'MASTERIYO_USER_PASSES_QUIZ' => 
+  array (
+    'code' => 'MASTERIYO_USER_PASSES_QUIZ',
+    'class' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_User_Passes_Quiz',
+    'integration' => 'MASTERIYO',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'MASTERIYO_QUIZ',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'masteriyo_quiz_attempt_status_changed',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'MASTERIYO_USER_REGISTERS' => 
+  array (
+    'code' => 'MASTERIYO_USER_REGISTERS',
+    'class' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_User_Registers',
+    'integration' => 'MASTERIYO',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'MASTERIYO_USER_REGISTERS',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'masteriyo_created_customer',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'MASTERIYO_USER_STARTS_QUIZ' => 
+  array (
+    'code' => 'MASTERIYO_USER_STARTS_QUIZ',
+    'class' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_User_Starts_Quiz',
+    'integration' => 'MASTERIYO',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'MASTERIYO_QUIZ',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'masteriyo_create_quiz_attempt',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
   'ANON_PM_FORM_SUBMITTED' => 
   array (
     'code' => 'ANON_PM_FORM_SUBMITTED',
@@ -1682,6 +2041,74 @@ return array (
       ),
     ),
   ),
+  'SENSEI_USER_COMPLETES_COURSE' => 
+  array (
+    'code' => 'SENSEI_USER_COMPLETES_COURSE',
+    'class' => 'Uncanny_Automator\\Integrations\\Sensei_Lms\\Sensei_User_Completes_Course',
+    'integration' => 'SENSEI_LMS',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'SENSEI_COURSE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_sensei_lms_course_completed',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'SENSEI_USER_COMPLETES_LESSON' => 
+  array (
+    'code' => 'SENSEI_USER_COMPLETES_LESSON',
+    'class' => 'Uncanny_Automator\\Integrations\\Sensei_Lms\\Sensei_User_Completes_Lesson',
+    'integration' => 'SENSEI_LMS',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'SENSEI_LESSON',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_sensei_lms_lesson_completed',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'SENSEI_USER_ENROLLED_COURSE' => 
+  array (
+    'code' => 'SENSEI_USER_ENROLLED_COURSE',
+    'class' => 'Uncanny_Automator\\Integrations\\Sensei_Lms\\Sensei_User_Enrolled_Course',
+    'integration' => 'SENSEI_LMS',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'SENSEI_COURSE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'sensei_course_enrolment_status_changed',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'SENSEI_USER_SUBMITS_QUIZ' => 
+  array (
+    'code' => 'SENSEI_USER_SUBMITS_QUIZ',
+    'class' => 'Uncanny_Automator\\Integrations\\Sensei_Lms\\Sensei_User_Submits_Quiz',
+    'integration' => 'SENSEI_LMS',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'SENSEI_QUIZ',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_sensei_lms_quiz_submitted',
+        1 => 10,
+        2 => 5,
+      ),
+    ),
+  ),
   'RANK_MATH_SEO_DATA_UPDATED' => 
   array (
     'code' => 'RANK_MATH_SEO_DATA_UPDATED',
@@ -1747,6 +2174,74 @@ return array (
         0 => 'wp_smush_image_optimised',
         1 => 10,
         2 => 3,
+      ),
+    ),
+  ),
+  'SPORTSPRESS_EVENT_CREATED' => 
+  array (
+    'code' => 'SPORTSPRESS_EVENT_CREATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Sportspress\\Sportspress_Event_Created',
+    'integration' => 'SPORTSPRESS',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'SP_LEAGUE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_sportspress_event_created',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'SPORTSPRESS_EVENT_UPDATED' => 
+  array (
+    'code' => 'SPORTSPRESS_EVENT_UPDATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Sportspress\\Sportspress_Event_Updated',
+    'integration' => 'SPORTSPRESS',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'SP_LEAGUE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_sportspress_event_updated',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'SPORTSPRESS_PLAYER_CREATED' => 
+  array (
+    'code' => 'SPORTSPRESS_PLAYER_CREATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Sportspress\\Sportspress_Player_Created',
+    'integration' => 'SPORTSPRESS',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'SP_POSITION',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_sportspress_player_created',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'SPORTSPRESS_TEAM_CREATED' => 
+  array (
+    'code' => 'SPORTSPRESS_TEAM_CREATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Sportspress\\Sportspress_Team_Created',
+    'integration' => 'SPORTSPRESS',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'SP_LEAGUE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_sportspress_team_created',
+        1 => 10,
+        2 => 1,
       ),
     ),
   ),
@@ -2507,6 +3002,108 @@ return array (
         0 => 'userfeedback_survey_response',
         1 => 10,
         2 => 3,
+      ),
+    ),
+  ),
+  'USERSWP_USER_ACTIVATES_EMAIL' => 
+  array (
+    'code' => 'USERSWP_USER_ACTIVATES_EMAIL',
+    'class' => 'Uncanny_Automator\\Integrations\\Userswp\\Userswp_User_Activates_Email',
+    'integration' => 'USERSWP',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'UWP_ACTIVATION',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'uwp_email_activation_success',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'USERSWP_USER_CHANGES_PASSWORD' => 
+  array (
+    'code' => 'USERSWP_USER_CHANGES_PASSWORD',
+    'class' => 'Uncanny_Automator\\Integrations\\Userswp\\Userswp_User_Changes_Password',
+    'integration' => 'USERSWP',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'UWP_CHANGE_PASSWORD',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'uwp_after_process_change',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'USERSWP_USER_DELETES_ACCOUNT' => 
+  array (
+    'code' => 'USERSWP_USER_DELETES_ACCOUNT',
+    'class' => 'Uncanny_Automator\\Integrations\\Userswp\\Userswp_User_Deletes_Account',
+    'integration' => 'USERSWP',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'UWP_DELETE_ACCOUNT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'uwp_after_delete_account',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'USERSWP_USER_LOGS_IN' => 
+  array (
+    'code' => 'USERSWP_USER_LOGS_IN',
+    'class' => 'Uncanny_Automator\\Integrations\\Userswp\\Userswp_User_Logs_In',
+    'integration' => 'USERSWP',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'UWP_LOGIN',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_userswp_user_logged_in',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'USERSWP_USER_REGISTERS' => 
+  array (
+    'code' => 'USERSWP_USER_REGISTERS',
+    'class' => 'Uncanny_Automator\\Integrations\\Userswp\\Userswp_User_Registers',
+    'integration' => 'USERSWP',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'UWP_REGISTER',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'uwp_after_process_register',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'USERSWP_USER_UPDATES_PROFILE' => 
+  array (
+    'code' => 'USERSWP_USER_UPDATES_PROFILE',
+    'class' => 'Uncanny_Automator\\Integrations\\Userswp\\Userswp_User_Updates_Profile',
+    'integration' => 'USERSWP',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'UWP_ACCOUNT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'uwp_after_process_account',
+        1 => 10,
+        2 => 2,
       ),
     ),
   ),

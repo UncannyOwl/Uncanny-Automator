@@ -10,6 +10,8 @@ namespace Uncanny_Automator\Integrations\Sugar_Calendar;
  */
 class Sugar_Calendar_Rsvp_Event extends \Uncanny_Automator\Recipe\Action {
 
+	use Sugar_Calendar_Requirements;
+
 	/**
 	 * Setup action.
 	 *
@@ -36,14 +38,18 @@ class Sugar_Calendar_Rsvp_Event extends \Uncanny_Automator\Recipe\Action {
 			),
 			$this->get_action_code()
 		);
+
+		$this->set_plugin_details( self::rsvp_plugin_details() );
 	}
 
 	/**
-	 * Check if the RSVP add-on is available.
+	 * Whether the RSVP add-on is loaded, from its own folder or a renamed one.
 	 *
-	 * @return bool
+	 * @since 8.1.0
+	 *
+	 * @return bool|null True when the RSVP add-on is loaded, false when it is not.
 	 */
-	public function requirements_met() {
+	protected function is_plugin_compatible(): ?bool {
 		return defined( 'SUGAR_CALENDAR_RSVP_VERSION' );
 	}
 

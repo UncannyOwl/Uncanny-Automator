@@ -179,7 +179,7 @@ class Search_Service {
 		}
 
 		return array(
-			'message' => sprintf( 'Found %d %s(s). Use get_component_schema to inspect fields before configuring.', count( $sliced ), $type ),
+			'message' => sprintf( 'Found %d %s(s).', count( $sliced ), $type ),
 			'data'    => $response_data,
 		);
 	}

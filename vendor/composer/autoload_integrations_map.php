@@ -182,6 +182,27 @@ return array(
 			$baseDir . '/src/integrations/asana/triggers/task-updated-in-project.php',
 		),
 	),
+	'asgaros-forum' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/asgaros-forum/actions/asgaros-forum-add-user-to-usergroup.php',
+			$baseDir . '/src/integrations/asgaros-forum/actions/asgaros-forum-create-reply.php',
+			$baseDir . '/src/integrations/asgaros-forum/actions/asgaros-forum-create-topic.php',
+			$baseDir . '/src/integrations/asgaros-forum/actions/asgaros-forum-remove-user-from-usergroup.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/asgaros-forum/helpers/asgaros-forum-helpers.php',
+		),
+		'tokens' => array(
+			$baseDir . '/src/integrations/asgaros-forum/tokens/asgaros-forum-tokens.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/asgaros-forum/triggers/asgaros-forum-topic-approved.php',
+			$baseDir . '/src/integrations/asgaros-forum/triggers/asgaros-forum-user-added-to-usergroup.php',
+			$baseDir . '/src/integrations/asgaros-forum/triggers/asgaros-forum-user-publishes-topic.php',
+			$baseDir . '/src/integrations/asgaros-forum/triggers/asgaros-forum-user-reacts-to-post.php',
+			$baseDir . '/src/integrations/asgaros-forum/triggers/asgaros-forum-user-replies-to-topic.php',
+		),
+	),
 	'autonami' => array(
 		'main' => $baseDir . '/src/integrations/autonami/add-autonami-integration.php',
 		'actions' => array(
@@ -243,6 +264,7 @@ return array(
 	'beaver-builder' => array(
 		'helpers' => array(
 			$baseDir . '/src/integrations/beaver-builder/helpers/beaver-builder-helpers.php',
+			$baseDir . '/src/integrations/beaver-builder/helpers/trait-beaver-builder-requirements.php',
 		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/beaver-builder/triggers/bb-contact-form-submitted.php',
@@ -370,6 +392,7 @@ return array(
 		),
 		'helpers' => array(
 			$baseDir . '/src/integrations/cartflows/helpers/cartflows-helpers.php',
+			$baseDir . '/src/integrations/cartflows/helpers/trait-cartflows-requirements.php',
 		),
 		'tokens' => array(
 			$baseDir . '/src/integrations/cartflows/tokens/cartflows-tokens.php',
@@ -486,6 +509,18 @@ return array(
 			$baseDir . '/src/integrations/constant-contact/helpers/constant-contact-custom-fields.php',
 		),
 	),
+	'contact-form-cfdb7' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/contact-form-cfdb7/actions/cfdb7-delete-entry.php',
+			$baseDir . '/src/integrations/contact-form-cfdb7/actions/cfdb7-mark-entry-read.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/contact-form-cfdb7/helpers/cfdb7-helpers.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/contact-form-cfdb7/triggers/cfdb7-entry-saved.php',
+		),
+	),
 	'contact-form7' => array(
 		'main' => $baseDir . '/src/integrations/contact-form7/add-cf7-integration.php',
 		'helpers' => array(
@@ -515,6 +550,7 @@ return array(
 			$baseDir . '/src/integrations/convertkit/helpers/convertkit-api-caller.php',
 			$baseDir . '/src/integrations/convertkit/helpers/convertkit-app-helpers.php',
 			$baseDir . '/src/integrations/convertkit/helpers/convertkit-subscriber-tokens-trait.php',
+			$baseDir . '/src/integrations/convertkit/helpers/trait-convertkit-setup-requirements.php',
 		),
 	),
 	'datetime' => array(
@@ -643,6 +679,7 @@ return array(
 			$baseDir . '/src/integrations/edd/helpers/edd-helpers.php',
 		),
 		'tokens' => array(
+			$baseDir . '/src/integrations/edd/tokens/edd-refund-tokens.php',
 			$baseDir . '/src/integrations/edd/tokens/edd-tokens.php',
 			$baseDir . '/src/integrations/edd/tokens/edd-user-address-line-1-token.php',
 			$baseDir . '/src/integrations/edd/tokens/edd-user-address-line-2-token.php',
@@ -657,6 +694,7 @@ return array(
 			$baseDir . '/src/integrations/edd/triggers/edd-orderrefunded.php',
 			$baseDir . '/src/integrations/edd/triggers/edd-productpurchase.php',
 			$baseDir . '/src/integrations/edd/triggers/edd-productpurchasewithprice.php',
+			$baseDir . '/src/integrations/edd/triggers/edd-user-receives-refund.php',
 		),
 	),
 	'edd-recurring' => array(
@@ -773,6 +811,16 @@ return array(
 		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/facebook-lead-ads/triggers/lead-created.php',
+		),
+	),
+	'favorites' => array(
+		'helpers' => array(
+			$baseDir . '/src/integrations/favorites/helpers/favorites-helpers.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/favorites/triggers/favorites-cleared.php',
+			$baseDir . '/src/integrations/favorites/triggers/favorites-post-favorited.php',
+			$baseDir . '/src/integrations/favorites/triggers/favorites-post-unfavorited.php',
 		),
 	),
 	'fluent-boards' => array(
@@ -1453,10 +1501,45 @@ return array(
 			$baseDir . '/src/integrations/mailster/triggers/mailster-subscriber-added-to-list.php',
 		),
 	),
+	'mainwp' => array(
+		'helpers' => array(
+			$baseDir . '/src/integrations/mainwp/helpers/mainwp-helpers.php',
+		),
+		'tokens' => array(
+			$baseDir . '/src/integrations/mainwp/tokens/mainwp-tokens.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/mainwp/triggers/mainwp-child-site-added.php',
+			$baseDir . '/src/integrations/mainwp/triggers/mainwp-child-site-removed.php',
+			$baseDir . '/src/integrations/mainwp/triggers/mainwp-core-updated.php',
+			$baseDir . '/src/integrations/mainwp/triggers/mainwp-software-updated.php',
+		),
+	),
 	'make' => array(
 		'main' => $baseDir . '/src/integrations/make/add-make-integration.php',
 		'actions' => array(
 			$baseDir . '/src/integrations/make/actions/make-sendwebhook.php',
+		),
+	),
+	'masteriyo' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/masteriyo/actions/masteriyo-enroll-user-in-course.php',
+			$baseDir . '/src/integrations/masteriyo/actions/masteriyo-mark-course-complete.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/masteriyo/helpers/masteriyo-helpers.php',
+		),
+		'tokens' => array(
+			$baseDir . '/src/integrations/masteriyo/tokens/masteriyo-tokens.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/masteriyo/triggers/masteriyo-user-completes-course.php',
+			$baseDir . '/src/integrations/masteriyo/triggers/masteriyo-user-completes-lesson.php',
+			$baseDir . '/src/integrations/masteriyo/triggers/masteriyo-user-enrolls-course.php',
+			$baseDir . '/src/integrations/masteriyo/triggers/masteriyo-user-fails-quiz.php',
+			$baseDir . '/src/integrations/masteriyo/triggers/masteriyo-user-passes-quiz.php',
+			$baseDir . '/src/integrations/masteriyo/triggers/masteriyo-user-registers.php',
+			$baseDir . '/src/integrations/masteriyo/triggers/masteriyo-user-starts-quiz.php',
 		),
 	),
 	'masterstudy-lms' => array(
@@ -1665,6 +1748,7 @@ return array(
 		'helpers' => array(
 			$baseDir . '/src/integrations/open-ai/helpers/open-ai-api-caller.php',
 			$baseDir . '/src/integrations/open-ai/helpers/open-ai-app-helpers.php',
+			$baseDir . '/src/integrations/open-ai/helpers/trait-open-ai-setup-requirements.php',
 		),
 	),
 	'optinmonster' => array(
@@ -1851,6 +1935,25 @@ return array(
 			$baseDir . '/src/integrations/sendy/helpers/sendy-app-helpers.php',
 		),
 	),
+	'sensei-lms' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/sensei-lms/actions/sensei-enroll-user-in-course.php',
+			$baseDir . '/src/integrations/sensei-lms/actions/sensei-mark-lesson-complete.php',
+			$baseDir . '/src/integrations/sensei-lms/actions/sensei-unenroll-user-from-course.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/sensei-lms/helpers/sensei-lms-helpers.php',
+		),
+		'tokens' => array(
+			$baseDir . '/src/integrations/sensei-lms/tokens/sensei-lms-tokens.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/sensei-lms/triggers/sensei-user-completes-course.php',
+			$baseDir . '/src/integrations/sensei-lms/triggers/sensei-user-completes-lesson.php',
+			$baseDir . '/src/integrations/sensei-lms/triggers/sensei-user-enrolled-course.php',
+			$baseDir . '/src/integrations/sensei-lms/triggers/sensei-user-submits-quiz.php',
+		),
+	),
 	'seo-by-rank-math' => array(
 		'actions' => array(
 			$baseDir . '/src/integrations/seo-by-rank-math/actions/rank-math-delete-focus-keyword.php',
@@ -1928,6 +2031,25 @@ return array(
 			$baseDir . '/src/integrations/smush/triggers/smush-image-optimized.php',
 		),
 	),
+	'sportspress' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/sportspress/actions/sportspress-create-event.php',
+			$baseDir . '/src/integrations/sportspress/actions/sportspress-update-event-results.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/sportspress/helpers/sportspress-helpers.php',
+			$baseDir . '/src/integrations/sportspress/helpers/sportspress-selections.php',
+		),
+		'tokens' => array(
+			$baseDir . '/src/integrations/sportspress/tokens/sportspress-event-tokens.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/sportspress/triggers/sportspress-event-created.php',
+			$baseDir . '/src/integrations/sportspress/triggers/sportspress-event-updated.php',
+			$baseDir . '/src/integrations/sportspress/triggers/sportspress-player-created.php',
+			$baseDir . '/src/integrations/sportspress/triggers/sportspress-team-created.php',
+		),
+	),
 	'stripe' => array(
 		'actions' => array(
 			$baseDir . '/src/integrations/stripe/actions/create-customer.php',
@@ -1989,6 +2111,7 @@ return array(
 		),
 		'helpers' => array(
 			$baseDir . '/src/integrations/sugar-calendar/helpers/sugar-calendar-helpers.php',
+			$baseDir . '/src/integrations/sugar-calendar/helpers/trait-sugar-calendar-requirements.php',
 		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/sugar-calendar/triggers/sugar-calendar-event-created.php',
@@ -2270,6 +2393,7 @@ return array(
 			$baseDir . '/src/integrations/uncanny-ceus/actions/uncannyceus-awardceus.php',
 		),
 		'helpers' => array(
+			$baseDir . '/src/integrations/uncanny-ceus/helpers/trait-uncanny-ceus-requirements.php',
 			$baseDir . '/src/integrations/uncanny-ceus/helpers/uncanny-ceus-helpers.php',
 		),
 		'tokens' => array(
@@ -2339,6 +2463,7 @@ return array(
 			$baseDir . '/src/integrations/uncanny-toolkit/actions/ut-resetuserstimeincourse.php',
 		),
 		'helpers' => array(
+			$baseDir . '/src/integrations/uncanny-toolkit/helpers/trait-toolkit-pro-requirements.php',
 			$baseDir . '/src/integrations/uncanny-toolkit/helpers/uncanny-toolkit-helpers.php',
 		),
 		'tokens' => array(
@@ -2380,6 +2505,27 @@ return array(
 		'triggers' => array(
 			$baseDir . '/src/integrations/userfeedback/triggers/anon-userfeedback-survey-submitted.php',
 			$baseDir . '/src/integrations/userfeedback/triggers/user-userfeedback-survey-submitted.php',
+		),
+	),
+	'userswp' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/userswp/actions/userswp-update-profile-fields.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/userswp/helpers/trait-userswp-field-rules.php',
+			$baseDir . '/src/integrations/userswp/helpers/userswp-helpers.php',
+			$baseDir . '/src/integrations/userswp/helpers/userswp-user-record.php',
+		),
+		'tokens' => array(
+			$baseDir . '/src/integrations/userswp/tokens/userswp-tokens.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/userswp/triggers/userswp-user-activates-email.php',
+			$baseDir . '/src/integrations/userswp/triggers/userswp-user-changes-password.php',
+			$baseDir . '/src/integrations/userswp/triggers/userswp-user-deletes-account.php',
+			$baseDir . '/src/integrations/userswp/triggers/userswp-user-logs-in.php',
+			$baseDir . '/src/integrations/userswp/triggers/userswp-user-registers.php',
+			$baseDir . '/src/integrations/userswp/triggers/userswp-user-updates-profile.php',
 		),
 	),
 	'w3-total-cache' => array(
@@ -2699,6 +2845,7 @@ return array(
 	),
 	'wp-job-manager' => array(
 		'helpers' => array(
+			$baseDir . '/src/integrations/wp-job-manager/helpers/trait-wpjm-requirements.php',
 			$baseDir . '/src/integrations/wp-job-manager/helpers/wpjm-helpers.php',
 		),
 		'tokens' => array(

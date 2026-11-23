@@ -21,9 +21,9 @@ class Automator_Create_Recipe_Walkthrough extends Automator_Walkthrough_Spec {
 	 */
 	protected static function get_steps() {
 
+		$start_scratch  = self::shadow( array( 'uap-f-recipe-builder-welcome', 'uas-button[data-test="welcome-start-from-scratch"]' ) );
 		$type_confirm   = self::shadow( array( 'uap-f-recipe-builder-type-selector', 'uas-button[slot="primary-action"]' ) );
 		$title_input    = self::shadow( array( 'uap-f-recipe-builder-title', 'input.title' ) );
-		$add_trigger    = self::selector( 'uap-f-recipe-builder-node-selector-add-button[scope="trigger"], [data-test="canvas-add-trigger"]' );
 		$add_action     = self::selector( 'uap-f-recipe-builder-node-selector-add-button[scope="action"], [data-test="canvas-add-action"]' );
 		$edit_dialog    = self::selector( 'uap-f-recipe-builder-edit-node' );
 		$wp_integration = self::shadow( array( 'uap-f-recipe-builder-node-selector-viewer', '.viewer-integration[data-integration-code="WP"]' ) );
@@ -41,21 +41,6 @@ class Automator_Create_Recipe_Walkthrough extends Automator_Walkthrough_Spec {
 				'wait_for'  => array( self::selector( 'uap-f-recipe-builder' ) ),
 				'advance'   => array( 'kind' => 'button' ),
 				'buttons'   => self::button( esc_html__( 'Start', 'uncanny-automator' ), 'next' ),
-			),
-
-			array(
-				'id'        => 'recipe-type',
-				'surface'   => self::SURFACE,
-				'title'     => esc_html__( 'Choose a recipe type', 'uncanny-automator' ),
-				'body_html' => self::paragraph( esc_html_x( '"Logged-in users" is selected, so the recipe runs for users on your site. Confirm to start building your recipe.', 'Create recipe walkthrough', 'uncanny-automator' ) ),
-				'target'    => $type_confirm,
-				'attach'    => 'left',
-				'wait_for'  => array( $type_confirm ),
-				'requires'  => $type_confirm,
-				'advance'   => array(
-					'kind' => 'event',
-					'name' => 'uap.f.recipe-builder.core.set-recipe-type',
-				),
 			),
 
 			array(
@@ -78,17 +63,32 @@ class Automator_Create_Recipe_Walkthrough extends Automator_Walkthrough_Spec {
 			),
 
 			array(
-				'id'        => 'trigger-add',
+				'id'        => 'start-from-scratch',
 				'surface'   => self::SURFACE,
-				'title'     => esc_html__( 'Add a trigger', 'uncanny-automator' ),
-				'body_html' => self::paragraph( esc_html_x( 'A trigger is what starts your recipe. Click "Add trigger" to choose one.', 'Create recipe walkthrough', 'uncanny-automator' ) ),
-				'target'    => $add_trigger,
-				'attach'    => 'right',
-				'wait_for'  => array( $add_trigger ),
+				'title'     => esc_html__( 'Start from scratch', 'uncanny-automator' ),
+				'body_html' => self::paragraph( esc_html_x( 'Build your recipe step by step. Click "Add a trigger" to begin.', 'Create recipe walkthrough', 'uncanny-automator' ) ),
+				'target'    => $start_scratch,
+				'attach'    => 'bottom',
+				'wait_for'  => array( $start_scratch ),
+				'requires'  => $start_scratch,
 				'advance'   => array(
-					'kind'  => 'event',
-					'name'  => 'uap.f.recipe-builder.node-selector.ready',
-					'match' => array( 'detail.scope' => 'trigger' ),
+					'kind' => 'event',
+					'name' => 'uap.f.recipe-builder.welcome.start-from-scratch',
+				),
+			),
+
+			array(
+				'id'        => 'recipe-type',
+				'surface'   => self::SURFACE,
+				'title'     => esc_html__( 'Choose a recipe type', 'uncanny-automator' ),
+				'body_html' => self::paragraph( esc_html_x( '"Logged-in users" is selected, so the recipe runs for users on your site. Confirm to start building your recipe.', 'Create recipe walkthrough', 'uncanny-automator' ) ),
+				'target'    => $type_confirm,
+				'attach'    => 'left',
+				'wait_for'  => array( $type_confirm ),
+				'requires'  => $type_confirm,
+				'advance'   => array(
+					'kind' => 'event',
+					'name' => 'uap.f.recipe-builder.core.set-recipe-type',
 				),
 			),
 

@@ -38,7 +38,7 @@ class Mysql_Get_Tables_Tool extends Abstract_MCP_Tool {
 	 * @return string
 	 */
 	public function get_description() {
-		return 'List database tables. Use to discover plugin data structures, custom tables, or understand the database schema. Returns table names and approximate_row_count, an InnoDB estimate that can be stale or zero for small tables; use mysql_select_from_table with COUNT(*) for an exact count. On a single site, tables must start with the site prefix or be approved by the owner in Site tools settings. On a WordPress network only the current site\'s tables are listed; shared network tables also require a network administrator. total counts returned tables; has_more indicates additional matches. Narrow search when has_more is true.';
+		return 'List database tables. Use to discover plugin data structures, custom tables, or understand the database schema. Returns table names and approximate_row_count, an InnoDB estimate that can be stale or zero for small tables; row_count is a deprecated alias for the same estimate. Use mysql_select_from_table with COUNT(*) for an exact count. On a single site, tables must start with the site prefix or be approved by the owner in Site tools settings. On a WordPress network only the current site\'s tables are listed; shared network tables also require a network administrator. total counts returned tables; has_more indicates additional matches. When has_more is true, pass next_offset as offset with the same search to continue.';
 	}
 
 	/**
@@ -58,7 +58,13 @@ class Mysql_Get_Tables_Tool extends Abstract_MCP_Tool {
 					'type'        => 'integer',
 					'default'     => 50,
 					'maximum'     => 200,
-					'description' => 'Maximum tables to return.',
+					'description' => 'Maximum tables to return. Use 1 to 200. Zero is refused. Negative values are treated as 1 for compatibility.',
+				),
+				'offset' => array(
+					'type'        => 'integer',
+					'default'     => 0,
+					'minimum'     => 0,
+					'description' => 'Pass next_offset from the previous page, using the same search.',
 				),
 			),
 			'required'   => array(),
@@ -74,9 +80,9 @@ class Mysql_Get_Tables_Tool extends Abstract_MCP_Tool {
 		return array(
 			'type'       => 'object',
 			'properties' => array(
-				'database' => array( 'type' => 'string' ),
-				'prefix'   => array( 'type' => 'string' ),
-				'tables'   => array(
+				'database'    => array( 'type' => 'string' ),
+				'prefix'      => array( 'type' => 'string' ),
+				'tables'      => array(
 					'type'  => 'array',
 					'items' => array(
 						'type'       => 'object',
@@ -94,11 +100,15 @@ class Mysql_Get_Tables_Tool extends Abstract_MCP_Tool {
 						),
 					),
 				),
-				'total'    => array(
+				'total'       => array(
 					'type'        => 'integer',
 					'description' => 'Number of tables returned, not the total number of matching tables.',
 				),
-				'has_more' => array( 'type' => 'boolean' ),
+				'has_more'    => array( 'type' => 'boolean' ),
+				'next_offset' => array(
+					'type'        => 'integer',
+					'description' => 'Offset for the next page. Present when more tables match.',
+				),
 			),
 			'required'   => array( 'database', 'prefix', 'tables', 'total', 'has_more' ),
 		);
@@ -114,8 +124,12 @@ class Mysql_Get_Tables_Tool extends Abstract_MCP_Tool {
 	protected function execute_tool( User_Context $user_context, array $params ) {
 		global $wpdb;
 
+		if ( 0 === ( $params['limit'] ?? 50 ) ) {
+			return Json_Rpc_Response::create_error_response( 'Limit must be between 1 and 200.' );
+		}
 		$search = $params['search'] ?? '';
-		$limit  = max( 1, min( (int) ( $params['limit'] ?? 50 ), 200 ) );
+		$limit  = max( 1, $params['limit'] ?? 50 );
+		$offset = $params['offset'] ?? 0;
 		$schema = $this->get_schema_name();
 
 		if ( '' === $schema ) {
@@ -139,8 +153,9 @@ class Mysql_Get_Tables_Tool extends Abstract_MCP_Tool {
 			$this->get_restricted_network_tables( $user_context ),
 			$this->is_network_scoped() && $site_prefix === $this->get_base_table_prefix(),
 			$ignore_case,
-			empty( $search ) ? '' : sanitize_text_field( $search ),
-			$limit + 1
+			sanitize_text_field( $search ),
+			$limit + 1,
+			$offset
 		);
 		if ( null === $tables ) {
 			return Json_Rpc_Response::create_error_response( 'Query failed: database table metadata is unavailable.' );
@@ -161,10 +176,12 @@ class Mysql_Get_Tables_Tool extends Abstract_MCP_Tool {
 		$items = array_map(
 			function ( $table ) use ( $wpdb ) {
 				$name = $table['name'];
+				// Older clients read row_count directly. Keep it an alias so listing tables
+				// stays a metadata query. Callers can request COUNT(*) for a specific table.
 				return array(
 					'name'                  => $name,
 					'approximate_row_count' => $table['rows'],
-					'row_count'             => $table['rows'], // Deprecated alias kept for existing consumers.
+					'row_count'             => $table['rows'],
 					'is_wp_core'            => strpos( $name, $wpdb->prefix ) === 0 && in_array(
 						str_replace( $wpdb->prefix, '', $name ),
 						array( 'posts', 'postmeta', 'options', 'users', 'usermeta', 'terms', 'termmeta', 'term_taxonomy', 'term_relationships', 'comments', 'commentmeta', 'links' ),
@@ -175,15 +192,19 @@ class Mysql_Get_Tables_Tool extends Abstract_MCP_Tool {
 			$tables
 		);
 
+		$message = $can_discover ? sprintf( 'Found %d tables.', count( $items ) ) : 'Only owner-approved tables and views are listed. ' . $service->schema_visibility_message();
+		if ( $items ) {
+			$message .= ' Both row_count and approximate_row_count are estimates. Use COUNT(*) for an exact count.';
+		}
 		return Json_Rpc_Response::create_success_response(
-			$can_discover ? sprintf( 'Found %d tables', count( $items ) ) : 'Only owner-approved tables and views are listed. ' . $service->schema_visibility_message(),
+			$message,
 			array(
 				'database' => $schema,
 				'prefix'   => $wpdb->prefix,
 				'tables'   => $items,
 				'total'    => count( $items ),
 				'has_more' => $has_more,
-			)
+			) + ( $has_more ? array( 'next_offset' => $offset + $limit ) : array() )
 		);
 	}
 }

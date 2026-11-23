@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Infrastructure\Database;
 
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Action_Error_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Log_List_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Action_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Mcp_Database_Boundary_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Api_Log_Store;
@@ -11,6 +12,7 @@ use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Block_Modifier_Stor
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Block_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Execution_Log_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Hosted_Read_Credential_Option_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Post_Content_Edit_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Item_Status_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Reorder_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Legacy_Meta_Store;
@@ -21,6 +23,7 @@ use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Run_Snapshot_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\User_Selector_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Block_Modifier_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Action_Error_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Log_List_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Action_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Mcp_Database_Boundary_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Api_Log_Store;
@@ -28,6 +31,7 @@ use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Background_Job_Store
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Block_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Execution_Log_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Hosted_Read_Credential_Option_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Post_Content_Edit_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Recipe_Item_Status_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Recipe_Reorder_Store;
 use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Recipe_Legacy_Meta_Store;
@@ -72,6 +76,11 @@ final class Database {
 
 	/** @var WP_Action_Error_Store|null */
 	private static $action_error_store = null;
+
+	/**
+	 * @var Log_List_Store|null
+	 */
+	private static $log_list_store = null;
 
 	/** @var WP_Run_Snapshot_Store|null */
 	private static $run_snapshot_store = null;
@@ -235,6 +244,20 @@ final class Database {
 	}
 
 	/**
+	 * The reads behind the Logs page lists.
+	 *
+	 * @since 8.1.0
+	 * @return Log_List_Store
+	 */
+	public static function get_log_list_store(): Log_List_Store {
+		if ( null === self::$log_list_store ) {
+			global $wpdb;
+			self::$log_list_store = new WP_Log_List_Store( $wpdb, self::get_action_error_store() );
+		}
+		return self::$log_list_store;
+	}
+
+	/**
 	 * @since 7.4.0
 	 * @return Run_Snapshot_Store
 	 */
@@ -321,6 +344,19 @@ final class Database {
 			self::$recipe_item_status_store = new WP_Recipe_Item_Status_Store();
 		}
 		return self::$recipe_item_status_store;
+	}
+
+	/**
+	 * Fresh store that runs an edit while the post's row is locked, in one transaction.
+	 *
+	 * Not memoised: the lock has to run on the connection the caller's writes use, which is the current `$wpdb`.
+	 *
+	 * @since 8.1.0
+	 * @return Post_Content_Edit_Store
+	 */
+	public static function get_post_content_edit_store(): Post_Content_Edit_Store {
+		global $wpdb;
+		return new WP_Post_Content_Edit_Store( $wpdb );
 	}
 
 	/**

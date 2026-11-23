@@ -21,6 +21,7 @@ use Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Store\Integrati
 use Uncanny_Automator\Traits\Singleton;
 use Uncanny_Automator\App\Events\Dispatcher;
 use Uncanny_Automator\App\Components\Translation\Locale_Resolver;
+use Uncanny_Automator\Automator_Compression;
 
 /**
  * Service for fetching and processing integration feed data.
@@ -266,7 +267,7 @@ class Integration_Feed_Service {
 	 */
 	private function fetch_language( string $language ): array {
 		$key    = self::CACHE_KEY . '_' . $language;
-		$cached = get_transient( $key );
+		$cached = $this->read_cache( $key );
 
 		if ( is_array( $cached ) ) {
 			$this->active_feed = "complete-{$language}.json";
@@ -277,7 +278,7 @@ class Integration_Feed_Service {
 			$data = $this->request( str_replace( 'complete.json', "complete-{$language}.json", self::COMPLETE_JSON_URL ) );
 			$this->remember_language( $language );
 			if ( null !== $data ) {
-				set_transient( $key, $data, self::CACHE_TTL );
+				$this->write_cache( $key, $data );
 				$this->active_feed = "complete-{$language}.json";
 				return $data;
 			}
@@ -300,7 +301,7 @@ class Integration_Feed_Service {
 	private function fetch_english(): array {
 		$this->active_feed = 'complete.json';
 
-		$cached = get_transient( self::CACHE_KEY );
+		$cached = $this->read_cache( self::CACHE_KEY );
 		if ( is_array( $cached ) ) {
 			return $cached;
 		}
@@ -317,7 +318,7 @@ class Integration_Feed_Service {
 			return array();
 		}
 
-		set_transient( self::CACHE_KEY, $data, self::CACHE_TTL );
+		$this->write_cache( self::CACHE_KEY, $data );
 
 		return $data;
 	}
@@ -339,6 +340,52 @@ class Integration_Feed_Service {
 		$data = json_decode( wp_remote_retrieve_body( $response ), true );
 
 		return is_array( $data ) ? $data : null;
+	}
+
+	/**
+	 * Read a feed transient, unpacking it when it was stored packed.
+	 *
+	 * A plain array (written before packing existed, or by a caller that
+	 * pre-seeds the cache) is returned as is; sentinels pass through untouched.
+	 * A packed value that no longer unpacks counts as a miss.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $key Transient key.
+	 *
+	 * @return array|string|false Feed records, a sentinel string, or false on a miss.
+	 */
+	private function read_cache( string $key ) {
+		$cached = get_transient( $key );
+
+		if ( ! Automator_Compression::is_compressed_string( $cached ) ) {
+			return $cached;
+		}
+
+		$records = json_decode( Automator_Compression::maybe_decompress_string( $cached ), true );
+
+		return is_array( $records ) ? $records : false;
+	}
+
+	/**
+	 * Store feed records in a transient, using compression when it saves space.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $key  Transient key.
+	 * @param array  $data Feed records.
+	 *
+	 * @return void
+	 */
+	private function write_cache( string $key, array $data ): void {
+		if ( ! function_exists( 'gzuncompress' ) ) {
+			set_transient( $key, $data, self::CACHE_TTL );
+			return;
+		}
+
+		$packed = Automator_Compression::maybe_compress_string( (string) wp_json_encode( $data ) );
+
+		set_transient( $key, Automator_Compression::is_compressed_string( $packed ) ? $packed : $data, self::CACHE_TTL );
 	}
 
 	/**

@@ -359,21 +359,10 @@ class Edd_Helpers {
 	public function get_download_price_options_ajax_handler() {
 		Automator()->utilities->ajax_auth_check();
 
-		$values = filter_input_array(
-			INPUT_POST,
-			array(
-				'values'  => array(
-					'filter' => FILTER_SANITIZE_STRING,
-					'flags'  => FILTER_REQUIRE_ARRAY,
-				),
-				'item_id' => array(
-					'filter' => FILTER_SANITIZE_NUMBER_INT,
-				),
-			)
-		);
+		$values = automator_filter_input_array( 'values', INPUT_POST );
 
-		$download_id = isset( $values['values']['EDDPRODUCT'] ) ? $values['values']['EDDPRODUCT'] : 0;
-		$item_id     = isset( $values['item_id'] ) ? absint( $values['item_id'] ) : 0;
+		$download_id = isset( $values['EDDPRODUCT'] ) ? sanitize_text_field( $values['EDDPRODUCT'] ) : 0;
+		$item_id     = absint( automator_filter_input( 'item_id', INPUT_POST ) );
 
 		// For uo-action type, we don't want to include the "Any" option
 		$include_any = 'uo-action' !== get_post_type( $item_id );
@@ -388,6 +377,71 @@ class Edd_Helpers {
 			)
 		);
 		die();
+	}
+
+	/**
+	 * Payment gateway options for a refund trigger: "Any", then every gateway EDD has registered,
+	 * so a refund on a gateway that has since been switched off can still be matched.
+	 *
+	 * @return array[]
+	 */
+	public function get_refund_gateway_options() {
+
+		$options = array(
+			array(
+				'value' => '-1',
+				'text'  => esc_html_x( 'Any payment gateway', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
+		);
+
+		foreach ( edd_get_payment_gateways() as $gateway_id => $gateway ) {
+			$label = is_array( $gateway ) ? ( $gateway['admin_label'] ?? ( $gateway['checkout_label'] ?? '' ) ) : '';
+
+			$options[] = array(
+				'value' => (string) $gateway_id,
+				'text'  => '' !== $label ? $label : (string) $gateway_id,
+			);
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Token definitions of a refund.
+	 *
+	 * @return array
+	 */
+	public function refund_tokens() {
+		return ( new Edd_Refund_Tokens( $this ) )->definitions();
+	}
+
+	/**
+	 * Token values of one refund event, see Edd_Refund_Dispatcher for the arguments.
+	 *
+	 * @param int    $order_id  The original order.
+	 * @param int    $refund_id The EDD refund record, 0 when EDD made none.
+	 * @param string $type      "full" or "partial".
+	 * @param string $amount    The amount of a refund with no record, or ''.
+	 *
+	 * @return array
+	 */
+	public function refund_token_values( $order_id, $refund_id, $type, $amount ) {
+		return ( new Edd_Refund_Tokens( $this ) )->values( absint( $order_id ), absint( $refund_id ), (string) $type, (string) $amount );
+	}
+
+	/**
+	 * The items a refund covers: the refund record's items when EDD made one, otherwise the original order's items.
+	 *
+	 * @param int $order_id  The original order.
+	 * @param int $refund_id The EDD refund record, 0 when EDD made none.
+	 *
+	 * @return array Order items.
+	 */
+	public function get_refund_items( $order_id, $refund_id ) {
+
+		$source = edd_get_order( $refund_id > 0 ? $refund_id : $order_id );
+
+		return $source && is_array( $source->items ) ? $source->items : array();
 	}
 
 	/**

@@ -53,6 +53,61 @@ class Resend_Action_Service {
 	}
 
 	/**
+	 * Whether a stored action API log row can be replayed: it holds a request,
+	 * and the request is a webhook or a payload that still decodes. The same
+	 * checks resend_action() makes before it sends anything, without sending.
+	 * A site with no license key still counts: its resend says which account
+	 * to link.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param object|null $api_request The `uap_api_log` row (`params`, `endpoint`).
+	 * @return bool
+	 */
+	public function can_replay( $api_request ) {
+
+		if ( empty( $api_request ) || empty( $api_request->params ) ) {
+			return false;
+		}
+
+		if ( 'internal:webhook' === $api_request->endpoint ) {
+			return true;
+		}
+
+		return null !== $this->replay_params( $api_request );
+	}
+
+	/**
+	 * The stored request's params, decoded, or null when they cannot be replayed.
+	 *
+	 * Log rows are decoded with allowed_classes => false (CVE-2026-82627). Rows that
+	 * stored a serialized Request object decode to __PHP_Incomplete_Class and cannot be
+	 * replayed. New rows store the legacy params array. A live Request object (only
+	 * possible in-process) is flattened to that array shape first.
+	 *
+	 * @param object $api_request The `uap_api_log` row.
+	 * @return array|null
+	 */
+	private function replay_params( $api_request ) {
+
+		$params = self::decode_api_log_value( $api_request->params );
+
+		if ( $params instanceof \Uncanny_Automator\App\Infrastructure\Automator_Platform\Request ) {
+			try {
+				$params = $this->api_request_to_params( $params );
+			} catch ( \Throwable $e ) {
+				$params = null;
+			}
+		}
+
+		if ( ! is_array( $params ) || empty( $params['endpoint'] ) ) {
+			return null;
+		}
+
+		return $params;
+	}
+
+	/**
 	 * Replay the stored API request for one action_log id. Mirrors the
 	 * per-action Resend button: re-fires the stored payload, records ONE
 	 * uap_api_log_response row, does NOT mutate the action_log row. A site
@@ -103,21 +158,9 @@ class Resend_Action_Service {
 			);
 		}
 
-		$params = self::decode_api_log_value( $api_request->params );
+		$params = $this->replay_params( $api_request );
 
-		// Log rows are decoded with allowed_classes => false (CVE-2026-82627). Rows that
-		// stored a serialized Request object decode to __PHP_Incomplete_Class and cannot be
-		// replayed; skip them cleanly. New rows store the legacy params array. A live Request
-		// object (only possible in-process) is flattened to that array shape first.
-		if ( $params instanceof \Uncanny_Automator\App\Infrastructure\Automator_Platform\Request ) {
-			try {
-				$params = $this->api_request_to_params( $params );
-			} catch ( \Throwable $e ) {
-				$params = null;
-			}
-		}
-
-		if ( ! is_array( $params ) || empty( $params['endpoint'] ) ) {
+		if ( null === $params ) {
 			return array(
 				'ok'         => false,
 				'outcome'    => 'skipped',

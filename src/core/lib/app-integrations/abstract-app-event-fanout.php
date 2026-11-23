@@ -8,6 +8,10 @@
 
 namespace Uncanny_Automator\App_Integrations;
 
+use Uncanny_Automator\App\Integration_Catalog\App_Events\App_Event_Data;
+use Uncanny_Automator\App\Integration_Catalog\App_Events\App_Event_Source;
+use Uncanny_Automator\App\Integration_Catalog\App_Events\Value_Objects\App_Event_Summary;
+
 /**
  * Per-integration event-fanout base class. Subclasses translate the
  * platform-normalized vendor_event envelope (Contract J) into per-trigger
@@ -40,13 +44,22 @@ namespace Uncanny_Automator\App_Integrations;
  * Subclass contract:
  *   - {@see get_integration_slug()} — lowercase platform slug (e.g. `dropbox`,
  *     `google-drive`). Used to derive the canonical hook name.
+ *   - {@see get_integration_code()} — the integration code the app's
+ *     triggers carry (`DROPBOX`, `GOOGLESHEET`). Not a change of case away
+ *     from the slug, so each app states it.
  *   - {@see dispatch_event()} — translate one event into the per-trigger
  *     shape the integration's triggers expect. Called once per enumerated
  *     event in the vendor_event payload.
+ *   - {@see summarize()} (optional) — what a delivery says on the Logs
+ *     page's App events tab. Without it, a delivery reads "3 changes".
+ *
+ * A fanout is the app's {@see App_Event_Source}: `register()` adds it to
+ * `automator_app_event_sources()`, which maps the platform's slug to the
+ * integration code and reads the app's events for the Logs page.
  *
  * @since 8.0.0
  */
-abstract class App_Event_Fanout {
+abstract class App_Event_Fanout implements App_Event_Source {
 
 	/**
 	 * Lowercase platform slug — drives the listener hook name.
@@ -54,6 +67,15 @@ abstract class App_Event_Fanout {
 	 * @return string
 	 */
 	abstract protected function get_integration_slug(): string;
+
+	/**
+	 * The code of the integration the app's triggers belong to.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return string
+	 */
+	abstract public function get_integration_code(): string;
 
 	/**
 	 * Translate a single enumerated event into the per-trigger hook shape
@@ -82,13 +104,44 @@ abstract class App_Event_Fanout {
 	}
 
 	/**
-	 * Wire the listener. Idempotent — WP's add_action with the same
-	 * callback + priority is silently deduplicated.
+	 * The platform's slug for the app, as an inbox row stores it.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return string
+	 */
+	final public function get_platform_slug(): string {
+		return $this->get_integration_slug();
+	}
+
+	/**
+	 * What one delivery says on the Logs page: "3 changes", or "No changes".
+	 * An app that can name its changes says more.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array<string, mixed> $data The vendor event's data block.
+	 *
+	 * @return App_Event_Summary
+	 */
+	public function summarize( array $data ): App_Event_Summary {
+		return App_Event_Data::summarize_changes( $data );
+	}
+
+	/**
+	 * Wire the listener, and add the app to the site's app event sources.
+	 * Idempotent — WP's add_action with the same callback + priority is
+	 * silently deduplicated, and a second registration replaces the first.
+	 *
+	 * @since 8.0.0
+	 * @since 8.1.0 Adds the app to `automator_app_event_sources()`.
 	 *
 	 * @return void
 	 */
 	public function register(): void {
 		add_action( $this->event_action_name(), array( $this, 'fanout' ), 10, 2 );
+
+		automator_app_event_sources()->register( $this );
 	}
 
 	/**
@@ -137,15 +190,7 @@ abstract class App_Event_Fanout {
 		// rows committed before that deploy still carry the old shape until
 		// they drain, and so can inbox rows this site retained. Tolerance here
 		// is what lets the two sides deploy independently.
-		$events = null;
-		$cursor = $data;
-		for ( $depth = 0; $depth < 4 && is_array( $cursor ); $depth++ ) {
-			if ( isset( $cursor['events'] ) && is_array( $cursor['events'] ) ) {
-				$events = $cursor['events'];
-				break;
-			}
-			$cursor = isset( $cursor['data'] ) && is_array( $cursor['data'] ) ? $cursor['data'] : null;
-		}
+		$events = App_Event_Data::find_events( $data );
 
 		// No `events` key at ANY depth is envelope drift, NOT an empty
 		// delivery — and it is the exact signature of the silent no-op that

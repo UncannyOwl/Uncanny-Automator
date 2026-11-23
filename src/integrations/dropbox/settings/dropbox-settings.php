@@ -87,10 +87,13 @@ class Dropbox_Settings extends App_Integration_Settings {
 			$account = array();
 		}
 
+		$picture = (string) ( $account['avatar_url'] ?? '' );
+
 		return array(
-			'avatar_url' => (string) ( $account['avatar_url'] ?? '' ),
-			'main_info'  => (string) ( $account['email'] ?? '' ),
-			'additional' => (string) ( $account['name'] ?? '' ),
+			'avatar_type'  => '' !== $picture ? 'image' : 'icon',
+			'avatar_value' => '' !== $picture ? $picture : $this->get_icon(),
+			'main_info'    => (string) ( $account['email'] ?? '' ),
+			'additional'   => (string) ( $account['name'] ?? '' ),
 		);
 	}
 

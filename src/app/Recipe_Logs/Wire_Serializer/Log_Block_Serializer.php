@@ -474,7 +474,7 @@ final class Log_Block_Serializer {
 			return $this->with_block_error(
 				array(
 					'status'       => $this->resolver->rollup_from_breakdown( $this->descendant_breakdown_totals( $block, $bundle ) )->to_array(),
-					'date_started' => $this->fmt( (string) ( $bundle->recipe_log_row()['date_time'] ?? '' ) ),
+					'date_started' => $this->fmt( $bundle->run_started_at() ),
 				),
 				$block_id,
 				$bundle
@@ -484,7 +484,7 @@ final class Log_Block_Serializer {
 		if ( $bundle->is_node_blocked( $block_id ) ) {
 			return array(
 				'status'       => Log_Status_Registry::from_code( Log_Status_Code::BLOCKED_ON_DEPENDENCY )->to_array(),
-				'date_started' => $this->fmt( (string) ( $bundle->recipe_log_row()['date_time'] ?? '' ) ),
+				'date_started' => $this->fmt( $bundle->run_started_at() ),
 			);
 		}
 
@@ -584,7 +584,7 @@ final class Log_Block_Serializer {
 	 * @return string|null Raw MySQL datetime, or null when the run never reached the block.
 	 */
 	private function reached_at( int $block_id, Run_Data_Bundle $bundle ): ?string {
-		$run_start = (string) ( $bundle->recipe_log_row()['date_time'] ?? '' );
+		$run_start = $bundle->run_started_at();
 		$config    = $bundle->block_run_config( $block_id );
 		if ( null !== $config ) {
 			return (string) ( $config['started_at'] ?? $run_start );

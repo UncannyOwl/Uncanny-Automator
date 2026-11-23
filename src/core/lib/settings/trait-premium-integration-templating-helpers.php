@@ -94,9 +94,8 @@ trait Premium_Integration_Templating_Helpers {
 
 		$args = wp_parse_args( $args, $defaults );
 
-		// Build button attributes
+		// Build button attributes. No `type`: uas-button only takes "submit", and without one it acts as a plain button.
 		$attrs = array(
-			'type'  => 'button',
 			'name'  => 'automator_action',
 			'value' => $action,
 		);

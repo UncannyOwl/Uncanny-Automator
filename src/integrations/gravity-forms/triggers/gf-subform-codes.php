@@ -31,15 +31,6 @@ class GF_SUBFORM_CODES extends \Uncanny_Automator\Recipe\Trigger {
 	}
 
 	/**
-	 * requirements_met
-	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return defined( 'UNCANNY_LEARNDASH_CODES_VERSION' );
-	}
-
-	/**
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function setup_trigger() {
@@ -61,7 +52,20 @@ class GF_SUBFORM_CODES extends \Uncanny_Automator\Recipe\Trigger {
 		// Non-active state sentence to show
 		$this->set_readable_sentence( esc_attr_x( 'A user submits {{a form}} with a code from {{a specific batch}}', 'Gravity Forms', 'uncanny-automator' ) );
 
+		$this->set_plugin_details( array( 'integration_required' => 'UNCANNYCODE' ) );
+
 		// Which do_action() fires this trigger.
+	}
+
+	/**
+	 * Whether Uncanny Codes is loaded: the check behind the Uncanny Codes integration this trigger states.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return bool|null True when Uncanny Codes is loaded, false when it is not.
+	 */
+	protected function is_plugin_compatible(): ?bool {
+		return defined( 'UNCANNY_LEARNDASH_CODES_VERSION' );
 	}
 
 	/**

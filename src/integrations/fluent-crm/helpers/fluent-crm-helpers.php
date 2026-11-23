@@ -598,15 +598,56 @@ class Fluent_Crm_Helpers {
 	}
 
 	/**
+	 * Carries the builder's current repeater values into the rows fetched from FluentCRM, matched by field slug.
+	 *
+	 * Each row is named "<slug> - <label>". The builder keeps a row's values only when the whole name still matches,
+	 * so a renamed custom field, or a label in another admin language, opens empty and the next save stores it empty.
+	 * Matching on the slug, as the action does at run time, keeps the values. The fetched name stays, so the next save
+	 * stores the current label. Only the given value columns are carried, and only scalar values.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array  $fetched       The rows for the fields FluentCRM has now.
+	 * @param array  $current       The repeater's rows as the builder posts them.
+	 * @param string $name_column   The column that holds "<slug> - <label>".
+	 * @param array  $value_columns The columns whose values are carried over.
+	 *
+	 * @return array The fetched rows, holding the current values of the fields they match.
+	 */
+	public function carry_row_values_by_slug( array $fetched, array $current, string $name_column, array $value_columns ): array {
+
+		$current_by_slug = array();
+
+		foreach ( $current as $row ) {
+			if ( ! is_array( $row ) || ! isset( $row[ $name_column ] ) || ! is_string( $row[ $name_column ] ) ) {
+				continue;
+			}
+			$current_by_slug[ trim( explode( ' - ', $row[ $name_column ] )[0] ) ] = $row;
+		}
+
+		foreach ( $fetched as $index => $row ) {
+			$slug = trim( explode( ' - ', $row[ $name_column ] )[0] );
+			if ( ! isset( $current_by_slug[ $slug ] ) ) {
+				continue;
+			}
+			foreach ( $value_columns as $column ) {
+				if ( isset( $current_by_slug[ $slug ][ $column ] ) && is_scalar( $current_by_slug[ $slug ][ $column ] ) ) {
+					$fetched[ $index ][ $column ] = $current_by_slug[ $slug ][ $column ];
+				}
+			}
+		}
+
+		return $fetched;
+	}
+
+	/**
 	 * Fetch FluentCRM standard fields for the repeater AJAX functionality.
-	 * Returns only standard fields that can be updated.
+	 * Returns only standard fields that can be updated, holding the builder's current values by field slug.
 	 *
 	 * @return void
 	 */
 	public function fetch_fluentcrm_fields_ajax() {
 		Automator()->utilities->ajax_auth_check();
-
-		$fields = array();
 
 		// Standard fields that can be updated
 		$fields = array(
@@ -652,17 +693,19 @@ class Fluent_Crm_Helpers {
 			),
 		);
 
+		$values = automator_filter_input_array( 'values', INPUT_POST );
+
 		wp_send_json(
 			array(
 				'success' => true,
-				'rows'    => $fields,
+				'rows'    => $this->carry_row_values_by_slug( $fields, (array) ( $values['FCRM_FIELDS'] ?? array() ), 'FCRM_COLUMN_NAME', array( 'FCRM_COLUMN_VALUE', 'FCRM_UPDATE_FIELD' ) ),
 			)
 		);
 	}
 
 	/**
 	 * Fetch FluentCRM custom fields for the repeater AJAX functionality.
-	 * Returns only custom fields that can be updated.
+	 * Returns only custom fields that can be updated, holding the builder's current values by field slug.
 	 *
 	 * @return void
 	 */
@@ -693,10 +736,12 @@ class Fluent_Crm_Helpers {
 			}
 		}
 
+		$values = automator_filter_input_array( 'values', INPUT_POST );
+
 		wp_send_json(
 			array(
 				'success' => true,
-				'rows'    => $fields,
+				'rows'    => $this->carry_row_values_by_slug( $fields, (array) ( $values['FCRM_CUSTOM_FIELDS'] ?? array() ), 'FCRM_CUSTOM_COLUMN_NAME', array( 'FCRM_CUSTOM_COLUMN_VALUE', 'FCRM_CUSTOM_UPDATE_FIELD' ) ),
 			)
 		);
 	}

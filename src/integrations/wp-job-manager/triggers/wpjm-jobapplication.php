@@ -11,6 +11,8 @@ use Uncanny_Automator\Integrations\WpJobManager\Tokens\WPJM_Legacy_Tokens;
  */
 class Wpjm_Jobapplication extends \Uncanny_Automator\Recipe\Trigger {
 
+	use Wpjm_Requirements;
+
 	const TRIGGER_CODE = 'WPJMSUBMITJOBAPPLICATION';
 	const TRIGGER_META = 'WPJMJOBAPPLICATION';
 
@@ -28,13 +30,6 @@ class Wpjm_Jobapplication extends \Uncanny_Automator\Recipe\Trigger {
 	}
 
 	/**
-	 * Check if requirements are met
-	 */
-	public function requirements_met() {
-		return function_exists( 'get_resume_files' );
-	}
-
-	/**
 	 * Setup trigger
 	 */
 	protected function setup_trigger() {
@@ -49,6 +44,8 @@ class Wpjm_Jobapplication extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_sentence( sprintf( esc_html_x( 'A user applies for {{a job:%1$s}}', 'WP Job Manager', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 
 		$this->set_readable_sentence( esc_html_x( 'A user applies for {{a job}}', 'WP Job Manager', 'uncanny-automator' ) );
+
+		$this->set_plugin_details( self::resume_manager_plugin_details() );
 	}
 
 	/**

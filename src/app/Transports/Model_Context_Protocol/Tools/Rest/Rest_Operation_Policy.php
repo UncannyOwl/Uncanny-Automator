@@ -28,6 +28,9 @@ final class Rest_Operation_Policy {
 	public const ABILITY_ROUTE            = '/wp-abilities/v1/abilities/(?P<name>[a-zA-Z0-9\-\/]+?)/run';
 	public const DEFAULT_MAX_INPUT_BYTES  = 262144;
 	public const MAX_REVIEWED_INPUT_BYTES = 1572864;
+	public const HOSTED_UPLOAD_REQUIRED   = 'hosted_upload_required';
+	public const ATTACHMENT_DERIVATIVE    = 'attachment_derivative';
+	public const REVISION_DELETE          = 'revision_delete';
 
 	/** Refuse force=true. Only native controllers with trash support guarantee a trash operation. */
 	public const TRASH_ONLY_REQUEST_SCHEMA = array(
@@ -71,8 +74,12 @@ final class Rest_Operation_Policy {
 			return null;
 		}
 
-		$policy   = self::default_policy( $route, $method, $handler );
-		$callback = $handler['callback'] ?? null;
+		$callback   = $handler['callback'] ?? null;
+		$controller = is_array( $callback ) ? ( $callback[0] ?? null ) : null;
+		if ( null !== self::unsupported_core_operation( $method, $callback ) ) {
+			return null;
+		}
+		$policy = self::default_policy( $route, $method, $controller );
 		if ( Post_Content_Rest_Controller::ROUTE === $route && is_array( $callback ) && $callback[0] instanceof Post_Content_Rest_Controller ) {
 			if ( 'GET' === $method && 'get_item' === $callback[1] ) {
 				$policy = array(
@@ -134,6 +141,10 @@ final class Rest_Operation_Policy {
 			'tools'           => array_values( array_unique( $policy['tools'] ) ),
 			'max_input_bytes' => self::DEFAULT_MAX_INPUT_BYTES,
 		);
+		if ( 'POST' === $method && '/uncanny-page-builder/v1/agent/media' === strtolower( $route ) ) {
+			// Preserve Agent's native upload transport. Hosted apps use prepare_upload.
+			$reviewed['page_builder_media_upload'] = true;
+		}
 		if ( $media_upload ) {
 			// Extensions may close this operation, but cannot weaken its invariants.
 			$reviewed['read_only'] = false;
@@ -170,8 +181,51 @@ final class Rest_Operation_Policy {
 		if ( preg_match( '#^/wp/v2/users(?:/|$)#i', $route ) && ( ! $read || preg_match( '#/application-passwords(?:/|$)#i', $route ) ) ) {
 			return true;
 		}
-		// Uninstalling deletes a plugin's files, which site_manage never does.
-		if ( 'DELETE' === $method && preg_match( '#^/wp/v2/plugins(?:/|$)#i', $route ) ) {
+		// Core uses the same item update operation for activation and deactivation.
+		// Route lifecycle changes through the site-management command's checks.
+		if ( ! $read && preg_match( '#^/wp/v2/plugins(?:/|$)#i', $route ) ) {
+			return true;
+		}
+		// Keep installs on the site-management command and reviewed high-impact AIOSEO changes in wp-admin.
+		$closed_plugin_operations = array(
+			'POST'   => array(
+				'/aioseo/v1/ai-agents/generate-app-password',
+				'/aioseo/v1/ai-agents/install-mcp-adapter',
+				'/aioseo/v1/ai/deactivate',
+				'/aioseo/v1/analyze/delete-site',
+				'/aioseo/v1/analyze-headline/delete',
+				'/aioseo/v1/crawl-cleanup/delete-blocked',
+				'/aioseo/v1/crawl-cleanup/delete-unblocked',
+				'/aioseo/v1/backup/restore',
+				'/aioseo/v1/clear-log',
+				'/aioseo/v1/htaccess',
+				'/aioseo/v1/options',
+				'/aioseo/v1/plugins/deactivate',
+				'/aioseo/v1/plugins/install',
+				'/aioseo/v1/plugins/upgrade',
+				'/aioseo/v1/reset-settings',
+				'/aioseo/v1/search-statistics/sitemap/delete',
+				// Their action dispatchers can install plugins, remove data, or reset connected accounts.
+				'/aioseo/v1/seo-checklist/action',
+				'/aioseo/v1/settings/do-task',
+				'/aioseo/v1/settings/import',
+				'/aioseo/v1/settings/import/(?p<siteid>[\\d]+)',
+				'/aioseo/v1/settings/import-plugins',
+				'/aioseo/v1/sitemap/deactivate-conflicting-plugins',
+				'/aioseo/v1/sitemap/delete-static-files',
+				'/aioseo/v1/tools/delete-robots-txt',
+				'/aioseo/v1/tools/import-robots-txt',
+				'/aioseo/v1/wizard',
+				'/aioseo/v1/writing-assistant/disconnect',
+			),
+			'DELETE' => array(
+				'/aioseo/v1/ai/image-generator',
+				'/aioseo/v1/ai/insights/reports/(?p<uuid>[a-za-z0-9-]+)',
+				'/aioseo/v1/backup',
+				'/aioseo/v1/search-statistics/auth',
+			),
+		);
+		if ( in_array( strtolower( $route ), $closed_plugin_operations[ $method ] ?? array(), true ) ) {
 			return true;
 		}
 		// The MCP and OAuth routes hold this connection; batch and oEmbed proxy dispatch nested or outbound requests;
@@ -181,12 +235,10 @@ final class Rest_Operation_Policy {
 	}
 
 	/** Every other route behind the owner's matching tool switch; Automator's own routes need an explicit policy. */
-	private static function default_policy( string $route, string $method, array $handler ): ?array {
+	private static function default_policy( string $route, string $method, $controller ): ?array {
 		if ( preg_match( '#^/(?:automator|uap|uncanny-page-builder)(?:/|$)#i', $route ) ) {
 			return null;
 		}
-		$callback   = $handler['callback'] ?? null;
-		$controller = is_array( $callback ) ? ( $callback[0] ?? null ) : null;
 		// Known native controllers without trash are excluded; plugin controllers own their deletion behavior.
 		if ( 'DELETE' === $method && ! self::has_trash( $controller ) ) {
 			return null;
@@ -237,7 +289,7 @@ final class Rest_Operation_Policy {
 	}
 
 	/** WordPress's own controllers in the core namespace. */
-	private static function is_core_controller( string $route, $controller ): bool {
+	public static function is_core_controller( string $route, $controller ): bool {
 		if ( ! $controller instanceof \WP_REST_Controller || 0 !== strpos( $route, '/wp/v2/' ) ) {
 			return false;
 		}
@@ -302,6 +354,33 @@ final class Rest_Operation_Policy {
 	}
 
 	/**
+	 * Identify core callbacks that the MCP bridge cannot safely support.
+	 *
+	 * @since 8.1.0
+	 */
+	public static function unsupported_core_operation( string $method, $callback ): ?string {
+		$controller = is_array( $callback ) ? ( $callback[0] ?? null ) : null;
+		$action     = is_array( $callback ) ? ( $callback[1] ?? null ) : null;
+		if ( 'POST' === $method && 'sideload_item' === $action && $controller instanceof \WP_REST_Attachments_Controller ) {
+			return self::ATTACHMENT_DERIVATIVE;
+		}
+		if ( 'DELETE' === $method && 'delete_item' === $action && $controller instanceof \WP_REST_Revisions_Controller
+			&& \WP_REST_Revisions_Controller::class === ( new \ReflectionMethod( $controller, 'delete_item' ) )->getDeclaringClass()->getName() ) {
+			return self::REVISION_DELETE;
+		}
+		return null;
+	}
+
+	/**
+	 * External MCP apps use file transfer for Page Builder attachments.
+	 *
+	 * @since 8.1.0
+	 */
+	public static function requires_external_media_transfer( array $policy, User_Context $context ): bool {
+		return ! empty( $policy['page_builder_media_upload'] ) && ! $context->is_first_party_caller();
+	}
+
+	/**
 	 * Explain the current caller's transport-level availability.
 	 */
 	public function unavailable_reason( array $policy, User_Context $context, string $entry_tool ): ?string {
@@ -310,6 +389,9 @@ final class Rest_Operation_Policy {
 		}
 		if ( ! $policy['read_only'] && ! $context->can_write() ) {
 			return 'write_scope_required';
+		}
+		if ( self::requires_external_media_transfer( $policy, $context ) ) {
+			return self::HOSTED_UPLOAD_REQUIRED;
 		}
 		foreach ( $policy['tools'] as $tool ) {
 			// Once the owner turns site management off, it is off for every caller.

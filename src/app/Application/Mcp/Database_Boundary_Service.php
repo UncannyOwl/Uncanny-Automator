@@ -105,6 +105,28 @@ final class Database_Boundary_Service {
 
 
 	/**
+	 * Read column facts for a table whose read access has already been checked.
+	 *
+	 * @since 8.1.0
+	 * @param string $table Approved table name.
+	 * @return array Columns keyed by name.
+	 */
+	public function continuation_columns( string $table ): array {
+		return $this->store->continuation_columns( $this->schema, $table, $this->ignore_case );
+	}
+
+	/**
+	 * Read the types of columns in tables whose read access has been checked.
+	 *
+	 * @since 8.1.0
+	 * @param string[] $tables Approved table names.
+	 * @return array<string,array<string,string>>|null Types by table and column, or null on failure.
+	 */
+	public function column_types( array $tables ): ?array {
+		return $this->store->column_types( $this->schema, $tables, $this->ignore_case );
+	}
+
+	/**
 	 * Qualify a sanitized table name with the database used for its checks.
 	 *
 	 * @since 8.0.0
@@ -338,9 +360,10 @@ final class Database_Boundary_Service {
 	 * @param bool $ignore_case Whether allowed names ignore case.
 	 * @param string $search Literal search text.
 	 * @param int $limit Row limit.
+	 * @param int $offset Number of matches to skip.
 	 * @return array|null
 	 */
-	public function table_page( string $prefix, array $restricted, bool $network_main, bool $ignore_case, string $search, int $limit ): ?array {
-		return $this->store->table_page( $this->schema, $prefix, $this->extra, $restricted, $network_main, $ignore_case, $this->ignore_case, $search, $limit );
+	public function table_page( string $prefix, array $restricted, bool $network_main, bool $ignore_case, string $search, int $limit, int $offset = 0 ): ?array {
+		return $this->store->table_page( $this->schema, $prefix, $this->extra, $restricted, $network_main, $ignore_case, $this->ignore_case, $search, $limit, $offset );
 	}
 }

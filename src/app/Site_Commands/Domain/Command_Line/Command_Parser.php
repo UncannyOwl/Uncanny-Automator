@@ -142,11 +142,13 @@ final class Command_Parser {
 				$started = false;
 				continue;
 			}
-			if ( '|' === $char ) {
-				throw new Command_Error( 'Pipes (|) are not supported yet. Run one command at a time.' );
+			$next = $input[ $i + 1 ] ?? '';
+			if ( '|' === $char && '|' !== $next ) {
+				throw new Command_Error( 'Pipes (|) only work with file commands. Run the WordPress command on its own.' );
 			}
-			if ( false !== strpos( ';&`$<>', $char ) ) {
-				throw new Command_Error( sprintf( 'The character %s is shell syntax. Site commands run one command without a shell; quote it if it is part of a value.', $char ) );
+			if ( false !== strpos( ';&`$<>|', $char ) ) {
+				$operator = $char === $next && in_array( $char, array( '&', '|' ), true ) ? $char . $next : 'The character ' . $char;
+				throw new Command_Error( sprintf( '%s is shell syntax. Site commands run one command without a shell. Quote it if it is part of a value.', $operator ) );
 			}
 
 			$current .= $char;

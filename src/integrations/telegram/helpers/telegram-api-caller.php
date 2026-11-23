@@ -23,6 +23,15 @@ class Telegram_Api_Caller extends Api_Caller {
 	 */
 	public function set_properties() {
 		$this->set_credential_request_key( 'bot_token' );
+
+		// Telegram answers 401 Unauthorized once the bot token is changed or revoked in BotFather.
+		$this->register_error_messages(
+			array(
+				'unauthorized' => array(
+					'message' => esc_html_x( 'Telegram rejected the bot token. If you changed or revoked it in BotFather, disconnect Telegram and connect again with the current token.', 'Telegram', 'uncanny-automator' ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -45,12 +54,20 @@ class Telegram_Api_Caller extends Api_Caller {
 	/**
 	 * Check for API errors
 	 *
+	 * On api_request()'s exception path the platform's error replaced Telegram's reply,
+	 * so the response carries no data and the shared handler surfaces the error.
+	 *
 	 * @param array $response
 	 * @param array $args
 	 * @return void
 	 * @throws Exception
 	 */
 	public function check_for_errors( $response, $args = array() ) {
+
+		if ( ! array_key_exists( 'data', $response ) ) {
+			parent::check_for_errors( $response, $args );
+			return;
+		}
 
 		$response_data = $response['data'];
 

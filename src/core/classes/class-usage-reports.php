@@ -15,6 +15,7 @@ use Uncanny_Automator\App\Recipe_Builder\Block\Registry\Blocks\Delay_Block;
 use Uncanny_Automator\App\Recipe_Builder\Block\Value_Objects\Fields_Bag;
 
 use Uncanny_Automator\Services\Action_Scheduler;
+use Uncanny_Automator\App\Components\Page_Builder\Module as Page_Builder_Module;
 use WP_REST_Response;
 
 use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
@@ -277,7 +278,7 @@ class Usage_Reports {
 		// on those screens. A nonce alone was still the whole gate, leaving an
 		// authenticated write to a uap_options row available to any role that
 		// got hold of one.
-		if ( ! current_user_can( automator_get_capability() ) ) {
+		if ( ! current_user_can( automator_get_capability() ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- Dynamic capability from filter.
 			return new \WP_Error( 'rest_forbidden', esc_html__( 'Insufficient permissions.', 'uncanny-automator' ), array( 'status' => 403 ) );
 		}
 
@@ -334,15 +335,30 @@ class Usage_Reports {
 	 */
 	public function log_event( $request ) {
 
+		$data = $request->get_params();
+
+		$this->record_event( (string) $data['event'], $data['value'] ?? '' );
+
+		return new WP_REST_Response( array(), 201 );
+	}
+
+	/**
+	 * Record one event in the stats option for the next report.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string       $event The event key, e.g. `template-library-search`.
+	 * @param string|array $value A scalar, or the `{ banner, event }` pair the review tracker sends.
+	 *
+	 * @return void
+	 */
+	public function record_event( string $event, $value ) {
+
 		// A site that opted out never sends, so it must not collect either:
 		// nothing would ever clear what it accumulated.
 		if ( ! $this->reporting_enabled() ) {
-			return new WP_REST_Response( array(), 201 );
+			return;
 		}
-
-		$data = $request->get_params();
-
-		$event = (string) $data['event'];
 
 		$usage_report_stats = automator_get_option( self::STATS_OPTION_NAME, array( 'events' => array() ) );
 
@@ -356,14 +372,12 @@ class Usage_Reports {
 		// simply cannot reach the service) must not be able to bloat a
 		// uap_options row indefinitely.
 		if ( count( $usage_report_stats['events'][ $event ] ) >= self::MAX_EVENTS_PER_KEY ) {
-			return new WP_REST_Response( array(), 201 );
+			return;
 		}
 
-		$usage_report_stats['events'][ $event ][] = $this->sanitize_event_value( $data['value'] ?? '' );
+		$usage_report_stats['events'][ $event ][] = $this->sanitize_event_value( $value );
 
 		automator_update_option( self::STATS_OPTION_NAME, $usage_report_stats );
-
-		return new WP_REST_Response( array(), 201 );
 	}
 
 	/**
@@ -624,6 +638,7 @@ class Usage_Reports {
 		$this->get_template_library_info();
 		$this->get_review_tracking_info();
 		$this->get_settings();
+		$this->get_page_builder_info();
 		$this->get_health_metrics();
 		$this->get_loops_info();
 		$this->get_blocks_info();
@@ -1189,6 +1204,77 @@ class Usage_Reports {
 	}
 
 	/**
+	 * Count the posts Page Builder owns on this site, by post type and status:
+	 * `owned` is every post carrying its ownership flag, `built` the ones with at
+	 * least one section. Adopting a page sets the flag before anything is built,
+	 * so the two differ.
+	 *
+	 * A snapshot, not a history: handing a page back to WordPress clears the
+	 * flag, so that page leaves the count. Left out when the sections table is
+	 * missing or the count fails, rather than reported as zeros.
+	 *
+	 * Reads the module's names from its gate class, never a Page Builder class:
+	 * those need PHP 8.1 and load only after the module's compatibility checks.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return void
+	 */
+	public function get_page_builder_info() {
+
+		global $wpdb;
+
+		$sections = $wpdb->prefix . 'upb_sections';
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Existence check for the usage report; no WordPress API answers it.
+		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $sections ) ) ) !== $sections ) {
+			return;
+		}
+
+		// Subqueries, not joins, so a post counts once however many sections or flag rows it has.
+		// IN, not EXISTS, for the flag: MySQL 5.7 runs a correlated EXISTS once per post in the
+		// table, and starts an IN from the few flagged rows.
+		$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Aggregate for the usage report; no WordPress API returns it.
+			$wpdb->prepare(
+				// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $sections is the module's own table name, built from $wpdb->prefix, with no user input.
+				"SELECT p.post_type, p.post_status, COUNT(*) AS owned, SUM( EXISTS ( SELECT 1 FROM {$sections} s WHERE s.page_id = p.ID ) ) AS built
+				 FROM {$wpdb->posts} p
+				 WHERE p.ID IN (
+				     SELECT pm.post_id FROM {$wpdb->postmeta} pm
+				     WHERE pm.meta_key = %s AND pm.meta_value = '1'
+				 )
+				 GROUP BY p.post_type, p.post_status
+				 ORDER BY p.post_type, p.post_status",
+				Page_Builder_Module::PAGE_OWNERSHIP_META_KEY
+			)
+		);
+
+		// A failed query returns no rows, the same as a site that owns nothing: leave the field out.
+		if ( '' !== (string) $wpdb->last_error ) {
+			return;
+		}
+
+		$pages = array();
+
+		foreach ( (array) $rows as $row ) {
+			$pages[ $row->post_type ][ $row->post_status ] = array(
+				'owned' => (int) $row->owned,
+				'built' => (int) $row->built,
+			);
+		}
+
+		// Objects at both levels, never arrays. PHP turns a numeric key (a status stored as "0") into
+		// an integer, and an array keyed 0..n, like an empty one, encodes as a JSON list. An object
+		// always encodes keyed by name, so the report keeps one shape whatever the site stores.
+		$this->report['page_builder_pages'] = (object) array_map(
+			static function ( $statuses ) {
+				return (object) $statuses;
+			},
+			$pages
+		);
+	}
+
+	/**
 	 * Count every completed run still in the recipe log.
 	 *
 	 * Counted from uap_recipe_log (completed = 1), NOT from a running option.
@@ -1713,7 +1799,9 @@ class Usage_Reports {
 	}
 
 	/**
-	 * Group the template library search and import events by term, with a count for each.
+	 * Group the template library search, filter and import events by value, with a count for each.
+	 *
+	 * @since 8.1.0 Adds the category and integration picks.
 	 *
 	 * @return void
 	 */
@@ -1723,20 +1811,15 @@ class Usage_Reports {
 		$stats   = isset( $stats['events'] ) ? $stats['events'] : array();
 		$pre     = 'template-library-';
 		$library = array(
-			'search' => array(),
-			'import' => array(),
+			'search'      => array(),
+			'category'    => array(),
+			'integration' => array(),
+			'import'      => array(),
 		);
-
-		// Bail if no stats.
-		if ( empty( $stats ) ) {
-			$this->report['template-library-search'] = array();
-			$this->report['template-library-import'] = array();
-			return;
-		}
 
 		// Loop through stats for library keys.
 		foreach ( $library as $key => $data ) {
-			// Check if 'search' or 'import' key exists in events stats.
+			// This key's events, if any were recorded.
 			$data = isset( $stats[ "{$pre}{$key}" ] ) ? $stats[ "{$pre}{$key}" ] : array();
 			if ( empty( $data ) ) {
 				continue;
@@ -1766,8 +1849,9 @@ class Usage_Reports {
 			);
 		}
 
-		$this->report['template-library-search'] = $library['search'];
-		$this->report['template-library-import'] = $library['import'];
+		foreach ( $library as $key => $data ) {
+			$this->report[ "{$pre}{$key}" ] = $data;
+		}
 	}
 
 	/**
@@ -2010,7 +2094,9 @@ class Usage_Reports {
 		// current_time( 'mysql' ), so a UTC window silently widens or narrows by
 		// the site's offset — a UTC+10 site would get a ~34 hour "day" and a
 		// UTC-8 site ~16. Mirrors Automator_Get_Data::completed_runs().
-		$since      = date_i18n( 'Y-m-d H:i:s', current_time( 'timestamp' ) - $window );
+		// Keep the existing cutoff for this change. It can be off by an hour
+		// across a daylight-saving transition, which needs a separate fix.
+		$since      = date_i18n( 'Y-m-d H:i:s', current_time( 'timestamp' ) - $window ); // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- Preserve the existing health cutoff pending the daylight-saving fix.
 		$boundary   = $this->get_boundary_recipe_log_id( $since );
 		$started_at = microtime( true );
 
@@ -2160,7 +2246,7 @@ class Usage_Reports {
 		}
 
 		return array(
-			'top_codes'      => $codes,
+			'top_codes'       => $codes,
 			'top_codes_total' => $total,
 		);
 	}
@@ -2186,8 +2272,8 @@ class Usage_Reports {
 		 */
 		$threshold = (int) apply_filters( 'automator_usage_report_stuck_threshold', DAY_IN_SECONDS );
 
-		// Site-local, same reason as the window in get_health_metrics().
-		$before = date_i18n( 'Y-m-d H:i:s', current_time( 'timestamp' ) - $threshold );
+		// Keep this cutoff consistent with get_health_metrics() until both handle daylight-saving transitions.
+		$before = date_i18n( 'Y-m-d H:i:s', current_time( 'timestamp' ) - $threshold ); // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- Preserve the existing stuck-run cutoff pending the daylight-saving fix.
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
 		$count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM `' . esc_sql( $table ) . '` WHERE completed = %d AND date_time < %s', Automator_Status::IN_PROGRESS, $before ) );
@@ -2369,9 +2455,9 @@ class Usage_Reports {
 		);
 
 		$triggers_buckets = array(
-			'1'   => 0,
-			'2'   => 0,
-			'3+'  => 0,
+			'1'  => 0,
+			'2'  => 0,
+			'3+' => 0,
 		);
 
 		foreach ( (array) $this->report['recipe_items'] as $recipe ) {

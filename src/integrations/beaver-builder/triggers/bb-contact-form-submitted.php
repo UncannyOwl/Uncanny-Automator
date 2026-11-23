@@ -17,6 +17,8 @@ use Uncanny_Automator\Recipe\Trigger;
  */
 class Bb_Contact_Form_Submitted extends Trigger {
 
+	use Beaver_Builder_Requirements;
+
 	/**
 	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
 	 */
@@ -27,11 +29,13 @@ class Bb_Contact_Form_Submitted extends Trigger {
 	}
 
 	/**
-	 * The Contact Form module ships only with Beaver Builder Pro.
+	 * Whether the Contact Form module is loaded.
 	 *
-	 * @return bool
+	 * @since 8.1.0
+	 *
+	 * @return bool|null True when the Contact Form module is loaded, false when it is not.
 	 */
-	public function requirements_met() {
+	protected function is_plugin_compatible(): ?bool {
 		return class_exists( 'FLContactFormModule' );
 	}
 
@@ -48,6 +52,8 @@ class Bb_Contact_Form_Submitted extends Trigger {
 			)
 		);
 		$this->set_readable_sentence( esc_html_x( 'A user submits {{a contact form}}', 'Beaver Builder', 'uncanny-automator' ) );
+
+		$this->set_plugin_details( self::beaver_builder_pro_plugin_details() );
 	}
 
 	/**

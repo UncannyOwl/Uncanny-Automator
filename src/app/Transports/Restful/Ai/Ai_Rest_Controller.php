@@ -37,6 +37,12 @@ final class Ai_Rest_Controller {
 					'methods'             => \WP_REST_Server::READABLE,
 					'callback'            => array( Get_Ai_Connections_Route::class, 'handle' ),
 					'permission_callback' => array( self::class, 'permissions_check' ),
+					'args'                => array(
+						'fresh' => array(
+							'type'    => 'boolean',
+							'default' => false,
+						),
+					),
 				),
 			)
 		);

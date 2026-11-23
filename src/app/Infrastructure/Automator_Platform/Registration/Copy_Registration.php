@@ -104,7 +104,8 @@ final class Copy_Registration {
 	 * a request that saw another home URL (WP-Cron on an internal host, WP-CLI, a
 	 * proxy that rewrites the host) and never succeeded, so the install is not a
 	 * copy and its credentials still stand. Lift the block instead of registering
-	 * a known site unsigned, which the platform refuses.
+	 * a known site unsigned, which the platform refuses. The copy's record goes
+	 * with the block when it names this address ({@see forget_if_back_at_source()}).
 	 *
 	 * @since 8.0.0
 	 *
@@ -116,6 +117,7 @@ final class Copy_Registration {
 
 		if ( $this->address->is_on_registered_address() ) {
 			$state->complete();
+			$this->forget_if_back_at_source();
 			return true;
 		}
 
@@ -124,6 +126,61 @@ final class Copy_Registration {
 		}
 
 		return $this->register_as_copy();
+	}
+
+	/**
+	 * Forget the copy record when this install is back at the address the copy
+	 * was taken from, under that address's own registration.
+	 *
+	 * A copy records its source ({@see Site_Copy_Record::begin()}) before it
+	 * registers. A copy whose registration never succeeded (its handshake was
+	 * abandoned, or the platform refused it) still holds the source's
+	 * credentials, and its database carries the record. Restored at the
+	 * source's address (a backup restore), that database is the source site
+	 * again. The block lifts ({@see resume_copy()}), but the record would stay,
+	 * and every screen that reads it would call the site "a copy of" itself,
+	 * with no answer that clears it.
+	 *
+	 * The record is forgotten only when all of these hold, so a real copy
+	 * keeps its record:
+	 *
+	 *  - the record names a source, and that source is the address the stored
+	 *    credentials were issued for. A copy that registered stored its own
+	 *    address there ({@see Registration_Recorder::persist_registration()}),
+	 *    so its record never matches;
+	 *  - this request is on that address and the credentials are on file. A
+	 *    copy running at another address doesn't qualify, and neither does a
+	 *    staging push that carries staging's registration;
+	 *  - no attempt is in flight and no copy block is engaged, so this never
+	 *    races a copy that is still registering.
+	 *
+	 * Nothing else needs undoing: the inherited connections are quarantined,
+	 * and adoption starts, only after a registration that stored the copy's
+	 * own address.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return bool True when the record was forgotten.
+	 */
+	public function forget_if_back_at_source(): bool {
+
+		$source = $this->copy_record->source_site_name();
+
+		if ( ! $this->copy_record->is_copy()
+			|| '' === $source
+			|| (string) $this->store->registered_site_name() !== $source
+			|| ! $this->address->is_on_registered_address()
+			|| null !== $this->challenge->pending_attempt()
+			|| ( new Copy_Quarantine_State() )->is_blocking()
+		) {
+			return false;
+		}
+
+		$this->copy_record->forget();
+
+		automator_log( sprintf( 'Forgot the site copy record: this site is back at %s, the address it was copied from, under that address\'s registration.', $source ), 'Platform_Site_Registration', false );
+
+		return true;
 	}
 
 	/**

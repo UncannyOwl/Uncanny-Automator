@@ -107,6 +107,71 @@ final class Allowed_Path_Policy {
 	}
 
 	/**
+	 * The file in the uploads folder that a media-library URL names.
+	 *
+	 * The URL maps onto basedir the way WordPress maps the folder onto
+	 * baseurl, and the path it gives must resolve inside basedir, so a `..`
+	 * segment (`{baseurl}/../../etc/passwd`) names nothing. The gate, the
+	 * serve endpoint and the upload pre-flight all read a media-library URL
+	 * through this, so the three always mean the same file.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $url URL the recipe author or async job supplied.
+	 *
+	 * @return string|null The file's path, or null when the URL names no file in the uploads folder.
+	 */
+	public function media_library_path( string $url ): ?string {
+
+		if ( ! $this->is_media_library_url( $url ) ) {
+			return null;
+		}
+
+		$uploads = wp_get_upload_dir();
+		$basedir = isset( $uploads['basedir'] ) ? (string) $uploads['basedir'] : '';
+
+		if ( '' === $basedir ) {
+			return null;
+		}
+
+		$path = rtrim( $basedir, DIRECTORY_SEPARATOR ) . substr( $url, strlen( $this->media_library_url_prefix() ) - 1 );
+
+		return $this->is_within_basedir( $path, $basedir ) ? $path : null;
+	}
+
+	/**
+	 * Whether the URL starts with the uploads folder's URL and a slash.
+	 *
+	 * The slash is the boundary. `upload_url_path` (CDN and offload plugins)
+	 * can make baseurl host-only, and a bare prefix match would then take
+	 * `https://cdn.example.com.evil.com/...` for a media URL, or
+	 * `{baseurl}-backups/x` for a file in the uploads folder.
+	 *
+	 * @param string $url URL.
+	 *
+	 * @return bool
+	 */
+	private function is_media_library_url( string $url ): bool {
+
+		$prefix = $this->media_library_url_prefix();
+
+		return '/' !== $prefix && 0 === strpos( $url, $prefix );
+	}
+
+	/**
+	 * The uploads folder's URL with one trailing slash; `/` when WordPress gives none.
+	 *
+	 * @return string
+	 */
+	private function media_library_url_prefix(): string {
+
+		$uploads = wp_get_upload_dir();
+		$baseurl = isset( $uploads['baseurl'] ) ? (string) $uploads['baseurl'] : '';
+
+		return rtrim( $baseurl, '/' ) . '/';
+	}
+
+	/**
 	 * Vet a URL candidate.
 	 *
 	 * Order: cheap shape checks first (scheme, host parse, denylist),
@@ -119,28 +184,14 @@ final class Allowed_Path_Policy {
 	 */
 	private function is_allowed_external_url( string $candidate ): bool {
 
-		// Shape 2 — media-library URL. Two guards, both mirroring the
-		// filesystem shape (Shape 1):
-		//   1. Anchor the prefix match on `baseurl + "/"`. With WP's default
-		//      path-bearing baseurl the path already pins the host, but
-		//      `upload_url_path` (CDN/offload plugins) can make baseurl
-		//      host-only — a bare prefix match would then treat
-		//      `https://cdn.example.com.evil.com/...` as a media URL. The
-		//      trailing-slash boundary sends it to the external-URL vetting
-		//      instead, exactly as is_within_basedir() anchors the disk case.
-		//   2. Map the URL to its on-disk path and realpath-check under
-		//      basedir, so a `..` segment (`{baseurl}/../../etc/passwd`)
-		//      can't escape the uploads dir.
+		// Shape 2 — media-library URL, allowed only when it names a file
+		// inside the uploads folder (media_library_path() holds both guards:
+		// the `baseurl + "/"` boundary and the realpath check under basedir).
+		// A URL that fails the boundary goes on to the external-URL vetting.
 		// (http baseurls are fine — some WP configs are unwrapped behind a
 		// load balancer; the bytes still come off disk.)
-		$uploads     = wp_get_upload_dir();
-		$baseurl     = isset( $uploads['baseurl'] ) ? (string) $uploads['baseurl'] : '';
-		$basedir     = isset( $uploads['basedir'] ) ? (string) $uploads['basedir'] : '';
-		$base_prefix = rtrim( $baseurl, '/' );
-		if ( '' !== $baseurl && 0 === strpos( $candidate, $base_prefix . '/' ) ) {
-			$relative = substr( $candidate, strlen( $base_prefix ) );
-			return '' !== $basedir
-				&& $this->is_within_basedir( rtrim( $basedir, DIRECTORY_SEPARATOR ) . $relative, $basedir );
+		if ( $this->is_media_library_url( $candidate ) ) {
+			return null !== $this->media_library_path( $candidate );
 		}
 
 		$parts = wp_parse_url( $candidate );

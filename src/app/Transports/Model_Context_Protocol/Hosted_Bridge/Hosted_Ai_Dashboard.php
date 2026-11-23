@@ -54,6 +54,82 @@ final class Hosted_Ai_Dashboard {
 		'other'   => 'AI app',
 	);
 
+	/**
+	 * Vendor => where its app takes a prompt, for the recipe builder's welcome
+	 * screen. open_url is the link that works for everyone with the app (a web
+	 * chat when there is one), prompt_param the query parameter that fills in
+	 * the prompt there, and prompt_prefix the text that makes the app call this
+	 * MCP server. app_url and app_prompt_param are the same for the vendor's
+	 * desktop app: one vendor covers both, because the web and desktop apps sign
+	 * in through the same callback, so the screen can offer both.
+	 *
+	 * The desktop links are documented to fill in the prompt without sending it.
+	 * The web chats' ?q= is undocumented, and ChatGPT's sends at once. Gemini
+	 * documents no prompt link, so it opens with the prompt copied. Checked
+	 * 2026-11-05:
+	 * - Claude Desktop: https://support.claude.com/en/articles/14729294-open-claude-desktop-with-a-link
+	 * - ChatGPT desktop (keeps the codex:// scheme): https://learn.chatgpt.com/docs/reference/commands
+	 *
+	 * A vendor proves only which callback the app signed in through, so `other`
+	 * has no link unless the app is one of NAMED_CHATS.
+	 */
+	private const VENDOR_CHATS = array(
+		'claude'  => array(
+			'open_url'         => 'https://claude.ai/new',
+			'prompt_param'     => 'q',
+			'prompt_prefix'    => null,
+			'app_url'          => 'claude://claude.ai/new',
+			'app_prompt_param' => 'q',
+		),
+		'chatgpt' => array(
+			'open_url'         => 'https://chatgpt.com/',
+			'prompt_param'     => 'q',
+			'prompt_prefix'    => '@Uncanny Automator',
+			'app_url'          => 'codex://new',
+			'app_prompt_param' => 'prompt',
+		),
+		'gemini'  => array(
+			'open_url'         => 'https://gemini.google.com/app',
+			'prompt_param'     => null,
+			'prompt_prefix'    => null,
+			'app_url'          => null,
+			'app_prompt_param' => null,
+		),
+		'other'   => array(
+			'open_url'         => null,
+			'prompt_param'     => null,
+			'prompt_prefix'    => null,
+			'app_url'          => null,
+			'app_prompt_param' => null,
+		),
+	);
+
+	/**
+	 * App name pattern => where an `other` app takes a prompt. These apps sign in
+	 * through a local callback, which proves nothing, so they are known by the
+	 * name they give. An app that only takes the name gets a link that opens the
+	 * person's own copy of the named app, if they have it, and nothing else.
+	 * Both links are documented to fill in the prompt without sending it:
+	 * - Claude Code, in a terminal: https://code.claude.com/docs/en/deep-links
+	 * - Cursor, through cursor.com, which opens the app: https://cursor.com/docs/reference/deeplinks
+	 */
+	private const NAMED_CHATS = array(
+		'/^claude code(?!\S)/i' => array(
+			'open_url'         => 'claude-cli://open',
+			'prompt_param'     => 'q',
+			'prompt_prefix'    => null,
+			'app_url'          => null,
+			'app_prompt_param' => null,
+		),
+		'/^cursor(?!\S)/i'      => array(
+			'open_url'         => 'https://cursor.com/link/prompt',
+			'prompt_param'     => 'text',
+			'prompt_prefix'    => null,
+			'app_url'          => null,
+			'app_prompt_param' => null,
+		),
+	);
+
 	private const MAX_PER_PAGE = 100;
 
 	private const MAX_WINDOW = 10000;
@@ -90,23 +166,37 @@ final class Hosted_Ai_Dashboard {
 	 * Every AI app connected through the hosted service, each with the admin
 	 * who brought it: the WordPress admin whose live hosted connection it
 	 * comes through. Liveness already requires that admin to manage options.
+	 * is_mine is true when the current user connected the app, through any of
+	 * the admins it comes through.
 	 *
-	 * @return list<array{id:string,brand:?string,name:string,connected_by:array{id:int,name:string},last_used_at:?string}>|WP_Error
+	 * @param bool $fresh Whether to ask the hosted service instead of reusing a kept list.
+	 *
+	 * @return list<array{id:string,brand:?string,name:string,connected_by:array{id:int,name:string},last_used_at:?string,vendor:string,open_url:?string,prompt_param:?string,prompt_prefix:?string,app_url:?string,app_prompt_param:?string,is_mine:bool}>|WP_Error
 	 */
-	public function connections() {
-		$apps = $this->live_apps();
+	public function connections( bool $fresh = false ) {
+		$apps = $this->live_apps( $fresh );
 		if ( $apps instanceof WP_Error ) {
 			return $apps;
 		}
 
-		$connections = array();
+		$current_user = get_current_user_id();
+		$connections  = array();
 		foreach ( $apps as $entry ) {
+			$vendor        = $entry['app']['vendor'];
+			$chat          = $this->chat( $vendor, $entry['app']['name'] );
 			$connections[] = array(
-				'id'           => $entry['app']['id'],
-				'brand'        => $entry['app']['brand'],
-				'name'         => $this->app_name( $entry['app'] ),
-				'connected_by' => $this->admin( $entry['user_id'] ),
-				'last_used_at' => $entry['app']['last_used_at'],
+				'id'               => $entry['app']['id'],
+				'brand'            => $entry['app']['brand'],
+				'name'             => $this->app_name( $entry['app'] ),
+				'connected_by'     => $this->admin( $entry['user_id'] ),
+				'last_used_at'     => $entry['app']['last_used_at'],
+				'vendor'           => $vendor,
+				'open_url'         => $chat['open_url'],
+				'prompt_param'     => $chat['prompt_param'],
+				'prompt_prefix'    => $chat['prompt_prefix'],
+				'app_url'          => $chat['app_url'],
+				'app_prompt_param' => $chat['app_prompt_param'],
+				'is_mine'          => in_array( $current_user, $entry['user_ids'], true ),
 			);
 		}
 
@@ -149,7 +239,7 @@ final class Hosted_Ai_Dashboard {
 	 *
 	 * @param bool $fresh Whether to ask the hosted service instead of reusing a kept list.
 	 *
-	 * @return array<string,array{app:array{id:string,name:string,vendor:string,brand:?string,last_used_at:?string},user_id:int}>|WP_Error
+	 * @return array<string,array{app:array{id:string,name:string,vendor:string,brand:?string,last_used_at:?string},user_id:int,user_ids:list<int>}>|WP_Error
 	 */
 	private function live_apps( bool $fresh = false ) {
 		if ( ! $this->may_read() ) {
@@ -179,16 +269,18 @@ final class Hosted_Ai_Dashboard {
 				continue;
 			}
 			foreach ( $reply as $app ) {
-				// An app that comes through two admins stays with the one who connected first, at its latest use.
+				// An app that comes through two admins stays with the one who connected first, at its latest use, and remembers every admin.
 				if ( isset( $apps[ $app['id'] ] ) ) {
 					if ( (string) $app['last_used_at'] > (string) $apps[ $app['id'] ]['app']['last_used_at'] ) {
 						$apps[ $app['id'] ]['app']['last_used_at'] = $app['last_used_at'];
 					}
+					$apps[ $app['id'] ]['user_ids'][] = (int) $credential['user_id'];
 					continue;
 				}
 				$apps[ $app['id'] ] = array(
-					'app'     => $app,
-					'user_id' => (int) $credential['user_id'],
+					'app'      => $app,
+					'user_id'  => (int) $credential['user_id'],
+					'user_ids' => array( (int) $credential['user_id'] ),
 				);
 			}
 		}
@@ -590,6 +682,23 @@ final class Hosted_Ai_Dashboard {
 			'id'   => $user_id,
 			'name' => '' !== $name ? $name : ( $user ? (string) $user->user_login : (string) $user_id ),
 		);
+	}
+
+	/**
+	 * Where an app takes a prompt: its vendor's links, or, for an `other` app, the links of the app its name names.
+	 *
+	 * @return array{open_url:?string,prompt_param:?string,prompt_prefix:?string,app_url:?string,app_prompt_param:?string}
+	 */
+	private function chat( string $vendor, string $name ): array {
+		if ( 'other' === $vendor ) {
+			foreach ( self::NAMED_CHATS as $pattern => $chat ) {
+				if ( 1 === preg_match( $pattern, $name ) ) {
+					return $chat;
+				}
+			}
+		}
+
+		return self::VENDOR_CHATS[ $vendor ];
 	}
 
 	/**

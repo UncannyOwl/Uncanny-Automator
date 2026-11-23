@@ -86,17 +86,40 @@ final class Node_Status_Resolver {
 	 */
 	public function pending_delay( int $action_id, Run_Data_Bundle $bundle ): ?array {
 		$row = $bundle->action_row( $action_id );
-		if ( ! is_array( $row ) || Automator_Status::finished( (int) ( $row['completed'] ?? Automator_Status::NOT_COMPLETED ) ) ) {
+		if ( ! is_array( $row ) ) {
 			return null;
 		}
 		$config = $bundle->delay_config_for_action( $action_id );
-		if ( ! is_array( $config ) || ! isset( $config['time'] ) || ! is_numeric( $config['time'] ) ) {
+		$code   = self::pending_delay_code( (int) ( $row['completed'] ?? Automator_Status::NOT_COMPLETED ), $config );
+		if ( null === $code ) {
 			return null;
 		}
 		return array(
-			'code' => 'schedule' === (string) ( $config['type'] ?? '' ) ? Log_Status_Code::SCHEDULED : Log_Status_Code::DELAYED,
+			'code' => $code,
 			'time' => (int) $config['time'],
 		);
+	}
+
+	/**
+	 * The status code of an action still waiting on its delay or schedule,
+	 * or null: the action's log row must be non-terminal and its stored
+	 * action_delays record must carry a numeric `time`. Shared with the Logs
+	 * page lists, so an action row there shows what its run's log shows.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param int        $completed The action log row's stored status.
+	 * @param array|null $config    The action's action_delays record.
+	 * @return string|null `scheduled`, `delayed`, or null when not pending.
+	 */
+	public static function pending_delay_code( int $completed, ?array $config ): ?string {
+		if ( Automator_Status::finished( $completed ) ) {
+			return null;
+		}
+		if ( ! is_array( $config ) || ! isset( $config['time'] ) || ! is_numeric( $config['time'] ) ) {
+			return null;
+		}
+		return 'schedule' === (string) ( $config['type'] ?? '' ) ? Log_Status_Code::SCHEDULED : Log_Status_Code::DELAYED;
 	}
 
 	/**
@@ -141,7 +164,7 @@ final class Node_Status_Resolver {
 			);
 		}
 		if ( ! empty( $ctx['is_loop_filter'] ) ) {
-			// A loop filter that threw, or whose plugin is not active, matched nothing: Pro's loop recorded why.
+			// Pro's loop records a loop filter that matched no items, with why.
 			$outcome = $bundle->loop_filter_outcome( (int) ( $modifier_node['id'] ?? 0 ) );
 			if ( null !== $outcome && ! $outcome['met'] ) {
 				return Log_Status_Registry::from_code( Log_Status_Code::CONDITION_NOT_MET );

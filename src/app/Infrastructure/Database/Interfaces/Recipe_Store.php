@@ -120,6 +120,44 @@ interface Recipe_Store {
 	public function set_recipe_type( int $recipe_id, string $recipe_type ): bool;
 
 	/**
+	 * Save an existing recipe without writing its type or the type's run limits.
+	 *
+	 * For an update of a still-untyped draft that names no type: the type stays
+	 * unchosen, and it is never written even for a moment, so a trigger added
+	 * at the same time is never judged against a type nobody chose. The total
+	 * run limit is written only when the caller asked for it; both types store
+	 * it the same way. The per-user limit is never written here.
+	 *
+	 * @param Recipe $recipe           Recipe with an ID.
+	 * @param bool   $with_total_times Write the recipe's total run limit too.
+	 * @return Recipe The stored recipe.
+	 */
+	public function save_without_type( Recipe $recipe, bool $with_total_times = false ): Recipe;
+
+	/**
+	 * Hold the recipe's first-type decision, so two writes to an untyped draft
+	 * cannot each choose a type. Released by unlock_recipe_type(), or when the
+	 * database connection ends. Once held, the recipe is read fresh from the
+	 * database, never from a copy cached before the wait.
+	 *
+	 * Unless the result is false, the caller holds the decision and must call
+	 * unlock_recipe_type(), in a finally block.
+	 *
+	 * @param int $recipe_id    The recipe post id.
+	 * @param int $wait_seconds How long to wait for another writer.
+	 * @return bool|null True when held; false when busy (another request kept it past the wait, or this request is already deciding); null when held only within this request because the database cannot lock.
+	 */
+	public function lock_recipe_type( int $recipe_id, int $wait_seconds = 5 ): ?bool;
+
+	/**
+	 * Release the decision taken by lock_recipe_type(). Does nothing unless this request holds it.
+	 *
+	 * @param int $recipe_id The recipe post id.
+	 * @return void
+	 */
+	public function unlock_recipe_type( int $recipe_id ): void;
+
+	/**
 	 * Targeted writer — replace the recipe's `recipe_category` terms.
 	 *
 	 * Slugs are sanitized with `sanitize_title`; the set replaces any existing

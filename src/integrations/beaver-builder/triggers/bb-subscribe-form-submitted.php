@@ -16,6 +16,8 @@ use Uncanny_Automator\Recipe\Trigger;
  */
 class Bb_Subscribe_Form_Submitted extends Trigger {
 
+	use Beaver_Builder_Requirements;
+
 	/**
 	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
 	 */
@@ -26,11 +28,13 @@ class Bb_Subscribe_Form_Submitted extends Trigger {
 	}
 
 	/**
-	 * The Subscribe Form module ships only with Beaver Builder Pro.
+	 * Whether the Subscribe Form module is loaded.
 	 *
-	 * @return bool
+	 * @since 8.1.0
+	 *
+	 * @return bool|null True when the Subscribe Form module is loaded, false when it is not.
 	 */
-	public function requirements_met() {
+	protected function is_plugin_compatible(): ?bool {
 		return class_exists( 'FLSubscribeFormModule' );
 	}
 
@@ -47,6 +51,8 @@ class Bb_Subscribe_Form_Submitted extends Trigger {
 			)
 		);
 		$this->set_readable_sentence( esc_html_x( 'A user submits {{a subscribe form}}', 'Beaver Builder', 'uncanny-automator' ) );
+
+		$this->set_plugin_details( self::beaver_builder_pro_plugin_details() );
 	}
 
 	/**

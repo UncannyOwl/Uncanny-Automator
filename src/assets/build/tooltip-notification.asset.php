@@ -2,5 +2,5 @@
 	'dependencies' => array(
 		'wp-api-fetch'
 	),
-	'version' => 'e05dd43ec99b1f9098ff'
+	'version' => '75abf9b6e9470f813dd1'
 );

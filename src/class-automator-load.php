@@ -950,6 +950,7 @@ class Automator_Load {
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-trigger-custom-value-meta.php';
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-ai-intro-notice.php';
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-multi-hook-triggers.php';
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-app-event-columns.php';
 
 		// The Redirect integration's closure retirement lives with that integration (classmap-loaded) but is
 		// registered here: integrations load on demand, and no recipe uses REDIRECT_TO_URL until it ran.

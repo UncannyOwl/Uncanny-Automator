@@ -31,14 +31,25 @@ class Get_Site_Context_Tool extends Abstract_MCP_Tool {
 
 	/** @return string */
 	public function get_description() {
-		return 'Read this site\'s name, current WordPress, Automator and MCP tools versions, acting WordPress user, active Automator integrations, and bounded native theme presets and content templates. This does not include an open admin page or grant permission to use other tools.';
+		return 'Read this site\'s name, current WordPress, Automator and MCP tools versions, acting WordPress user, active Automator integrations, and bounded native theme presets and content templates. Select fields for a focused lookup, for example automator_version. Omit fields for the full connection context, including the acting user.';
 	}
 
 	/** @return array */
 	protected function schema_definition() {
 		return array(
 			'type'       => 'object',
-			'properties' => new \stdClass(),
+			'properties' => array(
+				'fields' => array(
+					'type'        => 'array',
+					'description' => 'Only return the named context fields.',
+					'items'       => array(
+						'type' => 'string',
+						'enum' => array_keys( $this->output_schema_definition()['properties'] ),
+					),
+					'minItems'    => 1,
+					'uniqueItems' => true,
+				),
+			),
 		);
 	}
 
@@ -72,9 +83,6 @@ class Get_Site_Context_Tool extends Abstract_MCP_Tool {
 					),
 				),
 			),
-			// Fields added later, such as mcp_tools_version, stay optional so the
-			// 1.0 identity a client validates against does not change.
-			'required'   => array( 'schema_version', 'site_name', 'wordpress_version', 'automator_version', 'wordpress_user_id', 'wordpress_user_name', 'active_integrations' ),
 		);
 	}
 
@@ -168,11 +176,11 @@ class Get_Site_Context_Tool extends Abstract_MCP_Tool {
 	 * Read current values; a version recorded during approval can become stale.
 	 *
 	 * @param User_Context $user_context Authenticated executor, checked by the base tool.
-	 * @param array        $params       Empty arguments.
+	 * @param array        $params       Optional context fields.
 	 * @return array
 	 */
 	protected function execute_tool( User_Context $user_context, array $params ) {
-		$user = get_userdata( $user_context->get_executor() );
+		$fields = isset( $params['fields'] ) ? array_flip( $params['fields'] ) : null;
 
 		// Reuse Agent_Context's integration source, but not its admin-screen,
 		// account, email, or server metadata. A hosted client has no open WP page.
@@ -186,11 +194,22 @@ class Get_Site_Context_Tool extends Abstract_MCP_Tool {
 			// Tool changes are versioned on their own; see Mcp_Tools_Version.
 			'mcp_tools_version'   => Mcp_Tools_Version::VERSION,
 			'native_abilities_available' => Automator_Abilities::native_operations_available(),
-			'wordpress_user_id'   => (int) $user->ID,
-			'wordpress_user_name' => $user->display_name,
-			'active_integrations' => Integration_Registry_Service::get_instance()->get_active_integrations(),
-			'design'              => ( new Site_Design_Context() )->read( (int) $user->ID ),
 		);
+		if ( null === $fields || isset( $fields['wordpress_user_id'] ) ) {
+			$data['wordpress_user_id'] = $user_context->get_executor();
+		}
+		if ( null === $fields || isset( $fields['wordpress_user_name'] ) ) {
+			$data['wordpress_user_name'] = get_userdata( $user_context->get_executor() )->display_name;
+		}
+		if ( null === $fields || isset( $fields['active_integrations'] ) ) {
+			$data['active_integrations'] = Integration_Registry_Service::get_instance()->get_active_integrations();
+		}
+		if ( null === $fields || isset( $fields['design'] ) ) {
+			$data['design'] = ( new Site_Design_Context() )->read( $user_context->get_executor() );
+		}
+		if ( null !== $fields ) {
+			$data = array_intersect_key( $data, $fields );
+		}
 
 		return Json_Rpc_Response::create_success_response( 'Site context retrieved', $data );
 	}

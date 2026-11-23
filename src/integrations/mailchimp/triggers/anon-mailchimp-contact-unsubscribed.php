@@ -26,6 +26,7 @@ class ANON_MAILCHIMP_CONTACT_UNSUBSCRIBED extends \Uncanny_Automator\Recipe\App_
 		$this->set_is_login_required( false );
 		$this->set_is_pro( false );
 		$this->set_uses_api( true );
+		$this->require_triggers_enabled();
 		$this->add_action( 'automator_mailchimp_webhook_received_unsubscribe' );
 		$this->set_readable_sentence( esc_html_x( 'A contact is unsubscribed from {{an audience}}', 'Mailchimp', 'uncanny-automator' ) );
 		$this->set_sentence(
@@ -35,14 +36,5 @@ class ANON_MAILCHIMP_CONTACT_UNSUBSCRIBED extends \Uncanny_Automator\Recipe\App_
 				$this->get_trigger_meta()
 			)
 		);
-	}
-
-	/**
-	 * Check if the trigger requirements are met.
-	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return $this->webhooks->get_webhooks_enabled_status();
 	}
 }

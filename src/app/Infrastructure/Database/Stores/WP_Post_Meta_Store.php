@@ -35,10 +35,10 @@ final class WP_Post_Meta_Store implements Post_Meta_Store {
 		if ( ! is_wp_error( $result ) ) {
 			return $result;
 		}
-		if ( 'post_content_edit_storage_unavailable' === $result->get_error_code() ) {
+		if ( Post_Content_Edit_Store::ERROR_STORAGE_UNAVAILABLE === $result->get_error_code() ) {
 			return new \WP_Error( 'post_meta_storage_unavailable', 'Meta editing needs transactional WordPress storage. Nothing was saved.', array( 'status' => 503 ) );
 		}
-		if ( 'post_content_edit_unverified' === $result->get_error_code() ) {
+		if ( Post_Content_Edit_Store::ERROR_UNVERIFIED === $result->get_error_code() ) {
 			return new \WP_Error( 'post_meta_unverified', 'The save could not be confirmed. Read the meta before retrying.', array( 'status' => 503 ) );
 		}
 		return $result;

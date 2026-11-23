@@ -502,22 +502,15 @@ class Google_Sheet_Helpers extends App_Helpers {
 	 * @return array
 	 */
 	public function get_spreadsheet_field() {
-		$description = wp_kses(
-			sprintf(
-				esc_html_x(
-					"If you don't see your spreadsheet or haven't selected any files yet, please go to the %1\$ssettings page%2\$s to add them.",
-					'Google Sheets',
-					'uncanny-automator'
-				),
-				'<a href="' . esc_url( $this->get_settings_page_url() ) . '" target="_blank">',
-				'</a>'
+		// The builder renders a description as Markdown, so the link is a Markdown link.
+		$description = sprintf(
+			esc_html_x(
+				"If you don't see your spreadsheet or haven't selected any files yet, please go to the %1\$ssettings page%2\$s to add them.",
+				'Google Sheets',
+				'uncanny-automator'
 			),
-			array(
-				'a' => array(
-					'href'   => array(),
-					'target' => array(),
-				),
-			)
+			'[',
+			'](' . esc_url( $this->get_settings_page_url() ) . ')'
 		);
 
 		return array(

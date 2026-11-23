@@ -162,6 +162,9 @@ class Edd_Tokens {
 			case 'EDD_CUSTOMER_ADDRESS_ZIP':
 				$value = $payment->address['zip'];
 				break;
+			case 'EDD_LICENSE_KEY':
+				$value = ( new Edd_Helpers() )->get_licenses( $payment_id );
+				break;
 			case 'EDD_DOWNLOAD_NAME':
 				$value = $this->get_product_data( $trigger_data, $payment_id, 'name' );
 				break;
@@ -529,6 +532,15 @@ class Edd_Tokens {
 					'tokenIdentifier' => $trigger_code,
 				),
 			);
+
+			if ( class_exists( '\EDD_Software_Licensing' ) ) {
+				$fields[] = array(
+					'tokenId'         => 'EDD_LICENSE_KEY',
+					'tokenName'       => esc_html_x( 'License key', 'Easy Digital Downloads', 'uncanny-automator' ),
+					'tokenType'       => 'text',
+					'tokenIdentifier' => $trigger_code,
+				);
+			}
 
 			$tokens = array_merge( $tokens, $fields );
 		}

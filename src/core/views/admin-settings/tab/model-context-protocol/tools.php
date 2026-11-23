@@ -13,6 +13,9 @@
  * $database_extra_tables Tables outside the site prefix explicitly approved by the owner.
  * $database_table_prefix The current site's database table prefix.
  * $database_tables_notice Result of the last submitted table list.
+ * $database_redacted_columns The owner's table column redaction rules, one entry each.
+ * $database_redaction_notice Result of the last submitted redaction list.
+ * $database_redaction_rule   The line the last save stopped at, if any.
  * $can_manage_tools Whether this administrator may change tool availability.
  * $database_consent_allowed Whether this administrator may grant database access (super admin on multisite).
  * $file_reading_enabled Whether connected AI apps may read the site's code and files.
@@ -127,6 +130,31 @@ require Utilities::automator_get_view( 'admin-settings/tab/model-context-protoco
 				<?php } elseif ( is_string( $database_tables_notice ) && '' !== $database_tables_notice ) { ?>
 					<uo-alert type="error" role="alert"><?php echo esc_html_x( 'The list could not be saved. Refresh the page, check your permissions and try again.', 'MCP database extra tables error', 'uncanny-automator' ); ?></uo-alert>
 				<?php } ?>
+				<?php if ( 'saved' === $database_redaction_notice ) { ?>
+					<uo-alert type="success" role="status"><?php echo esc_html_x( 'Your redaction list was saved. AI apps now see [REDACTED] in place of these values.', 'MCP database redaction saved', 'uncanny-automator' ); ?></uo-alert>
+				<?php } elseif ( 'mcp_database_redaction_invalid' === $database_redaction_notice ) { ?>
+					<uo-alert type="error" role="alert">
+						<?php
+						if ( '' !== $database_redaction_rule ) {
+							/* translators: %s is the line of the redaction list that could not be read. */
+							printf( esc_html_x( 'Your list was not saved: “%s” isn’t a line Automator can read.', 'MCP database redaction invalid line', 'uncanny-automator' ), esc_html( $database_redaction_rule ) );
+							echo ' ';
+						} else {
+							echo esc_html_x( 'Your list was not saved.', 'MCP database redaction invalid', 'uncanny-automator' ) . ' ';
+						}
+						echo esc_html_x( 'Write each line like one of the examples: a table and column joined by a colon, a column on its own, or a setting name ending in *. Use letters, numbers and underscores (setting names may also use hyphens and dots), with no spaces. Enter up to 200 lines.', 'MCP database redaction invalid help', 'uncanny-automator' );
+						?>
+					</uo-alert>
+				<?php } elseif ( 'mcp_database_redaction_not_settings_table' === $database_redaction_notice ) { ?>
+					<uo-alert type="error" role="alert">
+						<?php
+						/* translators: %s is the line of the redaction list that names a table without settings. */
+						printf( esc_html_x( 'Your list was not saved: “%s” ends in *, which hides settings, but that table doesn’t store settings. Use a settings table such as the options or user meta table, write the setting name alone to hide it in every settings table, or name a column without *.', 'MCP database redaction not settings table', 'uncanny-automator' ), esc_html( $database_redaction_rule ) );
+						?>
+					</uo-alert>
+				<?php } elseif ( is_string( $database_redaction_notice ) && '' !== $database_redaction_notice ) { ?>
+					<uo-alert type="error" role="alert"><?php echo esc_html_x( 'The list could not be saved. Refresh the page, check your permissions and try again.', 'MCP database redaction error', 'uncanny-automator' ); ?></uo-alert>
+				<?php } ?>
 				<?php if ( ! $can_manage_tools ) { ?>
 					<uo-alert type="info" class="uap-spacing-top"><?php echo esc_html_x( 'You do not have permission to manage these settings. Contact a site administrator.', 'MCP tools administrator required', 'uncanny-automator' ); ?></uo-alert>
 				<?php } ?>
@@ -151,7 +179,7 @@ require Utilities::automator_get_view( 'admin-settings/tab/model-context-protoco
 							</div>
 							<div id="automator-mcp-database-details">
 								<div id="automator-mcp-database-alert" class="uap-spacing-bottom" role="alert"></div>
-								<p class="uap-spacing-top--none"><?php echo esc_html_x( 'Lets connected AI apps look up your site’s tables and records to answer your questions. These tools only read; they never change records.', 'MCP database access body', 'uncanny-automator' ); ?></p>
+								<p class="uap-spacing-top--none"><?php echo esc_html_x( 'Lets connected AI apps look up your site’s tables and records to answer your questions. These tools only read; they never change records. Password hashes, WordPress salts and session tokens, WooCommerce API keys and Automator’s own credentials are withheld. Other plugins’ data, including any API keys they store, is readable while this is on unless you hide it with Table column redaction below.', 'MCP database access body', 'uncanny-automator' ); ?></p>
 								<?php if ( is_multisite() && ! is_main_site() ) { ?>
 									<p><?php echo esc_html_x( 'Database access is off by default on a network subsite, including for Uncanny Agent. A super administrator can enable it.', 'MCP database subsite default', 'uncanny-automator' ); ?></p>
 								<?php } else { ?>
@@ -206,6 +234,66 @@ require Utilities::automator_get_view( 'admin-settings/tab/model-context-protoco
 										</form>
 									</div>
 								<?php } ?>
+								<div class="uap-spacing-top--big">
+									<label for="automator-mcp-database-redacted-columns"><strong><?php echo esc_html_x( 'Table column redaction', 'MCP database redaction heading', 'uncanny-automator' ); ?></strong></label>
+									<p><?php echo esc_html_x( 'Hide information you don’t want AI apps to read, such as another plugin’s API key or your customers’ phone numbers. Automator already hides passwords and the keys it knows for certain. For anything else, add a line below and AI apps will see [REDACTED] instead of the real value.', 'MCP database redaction help', 'uncanny-automator' ); ?></p>
+									<p><?php echo esc_html_x( 'Add one line for each thing to hide. Each line is one of these:', 'MCP database redaction examples intro', 'uncanny-automator' ); ?></p>
+									<?php
+									$redaction_examples = array(
+										array(
+											$database_table_prefix . 'options:ai1wm_secret_key*',
+											esc_html_x( 'One setting. Hides the value of the setting named ai1wm_secret_key. A setting name ends in *.', 'MCP database redaction example: one setting', 'uncanny-automator' ),
+										),
+										array(
+											$database_table_prefix . 'options:myplugin_*',
+											esc_html_x( 'A group of settings. Hides every setting whose name starts with myplugin_. This works in any table that stores settings by name, such as the options table and the post, user, term and comment meta tables.', 'MCP database redaction example: setting prefix', 'uncanny-automator' ),
+										),
+										array(
+											'billing_phone*',
+											esc_html_x( 'A setting everywhere. With no table in front, hides settings with that name in every settings table.', 'MCP database redaction example: setting everywhere', 'uncanny-automator' ),
+										),
+										array(
+											$database_table_prefix . 'myplugin_keys:secret',
+											esc_html_x( 'A column in one table. Hides the secret column of that table in every row.', 'MCP database redaction example: column', 'uncanny-automator' ),
+										),
+										array(
+											'api_token',
+											esc_html_x( 'A column in every table. Hides any column named api_token, wherever it appears.', 'MCP database redaction example: column everywhere', 'uncanny-automator' ),
+										),
+									);
+									?>
+									<table class="widefat striped" role="presentation">
+										<tbody>
+											<?php foreach ( $redaction_examples as $redaction_example ) { ?>
+												<tr>
+													<td><uas-chip size="sm" color="neutral" label="<?php echo esc_attr( $redaction_example[0] ); ?>"></uas-chip></td>
+													<td><?php echo $redaction_example[1]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped when built above. ?></td>
+												</tr>
+											<?php } ?>
+										</tbody>
+									</table>
+									<p><?php echo esc_html_x( 'Not sure what a plugin calls its settings or columns? Ask the plugin’s developer, or ask your AI app to list them: names stay visible, only the values are hidden. A hidden value also can’t be searched, sorted or totaled, so it can’t be worked out by guessing.', 'MCP database redaction finding names', 'uncanny-automator' ); ?></p>
+									<details>
+										<summary><?php echo esc_html_x( 'For developers', 'MCP database redaction developers summary', 'uncanny-automator' ); ?></summary>
+										<p>
+											<?php
+											/* translators: %s is the filter name. */
+											printf( esc_html_x( 'A plugin can add lines in the same format with the %s filter. Those lines are added to yours: they don’t appear in this list, and a plugin can’t remove or change any line you save here. Lines that aren’t valid are ignored.', 'MCP database redaction filter help', 'uncanny-automator' ), '<uas-chip size="sm" color="neutral" label="automator_mcp_database_redacted_columns"></uas-chip>' );
+											?>
+										</p>
+										<pre><?php echo esc_html( "add_filter(\n\t'automator_mcp_database_redacted_columns',\n\tfunction ( array \$rules ): array {\n\t\tglobal \$wpdb;\n\t\t\$rules[] = \$wpdb->options . ':myplugin_*';\n\t\t\$rules[] = 'api_token';\n\t\treturn \$rules;\n\t}\n);" ); ?></pre>
+									</details>
+									<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+										<input type="hidden" name="action" value="<?php echo esc_attr( Admin_Settings_Model_Context_Protocol_Tools::DATABASE_REDACTION_ACTION ); ?>">
+										<?php wp_nonce_field( Admin_Settings_Model_Context_Protocol_Tools::DATABASE_REDACTION_ACTION ); ?>
+										<textarea id="automator-mcp-database-redacted-columns" name="columns" class="large-text" rows="5" spellcheck="false" placeholder="<?php echo esc_attr( $database_table_prefix . "options:myplugin_*\napi_token" ); ?>" <?php disabled( ! $can_manage_tools ); ?>><?php echo esc_textarea( implode( "\n", $database_redacted_columns ) ); ?></textarea>
+										<p><?php echo esc_html_x( 'One per line, up to 200 lines. Capital letters don’t matter.', 'MCP database redaction instructions', 'uncanny-automator' ); ?></p>
+										<?php
+										if ( $can_manage_tools ) {
+											?>
+											<button type="submit" class="button button-secondary"><?php echo esc_html_x( 'Save redaction list', 'MCP database redaction save', 'uncanny-automator' ); ?></button><?php } ?>
+									</form>
+								</div>
 							</div>
 						</uas-accordion-item>
 						<uas-accordion-item id="automator-mcp-file-reading-settings">

@@ -24,11 +24,11 @@ final class Iteration_Label_Resolver {
 	public function resolve( int $entity_id, string $loop_type, array $parent_row ): ?string {
 		if ( 'users' === $loop_type ) {
 			$user = get_userdata( $entity_id );
-			return sprintf( '#%d %s', $entity_id, false !== $user ? $user->display_name : '(deleted)' );
+			return sprintf( '#%d %s', $entity_id, false !== $user ? Log_Message_Text::from_stored( (string) $user->display_name ) : '(deleted)' );
 		}
 		if ( 'posts' === $loop_type ) {
 			$post = get_post( $entity_id );
-			return sprintf( '#%d %s', $entity_id, null !== $post ? get_the_title( $post ) : '(deleted)' );
+			return sprintf( '#%d %s', $entity_id, null !== $post ? Log_Message_Text::from_stored( (string) get_the_title( $post ) ) : '(deleted)' );
 		}
 		if ( 'token' === $loop_type ) {
 			return $this->token_label( $entity_id, (string) ( $parent_row['entity_ids'] ?? '' ) );

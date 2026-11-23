@@ -10,7 +10,11 @@ use WP_REST_Request;
 
 /**
  * POST /uap/v2/recipe-template/import — imports a template into a new
- * draft recipe and returns the redirect URL for the recipe builder.
+ * draft recipe, or into the blank draft `recipe_id` names, and returns the
+ * redirect URL for the recipe builder and the recipe's id.
+ *
+ * On posts storage that can't roll a fill back, a blank draft is replaced:
+ * the reply names a new recipe holding the template, and the draft is deleted.
  */
 final class Import_Template_Route {
 
@@ -29,6 +33,10 @@ final class Import_Template_Route {
 	 * No absint anywhere: absint( -5 ) is 5, which would silently import
 	 * the wrong template.
 	 *
+	 * `recipe_id` follows the same rule. A value that is sent but invalid is
+	 * refused with `invalid_recipe_id`: it must never read as absent, which
+	 * would create a new recipe and leave the owner's draft empty.
+	 *
 	 * @param WP_REST_Request $request The request.
 	 * @return \WP_REST_Response|WP_Error
 	 */
@@ -39,12 +47,30 @@ final class Import_Template_Route {
 			return self::failure( 'A positive template_id is required.', 400, 'invalid_template_id' );
 		}
 
-		$result = Template_Import_Service::instance()->import( (int) $template_id );
+		$recipe_id = $request->get_param( 'recipe_id' );
+
+		if ( null !== $recipe_id && ! self::is_positive_integer( $recipe_id ) ) {
+			return self::failure( 'recipe_id must be a positive integer.', 400, 'invalid_recipe_id' );
+		}
+
+		$result = Template_Import_Service::instance()->import( (int) $template_id, null === $recipe_id ? null : (int) $recipe_id );
 
 		if ( is_wp_error( $result ) ) {
 			return self::failure( $result->get_error_message(), Route_Error_Status::for_error( $result ), (string) $result->get_error_code() );
 		}
 
 		return self::success( $result );
+	}
+
+	/**
+	 * Whether a raw request value is a positive whole number.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param mixed $value The raw value.
+	 * @return bool
+	 */
+	private static function is_positive_integer( $value ): bool {
+		return ! is_bool( $value ) && false !== filter_var( $value, FILTER_VALIDATE_INT, array( 'options' => array( 'min_range' => 1 ) ) );
 	}
 }

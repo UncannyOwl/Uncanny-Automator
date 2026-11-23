@@ -42,6 +42,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 // ──────────────────────────────────────────────
 
 if ( ! defined( 'AUTOMATOR_DATABASE_VERSION' ) ) {
+	// 8.0.0.4 — the Logs page's App events tab. Adds uap_platform_inbox_runs
+	// (inbox_id, recipe_log_id): one row per run an app event (a
+	// vendor_event row) started. Adds uap_platform_inbox.integration (the
+	// app's platform slug) and .search_text (the event's values), with the
+	// keys app_events (payload_type, received_at) and app_event_integration
+	// (payload_type, integration, received_at). Migrate_App_Event_Columns
+	// fills both columns for the events stored before them.
+	//
 	// 8.0.0.3 — adds uap_async_jobs.connection_id: the connection a platform
 	// job's write was sent with, so a failed job is handled for that connection
 	// as the same answer given at once would be.
@@ -70,7 +78,7 @@ if ( ! defined( 'AUTOMATOR_DATABASE_VERSION' ) ) {
 	//
 	// Must differ from the prior value or the schema-upgrade gate in
 	// Automator_DB::verify_base_tables() bails and the change never applies.
-	define( 'AUTOMATOR_DATABASE_VERSION', '8.0.0.3' );
+	define( 'AUTOMATOR_DATABASE_VERSION', '8.0.0.4' );
 }
 
 if ( ! defined( 'AUTOMATOR_MANIFEST_SCHEMA_VERSION' ) ) {

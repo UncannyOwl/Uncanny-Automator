@@ -13,16 +13,11 @@ use Uncanny_Automator\Recipe\App_Action;
  */
 class OPEN_AI_CORRECT_SPELLING_GRAMMAR extends App_Action {
 
+	use OpenAI_Setup_Requirements;
+
 	const PROMPT = "Fix grammar and spelling errors in the following content and return the corrected output:\n{{content}}";
 
 	protected $model = 'gpt-4';
-
-	/**
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return $this->helpers->has_gpt4_access();
-	}
 
 	/**
 	 * @return void

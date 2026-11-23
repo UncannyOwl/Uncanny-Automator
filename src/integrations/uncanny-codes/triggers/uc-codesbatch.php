@@ -32,14 +32,25 @@ class UC_CODESBATCH extends \Uncanny_Automator\Recipe\Trigger {
 		// translators: %1$s is the batch.
 		$this->set_sentence( sprintf( esc_html_x( 'A user redeems a code from {{a batch:%1$s}}', 'Uncanny Codes', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_html_x( 'A user redeems a code from {{a batch}}', 'Uncanny Codes', 'uncanny-automator' ) );
+
+		$this->set_plugin_details(
+			array(
+				'plugin_file'       => 'uncanny-learndash-codes/uncanny-learndash-codes.php',
+				'plugin_name'       => 'Uncanny Codes',
+				'distribution_type' => 'commercial',
+				'min_version'       => '4.0',
+			)
+		);
 	}
 
 	/**
-	 * Check if Uncanny Codes version >= 4.0 (batch names not available before v4).
+	 * Whether the Uncanny Codes that is loaded has batch names: 4.0 or newer, from its own folder or a renamed one.
 	 *
-	 * @return bool
+	 * @since 8.1.0
+	 *
+	 * @return bool|null True when Uncanny Codes 4.0 or newer is loaded, false when it is not.
 	 */
-	public function requirements_met() {
+	protected function is_plugin_compatible(): ?bool {
 		return defined( 'UNCANNY_LEARNDASH_CODES_VERSION' ) && version_compare( UNCANNY_LEARNDASH_CODES_VERSION, '4.0', '>=' );
 	}
 

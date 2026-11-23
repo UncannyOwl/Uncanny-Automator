@@ -1534,6 +1534,21 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 	 */
 	public function update_logs_user_id( int $user_id, int $recipe_log_id, int $trigger_log_id ): void {
 
+		// Keep the user the run started with before it is replaced: afterwards nothing else
+		// says whether the visitor was signed in (QA D104). The first value is the true one.
+		$wpdb = $this->wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table; live state read, must not be cached.
+		$run = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT automator_recipe_id, user_id FROM {$wpdb->prefix}uap_recipe_log WHERE ID = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$recipe_log_id
+			),
+			ARRAY_A
+		);
+		if ( is_array( $run ) && (int) $run['user_id'] !== $user_id && ! $this->has_recipe_log_meta( (int) $run['automator_recipe_id'], $recipe_log_id, self::META_STARTED_BY_USER ) ) {
+			$this->add_recipe_log_meta( (int) $run['automator_recipe_id'], $recipe_log_id, self::META_STARTED_BY_USER, (string) (int) $run['user_id'] );
+		}
+
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 		$this->wpdb->update(
 			$this->wpdb->prefix . 'uap_trigger_log',
@@ -1876,6 +1891,62 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 	/**
 	 * @inheritDoc
 	 */
+	public function get_tokens_records( int $recipe_id, int $recipe_log_id, int $run_number ): array {
+
+		$wpdb = $this->wpdb;
+
+		// UNIX_TIMESTAMP() reads date_added in the database's own time zone, which need not be the site's.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rows    = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT ID, tokens_record, UNIX_TIMESTAMP(date_added) AS added FROM {$wpdb->prefix}uap_tokens_log WHERE recipe_id = %d AND recipe_log_id = %d AND run_number = %d ORDER BY ID ASC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$recipe_id,
+				$recipe_log_id,
+				$run_number
+			),
+			ARRAY_A
+		);
+		$records = array();
+		foreach ( (array) $rows as $row ) {
+			$decoded = json_decode( (string) ( $row['tokens_record'] ?? '' ), true );
+			if ( ! is_array( $decoded ) ) {
+				continue;
+			}
+			$tokens = array();
+			foreach ( $decoded as $code => $value ) {
+				if ( is_scalar( $value ) ) {
+					$tokens[ (string) $code ] = (string) $value;
+				}
+			}
+			$records[] = array(
+				'id'     => (int) ( $row['ID'] ?? 0 ),
+				'added'  => (int) ( $row['added'] ?? 0 ),
+				'tokens' => $tokens,
+			);
+		}
+		return $records;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get_latest_tokens_record_id( int $recipe_id, int $recipe_log_id, int $run_number ): int {
+		$wpdb = $this->wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- The boundary is the latest record at the time the action ran or was skipped.
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT MAX(ID) FROM {$wpdb->prefix}uap_tokens_log WHERE recipe_id = %d AND recipe_log_id = %d AND run_number = %d",
+				$recipe_id,
+				$recipe_log_id,
+				$run_number
+			)
+		);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public function get_tokens_record_map( int $recipe_id, int $recipe_log_id, int $run_number ): array {
 
 		$wpdb = $this->wpdb;
@@ -1929,6 +2000,36 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 			$bag[ (int) $row['automator_action_log_id'] ][ (string) $row['meta_key'] ] = (string) $row['meta_value'];
 		}
 		return $bag;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function get_action_log_meta_values( array $action_log_ids, string $meta_key ): array {
+
+		$wpdb = $this->wpdb;
+
+		$ids = array_values( array_filter( array_map( 'intval', $action_log_ids ) ) );
+		if ( empty( $ids ) || '' === $meta_key ) {
+			return array();
+		}
+		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table; live state read, must not be cached.
+		$rows = $wpdb->get_results(
+			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- $placeholders is one %d per id; the spread supplies the ids after the meta key.
+			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $placeholders is one %d per id; the spread supplies the ids after the meta key.
+				"SELECT automator_action_log_id, meta_value FROM {$wpdb->prefix}uap_action_log_meta WHERE meta_key = %s AND automator_action_log_id IN ({$placeholders}) ORDER BY ID ASC",
+				$meta_key,
+				...$ids
+			),
+			ARRAY_A
+		);
+		$values = array();
+		foreach ( (array) $rows as $row ) {
+			$values[ (int) $row['automator_action_log_id'] ][] = (string) $row['meta_value'];
+		}
+		return $values;
 	}
 
 	/**

@@ -11,6 +11,8 @@
 namespace Uncanny_Automator\App\Integration_Catalog\Services;
 
 use Uncanny_Automator\App\Integration_Catalog\Integration\Integration;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integration_Block_Modifier;
+use Uncanny_Automator\App\Integration_Catalog\Integration\Value_Objects\Integration_Item;
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Dependency_Context;
 use Uncanny_Automator\App\Integration_Catalog\Dependency\Dependencies_Resolver;
 use Uncanny_Automator\App\Integration_Catalog\Scope_Tag\Scope_Tag_Resolver;
@@ -223,9 +225,9 @@ class Integration_Scope_Resolver {
 	 * @param Integration $integration  Integration object
 	 * @param array       $scoped_items Items filtered for current scope
 	 *
-	 * @return array Integration with scoped properties
+	 * @return array|null Integration with scoped properties; null when every entry was left out.
 	 */
-	private function build_scoped_data( Integration $integration, array $scoped_entries ): array {
+	private function build_scoped_data( Integration $integration, array $scoped_entries ): ?array {
 		// Start with REST format (excludes internal properties).
 		$data = $integration->to_rest();
 
@@ -243,6 +245,9 @@ class Integration_Scope_Resolver {
 		// Project the resolved scope into the right slot; stamp empty `{}` on the sibling slot
 		// so the frontend at-most-one-bucket refine on items + block_modifiers passes.
 		$resolved = $this->format_scoped_entries( $scoped_entries, $integration, $integration_dependencies );
+		if ( empty( $resolved[ $this->scope ] ) ) {
+			return null;
+		}
 
 		if ( $this->scope_is_modifier() ) {
 			$data['items']           = (object) array();
@@ -284,15 +289,30 @@ class Integration_Scope_Resolver {
 	/**
 	 * Format scoped items with dependencies and tags.
 	 *
-	 * @param array       $scoped_items             Items for current scope
+	 * Each entry's dependencies are resolved with the requirements its store entry carries; they are handed to the
+	 * resolver beside the row and never written into it, so they stay off the wire. An entry whose stored answer is
+	 * not met yet gets no unmet row, neither its own nor its integration's, is left out
+	 * (Dependencies_Resolver::is_unmet_without_a_row()).
+	 *
+	 * @param array       $scoped_entries           Items for current scope
 	 * @param Integration $integration              Integration object
 	 * @param array       $integration_dependencies Integration-level dependencies
 	 *
 	 * @return array Formatted items structure
 	 */
 	private function format_scoped_entries( array $scoped_entries, Integration $integration, array $integration_dependencies ): array {
+		$store_entries = $this->store_entries( $integration );
+
 		foreach ( $scoped_entries as $code => $entry ) {
-			$entry_dependencies                      = $this->dependencies_resolver->resolve_item_dependencies( $entry, $integration, $integration_dependencies );
+			$requirements       = isset( $store_entries[ $code ] ) ? $store_entries[ $code ]->get_requirements() : null;
+			$entry_dependencies = $this->dependencies_resolver->resolve_item_dependencies( $entry, $integration, $integration_dependencies, $requirements );
+
+			// Not met, yet no row of its own or its integration's to show it locked: left out, as a blocked item that declares nothing is.
+			if ( $this->dependencies_resolver->is_unmet_without_a_row( $requirements, $entry_dependencies, $integration_dependencies ) ) {
+				unset( $scoped_entries[ $code ] );
+				continue;
+			}
+
 			$scoped_entries[ $code ]['dependencies'] = $this->dependencies_resolver->integration_items_to_array( $entry_dependencies, $integration_dependencies );
 
 			$entry_scope_tags                = $this->scope_tag_resolver->resolve_item_tags( $entry, $integration, $integration_dependencies, $entry_dependencies );
@@ -302,6 +322,30 @@ class Integration_Scope_Resolver {
 		return array(
 			$this->scope => $scoped_entries,
 		);
+	}
+
+	/**
+	 * The store entries of the current scope's items or block modifiers, keyed by code.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param Integration $integration Integration object
+	 *
+	 * @return array<string, Integration_Item|Integration_Block_Modifier>
+	 */
+	private function store_entries( Integration $integration ): array {
+		switch ( $this->scope ) {
+			case Integration_Item_Types::TRIGGER:
+				return $integration->get_items()->get_triggers();
+			case Integration_Item_Types::ACTION:
+				return $integration->get_items()->get_actions();
+			case Block_Modifier_Types::FILTER_CONDITION:
+				return $integration->get_block_modifiers()->get_filter_conditions();
+			case Block_Modifier_Types::LOOP_FILTER:
+				return $integration->get_block_modifiers()->get_loop_filters();
+			default:
+				return array();
+		}
 	}
 
 	/**

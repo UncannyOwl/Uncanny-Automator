@@ -163,10 +163,11 @@ class EDD_PRODUCTPURCHASE extends Trigger {
 			return false;
 		}
 
-		$user_id = get_current_user_id();
+		// The buyer comes from the payment, not from the session: Stripe and PayPal complete the
+		// order in a webhook with nobody signed in. A guest payment has no user and is rejected.
+		$user_id = absint( $payment->user_id );
 
-		// Check if user is logged in
-		if ( ! $user_id ) {
+		if ( 0 === $user_id ) {
 			return false;
 		}
 

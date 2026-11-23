@@ -9,6 +9,8 @@ namespace Uncanny_Automator\Integrations\Uncanny_Toolkit;
  */
 class UT_USER_IMPORTED extends \Uncanny_Automator\Recipe\Trigger {
 
+	use Toolkit_Pro_Requirements;
+
 	/**
 	 * Static definition — opts the trigger into lazy loading.
 	 *
@@ -30,15 +32,8 @@ class UT_USER_IMPORTED extends \Uncanny_Automator\Recipe\Trigger {
 		// translators: Logged-in trigger sentence.
 		$this->set_sentence( esc_html_x( 'A user is imported by the Import Users module', 'Uncanny Toolkit', 'uncanny-automator' ) );
 		$this->set_readable_sentence( esc_html_x( 'A user is imported by the Import Users module', 'Uncanny Toolkit', 'uncanny-automator' ) );
-	}
 
-	/**
-	 * Check if Uncanny Toolkit Pro is active.
-	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return defined( 'UNCANNY_TOOLKIT_PRO_VERSION' );
+		$this->set_plugin_details( self::toolkit_pro_plugin_details() );
 	}
 
 	/**

@@ -709,25 +709,82 @@ class Mcp_Client {
 	/**
 	 * Render Automator's default launcher when its presentation setting is enabled.
 	 *
+	 * On the recipe builder the launcher also mounts with the setting off, hidden:
+	 * window.UncannyAgent is only ready once a launcher registers, and the
+	 * builder's welcome screen and "Ask Uncanny Agent" buttons open the Agent
+	 * through it. The setting decides whether the tab shows, not whether the
+	 * Agent can open there.
+	 *
 	 * @param mixed $post WordPress passed parameter.
 	 *
 	 * @return void
 	 */
 	public function render_default_launcher( $post ): void {
-		if ( ! $this->get_uncanny_agent_setting( Admin_Settings_Uncanny_Agent_General::ENABLED_KEY ) ) {
+		if ( $this->get_uncanny_agent_setting( Admin_Settings_Uncanny_Agent_General::ENABLED_KEY ) ) {
+			$this->render_launcher( $post );
 			return;
 		}
 
-		$this->render_launcher( $post );
+		if ( ! $this->is_recipe_builder_screen() ) {
+			return;
+		}
+
+		ob_start();
+		$this->render_launcher( $post, true );
+		$launcher = (string) ob_get_clean();
+
+		if ( '' !== $launcher ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is escaped in generate_launcher_html.
+			echo '<div hidden class="uncanny-agent-launcher-host">' . $launcher . '</div>';
+		}
+	}
+
+	/**
+	 * Whether Uncanny Agent can open docked on the current admin page for the
+	 * current user: the same gates the SDK and the launcher pass before they
+	 * render, and a page the launcher may dock on (the welcome screen always
+	 * asks for the docked chat).
+	 *
+	 * Deliberately not checked here, so do not add them:
+	 * - The encrypted payload. Building it can mint tokens, and a check must not.
+	 *   If it fails at footer time, the welcome screen shows its own
+	 *   "couldn't open" message after its 4-second wait.
+	 * - Whether the SDK service serves this site the real Agent (rollout). Only
+	 *   the browser knows that, without another blocking request on page load:
+	 *   the welcome screen offers Uncanny Agent once window.UncannyAgent.ready
+	 *   resolves.
+	 *
+	 * @return bool
+	 */
+	public function can_open_agent(): bool {
+		return $this->can_render_client_on_current_surface()
+			&& $this->should_render_surface( 'admin_sdk' )
+			&& $this->should_render_surface( 'admin_launcher' )
+			&& $this->in_allowed_pages()
+			&& ( $this->get_sdk_render_context()['should_render'] ?? false );
+	}
+
+	/**
+	 * Whether the current admin page is the uo-recipe edit screen (the recipe builder).
+	 *
+	 * @return bool
+	 */
+	private function is_recipe_builder_screen(): bool {
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+
+		return $screen instanceof \WP_Screen
+			&& 'post' === $screen->base
+			&& AUTOMATOR_POST_TYPE_RECIPE === $screen->post_type;
 	}
 
 	/**
 	 * Render the chat launcher button.
 	 *
-	 * @param mixed $post - WordPress' passed parameter.
+	 * @param mixed $post    - WordPress' passed parameter.
+	 * @param bool  $passive Render the passive wp-quicklink variant: it registers with the SDK and can dock, but fetches no suggestions (for a hidden host nobody sees).
 	 * @return void
 	 */
-	public function render_launcher( $post ): void {
+	public function render_launcher( $post, bool $passive = false ): void {
 
 		if ( ! $this->can_render_client_on_current_surface() ) {
 			return;
@@ -744,7 +801,7 @@ class Mcp_Client {
 		$sdk_render_context = $this->get_sdk_render_context();
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is escaped in generate_launcher_html.
-		echo $this->generate_launcher_html( $sdk_render_context );
+		echo $this->generate_launcher_html( $sdk_render_context, false, $passive );
 	}
 
 	/**
@@ -949,9 +1006,10 @@ class Mcp_Client {
 	 *
 	 * @param array<string,mixed> $sdk_render_context SDK render state.
 	 * @param bool                $rest_request Whether the launcher is requested by the REST route.
+	 * @param bool                $passive      Use the passive wp-quicklink variant (no suggestions fetched).
 	 * @return string The launcher, a recovery message, or an empty string when access is denied.
 	 */
-	private function generate_launcher_html( array $sdk_render_context, bool $rest_request = false ): string {
+	private function generate_launcher_html( array $sdk_render_context, bool $rest_request = false, bool $passive = false ): string {
 
 		if ( ! ( $sdk_render_context['should_render'] ?? false ) ) {
 			return ! empty( $sdk_render_context['temporarily_unavailable'] ) ? $this->get_unavailable_launcher_html( $rest_request ) : '';
@@ -985,6 +1043,7 @@ class Mcp_Client {
 				view-mode="%s"
 				locale="%s"
 				%s
+				%s
 			></uaai-f-widget-launcher>',
 			esc_attr( self::get_inference_url() ),
 			esc_attr( $payload ),
@@ -995,7 +1054,8 @@ class Mcp_Client {
 			esc_url( $this->get_sdk_css_url() ),
 			esc_attr( $view_mode ),
 			esc_attr( $this->context_service->get_user_locale_bcp47() ),
-			( $can_dock_to_right ? 'can-dock-to-right' : '' )
+			( $can_dock_to_right ? 'can-dock-to-right' : '' ),
+			( $passive ? 'variant="wp-quicklink"' : '' )
 		);
 
 		return $this->get_inline_css() . $launcher;

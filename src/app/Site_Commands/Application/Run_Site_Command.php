@@ -112,7 +112,12 @@ final class Run_Site_Command {
 			// As in WP-CLI, "<command> --help" shows the command's help. Only the
 			// flag itself: --no-help and --help=<value> are refused like any unknown option.
 			if ( array() !== $words && 'help' !== $words[0] && true === ( $parsed->options()['help'] ?? null ) ) {
-				list( $definition ) = $this->commands->execute()->resolve( $words );
+				try {
+					list( $definition ) = $this->commands->execute()->resolve( $words );
+				} catch ( Command_Error $error ) {
+					$this->help->point_to_read_help( implode( ' ', $words ) );
+					throw $error;
+				}
 
 				return $this->budget->apply( $this->help->execute( explode( ' ', $definition->path() ) ) );
 			}

@@ -9,6 +9,8 @@ namespace Uncanny_Automator\Integrations\Wpjm;
  */
 class Wpjm_Submitresume extends \Uncanny_Automator\Recipe\Trigger {
 
+	use Wpjm_Requirements;
+
 	const TRIGGER_CODE = 'WPJMSUBMITRESUME';
 	const TRIGGER_META = 'WPJMJOBRESUME';
 
@@ -26,13 +28,6 @@ class Wpjm_Submitresume extends \Uncanny_Automator\Recipe\Trigger {
 	}
 
 	/**
-	 * Check if requirements are met
-	 */
-	public function requirements_met() {
-		return function_exists( 'get_resume_files' );
-	}
-
-	/**
 	 * Setup trigger
 	 */
 	protected function setup_trigger() {
@@ -44,6 +39,8 @@ class Wpjm_Submitresume extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_sentence( esc_html_x( 'A user submits a resume', 'WP Job Manager', 'uncanny-automator' ) );
 
 		$this->set_readable_sentence( esc_html_x( 'A user submits a resume', 'WP Job Manager', 'uncanny-automator' ) );
+
+		$this->set_plugin_details( self::resume_manager_plugin_details() );
 	}
 
 	/**

@@ -13,16 +13,11 @@ use Uncanny_Automator\Recipe\App_Action;
  */
 class OPEN_AI_LINKS_SUGGEST extends App_Action {
 
+	use OpenAI_Setup_Requirements;
+
 	const PROMPT = "Generate a list of up to {{max_n_pages}} pages on {{site_url}} that might be helpful in resolving the following question:\n{{request}}";
 
 	protected $model = 'gpt-4';
-
-	/**
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return $this->helpers->has_gpt4_access();
-	}
 
 	/**
 	 * @return void

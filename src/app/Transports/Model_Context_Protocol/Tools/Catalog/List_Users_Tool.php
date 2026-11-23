@@ -41,7 +41,7 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 	 * @return string
 	 */
 	public function get_description() {
-		return 'Search and query WordPress users. Partial name search across first name, last name, display name, nickname, username, and email. Filter by role, custom user meta with full comparison operators (=, !=, >, <, LIKE, IN, BETWEEN, EXISTS, etc.), or combine search with meta filters. Paginated results with offset/limit. Returns user ID, names, email, roles, and registration date.';
+		return 'Search and query WordPress users. Partial name search across first name, last name, display name, nickname, username, and email. Filter by role, custom user meta with full comparison operators (=, !=, >, <, LIKE, IN, BETWEEN, EXISTS, etc.), or combine search with meta filters. Paginated results with offset/limit. Returns ID and display name by default. Select fields to request email, roles or other account details.';
 	}
 
 	/**
@@ -56,6 +56,16 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 		return array(
 			'type'       => 'object',
 			'properties' => array(
+				'fields'       => array(
+					'type'        => 'array',
+					'description' => 'Select the user fields needed for this lookup. Defaults to id and display_name.',
+					'items'       => array(
+						'type' => 'string',
+						'enum' => array_keys( $this->output_schema_definition()['properties']['items']['items']['properties'] ),
+					),
+					'minItems'    => 1,
+					'uniqueItems' => true,
+				),
 				'search'       => array(
 					'type'        => 'string',
 					'description' => 'Search term. Searches user_login, user_email, user_nicename, display_name, first_name, last_name, and nickname. Example: "Joseph" finds users with Joseph in any name field.',
@@ -166,6 +176,7 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 	 * @return array
 	 */
 	protected function execute_tool( User_Context $user_context, array $params ) {
+		$fields  = array_flip( $params['fields'] ?? array( 'id', 'display_name' ) );
 		$limit   = max( 1, min( (int) ( $params['limit'] ?? 20 ), 100 ) );
 		$offset  = max( (int) ( $params['offset'] ?? 0 ), 0 );
 		$orderby = sanitize_key( $params['orderby'] ?? 'display_name' );
@@ -188,7 +199,7 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 			return Json_Rpc_Response::create_success_response(
 				'User found',
 				array(
-					'items' => array( $this->format_user( $user ) ),
+					'items' => array( $this->format_user( $user, $fields ) ),
 					'total' => 1,
 				)
 			);
@@ -271,7 +282,10 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 		$users = $user_query->get_results();
 		$total = (int) $user_query->get_total();
 
-		$items = array_map( array( $this, 'format_user' ), $users );
+		$items = array();
+		foreach ( $users as $user ) {
+			$items[] = $this->format_user( $user, $fields );
+		}
 
 		return $this->found_answer( $items, $total, $offset, $limit );
 	}
@@ -339,11 +353,12 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 	/**
 	 * Format user object for response.
 	 *
-	 * @param \WP_User $user User object.
+	 * @param \WP_User $user   User object.
+	 * @param array    $fields Selected field names as keys.
 	 * @return array
 	 */
-	private function format_user( \WP_User $user ): array {
-		return array(
+	private function format_user( \WP_User $user, array $fields ): array {
+		$data = array(
 			'id'           => $user->ID,
 			'user_login'   => $user->user_login,
 			'display_name' => $user->display_name,
@@ -353,5 +368,7 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 			'roles'        => $user->roles,
 			'registered'   => $user->user_registered,
 		);
+
+		return array_intersect_key( $data, $fields );
 	}
 }

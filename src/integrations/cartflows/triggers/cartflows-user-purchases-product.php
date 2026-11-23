@@ -23,6 +23,8 @@ use WC_Order;
  */
 class Cartflows_User_Purchases_Product extends \Uncanny_Automator\Recipe\Trigger {
 
+	use Cartflows_Requirements;
+
 	/**
 	 * Opt this trigger into the lazy loading path.
 	 */
@@ -49,15 +51,8 @@ class Cartflows_User_Purchases_Product extends \Uncanny_Automator\Recipe\Trigger
 			)
 		);
 		$this->set_readable_sentence( esc_html_x( '{{A product}} is purchased in {{a flow}}', 'CartFlows', 'uncanny-automator' ) );
-	}
 
-	/**
-	 * WooCommerce is required.
-	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return $this->item_helpers->woocommerce_active();
+		$this->set_plugin_details( self::woocommerce_plugin_details() );
 	}
 
 	/**

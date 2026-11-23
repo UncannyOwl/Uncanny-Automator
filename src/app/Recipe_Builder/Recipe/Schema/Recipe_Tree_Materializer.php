@@ -182,10 +182,12 @@ final class Recipe_Tree_Materializer {
 	/**
 	 * Delete everything this run created, then hand back the original error.
 	 *
-	 * Only `materialize_into()` needs this. `materialize_tree()` writes into a
-	 * recipe shell its caller discards via `Recipe_Duplication_Service::abandon_replay()`,
-	 * whereas `materialize_into()` writes into a live recipe the user is editing
-	 * — there is no container to bin, so the nodes have to go individually.
+	 * Only `materialize_into()` needs this. The callers of `materialize_tree()`
+	 * undo it themselves: a new recipe's shell is discarded by
+	 * `Recipe_Duplication_Service::abandon_replay()`, and a fill runs inside the
+	 * transaction `Recipe_Importer` holds. `materialize_into()` writes into a live
+	 * recipe the user is editing — there is no container to bin, so the nodes
+	 * have to go individually.
 	 *
 	 * Reverse order because `$created` is insertion-ordered and parents are
 	 * created before their children; unwinding backwards means no rebuild

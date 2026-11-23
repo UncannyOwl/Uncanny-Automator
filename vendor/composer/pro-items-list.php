@@ -341,6 +341,53 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'ASGAROS_FORUM' => array(
+			'name'       => 'Asgaros Forum',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name'     => esc_html_x( 'A user changes their reaction on {{a post}} to {{a reaction}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'logged-in',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'A user is removed from {{a usergroup}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'logged-in',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'A user removes {{a reaction}} from {{a post}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'logged-in',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+			'actions'    => array(
+				array(
+					'name'     => esc_html_x( 'Ban the user from the forum', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'Delete {{a post}}', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'Delete {{a topic}}', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'Unban the user', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+		),
 		'AUTOMATOR_GENERATOR' => array(
 			'name'       => 'Generator',
 			'pro_only'   => 'yes',
@@ -1151,6 +1198,24 @@ function automator_pro_items_list() {
 			),
 			'actions'    => array(),
 		),
+		'CFDB7' => array(
+			'name'       => 'Contact Form CFDB7',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(),
+			'actions'    => array(
+				array(
+					'name'     => esc_html_x( 'Delete all entries for {{a form}}', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'Mark {{an entry}} as unread', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+		),
 		'CHARITABLE' => array(
 			'name'       => 'Charitable',
 			'pro_only'   => 'no',
@@ -1514,6 +1579,12 @@ function automator_pro_items_list() {
 				),
 				array(
 					'name'     => esc_html_x( 'A customer makes a payment and their lifetime value is {{greater than, less than, or equal to}} {{a specific amount}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'logged-in',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'A user receives a refund for {{a price option}} of {{a download}} paid with {{a payment gateway}}', 'Automator Pro item', 'uncanny-automator' ),
 					'type'     => 'logged-in',
 					'is_pro'   => true,
 					'is_elite' => false,
@@ -3315,6 +3386,62 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'MAINWP' => array(
+			'name'       => 'MainWP',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name'     => esc_html_x( 'A backup is requested for a child site', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'A client is {{created or updated}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( '{{A plugin action}} is performed on a child site', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( '{{A child site}} sync succeeds', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'A plugin or theme is installed on a child site', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'A tag is created', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( '{{A theme action}} is performed on a child site', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( '{{A user action}} is performed on a child site', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+			'actions'    => array(),
+		),
 		'MAKE' => array(
 			'name'       => 'MAKE',
 			'pro_only'   => 'no',
@@ -3328,6 +3455,48 @@ function automator_pro_items_list() {
 				),
 			),
 			'actions'    => array(),
+		),
+		'MASTERIYO' => array(
+			'name'       => 'Masteriyo LMS',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name'     => esc_html_x( 'An order for {{a course}} is completed', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'logged-in',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'A user achieves a percentage {{greater than, less than, or equal to}} {{a value}} on {{a quiz}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'logged-in',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'A user submits an assignment in {{a course}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'logged-in',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+			'actions'    => array(
+				array(
+					'name'     => esc_html_x( 'Mark {{a lesson}} in {{a course}} complete for the user', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( "Reset the user's progress in {{a course}}", 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'Unenroll the user from {{a course}}', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
 		),
 		'MEC' => array(
 			'name'       => 'M.E. Calendar',
@@ -4043,6 +4212,26 @@ function automator_pro_items_list() {
 			),
 			'actions'    => array(),
 		),
+		'SENSEI_LMS' => array(
+			'name'       => 'Sensei LMS',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name'     => esc_html_x( 'A user passes {{a quiz}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'logged-in',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+			'actions'    => array(
+				array(
+					'name'     => esc_html_x( "Reset the user's progress in {{a course}}", 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+		),
 		'SLICEWP' => array(
 			'name'       => 'SliceWP',
 			'pro_only'   => 'no',
@@ -4081,6 +4270,42 @@ function automator_pro_items_list() {
 				),
 			),
 			'actions'    => array(),
+		),
+		'SPORTSPRESS' => array(
+			'name'       => 'SportsPress',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name'     => esc_html_x( 'An event is postponed or cancelled', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( '{{An event}} changes from {{a status}} to {{a status}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+			'actions'    => array(
+				array(
+					'name'     => esc_html_x( 'Add {{a player}} to {{a team}}', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'Create {{a player}}', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'Create {{a team}}', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
 		),
 		'STUDIOCART' => array(
 			'name'       => 'Studiocart',
@@ -4397,6 +4622,26 @@ function automator_pro_items_list() {
 				array(
 					'name'     => esc_html_x( 'A URL with {{a URL parameter}} set to {{a specific value}} is visited', 'Automator Pro item', 'uncanny-automator' ),
 					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+			'actions'    => array(),
+		),
+		'USERSWP' => array(
+			'name'       => 'UsersWP',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name'     => esc_html_x( 'A password reset is requested', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'A user resets their password', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'logged-in',
 					'is_pro'   => true,
 					'is_elite' => false,
 				),

@@ -341,6 +341,57 @@ return array(
 			),
 		),
 	),
+	'ASGAROS_FORUM' => array(
+		'triggers' => array(
+			'ASGAROS_FORUM_ASGAROS_FORUM_TOPIC_APPROVED' => array(
+				'code'  => 'ASGAROS_FORUM_TOPIC_APPROVED',
+				'class' => 'Uncanny_Automator\\Integrations\\Asgaros_Forum\\Asgaros_Forum_Topic_Approved',
+				'file'  => $baseDir . '/src/integrations/asgaros-forum/triggers/asgaros-forum-topic-approved.php',
+			),
+			'ASGAROS_FORUM_ASGAROS_FORUM_USER_ADDED_TO_USERGROUP' => array(
+				'code'  => 'ASGAROS_FORUM_USER_ADDED_TO_USERGROUP',
+				'class' => 'Uncanny_Automator\\Integrations\\Asgaros_Forum\\Asgaros_Forum_User_Added_To_Usergroup',
+				'file'  => $baseDir . '/src/integrations/asgaros-forum/triggers/asgaros-forum-user-added-to-usergroup.php',
+			),
+			'ASGAROS_FORUM_ASGAROS_FORUM_USER_PUBLISHES_TOPIC' => array(
+				'code'  => 'ASGAROS_FORUM_USER_PUBLISHES_TOPIC',
+				'class' => 'Uncanny_Automator\\Integrations\\Asgaros_Forum\\Asgaros_Forum_User_Publishes_Topic',
+				'file'  => $baseDir . '/src/integrations/asgaros-forum/triggers/asgaros-forum-user-publishes-topic.php',
+			),
+			'ASGAROS_FORUM_ASGAROS_FORUM_USER_REACTS_TO_POST' => array(
+				'code'  => 'ASGAROS_FORUM_USER_REACTS_TO_POST',
+				'class' => 'Uncanny_Automator\\Integrations\\Asgaros_Forum\\Asgaros_Forum_User_Reacts_To_Post',
+				'file'  => $baseDir . '/src/integrations/asgaros-forum/triggers/asgaros-forum-user-reacts-to-post.php',
+			),
+			'ASGAROS_FORUM_ASGAROS_FORUM_USER_REPLIES_TO_TOPIC' => array(
+				'code'  => 'ASGAROS_FORUM_USER_REPLIES_TO_TOPIC',
+				'class' => 'Uncanny_Automator\\Integrations\\Asgaros_Forum\\Asgaros_Forum_User_Replies_To_Topic',
+				'file'  => $baseDir . '/src/integrations/asgaros-forum/triggers/asgaros-forum-user-replies-to-topic.php',
+			),
+		),
+		'actions' => array(
+			'ASGAROS_FORUM_ASGAROS_FORUM_ADD_USER_TO_USERGROUP' => array(
+				'code'  => 'ASGAROS_FORUM_ADD_USER_TO_USERGROUP',
+				'class' => 'Uncanny_Automator\\Integrations\\Asgaros_Forum\\Asgaros_Forum_Add_User_To_Usergroup',
+				'file'  => $baseDir . '/src/integrations/asgaros-forum/actions/asgaros-forum-add-user-to-usergroup.php',
+			),
+			'ASGAROS_FORUM_ASGAROS_FORUM_CREATE_REPLY' => array(
+				'code'  => 'ASGAROS_FORUM_CREATE_REPLY',
+				'class' => 'Uncanny_Automator\\Integrations\\Asgaros_Forum\\Asgaros_Forum_Create_Reply',
+				'file'  => $baseDir . '/src/integrations/asgaros-forum/actions/asgaros-forum-create-reply.php',
+			),
+			'ASGAROS_FORUM_ASGAROS_FORUM_CREATE_TOPIC' => array(
+				'code'  => 'ASGAROS_FORUM_CREATE_TOPIC',
+				'class' => 'Uncanny_Automator\\Integrations\\Asgaros_Forum\\Asgaros_Forum_Create_Topic',
+				'file'  => $baseDir . '/src/integrations/asgaros-forum/actions/asgaros-forum-create-topic.php',
+			),
+			'ASGAROS_FORUM_ASGAROS_FORUM_REMOVE_USER_FROM_USERGROUP' => array(
+				'code'  => 'ASGAROS_FORUM_REMOVE_USER_FROM_USERGROUP',
+				'class' => 'Uncanny_Automator\\Integrations\\Asgaros_Forum\\Asgaros_Forum_Remove_User_From_Usergroup',
+				'file'  => $baseDir . '/src/integrations/asgaros-forum/actions/asgaros-forum-remove-user-from-usergroup.php',
+			),
+		),
+	),
 	'AUTONAMI' => array(
 		'triggers' => array(
 			'AUTONAMI_CONTACT_ADDED_TO_LIST' => array(
@@ -671,6 +722,27 @@ return array(
 				'code'  => 'CF7SUBFORM',
 				'class' => 'Uncanny_Automator\\CF7_SUBFORM',
 				'file'  => $baseDir . '/src/integrations/contact-form7/triggers/cf7-subform.php',
+			),
+		),
+	),
+	'CFDB7' => array(
+		'triggers' => array(
+			'CFDB7_CFDB7_ENTRY_SAVED' => array(
+				'code'  => 'CFDB7_ENTRY_SAVED',
+				'class' => 'Uncanny_Automator\\Integrations\\Cfdb7\\Cfdb7_Entry_Saved',
+				'file'  => $baseDir . '/src/integrations/contact-form-cfdb7/triggers/cfdb7-entry-saved.php',
+			),
+		),
+		'actions' => array(
+			'CFDB7_CFDB7_DELETE_ENTRY' => array(
+				'code'  => 'CFDB7_DELETE_ENTRY',
+				'class' => 'Uncanny_Automator\\Integrations\\Cfdb7\\Cfdb7_Delete_Entry',
+				'file'  => $baseDir . '/src/integrations/contact-form-cfdb7/actions/cfdb7-delete-entry.php',
+			),
+			'CFDB7_CFDB7_MARK_ENTRY_READ' => array(
+				'code'  => 'CFDB7_MARK_ENTRY_READ',
+				'class' => 'Uncanny_Automator\\Integrations\\Cfdb7\\Cfdb7_Mark_Entry_Read',
+				'file'  => $baseDir . '/src/integrations/contact-form-cfdb7/actions/cfdb7-mark-entry-read.php',
 			),
 		),
 	),
@@ -1284,6 +1356,11 @@ return array(
 				'class' => 'Uncanny_Automator\\Integrations\\Easy_Digital_Downloads\\EDD_PRODUCTPURCHASEWITHPRICE',
 				'file'  => $baseDir . '/src/integrations/edd/triggers/edd-productpurchasewithprice.php',
 			),
+			'EDD_EDD_USER_RECEIVES_REFUND' => array(
+				'code'  => 'EDD_USER_RECEIVES_REFUND',
+				'class' => 'Uncanny_Automator\\Integrations\\Easy_Digital_Downloads\\Edd_User_Receives_Refund',
+				'file'  => $baseDir . '/src/integrations/edd/triggers/edd-user-receives-refund.php',
+			),
 		),
 	),
 	'EDD_RECURRING' => array(
@@ -1482,6 +1559,25 @@ return array(
 				'code'  => 'FB_LEAD_ADS_CODE',
 				'class' => 'Uncanny_Automator\\Integrations\\Facebook_Lead_Ads\\Lead_Created',
 				'file'  => $baseDir . '/src/integrations/facebook-lead-ads/triggers/lead-created.php',
+			),
+		),
+	),
+	'FAVORITES' => array(
+		'triggers' => array(
+			'FAVORITES_FAVORITES_CLEARED' => array(
+				'code'  => 'FAVORITES_CLEARED',
+				'class' => 'Uncanny_Automator\\Integrations\\Favorites\\Favorites_Cleared',
+				'file'  => $baseDir . '/src/integrations/favorites/triggers/favorites-cleared.php',
+			),
+			'FAVORITES_FAVORITES_POST_FAVORITED' => array(
+				'code'  => 'FAVORITES_POST_FAVORITED',
+				'class' => 'Uncanny_Automator\\Integrations\\Favorites\\Favorites_Post_Favorited',
+				'file'  => $baseDir . '/src/integrations/favorites/triggers/favorites-post-favorited.php',
+			),
+			'FAVORITES_FAVORITES_POST_UNFAVORITED' => array(
+				'code'  => 'FAVORITES_POST_UNFAVORITED',
+				'class' => 'Uncanny_Automator\\Integrations\\Favorites\\Favorites_Post_Unfavorited',
+				'file'  => $baseDir . '/src/integrations/favorites/triggers/favorites-post-unfavorited.php',
 			),
 		),
 	),
@@ -2841,12 +2937,87 @@ return array(
 			),
 		),
 	),
+	'MAINWP' => array(
+		'triggers' => array(
+			'MAINWP_MAINWP_CHILD_SITE_ADDED' => array(
+				'code'  => 'MAINWP_CHILD_SITE_ADDED',
+				'class' => 'Uncanny_Automator\\Integrations\\Mainwp\\Mainwp_Child_Site_Added',
+				'file'  => $baseDir . '/src/integrations/mainwp/triggers/mainwp-child-site-added.php',
+			),
+			'MAINWP_MAINWP_CHILD_SITE_REMOVED' => array(
+				'code'  => 'MAINWP_CHILD_SITE_REMOVED',
+				'class' => 'Uncanny_Automator\\Integrations\\Mainwp\\Mainwp_Child_Site_Removed',
+				'file'  => $baseDir . '/src/integrations/mainwp/triggers/mainwp-child-site-removed.php',
+			),
+			'MAINWP_MAINWP_CORE_UPDATED' => array(
+				'code'  => 'MAINWP_CORE_UPDATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Mainwp\\Mainwp_Core_Updated',
+				'file'  => $baseDir . '/src/integrations/mainwp/triggers/mainwp-core-updated.php',
+			),
+			'MAINWP_MAINWP_SOFTWARE_UPDATED' => array(
+				'code'  => 'MAINWP_SOFTWARE_UPDATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Mainwp\\Mainwp_Software_Updated',
+				'file'  => $baseDir . '/src/integrations/mainwp/triggers/mainwp-software-updated.php',
+			),
+		),
+	),
 	'MAKE' => array(
 		'actions' => array(
 			'MAKE_MAKESENDWEBHOOK' => array(
 				'code'  => 'MAKESENDWEBHOOK',
 				'class' => 'Uncanny_Automator\\MAKE_SENDWEBHOOK',
 				'file'  => $baseDir . '/src/integrations/make/actions/make-sendwebhook.php',
+			),
+		),
+	),
+	'MASTERIYO' => array(
+		'triggers' => array(
+			'MASTERIYO_MASTERIYO_USER_COMPLETES_COURSE' => array(
+				'code'  => 'MASTERIYO_USER_COMPLETES_COURSE',
+				'class' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_User_Completes_Course',
+				'file'  => $baseDir . '/src/integrations/masteriyo/triggers/masteriyo-user-completes-course.php',
+			),
+			'MASTERIYO_MASTERIYO_USER_COMPLETES_LESSON' => array(
+				'code'  => 'MASTERIYO_USER_COMPLETES_LESSON',
+				'class' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_User_Completes_Lesson',
+				'file'  => $baseDir . '/src/integrations/masteriyo/triggers/masteriyo-user-completes-lesson.php',
+			),
+			'MASTERIYO_MASTERIYO_USER_ENROLLS_COURSE' => array(
+				'code'  => 'MASTERIYO_USER_ENROLLS_COURSE',
+				'class' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_User_Enrolls_Course',
+				'file'  => $baseDir . '/src/integrations/masteriyo/triggers/masteriyo-user-enrolls-course.php',
+			),
+			'MASTERIYO_MASTERIYO_USER_FAILS_QUIZ' => array(
+				'code'  => 'MASTERIYO_USER_FAILS_QUIZ',
+				'class' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_User_Fails_Quiz',
+				'file'  => $baseDir . '/src/integrations/masteriyo/triggers/masteriyo-user-fails-quiz.php',
+			),
+			'MASTERIYO_MASTERIYO_USER_PASSES_QUIZ' => array(
+				'code'  => 'MASTERIYO_USER_PASSES_QUIZ',
+				'class' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_User_Passes_Quiz',
+				'file'  => $baseDir . '/src/integrations/masteriyo/triggers/masteriyo-user-passes-quiz.php',
+			),
+			'MASTERIYO_MASTERIYO_USER_REGISTERS' => array(
+				'code'  => 'MASTERIYO_USER_REGISTERS',
+				'class' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_User_Registers',
+				'file'  => $baseDir . '/src/integrations/masteriyo/triggers/masteriyo-user-registers.php',
+			),
+			'MASTERIYO_MASTERIYO_USER_STARTS_QUIZ' => array(
+				'code'  => 'MASTERIYO_USER_STARTS_QUIZ',
+				'class' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_User_Starts_Quiz',
+				'file'  => $baseDir . '/src/integrations/masteriyo/triggers/masteriyo-user-starts-quiz.php',
+			),
+		),
+		'actions' => array(
+			'MASTERIYO_MASTERIYO_ENROLL_USER_IN_COURSE' => array(
+				'code'  => 'MASTERIYO_ENROLL_USER_IN_COURSE',
+				'class' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_Enroll_User_In_Course',
+				'file'  => $baseDir . '/src/integrations/masteriyo/actions/masteriyo-enroll-user-in-course.php',
+			),
+			'MASTERIYO_MASTERIYO_MARK_COURSE_COMPLETE' => array(
+				'code'  => 'MASTERIYO_MARK_COURSE_COMPLETE',
+				'class' => 'Uncanny_Automator\\Integrations\\Masteriyo\\Masteriyo_Mark_Course_Complete',
+				'file'  => $baseDir . '/src/integrations/masteriyo/actions/masteriyo-mark-course-complete.php',
 			),
 		),
 	),
@@ -3595,6 +3766,47 @@ return array(
 			),
 		),
 	),
+	'SENSEI_LMS' => array(
+		'triggers' => array(
+			'SENSEI_LMS_SENSEI_USER_COMPLETES_COURSE' => array(
+				'code'  => 'SENSEI_USER_COMPLETES_COURSE',
+				'class' => 'Uncanny_Automator\\Integrations\\Sensei_Lms\\Sensei_User_Completes_Course',
+				'file'  => $baseDir . '/src/integrations/sensei-lms/triggers/sensei-user-completes-course.php',
+			),
+			'SENSEI_LMS_SENSEI_USER_COMPLETES_LESSON' => array(
+				'code'  => 'SENSEI_USER_COMPLETES_LESSON',
+				'class' => 'Uncanny_Automator\\Integrations\\Sensei_Lms\\Sensei_User_Completes_Lesson',
+				'file'  => $baseDir . '/src/integrations/sensei-lms/triggers/sensei-user-completes-lesson.php',
+			),
+			'SENSEI_LMS_SENSEI_USER_ENROLLED_COURSE' => array(
+				'code'  => 'SENSEI_USER_ENROLLED_COURSE',
+				'class' => 'Uncanny_Automator\\Integrations\\Sensei_Lms\\Sensei_User_Enrolled_Course',
+				'file'  => $baseDir . '/src/integrations/sensei-lms/triggers/sensei-user-enrolled-course.php',
+			),
+			'SENSEI_LMS_SENSEI_USER_SUBMITS_QUIZ' => array(
+				'code'  => 'SENSEI_USER_SUBMITS_QUIZ',
+				'class' => 'Uncanny_Automator\\Integrations\\Sensei_Lms\\Sensei_User_Submits_Quiz',
+				'file'  => $baseDir . '/src/integrations/sensei-lms/triggers/sensei-user-submits-quiz.php',
+			),
+		),
+		'actions' => array(
+			'SENSEI_LMS_SENSEI_ENROLL_USER_IN_COURSE' => array(
+				'code'  => 'SENSEI_ENROLL_USER_IN_COURSE',
+				'class' => 'Uncanny_Automator\\Integrations\\Sensei_Lms\\Sensei_Enroll_User_In_Course',
+				'file'  => $baseDir . '/src/integrations/sensei-lms/actions/sensei-enroll-user-in-course.php',
+			),
+			'SENSEI_LMS_SENSEI_MARK_LESSON_COMPLETE' => array(
+				'code'  => 'SENSEI_MARK_LESSON_COMPLETE',
+				'class' => 'Uncanny_Automator\\Integrations\\Sensei_Lms\\Sensei_Mark_Lesson_Complete',
+				'file'  => $baseDir . '/src/integrations/sensei-lms/actions/sensei-mark-lesson-complete.php',
+			),
+			'SENSEI_LMS_SENSEI_UNENROLL_USER_FROM_COURSE' => array(
+				'code'  => 'SENSEI_UNENROLL_USER_FROM_COURSE',
+				'class' => 'Uncanny_Automator\\Integrations\\Sensei_Lms\\Sensei_Unenroll_User_From_Course',
+				'file'  => $baseDir . '/src/integrations/sensei-lms/actions/sensei-unenroll-user-from-course.php',
+			),
+		),
+	),
 	'SEO_BY_RANK_MATH' => array(
 		'triggers' => array(
 			'SEO_BY_RANK_MATH_RANK_MATH_SEO_DATA_UPDATED' => array(
@@ -3762,6 +3974,42 @@ return array(
 				'code'  => 'SMUSH_RESTORE_IMAGE',
 				'class' => 'Uncanny_Automator\\Integrations\\Smush\\Smush_Restore_Image',
 				'file'  => $baseDir . '/src/integrations/smush/actions/smush-restore-image.php',
+			),
+		),
+	),
+	'SPORTSPRESS' => array(
+		'triggers' => array(
+			'SPORTSPRESS_SPORTSPRESS_EVENT_CREATED' => array(
+				'code'  => 'SPORTSPRESS_EVENT_CREATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Sportspress\\Sportspress_Event_Created',
+				'file'  => $baseDir . '/src/integrations/sportspress/triggers/sportspress-event-created.php',
+			),
+			'SPORTSPRESS_SPORTSPRESS_EVENT_UPDATED' => array(
+				'code'  => 'SPORTSPRESS_EVENT_UPDATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Sportspress\\Sportspress_Event_Updated',
+				'file'  => $baseDir . '/src/integrations/sportspress/triggers/sportspress-event-updated.php',
+			),
+			'SPORTSPRESS_SPORTSPRESS_PLAYER_CREATED' => array(
+				'code'  => 'SPORTSPRESS_PLAYER_CREATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Sportspress\\Sportspress_Player_Created',
+				'file'  => $baseDir . '/src/integrations/sportspress/triggers/sportspress-player-created.php',
+			),
+			'SPORTSPRESS_SPORTSPRESS_TEAM_CREATED' => array(
+				'code'  => 'SPORTSPRESS_TEAM_CREATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Sportspress\\Sportspress_Team_Created',
+				'file'  => $baseDir . '/src/integrations/sportspress/triggers/sportspress-team-created.php',
+			),
+		),
+		'actions' => array(
+			'SPORTSPRESS_SPORTSPRESS_CREATE_EVENT' => array(
+				'code'  => 'SPORTSPRESS_CREATE_EVENT',
+				'class' => 'Uncanny_Automator\\Integrations\\Sportspress\\Sportspress_Create_Event',
+				'file'  => $baseDir . '/src/integrations/sportspress/actions/sportspress-create-event.php',
+			),
+			'SPORTSPRESS_SPORTSPRESS_UPDATE_EVENT_RESULTS' => array(
+				'code'  => 'SPORTSPRESS_UPDATE_EVENT_RESULTS',
+				'class' => 'Uncanny_Automator\\Integrations\\Sportspress\\Sportspress_Update_Event_Results',
+				'file'  => $baseDir . '/src/integrations/sportspress/actions/sportspress-update-event-results.php',
 			),
 		),
 	),
@@ -4539,6 +4787,47 @@ return array(
 				'code'  => 'USER_USERFEEDBACK_SURVEY_SUBMITTED',
 				'class' => 'Uncanny_Automator\\Integrations\\Userfeedback\\USER_USERFEEDBACK_SURVEY_SUBMITTED',
 				'file'  => $baseDir . '/src/integrations/userfeedback/triggers/user-userfeedback-survey-submitted.php',
+			),
+		),
+	),
+	'USERSWP' => array(
+		'triggers' => array(
+			'USERSWP_USERSWP_USER_ACTIVATES_EMAIL' => array(
+				'code'  => 'USERSWP_USER_ACTIVATES_EMAIL',
+				'class' => 'Uncanny_Automator\\Integrations\\Userswp\\Userswp_User_Activates_Email',
+				'file'  => $baseDir . '/src/integrations/userswp/triggers/userswp-user-activates-email.php',
+			),
+			'USERSWP_USERSWP_USER_CHANGES_PASSWORD' => array(
+				'code'  => 'USERSWP_USER_CHANGES_PASSWORD',
+				'class' => 'Uncanny_Automator\\Integrations\\Userswp\\Userswp_User_Changes_Password',
+				'file'  => $baseDir . '/src/integrations/userswp/triggers/userswp-user-changes-password.php',
+			),
+			'USERSWP_USERSWP_USER_DELETES_ACCOUNT' => array(
+				'code'  => 'USERSWP_USER_DELETES_ACCOUNT',
+				'class' => 'Uncanny_Automator\\Integrations\\Userswp\\Userswp_User_Deletes_Account',
+				'file'  => $baseDir . '/src/integrations/userswp/triggers/userswp-user-deletes-account.php',
+			),
+			'USERSWP_USERSWP_USER_LOGS_IN' => array(
+				'code'  => 'USERSWP_USER_LOGS_IN',
+				'class' => 'Uncanny_Automator\\Integrations\\Userswp\\Userswp_User_Logs_In',
+				'file'  => $baseDir . '/src/integrations/userswp/triggers/userswp-user-logs-in.php',
+			),
+			'USERSWP_USERSWP_USER_REGISTERS' => array(
+				'code'  => 'USERSWP_USER_REGISTERS',
+				'class' => 'Uncanny_Automator\\Integrations\\Userswp\\Userswp_User_Registers',
+				'file'  => $baseDir . '/src/integrations/userswp/triggers/userswp-user-registers.php',
+			),
+			'USERSWP_USERSWP_USER_UPDATES_PROFILE' => array(
+				'code'  => 'USERSWP_USER_UPDATES_PROFILE',
+				'class' => 'Uncanny_Automator\\Integrations\\Userswp\\Userswp_User_Updates_Profile',
+				'file'  => $baseDir . '/src/integrations/userswp/triggers/userswp-user-updates-profile.php',
+			),
+		),
+		'actions' => array(
+			'USERSWP_USERSWP_UPDATE_PROFILE_FIELDS' => array(
+				'code'  => 'USERSWP_UPDATE_PROFILE_FIELDS',
+				'class' => 'Uncanny_Automator\\Integrations\\Userswp\\Userswp_Update_Profile_Fields',
+				'file'  => $baseDir . '/src/integrations/userswp/actions/userswp-update-profile-fields.php',
 			),
 		),
 	),

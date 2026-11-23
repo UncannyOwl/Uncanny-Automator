@@ -9,6 +9,14 @@ namespace Uncanny_Automator\Logger;
 class Tokens_Logger {
 
 	/**
+	 * Action log meta naming where the action stands among the run's token records: the record
+	 * it wrote, or the latest one before it when it wrote none (0 when the run had none yet).
+	 * The run log shows each action the records up to there (QA D103). An action that never
+	 * ran, such as a skipped one, notes nothing; Run_Data_Bundle::token_place_for() places it.
+	 */
+	const RECORD_META_KEY = 'tokens_record_id';
+
+	/**
 	 * Logs the field values in action meta log table.
 	 *
 	 * @param mixed[] $args Accepts ['tokens_record','recipe_id','recipe_log_id', 'run_number'].
@@ -48,5 +56,4 @@ class Tokens_Logger {
 			)
 		);
 	}
-
 }

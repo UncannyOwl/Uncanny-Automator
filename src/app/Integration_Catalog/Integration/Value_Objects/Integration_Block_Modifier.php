@@ -10,8 +10,8 @@ use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Block_Modifier_T
  *
  * One catalog row under integration.block_modifiers[block_modifier_type][modifier_code].
  * Mirror of Integration_Item; the type allow-list differs (filter_condition / loop_filter
- * instead of trigger / action) and there are no backend-only fields
- * (no meta_code, no hooks).
+ * instead of trigger / action) and the only backend-only field is the
+ * stored `requirements` (no meta_code, no hooks).
  *
  * Per src/app/CLAUDE.md Rule 16, this is an independent class — not a subclass
  * of Integration_Item, not sharing a trait. The 8 wire fields are duplicated
@@ -102,9 +102,19 @@ class Integration_Block_Modifier {
 	private array $unsupported_block_ancestors;
 
 	/**
+	 * The requirements the registration pass stored with the modifier, attached while the store builds; null when it
+	 * stored none. Backend-only: it never goes into to_array() or to_rest().
+	 *
+	 * @since 8.1.0
+	 *
+	 * @var array|null
+	 */
+	private ?array $requirements;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param array $modifier Modifier data (the catalog row).
+	 * @param array $modifier Modifier data (the catalog row), with the stored `requirements` when it has them.
 	 *
 	 * @throws InvalidArgumentException When a required field is missing or any field is malformed.
 	 */
@@ -123,6 +133,18 @@ class Integration_Block_Modifier {
 
 		$this->required_block_ancestors    = $this->build_rules( $modifier['required_block_ancestors'] ?? array() );
 		$this->unsupported_block_ancestors = $this->build_rules( $modifier['unsupported_block_ancestors'] ?? array() );
+		$this->requirements                = is_array( $modifier['requirements'] ?? null ) ? $modifier['requirements'] : null;
+	}
+
+	/**
+	 * The requirements the registration pass stored with the modifier.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return array|null Null when the modifier stored none.
+	 */
+	public function get_requirements(): ?array {
+		return $this->requirements;
 	}
 
 	/**

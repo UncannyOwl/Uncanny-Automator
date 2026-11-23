@@ -10,6 +10,7 @@
 
 namespace Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Discovery\Items;
 
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Block_Modifier_Types;
 use Uncanny_Automator\App\Recipe_Builder\Loop\Services\Filter\Filter_Registry_Service;
 
 /**
@@ -36,7 +37,7 @@ class Loop_Filter_Discoverer extends Integration_Item_Discoverer {
 	}
 
 	/**
-	 * Discover loop filters for integration.
+	 * Discover loop filters for integration: the registered ones, then the unavailable ones the catalog lists.
 	 *
 	 * @param string $code Integration code
 	 * @param string $name Integration name
@@ -56,6 +57,8 @@ class Loop_Filter_Discoverer extends Integration_Item_Discoverer {
 			$filter['code'] = $filter['code'] ?? $filter_code;
 			$discovered[]   = $this->normalize_item( $filter, 'loop_filter' );
 		}
+
+		$discovered = array_merge( $discovered, $this->discover_unavailable( Block_Modifier_Types::LOOP_FILTER, $code ) );
 
 		return $discovered;
 	}

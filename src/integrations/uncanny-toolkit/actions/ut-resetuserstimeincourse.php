@@ -9,6 +9,8 @@ namespace Uncanny_Automator\Integrations\Uncanny_Toolkit;
  */
 class UT_RESETUSERSTIMEINCOURSE extends \Uncanny_Automator\Recipe\Action {
 
+	use Toolkit_Pro_Requirements;
+
 	/**
 	 * Setup action configuration.
 	 *
@@ -21,15 +23,8 @@ class UT_RESETUSERSTIMEINCOURSE extends \Uncanny_Automator\Recipe\Action {
 		// translators: %1$s is a course.
 		$this->set_sentence( sprintf( esc_html_x( "Reset a user's time in {{a course:%1\$s}}", 'Uncanny Toolkit', 'uncanny-automator' ), $this->get_action_meta() ) );
 		$this->set_readable_sentence( esc_html_x( "Reset a user's time in {{a course}}", 'Uncanny Toolkit', 'uncanny-automator' ) );
-	}
 
-	/**
-	 * Check if Toolkit Pro is active.
-	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return defined( 'UNCANNY_TOOLKIT_PRO_VERSION' );
+		$this->set_plugin_details( self::toolkit_pro_plugin_details() );
 	}
 
 	/**

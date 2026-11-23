@@ -10,6 +10,7 @@
 
 namespace Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Discovery\Items;
 
+use Uncanny_Automator\App\Integration_Catalog\Integration\Enums\Integration_Item_Types;
 use Uncanny_Automator\App\Recipe_Builder\Action\Services\Action_Registry_Service;
 
 /**
@@ -36,9 +37,10 @@ class Action_Discoverer extends Integration_Item_Discoverer {
 	}
 
 	/**
-	 * Discover actions for integration.
+	 * Discover actions for integration: the registered ones, then the unavailable ones the catalog lists.
 	 *
 	 * @param string $code Integration code
+	 * @param string $name Integration name
 	 *
 	 * @return array Action data
 	 */
@@ -59,6 +61,8 @@ class Action_Discoverer extends Integration_Item_Discoverer {
 			$action['action_code'] = $action['action_code'] ?? $action_key;
 			$actions[]             = $this->normalize_item( $action, 'action' );
 		}
+
+		$actions = array_merge( $actions, $this->discover_unavailable( Integration_Item_Types::ACTION, $code ) );
 
 		return $actions;
 	}

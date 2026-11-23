@@ -25,6 +25,7 @@ class AC_CONTACT_TAG_ADDED extends \Uncanny_Automator\Recipe\App_Trigger {
 		$this->set_trigger_type( 'anonymous' );
 		$this->set_is_login_required( false );
 		$this->set_uses_api( true );
+		$this->require_triggers_enabled();
 		$this->set_sentence(
 			sprintf(
 				// translators: %1$s: Tag name
@@ -34,15 +35,6 @@ class AC_CONTACT_TAG_ADDED extends \Uncanny_Automator\Recipe\App_Trigger {
 		);
 		$this->set_readable_sentence( esc_html_x( '{{A tag}} is added to a contact', 'ActiveCampaign', 'uncanny-automator' ) );
 		$this->add_action( 'automator_active_campaign_webhook_received' ); // which do_action() fires this trigger
-	}
-
-	/**
-	 * Check if the trigger requirements are met.
-	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-		return $this->webhooks->get_webhooks_enabled_status();
 	}
 
 	/**

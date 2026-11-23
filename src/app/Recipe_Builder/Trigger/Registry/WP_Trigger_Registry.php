@@ -61,6 +61,15 @@ class WP_Trigger_Registry implements Trigger_Registry {
 	private bool $initialized = false;
 
 	/**
+	 * Codes whose definition to_registered_definition() refused and logged, so each is logged once.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @var array<string, true>
+	 */
+	private array $refused = array();
+
+	/**
 	 * Anti-corruption boundary to the legacy trigger definition registry.
 	 *
 	 * @var Trigger_Definition_Bridge
@@ -90,7 +99,7 @@ class WP_Trigger_Registry implements Trigger_Registry {
 		// Convert domain objects back to arrays for API consumers
 		$trigger_arrays = array();
 		foreach ( $this->triggers as $code => $trigger ) {
-			$trigger_arrays[ $code ] = $trigger->to_array();
+			$trigger_arrays[ $code ] = $this->definition_row( $trigger, $this->legacy_triggers[ $code ] ?? array() );
 		}
 
 		if ( ! $include_schema ) {
@@ -118,7 +127,7 @@ class WP_Trigger_Registry implements Trigger_Registry {
 			return null;
 		}
 
-		$trigger_array  = $trigger->to_array();
+		$trigger_array  = $this->definition_row( $trigger, $this->legacy_triggers[ $trigger_code ] ?? array() );
 		$include_schema = $options['include_schema'] ?? false;
 
 		if ( ! $include_schema ) {
@@ -144,7 +153,7 @@ class WP_Trigger_Registry implements Trigger_Registry {
 		$filtered_triggers = array();
 		foreach ( $this->triggers as $code => $trigger ) {
 			if ( $trigger->get_trigger_type()->is_compatible_with( $type ) ) {
-				$filtered_triggers[ $code ] = $trigger->to_array();
+				$filtered_triggers[ $code ] = $this->definition_row( $trigger, $this->legacy_triggers[ $code ] ?? array() );
 			}
 		}
 
@@ -170,29 +179,68 @@ class WP_Trigger_Registry implements Trigger_Registry {
 		// Store legacy definition for MCP schema generation
 		$this->legacy_triggers[ $code ] = $definition;
 
-		// A definition that skipped normalization is refused here, before any key is read.
-		$missing = array_diff( self::DEFINITION_KEYS, array_keys( $definition ) );
-		if ( ! empty( $missing ) ) {
-			automator_log( sprintf( 'Failed to register trigger %s: the definition has no %s.', $code, implode( ', ', $missing ) ), 'Trigger Registry Error' );
-			return;
-		}
-
-		// Convert to domain object for type safety and business rule enforcement.
 		// \Throwable: a value of the wrong type is a TypeError, not an Exception, and one bad
 		// definition must never stop the others from registering.
 		try {
-			$config = $this->create_trigger_config_from_legacy( $definition );
-
-			// The definition owns the sentence, so one it can't show is refused here; a stored trigger only keeps a snapshot of it.
-			new Sentence_String( (string) $config->get_sentence() );
-			Sentence_String::for_human_readable( (string) $config->get_sentence_human_readable() );
-
-			$this->triggers[ $code ] = new Trigger( $config );
+			$this->triggers[ $code ] = $this->build_trigger( $definition );
 		} catch ( \Throwable $e ) {
 			// Fail gracefully - continue processing other triggers, but log for debugging.
 			automator_log( sprintf( 'Failed to register trigger %s: %s', $code, $e->getMessage() ), 'Trigger Registry Error' );
-			return;
 		}
+	}
+
+	/**
+	 * The definition a legacy trigger definition reads as once registered, as get_triggers_by_integration() gives
+	 * it, so a definition that did not register (a trigger whose requirements are not met) reads in the same shape.
+	 * A refusal is logged once per code for this registry.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array $legacy_trigger Legacy trigger definition.
+	 *
+	 * @return array|null Null when the registry refuses the definition.
+	 */
+	public function to_registered_definition( array $legacy_trigger ): ?array {
+		try {
+			$definition = $this->convert_legacy_trigger( $legacy_trigger );
+
+			return $this->definition_row( $this->build_trigger( $definition ), $definition );
+		} catch ( \Throwable $e ) {
+			$code = (string) ( $legacy_trigger['code'] ?? '' );
+			if ( ! isset( $this->refused[ $code ] ) ) {
+				$this->refused[ $code ] = true;
+				automator_log( sprintf( 'Trigger %s is not listed: %s', $code, $e->getMessage() ), 'Trigger Registry Error' );
+			}
+
+			return null;
+		}
+	}
+
+	/**
+	 * Build the domain object for a normalized definition.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param array $definition Normalized trigger definition array.
+	 *
+	 * @return Trigger
+	 * @throws \InvalidArgumentException When the definition skipped normalization or breaks a rule.
+	 */
+	private function build_trigger( array $definition ): Trigger {
+		// A definition that skipped normalization is refused here, before any key is read.
+		$missing = array_diff( self::DEFINITION_KEYS, array_keys( $definition ) );
+		if ( ! empty( $missing ) ) {
+			throw new \InvalidArgumentException( sprintf( 'the definition has no %s.', esc_html( implode( ', ', $missing ) ) ) );
+		}
+
+		// Convert to domain object for type safety and business rule enforcement.
+		$config = $this->create_trigger_config_from_legacy( $definition );
+
+		// The definition owns the sentence, so one it can't show is refused here; a stored trigger only keeps a snapshot of it.
+		new Sentence_String( (string) $config->get_sentence() );
+		Sentence_String::for_human_readable( (string) $config->get_sentence_human_readable() );
+
+		return new Trigger( $config );
 	}
 
 	/**
@@ -233,11 +281,32 @@ class WP_Trigger_Registry implements Trigger_Registry {
 		foreach ( $this->triggers as $code => $trigger ) {
 			// Case-insensitive comparison for robustness
 			if ( strtoupper( $trigger->get_integration()->get_value() ) === $integration_upper ) {
-				$filtered_triggers[ $code ] = $trigger->to_array();
+				$filtered_triggers[ $code ] = $this->definition_row( $trigger, $this->legacy_triggers[ $code ] ?? array() );
 			}
 		}
 
 		return $filtered_triggers;
+	}
+
+	/**
+	 * A trigger as the reads return it: its array form plus the tier flags its definition declared.
+	 * A trigger added through `automator_core_api_triggers` has no definition and reads as neither.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param Trigger $trigger    The trigger.
+	 * @param array   $definition The normalized definition it was built from; empty when it has none.
+	 *
+	 * @return array
+	 */
+	private function definition_row( Trigger $trigger, array $definition ): array {
+		return array_merge(
+			$trigger->to_array(),
+			array(
+				'is_pro'   => ! empty( $definition['is_pro'] ),
+				'is_elite' => ! empty( $definition['is_elite'] ),
+			)
+		);
 	}
 
 	/**

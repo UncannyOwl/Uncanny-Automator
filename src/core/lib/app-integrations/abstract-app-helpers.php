@@ -294,6 +294,23 @@ abstract class App_Helpers extends Abstract_Helpers {
 	}
 
 	/**
+	 * Whether the integration's "Enable triggers" switch is on, as its webhooks read it.
+	 *
+	 * An integration that reads its switch another way overrides this.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @return bool False when the integration has no webhooks.
+	 */
+	public function triggers_enabled() {
+		if ( null === $this->webhooks ) {
+			return false;
+		}
+
+		return $this->webhooks->get_webhooks_enabled_status();
+	}
+
+	/**
 	 * Whether this helper's api_endpoint targets the `/v3/*` surface.
 	 *
 	 * Mirrors App_Integration::supports_v3() on the helper side so callers

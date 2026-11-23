@@ -98,14 +98,14 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 				),
 				'categories'     => array(
 					'type'        => 'array',
-					'description' => 'Recipe categories (slugs). Use get_terms tool to discover available categories.',
+					'description' => 'Recipe category slugs. Look up taxonomy recipe_category with the automator/get-terms ability when available, or the site\'s listed term lookup tool.',
 					'items'       => array(
 						'type' => 'string',
 					),
 				),
 				'tags'           => array(
 					'type'        => 'array',
-					'description' => 'Recipe tags (slugs). Use get_terms tool to discover available tags.',
+					'description' => 'Recipe tag slugs. Look up taxonomy recipe_tag with the automator/get-terms ability when available, or the site\'s listed term lookup tool.',
 					'items'       => array(
 						'type' => 'string',
 					),

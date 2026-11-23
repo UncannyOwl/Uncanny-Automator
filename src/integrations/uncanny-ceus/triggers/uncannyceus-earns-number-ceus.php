@@ -16,6 +16,8 @@ use Uncanny_Automator\Recipe\Trigger_Definition;
  */
 class UNCANNYCEUS_EARNS_NUMBER_CEUS extends Trigger {
 
+	use Uncanny_Ceus_Requirements;
+
 	/**
 	 * Opt this trigger into the lazy loading path.
 	 *
@@ -25,22 +27,6 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS extends Trigger {
 		return self::new_definition( 'EARNSCEUSNUMBER', 'UNCANNYCEUS' )
 			->trigger_meta( 'AMOUNTSCEUS' )
 			->hook( 'ceus_after_updated_user_ceu_record', 20, 7 );
-	}
-
-	/**
-	 * Skip registration when the host plugin doesn't expose the award hook.
-	 *
-	 * @return bool
-	 */
-	public function requirements_met() {
-
-		if ( ! class_exists( '\\uncanny_ceu\\Utilities' ) ) {
-			return false;
-		}
-
-		$version = \uncanny_ceu\Utilities::get_version();
-
-		return version_compare( $version, '3.0.6', '>' );
 	}
 
 	/**
@@ -58,6 +44,8 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS extends Trigger {
 		$this->set_sentence( sprintf( esc_html_x( 'A user earns {{a number of:%1$s}} %2$s', 'Uncanny CEUs', 'uncanny-automator' ), $this->get_trigger_meta(), $credit_designation_label_plural ) );
 		// translators: %1$s is the credit designation label (plural).
 		$this->set_readable_sentence( sprintf( esc_html_x( 'A user earns {{a number of}} %1$s', 'Uncanny CEUs', 'uncanny-automator' ), $credit_designation_label_plural ) );
+
+		$this->set_plugin_details( self::award_hook_plugin_details() );
 	}
 
 	/**

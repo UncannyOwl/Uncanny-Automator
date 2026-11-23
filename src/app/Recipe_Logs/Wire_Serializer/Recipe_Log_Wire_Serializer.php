@@ -6,11 +6,16 @@ namespace Uncanny_Automator\App\Recipe_Logs\Wire_Serializer;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils;
 use Uncanny_Automator\Automator_Status;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Wire_Serializer\Enums\Wire_Key;
+use Uncanny_Automator\App\Recipe_Logs\Lists\Services\Recipe_Run_Delete_Policy;
 
 /**
  * Top-level recipe-log wire serializer. Assembles the strict ModelRecipeLog:
- * identity, title, admin URLs, optional triggering user, root execution, and
- * the flow tree.
+ * identity, title, the recipe's edit URL, whether the current user may delete
+ * the run, optional triggering user, root execution, and the flow tree.
+ *
+ * The payload never carries a nonce: it reaches the Agent's logs tool and the
+ * run log's JSON download, so the frontend deletes a run with its own REST
+ * request (`DELETE logs/recipe-runs`) instead of a link.
  *
  * Reads tree keys as literals; emits wire keys from Wire_Key.
  */
@@ -31,14 +36,25 @@ final class Recipe_Log_Wire_Serializer {
 	private $flow;
 
 	/**
+	 * Who may delete a recipe's runs.
+	 *
+	 * @var Recipe_Run_Delete_Policy
+	 */
+	private $delete_policy;
+
+	/**
 	 * Wires up the wire serializer's collaborators, defaulting each to its production implementation.
 	 *
-	 * @param Node_Status_Resolver|null $resolver Status derivation.
-	 * @param Log_Flow_Serializer|null  $flow     Flow serializer.
+	 * @since 8.1.0 Takes the run delete policy.
+	 *
+	 * @param Node_Status_Resolver|null     $resolver      Status derivation.
+	 * @param Log_Flow_Serializer|null      $flow          Flow serializer.
+	 * @param Recipe_Run_Delete_Policy|null $delete_policy Who may delete a recipe's runs.
 	 */
-	public function __construct( ?Node_Status_Resolver $resolver = null, ?Log_Flow_Serializer $flow = null ) {
-		$this->resolver = $resolver ?? new Node_Status_Resolver();
-		$this->flow     = $flow ?? new Log_Flow_Serializer();
+	public function __construct( ?Node_Status_Resolver $resolver = null, ?Log_Flow_Serializer $flow = null, ?Recipe_Run_Delete_Policy $delete_policy = null ) {
+		$this->resolver      = $resolver ?? new Node_Status_Resolver();
+		$this->flow          = $flow ?? new Log_Flow_Serializer();
+		$this->delete_policy = $delete_policy ?? new Recipe_Run_Delete_Policy();
 	}
 
 	/**
@@ -60,7 +76,7 @@ final class Recipe_Log_Wire_Serializer {
 			Wire_Key::RECIPE_ID => $recipe_id,
 			'recipe_title'      => (string) ( $tree['title'] ?? '' ),
 			'run_number'        => $run_number,
-			'log_delete_url'    => $this->delete_url( $recipe_id, $run_number, $log_id ),
+			'can_delete'        => $this->delete_policy->can_delete( $recipe_id ),
 			'recipe_edit_url'   => false !== $edit_link ? (string) $edit_link : '',
 			'execution'         => $this->root_execution( $bundle ),
 			Wire_Key::FLOW      => $this->flow->serialize( $tree, $bundle ),
@@ -86,12 +102,7 @@ final class Recipe_Log_Wire_Serializer {
 		$row      = $bundle->recipe_log_row();
 		$finished = Automator_Status::finished( (int) ( $row['completed'] ?? Automator_Status::NOT_COMPLETED ) );
 
-		// mark_recipe_complete() overwrites date_time with the completion time, so a
-		// finished run's real start is its earliest child row.
-		$started = $finished ? $this->earliest_child_date( $bundle ) : '';
-		if ( '' === $started ) {
-			$started = (string) ( $row['date_time'] ?? '' );
-		}
+		$started = $bundle->run_started_at();
 
 		$exec = array(
 			'status'       => $this->resolver->recipe_root( $bundle )->to_array(),
@@ -154,19 +165,6 @@ final class Recipe_Log_Wire_Serializer {
 	}
 
 	/**
-	 * Earliest raw MySQL datetime across the run's trigger and action log rows,
-	 * or '' when none carry a date.
-	 *
-	 * @param Run_Data_Bundle $bundle Run data.
-	 * @return string
-	 */
-	private function earliest_child_date( Run_Data_Bundle $bundle ): string {
-		$dates = $this->child_dates( $bundle );
-
-		return empty( $dates ) ? '' : (string) min( $dates );
-	}
-
-	/**
 	 * Every non-empty trigger/action row datetime for the run, unordered.
 	 *
 	 * @param Run_Data_Bundle $bundle Run data.
@@ -210,34 +208,8 @@ final class Recipe_Log_Wire_Serializer {
 		$avatar_url = get_avatar_url( $user_id, array( 'size' => 96 ) );
 		return array(
 			'id'           => $user_id,
-			'display_name' => (string) $user->display_name,
+			'display_name' => Log_Message_Text::from_stored( (string) $user->display_name ),
 			'avatar_url'   => false !== $avatar_url ? (string) $avatar_url : '',
-		);
-	}
-
-	/**
-	 * Build the nonced admin delete URL; empty string without the admin capability.
-	 *
-	 * @param int $recipe_id  Recipe id.
-	 * @param int $run_number Run number.
-	 * @param int $log_id     Recipe-log id.
-	 * @return string The nonced admin delete URL, or empty string without the admin capability.
-	 */
-	private function delete_url( int $recipe_id, int $run_number, int $log_id ): string {
-		if ( ! current_user_can( automator_get_admin_capability() ) ) {
-			return '';
-		}
-		return add_query_arg(
-			array(
-				'post_type'                => AUTOMATOR_POST_TYPE_RECIPE,
-				'page'                     => 'uncanny-automator-admin-logs',
-				'recipe_id'                => $recipe_id,
-				'run_number'               => $run_number,
-				'recipe_log_id'            => $log_id,
-				'delete_specific_activity' => 1,
-				'wpnonce'                  => wp_create_nonce( AUTOMATOR_FREE_ITEM_NAME ),
-			),
-			admin_url( 'edit.php' )
 		);
 	}
 }

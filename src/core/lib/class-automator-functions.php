@@ -84,6 +84,17 @@ class Automator_Functions {
 	 */
 	public $actions = array();
 	/**
+	 * Items whose requirements are not met on this site, with the definition they would register and
+	 * their `requirements`. Written in the registration pass.
+	 *
+	 * Keyed `[ $type ][ strtoupper( $integration ) ][ strtoupper( $code ) ]`.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @var array
+	 */
+	public $unavailable_items = array();
+	/**
 	 * Collection of all loop filters
 	 *
 	 * @since    4.2.0
@@ -669,6 +680,51 @@ class Automator_Functions {
 	 */
 	public function get_actions() {
 		return $this->actions;
+	}
+
+	/**
+	 * Store an item whose requirements are not met, with its definition and `requirements`.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $type        The item type, an `Integration_Item_Types` value.
+	 * @param string $integration The integration code.
+	 * @param string $code        The item code.
+	 * @param array  $definition  The definition the item would register, with `requirements`.
+	 *
+	 * @return void
+	 */
+	public function set_unavailable_item( string $type, string $integration, string $code, array $definition ): void {
+		$this->unavailable_items[ $type ][ strtoupper( $integration ) ][ strtoupper( $code ) ] = $definition;
+	}
+
+	/**
+	 * One item whose requirements are not met.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $type        The item type, an `Integration_Item_Types` value.
+	 * @param string $integration The integration code, any case.
+	 * @param string $code        The item code, any case.
+	 *
+	 * @return array|false The stored definition, or false when the item is not stored as unavailable.
+	 */
+	public function get_unavailable_item( string $type, string $integration, string $code ) {
+		return $this->unavailable_items[ $type ][ strtoupper( $integration ) ][ strtoupper( $code ) ] ?? false;
+	}
+
+	/**
+	 * An integration's items of one type whose requirements are not met.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $type        The item type, an `Integration_Item_Types` value.
+	 * @param string $integration The integration code, any case.
+	 *
+	 * @return array The stored definitions, keyed by item code.
+	 */
+	public function get_unavailable_items( string $type, string $integration ): array {
+		return $this->unavailable_items[ $type ][ strtoupper( $integration ) ] ?? array();
 	}
 
 	/**

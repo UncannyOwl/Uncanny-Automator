@@ -57,11 +57,6 @@ class Account_Resolver extends Abstract_Resolver {
 	public function evaluate() {
 		$is_connected = $this->entity->is_connected();
 
-		/**
-		 * TODO REVIEW
-		 * - App Integration Trigger - Should check if enabled (requirements met)
-		 */
-
 		return array( $this->resolve( $is_connected ) );
 	}
 

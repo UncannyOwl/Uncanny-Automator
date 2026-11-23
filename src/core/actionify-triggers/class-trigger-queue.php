@@ -246,29 +246,34 @@ class Trigger_Queue {
 
 		$this->processing = true;
 
-		$iteration = 0;
+		// A trigger that throws reaches the caller, and the queue stays able to drain: left set, the flag would
+		// skip every trigger queued later in this request (an inbox drain catches a recipe's failure and goes on).
+		try {
+			$iteration = 0;
 
-		// Process queue in batches to handle new items enqueued during processing.
-		while ( ! empty( $this->memory_queue ) && $iteration < self::MAX_QUEUE_ITERATIONS ) {
-			// Capture current batch to process.
-			$batch              = $this->memory_queue;
-			$this->memory_queue = array();
+			// Process queue in batches to handle new items enqueued during processing.
+			while ( ! empty( $this->memory_queue ) && $iteration < self::MAX_QUEUE_ITERATIONS ) {
+				// Capture current batch to process.
+				$batch              = $this->memory_queue;
+				$this->memory_queue = array();
 
-			++$iteration;
+				++$iteration;
 
-			foreach ( $batch as $item ) {
-				$this->process_queue_item( $item );
+				foreach ( $batch as $item ) {
+					$this->process_queue_item( $item );
+				}
 			}
-		}
 
-		if ( ! empty( $this->memory_queue ) ) {
-			$this->log( 'Queue processing hit max iterations (' . self::MAX_QUEUE_ITERATIONS . '). Remaining items discarded: ' . count( $this->memory_queue ) );
-			$this->memory_queue = array();
+			if ( ! empty( $this->memory_queue ) ) {
+				$this->log( 'Queue processing hit max iterations (' . self::MAX_QUEUE_ITERATIONS . '). Remaining items discarded: ' . count( $this->memory_queue ) );
+				$this->memory_queue = array();
+			}
+		} finally {
+			$this->processing = false;
 		}
 
 		// Mark as drained after processing.
 		$this->queue_drained = true;
-		$this->processing    = false;
 
 		// Clear deduplication state between drain cycles.
 		//

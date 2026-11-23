@@ -46,7 +46,9 @@ class Recipe_Post_Metabox {
 	/**
 	 * Render the recipe builder into the edit form, below the (hidden) title field.
 	 *
-	 * Mounts <uap-f-recipe-builder> and its type selector inside <uap-d-site-auth>, passing the REST endpoint and a wp_rest nonce.
+	 * Mounts <uap-f-recipe-builder> and its type selector inside <uap-d-site-auth>, passing the REST endpoint and a wp_rest nonce. The builder also gets the current user's first name, for the welcome screen's greeting.
+	 *
+	 * @since 8.1.0 Passes the current user's first name to the builder.
 	 *
 	 * @return void
 	 */
@@ -65,14 +67,30 @@ class Recipe_Post_Metabox {
 
 		printf(
 			'<uap-d-site-auth site-api-url="%1$s" site-api-nonce="%2$s">
-				<uap-f-recipe-builder class="uap-wp-admin-pinned-app" recipe-id="%3$d"></uap-f-recipe-builder>
+				<uap-f-recipe-builder class="uap-wp-admin-pinned-app" recipe-id="%3$d" user-first-name="%4$s" site-url="%5$s"%6$s></uap-f-recipe-builder>
 				<uap-f-recipe-builder-edit-node-dialog recipe-id="%3$d"></uap-f-recipe-builder-edit-node-dialog>
 				<uap-f-recipe-builder-type-selector recipe-id="%3$d"></uap-f-recipe-builder-type-selector>
 			</uap-d-site-auth>',
 			esc_attr( rest_url() . AUTOMATOR_REST_API_END_POINT ),
 			esc_attr( wp_create_nonce( 'wp_rest' ) ),
-			esc_attr( $recipe_id )
+			esc_attr( $recipe_id ),
+			esc_attr( wp_get_current_user()->first_name ),
+			esc_attr( home_url() ),
+			$this->can_open_agent() ? ' agent-available' : ''
 		);
+	}
+
+	/**
+	 * Whether Uncanny Agent can open on this page for this user. False when the Agent client is not running.
+	 *
+	 * @return bool
+	 */
+	private function can_open_agent() {
+		try {
+			return \Uncanny_Automator\App\Application\Mcp\Mcp_Client::get_instance()->can_open_agent();
+		} catch ( \LogicException $e ) {
+			return false;
+		}
 	}
 
 	/**
